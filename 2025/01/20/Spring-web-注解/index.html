@@ -20,28 +20,70 @@
     var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Lzq&#39;s blog">
-<meta property="og:url" content="https://hqulzq.github.io/index.html">
+  <meta name="description" content="一、Spring Web MVC 与 Spring Bean 注解Spring Web MVC 注解@RequestMapping @RequestMapping注解的主要用途是将Web请求与请求处理类中的方法进行映射。Spring MVC和Spring WebFlux都通过RquestMappingHandlerMapping和RequestMappingHndlerAdapter两个类来提供对">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring web 注解">
+<meta property="og:url" content="https://hqulzq.github.io/2025/01/20/Spring-web-%E6%B3%A8%E8%A7%A3/index.html">
 <meta property="og:site_name" content="Lzq&#39;s blog">
+<meta property="og:description" content="一、Spring Web MVC 与 Spring Bean 注解Spring Web MVC 注解@RequestMapping @RequestMapping注解的主要用途是将Web请求与请求处理类中的方法进行映射。Spring MVC和Spring WebFlux都通过RquestMappingHandlerMapping和RequestMappingHndlerAdapter两个类来提供对">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/png/33554569/1709106096731-61aa57df-c36c-451a-8c6a-7ea937c4c60d.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/png/33554569/1709106096629-d7f931ea-fbd5-4c07-8a66-4ba16a806456.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/jpeg/33554569/1709106096701-9d9d0d6e-2fa5-43f2-94d6-811d78ffa04d.jpeg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/jpeg/33554569/1709106096688-c0398558-79fb-4f6f-9ec4-7100c77dbd3b.jpeg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/jpeg/33554569/1709106096618-3550ddca-8fa3-4a10-8faf-698b32c6ea68.jpeg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/jpeg/33554569/1709106097163-681e9f87-039d-44b6-b272-9026ace93a00.jpeg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/jpeg/33554569/1709106097302-924c0ec0-a8ea-41d6-8458-7ee7deaf5254.jpeg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/jpeg/33554569/1709106097261-f0eb3826-f449-46b0-9a2f-9bb4aef3888a.jpeg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/jpeg/33554569/1709106097273-f1dc8409-761a-4579-8d4d-4bddafc6047f.jpeg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/png/33554569/1709106097309-d7108a06-e6bc-4b04-b442-41cc24e8ddf8.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/jpeg/33554569/1709106097716-f9cc78a3-b126-457a-a6f3-b1336fe0924e.jpeg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/jpeg/33554569/1709106097942-28ba45a1-6ac0-4fe7-8447-19efe8bdd12c.jpeg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/jpeg/33554569/1709106097865-e8ed68eb-0fea-4e35-bb37-2d52bea49b21.jpeg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/jpeg/33554569/1709106097968-dcbf7dc8-e1d2-412c-9639-fdfba9e545ae.jpeg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/png/33554569/1709106097953-35ae1da2-6935-4b59-9d9e-f2486c6a1410.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/jpeg/33554569/1709106098321-68f40df0-3918-4a04-b5d2-e6c490901228.jpeg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/jpeg/33554569/1709106098485-28e2a725-d479-46de-8ee5-8d0d6a948c72.jpeg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/jpeg/33554569/1709106098549-b33d3134-a3c4-47b8-a619-05bb6d59c989.jpeg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/png/33554569/1709106098636-fa91e056-bf59-441a-92fa-bd64be4cdf4e.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/png/33554569/1709106098498-e16ba5df-5360-4215-b3e5-6136ce06c65d.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/png/33554569/1709106099007-048d51af-6468-4eb1-be6e-b89897316399.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/jpeg/33554569/1709106099056-67c9795b-60ca-4d33-9d90-79a306495b19.jpeg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/png/33554569/1709106099162-0494d48f-cdf6-450d-b1bf-3a2c258d425f.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/png/33554569/1709106099168-8db7425c-413b-4d4c-9700-09a9a481651a.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/jpeg/33554569/1709106099385-1480782a-ea36-4b65-9937-2f39030e0aaa.jpeg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/jpeg/33554569/1709106099679-4f026999-4d2d-44b4-b837-df76e8fcd3cc.jpeg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/jpeg/33554569/1709106099765-fd8e6bbc-fd54-4788-9913-3844e0e4a45c.jpeg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/jpeg/33554569/1709106099732-f5c0ee38-7ef5-44f3-9f0f-cf19fcbe287f.jpeg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/jpeg/33554569/1709106099941-81a1117f-f25b-451f-8b48-d5b6a748b83e.jpeg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/png/33554569/1709106099945-cbf8cf90-1120-4b8d-b52e-98e023a9e162.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/png/33554569/1709106100372-d6898280-8259-431e-a6d7-668708a02ef7.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/png/33554569/1709106100395-d14606e1-09a8-48e5-a7c8-c6bcb4d9364e.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/png/33554569/1709106100526-8d32a439-9a2f-4313-8c08-d905e1f673b8.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/png/33554569/1709106100512-76f86389-942f-484b-8ab4-4ee1d3e03fb5.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/png/33554569/1709106100654-4f6b2adb-b033-42c6-8af9-ae4724aff9f5.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/png/33554569/1709106101078-632fad2d-dbeb-4aa4-a3dd-2d80766d7adb.png">
+<meta property="article:published_time" content="2025-01-20T13:23:31.000Z">
+<meta property="article:modified_time" content="2025-01-20T13:24:55.981Z">
 <meta property="article:author" content="Zongqing Li">
+<meta property="article:tag" content="Spring Web">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2024/png/33554569/1709106096731-61aa57df-c36c-451a-8c6a-7ea937c4c60d.png">
 
-<link rel="canonical" href="https://hqulzq.github.io/">
+<link rel="canonical" href="https://hqulzq.github.io/2025/01/20/Spring-web-%E6%B3%A8%E8%A7%A3/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>Lzq's blog</title>
+  <title>Spring web 注解 | Lzq's blog</title>
   
 
 
@@ -177,9 +219,10 @@
         <div class="content-wrap">
           
 
-          <div class="content index posts-expand">
+          <div class="content post posts-expand">
             
-      
+
+    
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
@@ -195,10 +238,9 @@
       <meta itemprop="name" content="Lzq's blog">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2025/01/20/Spring-web-%E6%B3%A8%E8%A7%A3/" class="post-title-link" itemprop="url">Spring web 注解</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          Spring web 注解
+        </h1>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -231,7 +273,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h3 id="一、Spring-Web-MVC-与-Spring-Bean-注解"><a href="#一、Spring-Web-MVC-与-Spring-Bean-注解" class="headerlink" title="一、Spring Web MVC 与 Spring Bean 注解"></a><strong><font style="color:rgb(0, 0, 0);">一、Spring Web MVC 与 Spring Bean 注解</font></strong></h3><h4 id="Spring-Web-MVC-注解"><a href="#Spring-Web-MVC-注解" class="headerlink" title="Spring Web MVC 注解"></a><strong><font style="color:rgb(0, 0, 0);">Spring Web MVC 注解</font></strong></h4><p><strong><font style="color:rgb(51, 51, 51);">@RequestMapping</font></strong></p>
+        <h3 id="一、Spring-Web-MVC-与-Spring-Bean-注解"><a href="#一、Spring-Web-MVC-与-Spring-Bean-注解" class="headerlink" title="一、Spring Web MVC 与 Spring Bean 注解"></a><strong><font style="color:rgb(0, 0, 0);">一、Spring Web MVC 与 Spring Bean 注解</font></strong></h3><h4 id="Spring-Web-MVC-注解"><a href="#Spring-Web-MVC-注解" class="headerlink" title="Spring Web MVC 注解"></a><strong><font style="color:rgb(0, 0, 0);">Spring Web MVC 注解</font></strong></h4><p><strong><font style="color:rgb(51, 51, 51);">@RequestMapping</font></strong></p>
 <p><font style="color:rgb(51, 51, 51);">@RequestMapping注解的主要用途是将Web请求与请求处理类中的方法进行映射。Spring MVC和Spring WebFlux都通过</font><font style="color:rgb(10, 191, 91);background-color:rgb(243, 245, 249);">RquestMappingHandlerMapping</font><font style="color:rgb(51, 51, 51);">和</font><font style="color:rgb(10, 191, 91);background-color:rgb(243, 245, 249);">RequestMappingHndlerAdapter</font><font style="color:rgb(51, 51, 51);">两个类来提供对@RequestMapping注解的支持。</font></p>
 <p><font style="color:rgb(10, 191, 91);background-color:rgb(243, 245, 249);">@RequestMapping</font><font style="color:rgb(51, 51, 51);">注解对请求处理类中的请求处理方法进行标注；</font><font style="color:rgb(10, 191, 91);background-color:rgb(243, 245, 249);">@RequestMapping</font><font style="color:rgb(51, 51, 51);">注解拥有以下的六个配置属性：</font></p>
 <ul>
@@ -453,175 +495,33 @@
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong><font style="color:rgb(0, 0, 0);">总结</font></strong></h3><p><font style="color:rgb(51, 51, 51);">本次课程总结了Spring Boot中常见的各类型注解的使用方式，让大家能够统一的对Spring Boot常用注解有一个全面的了解。另外，关注</font><font style="color:rgb(0, 82, 217);">Java</font><font style="color:rgb(51, 51, 51);">知音公众号，回复“后端面试”，送你一份面试题宝典！</font></p>
 <p><font style="color:rgb(51, 51, 51);">由于篇幅的原因，关于Spring Boot不常用的一些注解，将在下一次分享中进行补充和说明。</font></p>
 
-      
     </div>
 
     
     
     
+
       <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
+          <div class="post-tags">
+              <a href="/tags/Spring-Web/" rel="tag"># Spring Web</a>
+          </div>
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/01/20/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2-Hello-Blog/">
+        
 
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
-      <meta itemprop="name" content="Zongqing Li">
-      <meta itemprop="description" content="">
-    </span>
 
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lzq's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2025/01/20/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2-Hello-Blog/" class="post-title-link" itemprop="url">第一篇博客 Hello Blog</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2025-01-20 17:40:12 / 修改时间：20:38:21" itemprop="dateCreated datePublished" datetime="2025-01-20T17:40:12+08:00">2025-01-20</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/blog/" itemprop="url" rel="index"><span itemprop="name">blog</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="博客"><a href="#博客" class="headerlink" title="博客"></a>博客</h2><p>这是我的第一篇博客</p>
-
-      
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/01/20/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2-Hello-Blog/" rel="prev" title="第一篇博客 Hello Blog">
+      <i class="fa fa-chevron-left"></i> 第一篇博客 Hello Blog
+    </a></div>
+      <div class="post-nav-item"></div>
     </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
       </footer>
+    
   </article>
   
   
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2023/09/27/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
-      <meta itemprop="name" content="Zongqing Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lzq's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/09/27/hello-world/" class="post-title-link" itemprop="url">Hello World</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2023-09-27 17:38:32" itemprop="dateCreated datePublished" datetime="2023-09-27T17:38:32+08:00">2023-09-27</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-01-20 20:38:34" itemprop="dateModified" datetime="2025-01-20T20:38:34+08:00">2025-01-20</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/hello-world/" itemprop="url" rel="index"><span itemprop="name">hello world</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-
   
 
 
@@ -674,6 +574,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E3%80%81Spring-Web-MVC-%E4%B8%8E-Spring-Bean-%E6%B3%A8%E8%A7%A3"><span class="nav-number">1.</span> <span class="nav-text">一、Spring Web MVC 与 Spring Bean 注解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Spring-Web-MVC-%E6%B3%A8%E8%A7%A3"><span class="nav-number">1.1.</span> <span class="nav-text">Spring Web MVC 注解</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E3%80%81Spring-Bean-%E6%B3%A8%E8%A7%A3"><span class="nav-number">2.</span> <span class="nav-text">二、Spring Bean 注解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E3%80%81Spring-Dependency-Inject-%E4%B8%8E-Bean-Scops%E6%B3%A8%E8%A7%A3"><span class="nav-number">3.</span> <span class="nav-text">三、Spring Dependency Inject 与 Bean Scops注解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Spring-DI%E6%B3%A8%E8%A7%A3"><span class="nav-number">3.1.</span> <span class="nav-text">Spring DI注解</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Scops%E6%B3%A8%E8%A7%A3"><span class="nav-number">3.2.</span> <span class="nav-text">Scops注解</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%AE%B9%E5%99%A8%E9%85%8D%E7%BD%AE%E6%B3%A8%E8%A7%A3"><span class="nav-number">4.</span> <span class="nav-text">四、容器配置注解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Autowired"><span class="nav-number">4.1.</span> <span class="nav-text">@Autowired</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Primary"><span class="nav-number">4.2.</span> <span class="nav-text">@Primary</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PostConstruct%E4%B8%8E-PreDestroy"><span class="nav-number">4.3.</span> <span class="nav-text">@PostConstruct与@PreDestroy</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Qualifier"><span class="nav-number">4.4.</span> <span class="nav-text">@Qualifier</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%94%E3%80%81Spring-Boot%E6%B3%A8%E8%A7%A3"><span class="nav-number">5.</span> <span class="nav-text">五、Spring Boot注解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
