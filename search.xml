@@ -1,24 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Java各个技术栈的官方网址</title>
+    <title>Java_Bug_总结</title>
+    <url>/2025/01/22/Java-Bug-%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[]]></content>
+      <tags>
+        <tag>Java</tag>
+        <tag>Bug</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Java技术栈的网址与文档</title>
     <url>/2025/01/22/Java%E5%90%84%E4%B8%AA%E6%8A%80%E6%9C%AF%E6%A0%88%E7%9A%84%E5%AE%98%E6%96%B9%E7%BD%91%E5%9D%80/</url>
-    <content><![CDATA[<h2 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h2><p><a href="https://hqulzq.github.io/pdf/Java.pdf">尚硅谷Java文档</a></p>
-<div class="pdfobject-container" data-target="https://hqulzq.github.io/pdf/Java.pdf" data-height="500px"></div>
-
-<h2 id="Shell"><a href="#Shell" class="headerlink" title="Shell"></a>Shell</h2><p><a href="https://hqulzq.github.io/pdf/Shell.pdf">尚硅谷Shell文档</a></p>
-<div class="pdfobject-container" data-target="https://hqulzq.github.io/pdf/Shell.pdf" data-height="500px"></div>
-
+    <content><![CDATA[<h2 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h2><p><a href="https://hqulzq.github.io/pdf/Java.pdf">尚硅谷Java文档，预览请转移至Book栏</a></p>
+<h2 id="Shell"><a href="#Shell" class="headerlink" title="Shell"></a>Shell</h2><p><a href="https://hqulzq.github.io/pdf/Shell.pdf">尚硅谷Shell文档，预览请转移至Book栏</a></p>
 <h2 id="Spring全家桶中文官网"><a href="#Spring全家桶中文官网" class="headerlink" title="Spring全家桶中文官网"></a>Spring全家桶中文官网</h2><p><a href="https://springdoc.cn/docs/">spring 中文文档 - spring 中文网</a></p>
-<h2 id="Spring"><a href="#Spring" class="headerlink" title="Spring"></a>Spring</h2><p>(<a href="https://docs.spring.io/spring-framework/reference/index.html">Spring Framework Documentation :: Spring Framework</a>)</p>
-<p><a href="https://docs.spring.io/spring-boot/api/java/index.html">Overview (Spring Boot 3.4.1 API)</a></p>
-<h2 id="Spring-Boot"><a href="#Spring-Boot" class="headerlink" title="Spring Boot"></a>Spring Boot</h2><p><a href="https://docs.spring.io/spring-boot/index.html">Spring Boot :: Spring Boot</a></p>
-<p><a href="https://docs.spring.io/spring-boot/api/java/index.html">Overview (Spring Boot 3.4.1 API)</a></p>
-<h2 id="Spring-Cloud"><a href="#Spring-Cloud" class="headerlink" title="Spring Cloud"></a>Spring Cloud</h2><p><a href="https://docs.spring.io/spring-cloud-release/reference/index.html">Spring Cloud Train Reference Documentation :: Spring Cloud Release</a></p>
+<h2 id="Spring"><a href="#Spring" class="headerlink" title="Spring"></a>Spring</h2><p>(<a href="https://docs.spring.io/spring-framework/reference/index.html">Spring Framework Documentation :: Spring Framework</a>)<br><a href="https://docs.spring.io/spring-boot/api/java/index.html">Overview (Spring Boot 3.4.1 API)</a></p>
+<h2 id="Spring-Boot"><a href="#Spring-Boot" class="headerlink" title="Spring Boot"></a>Spring Boot</h2><p><a href="https://docs.spring.io/spring-boot/index.html">Spring Boot :: Spring Boot</a><br><a href="https://docs.spring.io/spring-boot/api/java/index.html">Overview (Spring Boot 3.4.1 API)</a></p>
+<h2 id="Spring-Cloud"><a href="#Spring-Cloud" class="headerlink" title="Spring Cloud"></a>Spring Cloud</h2><p><a href="https://docs.spring.io/spring-cloud-release/reference/index.html">Spring Cloud Train Reference Documentation :: Spring Cloud Release</a><br><a href="https://www.yuque.com/leifengyang/sutong/oz4gbyh5maa0rmxu">SpringCloud - 快速通关</a></p>
 <h2 id="Spring-Cloud-Alibaba"><a href="#Spring-Cloud-Alibaba" class="headerlink" title="Spring Cloud Alibaba"></a>Spring Cloud Alibaba</h2><p><a href="https://sca.aliyun.com/docs/2023/overview/what-is-sca/?spm=5176.29160081.0.0.74805c720rxoP0">Spring Cloud Alibaba 是什么-阿里云Spring Cloud Alibaba官网</a></p>
 <h2 id="Mybatis"><a href="#Mybatis" class="headerlink" title="Mybatis"></a>Mybatis</h2><p><a href="https://mybatis.org/mybatis-3/zh_CN/index.html">Mybatis</a></p>
 <h2 id="Mybatis-Plus"><a href="#Mybatis-Plus" class="headerlink" title="Mybatis-Plus"></a>Mybatis-Plus</h2><p><a href="https://baomidou.com/introduce/">Mybatis-Plus</a></p>
-<h2 id="Docker"><a href="#Docker" class="headerlink" title="Docker"></a>Docker</h2>]]></content>
+<h2 id="Docker"><a href="#Docker" class="headerlink" title="Docker"></a>Docker</h2><p><a href="https://www.yuque.com/leifengyang/sutong/au0lv3sv3eldsmn8">Docker - 快速通关 （3h）</a></p>
+<h2 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h2><p><a href="https://hqulzq.github.io/pdf/Linux.pdf">Linux命令总结，预览请转移至Book栏</a></p>
+]]></content>
       <categories>
         <category>Java</category>
       </categories>
