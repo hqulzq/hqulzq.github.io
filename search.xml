@@ -1,6 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Java_Bug_总结</title>
+    <url>/2025/01/22/Java-Bug-%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Bug总结</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Java技术栈的网址与文档</title>
+    <url>/2025/01/22/Java%E5%90%84%E4%B8%AA%E6%8A%80%E6%9C%AF%E6%A0%88%E7%9A%84%E5%AE%98%E6%96%B9%E7%BD%91%E5%9D%80/</url>
+    <content><![CDATA[<h2 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h2><p><a href="https://hqulzq.github.io/pdf/Java.pdf">尚硅谷Java文档，预览请转移至Book栏</a></p>
+<h2 id="Shell"><a href="#Shell" class="headerlink" title="Shell"></a>Shell</h2><p><a href="https://hqulzq.github.io/pdf/Shell.pdf">尚硅谷Shell文档，预览请转移至Book栏</a></p>
+<h2 id="Spring全家桶中文官网"><a href="#Spring全家桶中文官网" class="headerlink" title="Spring全家桶中文官网"></a>Spring全家桶中文官网</h2><p><a href="https://springdoc.cn/docs/">spring 中文文档 - spring 中文网</a></p>
+<h2 id="Spring"><a href="#Spring" class="headerlink" title="Spring"></a>Spring</h2><p>(<a href="https://docs.spring.io/spring-framework/reference/index.html">Spring Framework Documentation :: Spring Framework</a>)<br><a href="https://docs.spring.io/spring-boot/api/java/index.html">Overview (Spring Boot 3.4.1 API)</a></p>
+<h2 id="Spring-Boot"><a href="#Spring-Boot" class="headerlink" title="Spring Boot"></a>Spring Boot</h2><p><a href="https://docs.spring.io/spring-boot/index.html">Spring Boot :: Spring Boot</a><br><a href="https://docs.spring.io/spring-boot/api/java/index.html">Overview (Spring Boot 3.4.1 API)</a></p>
+<h2 id="Spring-Cloud"><a href="#Spring-Cloud" class="headerlink" title="Spring Cloud"></a>Spring Cloud</h2><p><a href="https://docs.spring.io/spring-cloud-release/reference/index.html">Spring Cloud Train Reference Documentation :: Spring Cloud Release</a><br><a href="https://www.yuque.com/leifengyang/sutong/oz4gbyh5maa0rmxu">SpringCloud - 快速通关</a></p>
+<h2 id="Spring-Cloud-Alibaba"><a href="#Spring-Cloud-Alibaba" class="headerlink" title="Spring Cloud Alibaba"></a>Spring Cloud Alibaba</h2><p><a href="https://sca.aliyun.com/docs/2023/overview/what-is-sca/?spm=5176.29160081.0.0.74805c720rxoP0">Spring Cloud Alibaba 是什么-阿里云Spring Cloud Alibaba官网</a></p>
+<h2 id="Mybatis"><a href="#Mybatis" class="headerlink" title="Mybatis"></a>Mybatis</h2><p><a href="https://mybatis.org/mybatis-3/zh_CN/index.html">Mybatis</a></p>
+<h2 id="Mybatis-Plus"><a href="#Mybatis-Plus" class="headerlink" title="Mybatis-Plus"></a>Mybatis-Plus</h2><p><a href="https://baomidou.com/introduce/">Mybatis-Plus</a></p>
+<h2 id="Docker"><a href="#Docker" class="headerlink" title="Docker"></a>Docker</h2><p><a href="https://www.yuque.com/leifengyang/sutong/au0lv3sv3eldsmn8">Docker - 快速通关 （3h）</a></p>
+<h2 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h2><p><a href="https://hqulzq.github.io/pdf/Linux.pdf">Linux命令总结，预览请转移至Book栏</a></p>
+<h2 id="Git"><a href="#Git" class="headerlink" title="Git"></a>Git</h2><p><a href="https://learngitbranching.js.org/">git练习网站</a><br>[git常用命令]<a href="https://www.cnblogs.com/jamiechoo/articles/18408791">https://www.cnblogs.com/jamiechoo/articles/18408791</a></p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>技术总结</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Linux知识点1</title>
     <url>/2025/01/22/Linux%E7%9F%A5%E8%AF%86%E7%82%B91/</url>
     <content><![CDATA[<h1 id="1-Linux文件系统目录结构"><a href="#1-Linux文件系统目录结构" class="headerlink" title="1. Linux文件系统目录结构"></a>1. Linux文件系统目录结构</h1><p>理解和熟悉Linux系统的文件系统目录结构，对于有效的管理和定位文件十分重要。Linux文件系统的目录结构如下图所示：</p>
@@ -171,7 +205,7 @@
 </li>
 </ul>
 </li>
-<li><p>**mkdir（Make Directory） **</p>
+<li><p><strong>mkdir（Make Directory）</strong></p>
 <ul>
 <li><p><strong>作用</strong></p>
 <p>创建目录</p>
@@ -1096,44 +1130,10 @@
 </ol>
 ]]></content>
       <categories>
-        <category>Linux</category>
+        <category>OS</category>
       </categories>
       <tags>
         <tag>Linux</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Java技术栈的网址与文档</title>
-    <url>/2025/01/22/Java%E5%90%84%E4%B8%AA%E6%8A%80%E6%9C%AF%E6%A0%88%E7%9A%84%E5%AE%98%E6%96%B9%E7%BD%91%E5%9D%80/</url>
-    <content><![CDATA[<h2 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h2><p><a href="https://hqulzq.github.io/pdf/Java.pdf">尚硅谷Java文档，预览请转移至Book栏</a></p>
-<h2 id="Shell"><a href="#Shell" class="headerlink" title="Shell"></a>Shell</h2><p><a href="https://hqulzq.github.io/pdf/Shell.pdf">尚硅谷Shell文档，预览请转移至Book栏</a></p>
-<h2 id="Spring全家桶中文官网"><a href="#Spring全家桶中文官网" class="headerlink" title="Spring全家桶中文官网"></a>Spring全家桶中文官网</h2><p><a href="https://springdoc.cn/docs/">spring 中文文档 - spring 中文网</a></p>
-<h2 id="Spring"><a href="#Spring" class="headerlink" title="Spring"></a>Spring</h2><p>(<a href="https://docs.spring.io/spring-framework/reference/index.html">Spring Framework Documentation :: Spring Framework</a>)<br><a href="https://docs.spring.io/spring-boot/api/java/index.html">Overview (Spring Boot 3.4.1 API)</a></p>
-<h2 id="Spring-Boot"><a href="#Spring-Boot" class="headerlink" title="Spring Boot"></a>Spring Boot</h2><p><a href="https://docs.spring.io/spring-boot/index.html">Spring Boot :: Spring Boot</a><br><a href="https://docs.spring.io/spring-boot/api/java/index.html">Overview (Spring Boot 3.4.1 API)</a></p>
-<h2 id="Spring-Cloud"><a href="#Spring-Cloud" class="headerlink" title="Spring Cloud"></a>Spring Cloud</h2><p><a href="https://docs.spring.io/spring-cloud-release/reference/index.html">Spring Cloud Train Reference Documentation :: Spring Cloud Release</a><br><a href="https://www.yuque.com/leifengyang/sutong/oz4gbyh5maa0rmxu">SpringCloud - 快速通关</a></p>
-<h2 id="Spring-Cloud-Alibaba"><a href="#Spring-Cloud-Alibaba" class="headerlink" title="Spring Cloud Alibaba"></a>Spring Cloud Alibaba</h2><p><a href="https://sca.aliyun.com/docs/2023/overview/what-is-sca/?spm=5176.29160081.0.0.74805c720rxoP0">Spring Cloud Alibaba 是什么-阿里云Spring Cloud Alibaba官网</a></p>
-<h2 id="Mybatis"><a href="#Mybatis" class="headerlink" title="Mybatis"></a>Mybatis</h2><p><a href="https://mybatis.org/mybatis-3/zh_CN/index.html">Mybatis</a></p>
-<h2 id="Mybatis-Plus"><a href="#Mybatis-Plus" class="headerlink" title="Mybatis-Plus"></a>Mybatis-Plus</h2><p><a href="https://baomidou.com/introduce/">Mybatis-Plus</a></p>
-<h2 id="Docker"><a href="#Docker" class="headerlink" title="Docker"></a>Docker</h2><p><a href="https://www.yuque.com/leifengyang/sutong/au0lv3sv3eldsmn8">Docker - 快速通关 （3h）</a></p>
-<h2 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h2><p><a href="https://hqulzq.github.io/pdf/Linux.pdf">Linux命令总结，预览请转移至Book栏</a></p>
-<h2 id="Git"><a href="#Git" class="headerlink" title="Git"></a>Git</h2><p><a href="https://learngitbranching.js.org/">git练习网站</a><br>[git常用命令]<a href="https://www.cnblogs.com/jamiechoo/articles/18408791">https://www.cnblogs.com/jamiechoo/articles/18408791</a></p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>技术总结</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Java_Bug_总结</title>
-    <url>/2025/01/22/Java-Bug-%E6%80%BB%E7%BB%93/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>Bug总结</tag>
       </tags>
   </entry>
   <entry>
