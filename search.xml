@@ -50,15 +50,21 @@
 </li>
 <li><p><strong>引入Maven 依赖</strong></p>
 <p>Knife4j的依赖如下</p>
+</li>
+</ol>
 <figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.github.xiaoymin<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>knife4j-openapi3-jakarta-spring-boot-starter<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.3.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-<p>项目完整的pom.xml文件如下</p>
+<p>   项目完整的pom.xml文件如下</p>
 <figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">project</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0&quot;</span> <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span></span><br><span class="line"><span class="tag">         <span class="attr">xsi:schemaLocation</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">modelVersion</span>&gt;</span>4.0.0<span class="tag">&lt;/<span class="name">modelVersion</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">parent</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-parent<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.0.9<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">relativePath</span>/&gt;</span> <span class="comment">&lt;!-- lookup parent from repository --&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">parent</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.atguigu<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>hello-knife4j<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>0.0.1-SNAPSHOT<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hello-knife4j<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">description</span>&gt;</span>hello-knife4j<span class="tag">&lt;/<span class="name">description</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">java.version</span>&gt;</span>17<span class="tag">&lt;/<span class="name">java.version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">optional</span>&gt;</span>true<span class="tag">&lt;/<span class="name">optional</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-test<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.github.xiaoymin<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>knife4j-openapi3-jakarta-spring-boot-starter<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.3.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">build</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">plugins</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-maven-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">plugins</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">build</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></span><br></pre></td></tr></table></figure>
-</li>
+
+<ol start="3">
 <li><p><strong>创建配置类</strong></p>
-<p>创建<code>com.atguigu.helloknife4j.config.Knife4jConfiguration</code>，内容如下</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Knife4jConfiguration</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> OpenAPI <span class="title function_">openAPI</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">OpenAPI</span>()</span><br><span class="line">                .info(<span class="keyword">new</span> <span class="title class_">Info</span>()</span><br><span class="line">                        .title(<span class="string">&quot;hello-knife4j项目API&quot;</span>)</span><br><span class="line">                        .version(<span class="string">&quot;1.0&quot;</span>)</span><br><span class="line">                        .description(<span class="string">&quot;hello-knife4j项目的接口文档&quot;</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> GroupedOpenApi <span class="title function_">userAPI</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> GroupedOpenApi.builder().group(<span class="string">&quot;用户信息管理&quot;</span>).</span><br><span class="line">                pathsToMatch(<span class="string">&quot;/user/**&quot;</span>).</span><br><span class="line">                build();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> GroupedOpenApi <span class="title function_">systemAPI</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> GroupedOpenApi.builder().group(<span class="string">&quot;产品信息管理&quot;</span>).</span><br><span class="line">                pathsToMatch(<span class="string">&quot;/product/**&quot;</span>).</span><br><span class="line">                build();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>创建 <code>com.atguigu.helloknife4j.config.Knife4jConfiguration</code> ，内容如下</p>
 </li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Knife4jConfiguration</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> OpenAPI <span class="title function_">openAPI</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">OpenAPI</span>()</span><br><span class="line">                .info(<span class="keyword">new</span> <span class="title class_">Info</span>()</span><br><span class="line">                        .title(<span class="string">&quot;hello-knife4j项目API&quot;</span>)</span><br><span class="line">                        .version(<span class="string">&quot;1.0&quot;</span>)</span><br><span class="line">                        .description(<span class="string">&quot;hello-knife4j项目的接口文档&quot;</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> GroupedOpenApi <span class="title function_">userAPI</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> GroupedOpenApi.builder().group(<span class="string">&quot;用户信息管理&quot;</span>).</span><br><span class="line">                pathsToMatch(<span class="string">&quot;/user/**&quot;</span>).</span><br><span class="line">                build();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> GroupedOpenApi <span class="title function_">systemAPI</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> GroupedOpenApi.builder().group(<span class="string">&quot;产品信息管理&quot;</span>).</span><br><span class="line">                pathsToMatch(<span class="string">&quot;/product/**&quot;</span>).</span><br><span class="line">                build();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
 <li><p><strong>启动项目</strong></p>
 <p>启动SpringBoot项目，访问<a href="http://localhost:8080/doc.html%EF%BC%8C%E8%A7%82%E5%AF%9F%E6%8E%A5%E5%8F%A3%E6%96%87%E6%A1%A3%E3%80%82">http://localhost:8080/doc.html，观察接口文档。</a></p>
 </li>
@@ -66,28 +72,149 @@
 <h4 id="6-2-4-3-基本使用"><a href="#6-2-4-3-基本使用" class="headerlink" title="6.2.4.3 基本使用"></a>6.2.4.3 基本使用</h4><p>Knife4j的使用也十分简单，我们只需使用几个简单注解，对接口进行描述，Knife4j就能自动生成API文档了。具体操作如下</p>
 <ol>
 <li><p><strong>描述实体类</strong></p>
-<p>创建<code>com.atguigu.helloknife4j.entity.User</code>，内容如下</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="meta">@Schema(description = &quot;用户信息实体&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">User</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Schema(description = &quot;编号&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> Long id;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Schema(description = &quot;用户姓名&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Schema(description = &quot;用户年龄&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> Integer age;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Schema(description = &quot;用户邮箱&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String email;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>知识点</strong>：</p>
-<p><code>@Schema</code>注解用于描述作为接口参数或者返回值的实体类的数据结构。</p>
-</li>
-<li><p><strong>描述Controller接口</strong></p>
-<p>创建<code>com.atguigu.helloknife4j.controller.HelloController</code>，内容如下</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/user&quot;)</span></span><br><span class="line"><span class="meta">@Tag(name = &quot;用户信息管理&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">HelloController</span> &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Operation(summary = &quot;根据id获取用户信息&quot;)</span></span><br><span class="line">    <span class="meta">@GetMapping(&quot;getById&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> User <span class="title function_">getUserById</span><span class="params">(<span class="meta">@Parameter(description = &quot;用户id&quot;)</span> <span class="meta">@RequestParam</span> Long id)</span> &#123;</span><br><span class="line">        <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">User</span>();</span><br><span class="line">        user.setId(id);</span><br><span class="line">        user.setName(<span class="string">&quot;zhangsan&quot;</span>);</span><br><span class="line">        user.setAge(<span class="number">11</span>);</span><br><span class="line">        user.setEmail(<span class="string">&quot;zhangsan@email.com&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> user;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>知识点</strong>：</p>
-<p><code>@Tag</code>注解用于对接口进行分类，相同<code>Tag</code>的接口会放在同一个菜单。</p>
-<p><code>@Operation</code>用于对接口进行描述。</p>
-<p><code>@Parameter</code>用于对HTTP请求参数进行描述</p>
+<p>创建 <code>com.atguigu.helloknife4j.entity.User</code> ，内容如下</p>
 </li>
 </ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="meta">@Schema(description = &quot;用户信息实体&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">User</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Schema(description = &quot;编号&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> Long id;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Schema(description = &quot;用户姓名&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Schema(description = &quot;用户年龄&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> Integer age;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Schema(description = &quot;用户邮箱&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String email;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>   <strong>知识点</strong>：</p>
+<p><code>@Schema</code> 注解用于描述作为接口参数或者返回值的实体类的数据结构。</p>
+<ol start="2">
+<li><p><strong>描述Controller接口</strong></p>
+<p>创建 <code>com.atguigu.helloknife4j.controller.HelloController</code> ，内容如下</p>
+</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/user&quot;)</span></span><br><span class="line"><span class="meta">@Tag(name = &quot;用户信息管理&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">HelloController</span> &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Operation(summary = &quot;根据id获取用户信息&quot;)</span></span><br><span class="line">    <span class="meta">@GetMapping(&quot;getById&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> User <span class="title function_">getUserById</span><span class="params">(<span class="meta">@Parameter(description = &quot;用户id&quot;)</span> <span class="meta">@RequestParam</span> Long id)</span> &#123;</span><br><span class="line">        <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">User</span>();</span><br><span class="line">        user.setId(id);</span><br><span class="line">        user.setName(<span class="string">&quot;zhangsan&quot;</span>);</span><br><span class="line">        user.setAge(<span class="number">11</span>);</span><br><span class="line">        user.setEmail(<span class="string">&quot;zhangsan@email.com&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> user;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>   <strong>知识点</strong>：</p>
+<p><code>@Tag</code> 注解用于对接口进行分类，相同 <code>Tag</code> 的接口会放在同一个菜单。</p>
+<p><code>@Operation</code> 用于对接口进行描述。</p>
+<p><code>@Parameter</code> 用于对HTTP请求参数进行描述</p>
 ]]></content>
       <categories>
         <category>Java</category>
       </categories>
       <tags>
         <tag>Knife4j</tag>
+        <tag>快速入门</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Minio快速入门</title>
+    <url>/2025/01/22/Minio%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/</url>
+    <content><![CDATA[<h1 id="MinIO快速入门"><a href="#MinIO快速入门" class="headerlink" title="MinIO快速入门"></a>MinIO快速入门</h1><h2 id="1-MinIO核心概念"><a href="#1-MinIO核心概念" class="headerlink" title="1 MinIO核心概念"></a>1 MinIO核心概念</h2><p>下面介绍MinIO中的几个核心概念，这些概念在所有的对象存储服务中也都是通用的。</p>
+<ul>
+<li><p><strong>对象（Object）</strong></p>
+<p>对象是实际的数据单元，例如我们上传的一个图片。</p>
+</li>
+<li><p><strong>存储桶（Bucket）</strong></p>
+<p>存储桶是用于组织对象的命名空间，类似于文件夹。每个存储桶可以包含多个对象。</p>
+</li>
+<li><p><strong>端点（Endpoint）</strong></p>
+<p>端点是MinIO服务器的网络地址，用于访问存储桶和对象，例如 <code>http://192.168.10.101:9000</code></p>
+<p><strong>注意：</strong></p>
+</li>
+</ul>
+<p><code>9000</code> 为MinIO的API的默认端口，前边配置的 <code>9001</code> 以为管理页面端口。</p>
+<ul>
+<li><p><strong>Access Key 和 Secret Key</strong></p>
+<p><strong>Access Key</strong>是用于标识和验证访问者身份的唯一标识符，相当于用户名。</p>
+<p><strong>Secret Key</strong>是与<strong>Access Key</strong>关联的密码，用于验证访问者的身份。</p>
+</li>
+</ul>
+<h2 id="2-MinIO管理页面操作"><a href="#2-MinIO管理页面操作" class="headerlink" title="2 MinIO管理页面操作"></a>2 MinIO管理页面操作</h2><ol>
+<li><p><strong>登录</strong></p>
+<p>管理页面的地址为<a href="http://192.168.10.101:9001，登录的用户名和密码为部署时在">http://192.168.10.101:9001，登录的用户名和密码为部署时在</a> <code>EnvironmentFile</code> 文件中配置的如下参数</p>
+</li>
+</ol>
+<figure class="highlight ini"><table><tr><td class="code"><pre><span class="line"><span class="attr">MINIO_ROOT_USER</span>=minioadmin</span><br><span class="line"><span class="attr">MINIO_ROOT_PASSWORD</span>=minioadmin</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><p><strong>创建存储桶</strong></p>
+<p><img src="/2025/01/22/Minio%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/MinIO%E5%85%A5%E9%97%A8-%E5%88%9B%E5%BB%BA%E6%A1%B6.png"></p>
+</li>
+<li><p><strong>上传图片</strong></p>
+<ul>
+<li><p>找到目标桶</p>
+<p><img src="/2025/01/22/Minio%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/MinIO%E5%85%A5%E9%97%A8-%E9%80%89%E6%8B%A9%E6%A1%B6.png"></p>
+</li>
+<li><p>上传图片</p>
+<p><img src="/2025/01/22/Minio%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/MinIO%E5%85%A5%E9%97%A8-%E4%B8%8A%E4%BC%A0%E5%9B%BE%E7%89%87.png"></p>
+</li>
+</ul>
+</li>
+<li><p><strong>访问图片</strong></p>
+<ul>
+<li><p><strong>图片URL</strong></p>
+<p>由于MinIO提供了HTTP访问功能，所以可以通过浏览器直接访问对象。对象URL为MinIO的 <code>Endpoint</code> + <code>对象的存储路径</code> ，例如下图中的图片对象的URL为<a href="http://192.168.10.101:9000/test/%E5%85%AC%E5%AF%93-%E5%A4%96%E8%A7%82.jpg">http:192.168.10.101:9000&#x2F;test&#x2F;公寓-外观.jpg</a>。</p>
+<p><img src="/2025/01/22/Minio%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/MinIO%E5%85%A5%E9%97%A8-%E5%AD%98%E5%82%A8%E8%B7%AF%E5%BE%84.png"></p>
+</li>
+<li><p><strong>访问权限</strong></p>
+<p>不出意外的话，使用浏览器访问上述URL，会得到如下响应，很显然是没有访问权限。</p>
+</li>
+</ul>
+</li>
+</ol>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Error</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Code</span>&gt;</span>AccessDenied<span class="tag">&lt;/<span class="name">Code</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Message</span>&gt;</span>Access Denied.<span class="tag">&lt;/<span class="name">Message</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Key</span>&gt;</span>公寓-外观.jpg<span class="tag">&lt;/<span class="name">Key</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">BucketName</span>&gt;</span>test<span class="tag">&lt;/<span class="name">BucketName</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Resource</span>&gt;</span>/test/公寓-外观.jpg<span class="tag">&lt;/<span class="name">Resource</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">RequestId</span>&gt;</span>177BC92022FC5684<span class="tag">&lt;/<span class="name">RequestId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">HostId</span>&gt;</span>dd9025bab4ad464b049177c95eb6ebf374d3b3fd1af9251148b658df7ac2e3e8<span class="tag">&lt;/<span class="name">HostId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Error</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<pre><code> 若想继续访问图片，需要修改图片**所在桶**的访问权限，如下图所示
+
+ ![](MinIO入门-访问权限.png)
+
+ 如上图所示，可选的访问权限共有三个选项，分别是 `Private` 、 `Public` 和 `Custom` ，具体说明如下
+
+ - `Private`
+
+   只允许桶的所有者对该桶进行读写。
+
+ - `Public`
+
+   允许所有人对该桶进行读写。
+
+ - `Custom`
+
+   自定义访问权限。
+
+ 若想将权限设置为只允许所有者写，但允许所有人读，就需要自定义访问权限。自定义访问权限，需要使用一个规定格式的JSON字符串进行描述，具体格式可参考[官方文档](https://min.io/docs/minio/linux/administration/identity-access-management/policy-based-access-control.html#policy-document-structure)。
+
+ 例如以下JSON字符串表达的含义是：允许( `Allow` )所有人( `*` )读取( `s3:GetObject` )指定桶( `test` )的所有内容。
+
+ 
+</code></pre>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;Statement&quot;</span> <span class="punctuation">:</span> <span class="punctuation">[</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;Action&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;s3:GetObject&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;Effect&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;Allow&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;Principal&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;*&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;Resource&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;arn:aws:s3:::test/*&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span> <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;Version&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;2012-10-17&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<pre><code> 将 `test` 桶访问权限设置为 `Custom` ，并添加上述内容
+
+ ![](MinIO入门-自定义权限.png)
+
+ 重新访问[http:192.168.10.101:9000/test/公寓-外观.jpg](http:192.168.10.101:9000/test/公寓-外观.jpg)，观察是否正常。
+</code></pre>
+<h2 id="3-MinIO-Java-SDK"><a href="#3-MinIO-Java-SDK" class="headerlink" title="3 MinIO Java SDK"></a>3 MinIO Java SDK</h2><p>MinIO提供了多种语言的SDK供开发者使用，本项目需要用到Java SDK，下面通过一个简单案例熟悉一下其基本用法，具体内容可参考<a href="https://www.minio.org.cn/docs/minio/linux/developers/java/minio-java.html#">官方文档</a>。</p>
+<ol>
+<li><p><strong>创建一个Maven项目</strong></p>
+</li>
+<li><p><strong>引入如下依赖</strong></p>
+</li>
+</ol>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.minio<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>minio<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>8.5.3<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li><strong>编写如下内容</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">App</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException, NoSuchAlgorithmException, InvalidKeyException &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">//构造MinIO Client</span></span><br><span class="line">            <span class="type">MinioClient</span> <span class="variable">minioClient</span> <span class="operator">=</span> MinioClient.builder()</span><br><span class="line">                    .endpoint(<span class="string">&quot;http://192.168.10.101:9000&quot;</span>)</span><br><span class="line">                    .credentials(<span class="string">&quot;minioadmin&quot;</span>, <span class="string">&quot;minioadmin&quot;</span>)</span><br><span class="line">                    .build();</span><br><span class="line"></span><br><span class="line">            <span class="comment">//创建hello-minio桶</span></span><br><span class="line">            <span class="type">boolean</span> <span class="variable">found</span> <span class="operator">=</span> minioClient.bucketExists(BucketExistsArgs.builder().bucket(<span class="string">&quot;hello-minio&quot;</span>).build());</span><br><span class="line">            <span class="keyword">if</span> (!found) &#123;</span><br><span class="line">                <span class="comment">//创建hello-minio桶</span></span><br><span class="line">                minioClient.makeBucket(MakeBucketArgs.builder().bucket(<span class="string">&quot;hello-minio&quot;</span>).build());</span><br><span class="line">                <span class="comment">//设置hello-minio桶的访问权限</span></span><br><span class="line">                <span class="type">String</span> <span class="variable">policy</span> <span class="operator">=</span> <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                        &#123;</span></span><br><span class="line"><span class="string">                          &quot;Statement&quot; : [ &#123;</span></span><br><span class="line"><span class="string">                            &quot;Action&quot; : &quot;s3:GetObject&quot;,</span></span><br><span class="line"><span class="string">                            &quot;Effect&quot; : &quot;Allow&quot;,</span></span><br><span class="line"><span class="string">                            &quot;Principal&quot; : &quot;*&quot;,</span></span><br><span class="line"><span class="string">                            &quot;Resource&quot; : &quot;arn:aws:s3:::hello-minio/*&quot;</span></span><br><span class="line"><span class="string">                          &#125; ],</span></span><br><span class="line"><span class="string">                          &quot;Version&quot; : &quot;2012-10-17&quot;</span></span><br><span class="line"><span class="string">                        &#125;&quot;&quot;&quot;</span>;</span><br><span class="line">                minioClient.setBucketPolicy(SetBucketPolicyArgs.builder().bucket(<span class="string">&quot;hello-minio&quot;</span>).config(policy).build());</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                System.out.println(<span class="string">&quot;Bucket &#x27;hello-minio&#x27; already exists.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">//上传图片</span></span><br><span class="line">            minioClient.uploadObject(</span><br><span class="line">                    UploadObjectArgs.builder()</span><br><span class="line">                            .bucket(<span class="string">&quot;hello-minio&quot;</span>)</span><br><span class="line">                            .object(<span class="string">&quot;公寓-外观.jpg&quot;</span>)</span><br><span class="line">                            .filename(<span class="string">&quot;D:\\workspace\\hello-minio\\src\\main\\resources\\公寓-外观.jpg&quot;</span>)</span><br><span class="line">                            .build());</span><br><span class="line">            System.out.println(<span class="string">&quot;上传成功&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (MinioException e) &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;Error occurred: &quot;</span> + e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li><p><strong>运行测试</strong></p>
+<p>运行上述代码，然后查看MinIO管理页面，观察是否上传成功。</p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>数据库</category>
+      </categories>
+      <tags>
+        <tag>快速入门</tag>
+        <tag>MinIO</tag>
       </tags>
   </entry>
   <entry>
@@ -1193,99 +1320,18 @@
       </tags>
   </entry>
   <entry>
-    <title>Minio快速入门</title>
-    <url>/2025/01/22/Minio%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/</url>
-    <content><![CDATA[<h1 id="MinIO快速入门"><a href="#MinIO快速入门" class="headerlink" title="MinIO快速入门"></a>MinIO快速入门</h1><h2 id="1-MinIO核心概念"><a href="#1-MinIO核心概念" class="headerlink" title="1 MinIO核心概念"></a>1 MinIO核心概念</h2><p>下面介绍MinIO中的几个核心概念，这些概念在所有的对象存储服务中也都是通用的。</p>
-<ul>
-<li><p><strong>对象（Object）</strong> </p>
-<p>对象是实际的数据单元，例如我们上传的一个图片。</p>
-</li>
-<li><p><strong>存储桶（Bucket）</strong></p>
-<p>存储桶是用于组织对象的命名空间，类似于文件夹。每个存储桶可以包含多个对象。</p>
-</li>
-<li><p><strong>端点（Endpoint）</strong> </p>
-<p>端点是MinIO服务器的网络地址，用于访问存储桶和对象，例如<code>http://192.168.10.101:9000</code></p>
-<p><strong>注意：</strong></p>
-<p><code>9000</code>为MinIO的API的默认端口，前边配置的<code>9001</code>以为管理页面端口。</p>
-</li>
-<li><p><strong>Access Key 和 Secret Key</strong></p>
-<p><strong>Access Key</strong>是用于标识和验证访问者身份的唯一标识符，相当于用户名。</p>
-<p><strong>Secret Key</strong>是与<strong>Access Key</strong>关联的密码，用于验证访问者的身份。</p>
-</li>
-</ul>
-<h2 id="2-MinIO管理页面操作"><a href="#2-MinIO管理页面操作" class="headerlink" title="2 MinIO管理页面操作"></a>2 MinIO管理页面操作</h2><ol>
-<li><p><strong>登录</strong></p>
-<p>管理页面的地址为<a href="http://192.168.10.101:9001，登录的用户名和密码为部署时在`EnvironmentFile`文件中配置的如下参数">http://192.168.10.101:9001，登录的用户名和密码为部署时在`EnvironmentFile`文件中配置的如下参数</a></p>
-<figure class="highlight ini"><table><tr><td class="code"><pre><span class="line"><span class="attr">MINIO_ROOT_USER</span>=minioadmin</span><br><span class="line"><span class="attr">MINIO_ROOT_PASSWORD</span>=minioadmin</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>创建存储桶</strong></p>
-<p><img src="/2025/01/22/Minio%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/MinIO%E5%85%A5%E9%97%A8-%E5%88%9B%E5%BB%BA%E6%A1%B6.png"></p>
-</li>
-<li><p><strong>上传图片</strong></p>
-<ul>
-<li><p>找到目标桶</p>
-<p><img src="/2025/01/22/Minio%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/MinIO%E5%85%A5%E9%97%A8-%E9%80%89%E6%8B%A9%E6%A1%B6.png"></p>
-</li>
-<li><p>上传图片</p>
-<p><img src="/2025/01/22/Minio%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/MinIO%E5%85%A5%E9%97%A8-%E4%B8%8A%E4%BC%A0%E5%9B%BE%E7%89%87.png"></p>
-</li>
-</ul>
-</li>
-<li><p><strong>访问图片</strong></p>
-<ul>
-<li><p><strong>图片URL</strong></p>
-<p>由于MinIO提供了HTTP访问功能，所以可以通过浏览器直接访问对象。对象URL为MinIO的<code>Endpoint</code>+<code>对象的存储路径</code>，例如下图中的图片对象的URL为<a href="http://192.168.10.101:9000/test/%E5%85%AC%E5%AF%93-%E5%A4%96%E8%A7%82.jpg">http:192.168.10.101:9000&#x2F;test&#x2F;公寓-外观.jpg</a>。</p>
-<p><img src="/2025/01/22/Minio%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/MinIO%E5%85%A5%E9%97%A8-%E5%AD%98%E5%82%A8%E8%B7%AF%E5%BE%84.png"></p>
-</li>
-<li><p><strong>访问权限</strong></p>
-<p>不出意外的话，使用浏览器访问上述URL，会得到如下响应，很显然是没有访问权限。</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Error</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Code</span>&gt;</span>AccessDenied<span class="tag">&lt;/<span class="name">Code</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Message</span>&gt;</span>Access Denied.<span class="tag">&lt;/<span class="name">Message</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Key</span>&gt;</span>公寓-外观.jpg<span class="tag">&lt;/<span class="name">Key</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">BucketName</span>&gt;</span>test<span class="tag">&lt;/<span class="name">BucketName</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Resource</span>&gt;</span>/test/公寓-外观.jpg<span class="tag">&lt;/<span class="name">Resource</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">RequestId</span>&gt;</span>177BC92022FC5684<span class="tag">&lt;/<span class="name">RequestId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">HostId</span>&gt;</span>dd9025bab4ad464b049177c95eb6ebf374d3b3fd1af9251148b658df7ac2e3e8<span class="tag">&lt;/<span class="name">HostId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Error</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>若想继续访问图片，需要修改图片<strong>所在桶</strong>的访问权限，如下图所示</p>
-<p><img src="/2025/01/22/Minio%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/MinIO%E5%85%A5%E9%97%A8-%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90.png"></p>
-<p>如上图所示，可选的访问权限共有三个选项，分别是<code>Private</code>、<code>Public</code>和<code>Custom</code>，具体说明如下</p>
-<ul>
-<li><p><code>Private</code></p>
-<p>只允许桶的所有者对该桶进行读写。</p>
-</li>
-<li><p><code>Public</code></p>
-<p>允许所有人对该桶进行读写。</p>
-</li>
-<li><p><code>Custom</code></p>
-<p>自定义访问权限。</p>
-</li>
-</ul>
-<p>若想将权限设置为只允许所有者写，但允许所有人读，就需要自定义访问权限。自定义访问权限，需要使用一个规定格式的JSON字符串进行描述，具体格式可参考<a href="https://min.io/docs/minio/linux/administration/identity-access-management/policy-based-access-control.html#policy-document-structure">官方文档</a>。</p>
-<p>例如以下JSON字符串表达的含义是：允许(<code>Allow</code>)所有人(<code>*</code>)读取(<code>s3:GetObject</code>)指定桶(<code>test</code>)的所有内容。</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;Statement&quot;</span> <span class="punctuation">:</span> <span class="punctuation">[</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;Action&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;s3:GetObject&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;Effect&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;Allow&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;Principal&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;*&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;Resource&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;arn:aws:s3:::test/*&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span> <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;Version&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;2012-10-17&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
-<p>将<code>test</code>桶访问权限设置为<code>Custom</code>，并添加上述内容</p>
-<p><img src="/2025/01/22/Minio%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/MinIO%E5%85%A5%E9%97%A8-%E8%87%AA%E5%AE%9A%E4%B9%89%E6%9D%83%E9%99%90.png"></p>
-<p>重新访问<a href="http://192.168.10.101:9000/test/%E5%85%AC%E5%AF%93-%E5%A4%96%E8%A7%82.jpg">http:192.168.10.101:9000&#x2F;test&#x2F;公寓-外观.jpg</a>，观察是否正常。</p>
-</li>
-</ul>
-</li>
-</ol>
-<h2 id="3-MinIO-Java-SDK"><a href="#3-MinIO-Java-SDK" class="headerlink" title="3 MinIO Java SDK"></a>3 MinIO Java SDK</h2><p>MinIO提供了多种语言的SDK供开发者使用，本项目需要用到Java SDK，下面通过一个简单案例熟悉一下其基本用法，具体内容可参考<a href="https://www.minio.org.cn/docs/minio/linux/developers/java/minio-java.html#">官方文档</a>。</p>
-<ol>
-<li><p><strong>创建一个Maven项目</strong></p>
-</li>
-<li><p><strong>引入如下依赖</strong></p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.minio<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>minio<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>8.5.3<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>编写如下内容</strong></p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">App</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException, NoSuchAlgorithmException, InvalidKeyException &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">//构造MinIO Client</span></span><br><span class="line">            <span class="type">MinioClient</span> <span class="variable">minioClient</span> <span class="operator">=</span> MinioClient.builder()</span><br><span class="line">                    .endpoint(<span class="string">&quot;http://192.168.10.101:9000&quot;</span>)</span><br><span class="line">                    .credentials(<span class="string">&quot;minioadmin&quot;</span>, <span class="string">&quot;minioadmin&quot;</span>)</span><br><span class="line">                    .build();</span><br><span class="line"></span><br><span class="line">            <span class="comment">//创建hello-minio桶</span></span><br><span class="line">            <span class="type">boolean</span> <span class="variable">found</span> <span class="operator">=</span> minioClient.bucketExists(BucketExistsArgs.builder().bucket(<span class="string">&quot;hello-minio&quot;</span>).build());</span><br><span class="line">            <span class="keyword">if</span> (!found) &#123;</span><br><span class="line">                <span class="comment">//创建hello-minio桶</span></span><br><span class="line">                minioClient.makeBucket(MakeBucketArgs.builder().bucket(<span class="string">&quot;hello-minio&quot;</span>).build());</span><br><span class="line">                <span class="comment">//设置hello-minio桶的访问权限</span></span><br><span class="line">                <span class="type">String</span> <span class="variable">policy</span> <span class="operator">=</span> <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                        &#123;</span></span><br><span class="line"><span class="string">                          &quot;Statement&quot; : [ &#123;</span></span><br><span class="line"><span class="string">                            &quot;Action&quot; : &quot;s3:GetObject&quot;,</span></span><br><span class="line"><span class="string">                            &quot;Effect&quot; : &quot;Allow&quot;,</span></span><br><span class="line"><span class="string">                            &quot;Principal&quot; : &quot;*&quot;,</span></span><br><span class="line"><span class="string">                            &quot;Resource&quot; : &quot;arn:aws:s3:::hello-minio/*&quot;</span></span><br><span class="line"><span class="string">                          &#125; ],</span></span><br><span class="line"><span class="string">                          &quot;Version&quot; : &quot;2012-10-17&quot;</span></span><br><span class="line"><span class="string">                        &#125;&quot;&quot;&quot;</span>;</span><br><span class="line">                minioClient.setBucketPolicy(SetBucketPolicyArgs.builder().bucket(<span class="string">&quot;hello-minio&quot;</span>).config(policy).build());</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                System.out.println(<span class="string">&quot;Bucket &#x27;hello-minio&#x27; already exists.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">//上传图片</span></span><br><span class="line">            minioClient.uploadObject(</span><br><span class="line">                    UploadObjectArgs.builder()</span><br><span class="line">                            .bucket(<span class="string">&quot;hello-minio&quot;</span>)</span><br><span class="line">                            .object(<span class="string">&quot;公寓-外观.jpg&quot;</span>)</span><br><span class="line">                            .filename(<span class="string">&quot;D:\\workspace\\hello-minio\\src\\main\\resources\\公寓-外观.jpg&quot;</span>)</span><br><span class="line">                            .build());</span><br><span class="line">            System.out.println(<span class="string">&quot;上传成功&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (MinioException e) &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;Error occurred: &quot;</span> + e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>运行测试</strong></p>
-<p>运行上述代码，然后查看MinIO管理页面，观察是否上传成功。</p>
-</li>
-</ol>
+    <title>Spring Boots全局异常处理</title>
+    <url>/2025/01/22/Spring-Boots%E5%85%A8%E5%B1%80%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/</url>
+    <content><![CDATA[<h2 id="为什么使用全局异常处理"><a href="#为什么使用全局异常处理" class="headerlink" title="为什么使用全局异常处理"></a>为什么使用全局异常处理</h2><p>在开发时，需要对可能有异常的Controller层方法增加<code>try-catch</code>逻辑，而使用Spring MVC提供的<strong>全局异常处理</strong>功能，可以将所有处理异常的逻辑集中起来，进而统一处理所有异常，可以使代码更容易维护。<br>具体用法如下，详细信息可参考<a href="https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-exceptionhandler.html">官方文档</a>：</p>
+<h2 id="例子-尚庭公寓全局异常处理："><a href="#例子-尚庭公寓全局异常处理：" class="headerlink" title="例子-尚庭公寓全局异常处理："></a>例子-尚庭公寓全局异常处理：</h2><p>在<strong>common模块</strong>中创建<code>com.atguigu.lease.common.exception.GlobalExceptionHandler</code>类，内容如下</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@ControllerAdvice</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GlobalExceptionHandler</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ExceptionHandler(Exception.class)</span></span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="keyword">public</span> Result <span class="title function_">error</span><span class="params">(Exception e)</span>&#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">        <span class="keyword">return</span> Result.fail();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">`</span><br><span class="line">上述代码中的关键注解的作用如下</span><br><span class="line">`<span class="meta">@ControllerAdvice</span>`用于声明处理全局Controller方法异常的类</span><br><span class="line">`<span class="meta">@ExceptionHandler</span>`用于声明处理异常的方法，`value`属性用于声明该方法处理的异常类型</span><br><span class="line">`<span class="meta">@ResponseBody</span>`表示将方法的返回值作为HTTP的响应体</span><br><span class="line">**注意：**</span><br><span class="line">全局异常处理功能由SpringMVC提供，因此需要在**common模块**的`pom.xml`中引入如下依赖</span><br><span class="line">```xml</span><br><span class="line">&lt;!--spring-web--&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
-        <category>数据库</category>
+        <category>Java</category>
       </categories>
       <tags>
-        <tag>MinIO</tag>
+        <tag>Spring</tag>
+        <tag>异常处理</tag>
       </tags>
   </entry>
   <entry>
@@ -1498,6 +1544,7 @@
         <category>Java</category>
       </categories>
       <tags>
+        <tag>快速入门</tag>
         <tag>Mybatis-Plus</tag>
         <tag>Mybatis</tag>
       </tags>
@@ -2008,22 +2055,8 @@
         <category>数据库</category>
       </categories>
       <tags>
+        <tag>快速入门</tag>
         <tag>Redis</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Spring Boots全局异常处理</title>
-    <url>/2025/01/22/Spring-Boots%E5%85%A8%E5%B1%80%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/</url>
-    <content><![CDATA[<h2 id="为什么使用全局异常处理"><a href="#为什么使用全局异常处理" class="headerlink" title="为什么使用全局异常处理"></a>为什么使用全局异常处理</h2><p>在开发时，需要对可能有异常的Controller层方法增加<code>try-catch</code>逻辑，而使用Spring MVC提供的<strong>全局异常处理</strong>功能，可以将所有处理异常的逻辑集中起来，进而统一处理所有异常，可以使代码更容易维护。<br>具体用法如下，详细信息可参考<a href="https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-exceptionhandler.html">官方文档</a>：</p>
-<h2 id="例子-尚庭公寓全局异常处理："><a href="#例子-尚庭公寓全局异常处理：" class="headerlink" title="例子-尚庭公寓全局异常处理："></a>例子-尚庭公寓全局异常处理：</h2><p>在<strong>common模块</strong>中创建<code>com.atguigu.lease.common.exception.GlobalExceptionHandler</code>类，内容如下</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@ControllerAdvice</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GlobalExceptionHandler</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ExceptionHandler(Exception.class)</span></span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="keyword">public</span> Result <span class="title function_">error</span><span class="params">(Exception e)</span>&#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">        <span class="keyword">return</span> Result.fail();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">`</span><br><span class="line">上述代码中的关键注解的作用如下</span><br><span class="line">`<span class="meta">@ControllerAdvice</span>`用于声明处理全局Controller方法异常的类</span><br><span class="line">`<span class="meta">@ExceptionHandler</span>`用于声明处理异常的方法，`value`属性用于声明该方法处理的异常类型</span><br><span class="line">`<span class="meta">@ResponseBody</span>`表示将方法的返回值作为HTTP的响应体</span><br><span class="line">**注意：**</span><br><span class="line">全局异常处理功能由SpringMVC提供，因此需要在**common模块**的`pom.xml`中引入如下依赖</span><br><span class="line">```xml</span><br><span class="line">&lt;!--spring-web--&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>Spring Boot</tag>
-        <tag>异常处理</tag>
       </tags>
   </entry>
   <entry>
@@ -2220,7 +2253,8 @@
         <category>Java</category>
       </categories>
       <tags>
-        <tag>Spring Web</tag>
+        <tag>Spring</tag>
+        <tag>注解</tag>
       </tags>
   </entry>
   <entry>
@@ -2325,6 +2359,431 @@
       <tags>
         <tag>尚庭公寓</tag>
         <tag>项目实战</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>注解大全</title>
+    <url>/2025/01/22/%E6%B3%A8%E8%A7%A3%E5%A4%A7%E5%85%A8/</url>
+    <content><![CDATA[<h1 id="Spring-注解"><a href="#Spring-注解" class="headerlink" title="Spring 注解"></a>Spring 注解</h1><h2 id="和-DI-相关的注解"><a href="#和-DI-相关的注解" class="headerlink" title="和 DI 相关的注解"></a>和 DI 相关的注解</h2><h3 id="Autowired"><a href="#Autowired" class="headerlink" title="@Autowired"></a>@Autowired</h3><p>可以在构造函数、Setter 方法或字段注入中使用 @Autowired 注解，Spring 会解析并注入依赖。<br>构造函数注入：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Car</span> &#123;</span><br><span class="line">    Engine engine;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    Car(Engine engine) &#123;</span><br><span class="line">        <span class="built_in">this</span>.engine = engine;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Setter 注入:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Car</span> &#123;</span><br><span class="line">    Engine engine;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">setEngine</span><span class="params">(Engine engine)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.engine = engine;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>字段注入：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Car</span> &#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    Engine engine;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>@Autowired 有一个名为 required 的 boolean 参数，默认值为 true。当 Spring 找不到合适的 Bean 进行注入时，它会控制 Spring 的行为。当值为 true 时，会抛出异常，反之则不会。<br>注意，如果使用构造函数注入，所有构造函数参数都是 必须的 。<br>从 Spring 4.3 开始，除非声明了至少两个构造函数，否则不需要用 @Autowired 明确注解构造函数。</p>
+<h3 id="Bean"><a href="#Bean" class="headerlink" title="@Bean"></a>@Bean</h3><p>@Bean 用于标记工厂方法，用于实例化 Spring Bean：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line">Engine <span class="title function_">engine</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Engine</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>生成的 Bean 的名称与工厂方法的名称相同。如果想使用不同的名称，可以使用此注解的 name 或 value 参数（value 是 name 的别名）：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Bean(&quot;engine&quot;)</span></span><br><span class="line">Engine <span class="title function_">getEngine</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Engine</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意，所有注解为 @Bean 的方法必须位于 @Configuration 类中。</p>
+<h3 id="Qualifier"><a href="#Qualifier" class="headerlink" title="@Qualifier"></a>@Qualifier</h3><p>在模糊情况下，使用 @Qualifier 注解与 @Autowired 注解一起，提供想要使用的 Bean 的 ID 或名称。</p>
+<p>以下两个 Bean 实现了相同的接口：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Bike</span> <span class="keyword">implements</span> <span class="title class_">Vehicle</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Car</span> <span class="keyword">implements</span> <span class="title class_">Vehicle</span> &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果 Spring 需要注入一个 Vehicle Bean，最终会出现多个匹配的定义。在这种情况下，可以使用 @Qualifier 注解显式地提供 Bean 的名称。</p>
+<p>构造函数注入：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Autowired</span></span><br><span class="line">Biker(<span class="meta">@Qualifier(&quot;bike&quot;)</span> Vehicle vehicle) &#123;</span><br><span class="line">    <span class="built_in">this</span>.vehicle = vehicle;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Setter 注入：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">setVehicle</span><span class="params">(<span class="meta">@Qualifier(&quot;bike&quot;)</span> Vehicle vehicle)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.vehicle = vehicle;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>或者：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="meta">@Qualifier(&quot;bike&quot;)</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">setVehicle</span><span class="params">(Vehicle vehicle)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.vehicle = vehicle;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>字段注入：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="meta">@Qualifier(&quot;bike&quot;)</span></span><br><span class="line">Vehicle vehicle;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Required"><a href="#Required" class="headerlink" title="@Required"></a>@Required</h3><p>@Required 用于 Setter 方法，以标记我们希望通过 XML 填充的依赖：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Required</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">setColor</span><span class="params">(String color)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.color = color;</span><br><span class="line">&#125;</span><br><span class="line">&lt;bean class=<span class="string">&quot;com.baeldung.annotations.Bike&quot;</span>&gt;</span><br><span class="line">    &lt;property name=<span class="string">&quot;color&quot;</span> value=<span class="string">&quot;green&quot;</span> /&gt;</span><br><span class="line">&lt;/bean&gt;</span><br></pre></td></tr></table></figure>
+
+<p>否则，将抛出 BeanInitializationException 异常。</p>
+<h3 id="Value"><a href="#Value" class="headerlink" title="@Value"></a>@Value</h3><p>可以使用 @Value 向 Bean 注入属性值。它与构造函数、Setter 和字段注入兼容。</p>
+<p>构造函数：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Engine(<span class="meta">@Value(&quot;8&quot;)</span> <span class="type">int</span> cylinderCount) &#123;</span><br><span class="line">    <span class="built_in">this</span>.cylinderCount = cylinderCount;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Setter 方法：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">setCylinderCount</span><span class="params">(<span class="meta">@Value(&quot;8&quot;)</span> <span class="type">int</span> cylinderCount)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.cylinderCount = cylinderCount;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>或者：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Value(&quot;8&quot;)</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">setCylinderCount</span><span class="params">(<span class="type">int</span> cylinderCount)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.cylinderCount = cylinderCount;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>字段：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Value(&quot;8&quot;)</span></span><br><span class="line"><span class="type">int</span> cylinderCount;</span><br></pre></td></tr></table></figure>
+
+<p>注入静态值并不实用。因此，可以在 @Value 中使用占位符字符串来注入外部资源中定义的值，例如 .properties 或 .yaml 文件中的值。</p>
+<p>假设有以下 .properties 文件：</p>
+<p>engine.fuelType&#x3D;petrol<br>可以用下面的方法注入 engine.fuelType 的值：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Value(&quot;$&#123;engine.fuelType&#125;&quot;)</span></span><br><span class="line">String fuelType;</span><br></pre></td></tr></table></figure>
+
+<p>甚至可以在 SpEL 中使用 @Value。</p>
+<h3 id="DependsOn"><a href="#DependsOn" class="headerlink" title="@DependsOn"></a>@DependsOn</h3><p>可以使用此注解让 Spring 在注解的 Bean 之前初始化其他 Bean。通常情况下，这种行为是自动进行的，基于 Bean 之间的显式依赖关系。</p>
+<p>只有当依赖关系是隐式的，例如 JDBC 驱动加载或静态变量初始化时，才需要此注解。</p>
+<p>可以在依赖类上使用 @DependsOn 来指定依赖 Bean 的名称。注解的 value 参数需要一个包含依赖 Bean 名称的数组：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@DependsOn(&quot;engine&quot;)</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Car</span> <span class="keyword">implements</span> <span class="title class_">Vehicle</span> &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>或者，如果我们使用 @Bean 注解定义 Bean，那么就应该在工厂方法上使用 @DependsOn 注解：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="meta">@DependsOn(&quot;fuel&quot;)</span></span><br><span class="line">Engine <span class="title function_">engine</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Engine</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Lazy"><a href="#Lazy" class="headerlink" title="@Lazy"></a>@Lazy</h3><p>当我们希望延迟初始化 Bean 时，可以使用 @Lazy 注解。默认情况下，Spring 在 Application Context 启动时会立即创建所有 Singleton（单例）Bean。</p>
+<p>不过，在某些情况下，我们需要在使用时创建 Bean，而不是在应用启动时。</p>
+<p>这个注解会根据具体标注位置而有不同的表现，可以用在如下位置：</p>
+<p>@Bean 注解的 Bean 工厂方法，可以延迟方法调用（从而延迟 Bean 的创建）。<br>@Configuration 类，包含的 @Bean 方法都将受到影响<br>@Component 类，而该组件类不是 @Configuration 类，则该 Bean 将被延迟地初始化<br>@Autowired 构造函数、Setter 方法或字段，用于延迟地（通过代理）加载依赖本身<br>该注解有一个名为 value 的参数，默认值为 true。它可以覆盖默认行为。</p>
+<p>当全局设置为懒加载（lazy）时，可以标记要立即加载的 Bean，或者在使用 @Lazy 标记的 @Configuration 类中，配置特定的 @Bean 方法以进行立即加载：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@Lazy</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">VehicleFactoryConfig</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@Lazy(false)</span>  <span class="comment">// 立即加载</span></span><br><span class="line">    Engine <span class="title function_">engine</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Engine</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Lookup"><a href="#Lookup" class="headerlink" title="@Lookup"></a>@Lookup</h3><p>使用 @Lookup 注解的方法会告诉 Spring，在调用该方法时返回该方法返回类型的实例。</p>
+<h3 id="Primary"><a href="#Primary" class="headerlink" title="@Primary"></a>@Primary</h3><p>有时，需要定义多个相同类型的 Bean。在这种情况下，注入将不会成功，因为 Spring 不知道需要注入哪个 Bean。</p>
+<p>上文已经介绍了处理这种情况的方法：用 @Qualifier 标记所有注入点，并指定所需的 Bean 名称。</p>
+<p>可以使用 @Primary 注解来简化这种情况：将最常用的 Bean 标记为 @Primary，它将在未标记 @Qualifier 的注入点上被选中。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@Primary</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Car</span> <span class="keyword">implements</span> <span class="title class_">Vehicle</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Bike</span> <span class="keyword">implements</span> <span class="title class_">Vehicle</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Driver</span> &#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    Vehicle vehicle;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Biker</span> &#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="meta">@Qualifier(&quot;bike&quot;)</span></span><br><span class="line">    Vehicle vehicle;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在前面的示例中，Car 注解了 @Primary。因此，在 Driver 类中，Spring 注入了一个 Car Bean。当然，在 Biker Bean 中，vehicle 字段的值将是 Bike 对象，因为它注解了 @Qualifier 并且指定了 Bean 名称。</p>
+<h3 id="Scope"><a href="#Scope" class="headerlink" title="@Scope"></a>@Scope</h3><p>使用 @Scope 来定义 @Component 类或 @Bean 的 Scope（作用域），它可以是 singleton、prototype、request、session、globalSession 或某些自定义作用域。</p>
+<p>例如：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@Scope(&quot;prototype&quot;)</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Engine</span> &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Context-配置注解"><a href="#Context-配置注解" class="headerlink" title="Context 配置注解"></a>Context 配置注解</h2><h3 id="Profile"><a href="#Profile" class="headerlink" title="@Profile"></a>@Profile</h3><p>如果我们希望 Spring 仅在特定 Profile（配置文件）处于活动状态时才启用 @Component 类或 @Bean 方法，可以使用 @Profile 对其进行标记。<br>使用注解的 value 参数配置 Profile 的名称：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@Profile(&quot;sportDay&quot;)</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Bike</span> <span class="keyword">implements</span> <span class="title class_">Vehicle</span> &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Import"><a href="#Import" class="headerlink" title="@Import"></a>@Import</h3><p>可以使用该注解来使用特定的 @Configuration 类，而无需进行组件扫描。<br>通过 @Import 注解的 value 参数来提供这些类：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Import(VehiclePartSupplier.class)</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">VehicleFactoryConfig</span> &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="ImportResource"><a href="#ImportResource" class="headerlink" title="@ImportResource"></a>@ImportResource</h3><p>可以使用该注解导入 XML 配置。用 locations 参数或其别名 value 参数指定 XML 文件的位置：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@ImportResource(&quot;classpath:/annotations.xml&quot;)</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">VehicleFactoryConfig</span> &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="PropertySource"><a href="#PropertySource" class="headerlink" title="@PropertySource"></a>@PropertySource</h3><p>通过该注解，可以为应用设置定义属性文件：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@PropertySource(&quot;classpath:/annotations.properties&quot;)</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">VehicleFactoryConfig</span> &#123;&#125;</span><br><span class="line"><span class="meta">@PropertySource</span> 利用了 Java <span class="number">8</span> 的重复注解功能，这意味着可以用它多次标记一个类：</span><br><span class="line"></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@PropertySource(&quot;classpath:/annotations.properties&quot;)</span></span><br><span class="line"><span class="meta">@PropertySource(&quot;classpath:/vehicle-factory.properties&quot;)</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">VehicleFactoryConfig</span> &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="PropertySources"><a href="#PropertySources" class="headerlink" title="@PropertySources"></a>@PropertySources</h3><p>可以使用此注解指定多个 @PropertySource 配置：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@PropertySources(&#123; </span></span><br><span class="line"><span class="meta">    @PropertySource(&quot;classpath:/annotations.properties&quot;),</span></span><br><span class="line"><span class="meta">    @PropertySource(&quot;classpath:/vehicle-factory.properties&quot;)</span></span><br><span class="line"><span class="meta">&#125;)</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">VehicleFactoryConfig</span> &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意，自 Java 8 以来，可以通过上述重复注解的特性来实现同样的功能。</p>
+<h1 id="Spring-MVC-注解"><a href="#Spring-MVC-注解" class="headerlink" title="Spring MVC 注解"></a>Spring MVC 注解</h1><h2 id="Controller"><a href="#Controller" class="headerlink" title="@Controller"></a>@Controller</h2><p>@Controller 注解用于标识一个类为Spring MVC控制器，负责处理HTTP请求并返回视图。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Controller</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MyController</span> &#123;</span><br><span class="line">    <span class="comment">// 控制器方法定义...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="RestController"><a href="#RestController" class="headerlink" title="@RestController"></a>@RestController</h2><p>@RestController 注解是@Controller和@ResponseBody的组合，用于RESTful Web服务的控制器。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MyRestController</span> &#123;</span><br><span class="line">    <span class="comment">// 控制器中的方法将直接返回响应体。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="RequestMapping"><a href="#RequestMapping" class="headerlink" title="@RequestMapping"></a>@RequestMapping</h2><p>@RequestMapping 注解用于将HTTP请求映射到控制器的处理方法上。<br>注解属性介绍:</p>
+<ul>
+<li>value: 请求的URL路径。</li>
+<li>method: 支持的HTTP方法。</li>
+<li>params: 请求参数条件。</li>
+<li>headers: 请求头条件。</li>
+</ul>
+<p>当value设置为”&#x2F;users&#x2F;{id}”，method为RequestMethod.GET，params为”active&#x3D;true”，headers为”Accept&#x3D;application&#x2F;json”时：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">GET /users/<span class="number">123</span>?active=<span class="literal">true</span></span><br><span class="line">Accept: application/json</span><br><span class="line"></span><br><span class="line"><span class="meta">@RequestMapping(value = &quot;/users/&#123;id&#125;&quot;, method = RequestMethod.GET, params = &quot;active=true&quot;, headers = &quot;Accept=application/json&quot;)</span></span><br><span class="line"><span class="keyword">public</span> ResponseEntity&lt;List&lt;User&gt;&gt; <span class="title function_">listActiveUsers</span><span class="params">(<span class="meta">@PathVariable</span> <span class="type">int</span> id)</span> &#123;</span><br><span class="line"><span class="comment">// 根据用户ID获取激活用户的列表。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="GetMapping"><a href="#GetMapping" class="headerlink" title="@GetMapping"></a>@GetMapping</h2><p>@GetMapping 注解用于映射GET请求到控制器的方法上。<br>注解属性介绍:</p>
+<ul>
+<li>value: 请求的URL路径。</li>
+</ul>
+<p>当value设置为”&#x2F;users&#x2F;{id}”时，请求&#x2F;users&#x2F;123将映射到方法：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">GET /users/<span class="number">123</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@GetMapping(&quot;/users/&#123;id&#125;&quot;)</span></span><br><span class="line"><span class="keyword">public</span> User <span class="title function_">getUser</span><span class="params">(<span class="meta">@PathVariable</span> <span class="type">int</span> id)</span> &#123;</span><br><span class="line"><span class="comment">// 根据路径变量&#123;id&#125;获取用户信息。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="PostMapping"><a href="#PostMapping" class="headerlink" title="@PostMapping"></a>@PostMapping</h2><p>@PostMapping 注解用于映射POST请求到控制器的方法上。<br>注解属性介绍:</p>
+<ul>
+<li>value: 请求的URL路径。<br>当value设置为”&#x2F;users”时，带有JSON请求体的POST请求将映射到方法：</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">POST /users</span><br><span class="line">Content-Type: application/json</span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;name&quot;</span>: <span class="string">&quot;John Doe&quot;</span>,</span><br><span class="line">  <span class="string">&quot;age&quot;</span>: <span class="number">30</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@PostMapping(&quot;/users&quot;)</span></span><br><span class="line"><span class="keyword">public</span> User <span class="title function_">createUser</span><span class="params">(<span class="meta">@RequestBody</span> User user)</span> &#123;</span><br><span class="line"><span class="comment">// 使用JSON请求体中的数据创建新用户。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="PutMapping"><a href="#PutMapping" class="headerlink" title="@PutMapping"></a>@PutMapping</h2><p>@PutMapping 注解用于映射HTTP PUT请求到控制器的方法上，通常用于更新资源。</p>
+<p>注解属性介绍</p>
+<ul>
+<li>value: 请求的URL路径。<br>当value设置为”&#x2F;users&#x2F;{id}”时，请求将映射到更新用户的方法：</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line">PUT /users/<span class="number">123</span></span><br><span class="line">Content-Type: application/json</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;name&quot;</span>: <span class="string">&quot;Jane Doe&quot;</span>,</span><br><span class="line">  <span class="string">&quot;age&quot;</span>: <span class="number">25</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">@PutMapping(&quot;/users/&#123;id&#125;&quot;)</span></span><br><span class="line"><span class="keyword">public</span> User <span class="title function_">updateUser</span><span class="params">(<span class="meta">@PathVariable</span> <span class="type">int</span> id, <span class="meta">@RequestBody</span> User userDetails)</span> &#123;</span><br><span class="line"><span class="comment">// 使用请求体中的数据更新指定ID的用户信息。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="DeleteMapping"><a href="#DeleteMapping" class="headerlink" title="@DeleteMapping"></a>@DeleteMapping</h2><p>@DeleteMapping 注解用于映射HTTP DELETE请求到控制器的方法上，用于删除资源。<br>注解属性介绍</p>
+<ul>
+<li>value: 请求的URL路径。</li>
+</ul>
+<p>当value设置为”&#x2F;users&#x2F;{id}”时，请求将映射到删除用户的方法：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">DELETE /users/<span class="number">123</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@DeleteMapping(&quot;/users/&#123;id&#125;&quot;)</span></span><br><span class="line"><span class="keyword">public</span> ResponseEntity&lt;?&gt; deleteUser(<span class="meta">@PathVariable</span> <span class="type">int</span> id) &#123;</span><br><span class="line"><span class="comment">// 根据用户ID删除用户。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="PatchMapping"><a href="#PatchMapping" class="headerlink" title="@PatchMapping"></a>@PatchMapping</h2><p>@PatchMapping 注解用于映射HTTP PATCH请求到控制器的方法上，通常用于部分更新资源。</p>
+<p>注解属性介绍</p>
+<ul>
+<li>value: 请求的URL路径。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line">当value设置为<span class="string">&quot;/users/&#123;id&#125;&quot;</span>时，请求将映射到部分更新用户的方法：</span><br><span class="line"></span><br><span class="line">PATCH /users/<span class="number">123</span></span><br><span class="line">Content-Type: application/json</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;name&quot;</span>: <span class="string">&quot;Jane Doe&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@PatchMapping(&quot;/users/&#123;id&#125;&quot;)</span></span><br><span class="line"><span class="keyword">public</span> User <span class="title function_">patchUser</span><span class="params">(<span class="meta">@PathVariable</span> <span class="type">int</span> id, <span class="meta">@RequestBody</span> Map&lt;String, Object&gt; updates)</span> &#123;</span><br><span class="line"><span class="comment">// 使用请求体中的部分数据更新指定ID的用户信息。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="RequestParam"><a href="#RequestParam" class="headerlink" title="@RequestParam"></a>@RequestParam</h2><p>@RequestParam 注解用于将请求参数绑定到控制器方法的参数上。<br>注解属性介绍</p>
+<ul>
+<li>value: 请求参数的名称。</li>
+<li>required: 指示参数是否必须。</li>
+<li>defaultValue: 参数的默认值。</li>
+</ul>
+<p>当请求包含查询参数”page”和”size”时：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">GET /items?page=<span class="number">1</span>&amp;size=<span class="number">10</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@GetMapping(&quot;/items&quot;)</span></span><br><span class="line"><span class="keyword">public</span> List&lt;Item&gt; <span class="title function_">listItems</span><span class="params">(</span></span><br><span class="line"><span class="params"><span class="meta">@RequestParam(value = &quot;page&quot;, defaultValue = &quot;1&quot;)</span> <span class="type">int</span> page,</span></span><br><span class="line"><span class="params"><span class="meta">@RequestParam(value = &quot;size&quot;, defaultValue = &quot;10&quot;)</span> <span class="type">int</span> size</span></span><br><span class="line"><span class="params">)</span> &#123;</span><br><span class="line"><span class="comment">// 根据请求的页码和大小返回项目列表。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="PathVariable"><a href="#PathVariable" class="headerlink" title="@PathVariable"></a>@PathVariable</h2><p>@PathVariable 注解用于将URL中的模板变量绑定到控制器方法的参数上。</p>
+<p>注解属性介绍</p>
+<ul>
+<li>value: 模板变量的名称。</li>
+<li>required: 指示变量是否必须。</li>
+</ul>
+<p>当URL模板包含”{id}”时，请求&#x2F;users&#x2F;123将映射到方法：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">GET /users/<span class="number">123</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@GetMapping(&quot;/users/&#123;id&#125;&quot;)</span></span><br><span class="line"><span class="keyword">public</span> User <span class="title function_">getUserById</span><span class="params">(<span class="meta">@PathVariable</span> <span class="type">int</span> id)</span> &#123;</span><br><span class="line"><span class="comment">// 根据URL路径变量&#123;id&#125;获取用户信息。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="RequestBody"><a href="#RequestBody" class="headerlink" title="@RequestBody"></a>@RequestBody</h2><p>@RequestBody 注解用于将请求体绑定到控制器方法的参数上。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">POST /users</span><br><span class="line">Content-Type: application/json</span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;name&quot;</span>: <span class="string">&quot;John Doe&quot;</span>,</span><br><span class="line">  <span class="string">&quot;age&quot;</span>: <span class="number">30</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@PostMapping(&quot;/users&quot;)</span></span><br><span class="line"><span class="keyword">public</span> User <span class="title function_">createUser</span><span class="params">(<span class="meta">@RequestBody</span> User user)</span> &#123;</span><br><span class="line"><span class="comment">// 使用请求体中的数据创建新用户。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="RequestHeader"><a href="#RequestHeader" class="headerlink" title="@RequestHeader"></a>@RequestHeader</h2><p>@RequestHeader 注解用于将请求头绑定到控制器方法的参数上。</p>
+<p>注解属性介绍</p>
+<ul>
+<li>value: 请求头的名称。</li>
+<li>required: 指示请求头是否必须。</li>
+</ul>
+<p>请求包含自定义请求头”X-Request-ID”：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">GET /users</span><br><span class="line">X-Request-ID: <span class="number">123456789</span></span><br><span class="line"> 注解业务案例</span><br><span class="line"></span><br><span class="line"><span class="meta">@GetMapping(&quot;/users&quot;)</span></span><br><span class="line"><span class="keyword">public</span> List&lt;User&gt; <span class="title function_">listUsers</span><span class="params">(<span class="meta">@RequestHeader(value = &quot;X-Request-ID&quot;, required = false)</span> String requestId)</span> &#123;</span><br><span class="line"><span class="comment">// 根据请求头&quot;X-Request-ID&quot;记录日志或进行追踪。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="CookieValue"><a href="#CookieValue" class="headerlink" title="@CookieValue"></a>@CookieValue</h2><p>@CookieValue 注解用于将请求中Cookie的值绑定到控制器方法的参数上。</p>
+<p>注解属性介绍</p>
+<ul>
+<li>value: Cookie的名称。</li>
+<li>required: 指示Cookie是否必须。</li>
+</ul>
+<p>请求包含名为”sessionId”的Cookie：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">GET /users</span><br><span class="line">Cookie: sessionId=abc123def456</span><br><span class="line"> 注解业务案例</span><br><span class="line"></span><br><span class="line"><span class="meta">@GetMapping(&quot;/users&quot;)</span></span><br><span class="line"><span class="keyword">public</span> List&lt;User&gt; <span class="title function_">listUsers</span><span class="params">(<span class="meta">@CookieValue(value = &quot;sessionId&quot;, required = false)</span> String sessionId)</span> &#123;</span><br><span class="line"><span class="comment">// 根据Cookie中的&quot;sessionId&quot;进行会话管理。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="ModelAttribute"><a href="#ModelAttribute" class="headerlink" title="@ModelAttribute"></a>@ModelAttribute</h2><p>@ModelAttribute 注解用于将请求参数或表单数据绑定到模型属性上。<br>注解属性介绍</p>
+<ul>
+<li>value: 模型属性的名称。</li>
+<li>required: 指示模型属性是否必须。</li>
+</ul>
+<p>一个包含用户信息的POST请求：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">POST /users</span><br><span class="line">Content-Type: application/x-www-form-urlencoded</span><br><span class="line"></span><br><span class="line">name=John+Doe&amp;age=<span class="number">30</span></span><br><span class="line"> 注解业务案例</span><br><span class="line"></span><br><span class="line"><span class="meta">@PostMapping(&quot;/users&quot;)</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">addUser</span><span class="params">(Model model, <span class="meta">@ModelAttribute</span> User user)</span> &#123;</span><br><span class="line">model.addAttribute(<span class="string">&quot;user&quot;</span>, user);</span><br><span class="line"><span class="comment">// 将用户信息添加到模型中，以便在视图中展示。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="SessionAttribute"><a href="#SessionAttribute" class="headerlink" title="@SessionAttribute"></a>@SessionAttribute</h2><p>@SessionAttribute 注解用于将模型属性存储到HTTP会话中。<br>注解属性介绍</p>
+<ul>
+<li>name: 会话属性的名称。</li>
+<li>value: 会话属性的值。</li>
+</ul>
+<p>将用户信息存储在会话中，以便跨请求访问：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">GET /user/profile</span><br><span class="line">Cookie: JSESSIONID=abc123; user=John Doe</span><br><span class="line"> 注解业务案例</span><br><span class="line"></span><br><span class="line"><span class="meta">@SessionAttribute(name = &quot;user&quot;)</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">showProfile</span><span class="params">(Model model)</span> &#123;</span><br><span class="line"><span class="type">String</span> <span class="variable">user</span> <span class="operator">=</span> (String) model.asMap().get(<span class="string">&quot;user&quot;</span>);</span><br><span class="line"><span class="comment">// 从会话中获取用户信息。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="RequestAttribute"><a href="#RequestAttribute" class="headerlink" title="@RequestAttribute"></a>@RequestAttribute</h2><p>@RequestAttribute 注解用于将请求属性绑定到控制器方法的参数上。<br>注解属性介绍</p>
+<ul>
+<li>value: 请求属性的名称。</li>
+</ul>
+<p>从请求转发中携带属性：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">POST /login</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">Redirect /user/profile?role=admin</span><br><span class="line"> 注解业务案例</span><br><span class="line"></span><br><span class="line"><span class="meta">@GetMapping(&quot;/user/profile&quot;)</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">showProfile</span><span class="params">(<span class="meta">@RequestAttribute(&quot;role&quot;)</span> String role)</span> &#123;</span><br><span class="line"><span class="comment">// 根据请求属性&quot;role&quot;展示不同的用户信息。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="ResponseStatus"><a href="#ResponseStatus" class="headerlink" title="@ResponseStatus"></a>@ResponseStatus</h2><p>@ResponseStatus 注解用于指定HTTP响应的status。<br>注解属性介绍</p>
+<ul>
+<li>value: 指定的HTTP状态。</li>
+</ul>
+<p>当资源未找到时返回404状态：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">GET /users/<span class="number">999</span></span><br><span class="line">HTTP/<span class="number">1.1</span> <span class="number">404</span> Not Found</span><br><span class="line"> 注解业务案例</span><br><span class="line"></span><br><span class="line"><span class="meta">@ControllerAdvice</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GlobalExceptionHandler</span> &#123;</span><br><span class="line"><span class="meta">@ExceptionHandler(ResourceNotFoundException.class)</span></span><br><span class="line"><span class="meta">@ResponseStatus(HttpStatus.NOT_FOUND)</span></span><br><span class="line"><span class="keyword">public</span> ResponseEntity&lt;Object&gt; <span class="title function_">handleResourceNotFound</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 处理资源未找到的异常。</span></span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="ExceptionHandler"><a href="#ExceptionHandler" class="headerlink" title="@ExceptionHandler"></a>@ExceptionHandler</h2><p>@ExceptionHandler 注解用于处理控制器中抛出的特定异常。<br>注解属性介绍</p>
+<ul>
+<li>value: 指定异常的类型。</li>
+</ul>
+<p>捕获并处理自定义的业务异常：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">POST /users</span><br><span class="line">...</span><br><span class="line">HTTP/<span class="number">1.1</span> <span class="number">400</span> Bad Request</span><br><span class="line"> 注解业务案例</span><br><span class="line"></span><br><span class="line"><span class="meta">@ControllerAdvice</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GlobalExceptionHandler</span> &#123;</span><br><span class="line"><span class="meta">@ExceptionHandler(BusinessException.class)</span></span><br><span class="line"><span class="keyword">public</span> ResponseEntity&lt;Object&gt; <span class="title function_">handleBusinessException</span><span class="params">(BusinessException ex)</span> &#123;</span><br><span class="line">    <span class="comment">// 处理业务异常。</span></span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="CrossOrigin"><a href="#CrossOrigin" class="headerlink" title="@CrossOrigin"></a>@CrossOrigin</h2><p>@CrossOrigin 注解用于启用跨源请求。</p>
+<p>注解属性介绍</p>
+<ul>
+<li>origins: 允许的来源。</li>
+<li>methods: 允许的HTTP方法。</li>
+<li>allowedHeaders: 允许的请求头。</li>
+</ul>
+<p>允许特定域名进行跨域GET请求：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">OPTIONS /api/data</span><br><span class="line">Access-Control-Request-Method: GET</span><br><span class="line">Origin: &lt;http:<span class="comment">//example.com&gt;</span></span><br><span class="line"> 注解业务案例</span><br><span class="line"></span><br><span class="line"><span class="meta">@CrossOrigin(origins = &quot;&lt;http://example.com&gt;&quot;, methods = &#123;RequestMethod.GET&#125;)</span></span><br><span class="line"><span class="meta">@GetMapping(&quot;/api/data&quot;)</span></span><br><span class="line"><span class="keyword">public</span> List&lt;Data&gt; <span class="title function_">getAllData</span><span class="params">()</span> &#123;</span><br><span class="line"><span class="comment">// 返回数据列表，允许跨域GET请求。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="MatrixVariable"><a href="#MatrixVariable" class="headerlink" title="@MatrixVariable"></a>@MatrixVariable</h2><p>@MatrixVariable 注解用于从URL的矩阵变量中获取值。</p>
+<p>注解属性介绍</p>
+<ul>
+<li>pathVar: 指定矩阵变量所在的路径变量名称。</li>
+</ul>
+<p>从URL中获取矩阵变量的值：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">GET /api/users/<span class="number">123</span>;role=admin</span><br><span class="line"> 注解业务案例</span><br><span class="line"></span><br><span class="line"><span class="meta">@GetMapping(&quot;/api/users/&#123;id&#125;&quot;)</span></span><br><span class="line"><span class="keyword">public</span> User <span class="title function_">getUser</span><span class="params">(<span class="meta">@MatrixVariable(name = &quot;role&quot;, pathVar = &quot;id&quot;)</span> String role)</span> &#123;</span><br><span class="line"><span class="comment">// 根据矩阵变量&quot;role&quot;获取用户角色。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="InitBinder"><a href="#InitBinder" class="headerlink" title="@InitBinder"></a>@InitBinder</h2><p>@InitBinder 注解用于在控制器中初始化WebDataBinder，通常用于注册自定义属性编辑器。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@Controller</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MyController</span> &#123;</span><br><span class="line">    <span class="meta">@InitBinder</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">initBinder</span><span class="params">(WebDataBinder binder)</span> &#123;</span><br><span class="line">        <span class="comment">// 注册自定义属性编辑器。</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="ResponseStatus-1"><a href="#ResponseStatus-1" class="headerlink" title="@ResponseStatus"></a>@ResponseStatus</h2><p>@ResponseStatus 注解用于设置响应的HTTP状态码。<br>注解属性介绍</p>
+<ul>
+<li>value: 指定的HTTP状态码。</li>
+</ul>
+<p>当发生特定异常时，返回HTTP 503 Service Unavailable状态码。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ServiceUnavailableException</span> <span class="keyword">extends</span> <span class="title class_">RuntimeException</span> &#123;</span><br><span class="line">    <span class="comment">// 自定义异常类。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Validated"><a href="#Validated" class="headerlink" title="@Validated"></a>@Validated</h2><p>@Validated 注解用于在类或方法级别指定验证组，增强验证逻辑。<br>注解属性介绍</p>
+<ul>
+<li>groups: 指定验证组。</li>
+</ul>
+<p>使用特定的验证组对用户注册信息进行验证。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@Validated(UserValidationGroup.class)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UserRegistrationController</span> &#123;</span><br><span class="line">    <span class="comment">// 该控制器中的方法将使用UserValidationGroup验证组。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Validated-Annotation-with-Groups"><a href="#Validated-Annotation-with-Groups" class="headerlink" title="@Validated Annotation with Groups"></a>@Validated Annotation with Groups</h2><p>@Validated 注解与groups属性结合使用，允许在方法级别指定多个验证组。<br>注解属性介绍</p>
+<ul>
+<li>value: 指定的验证组数组。</li>
+</ul>
+<p>对更新操作使用不同的验证组。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@Validated(&#123;UpdateGroup.class, AnotherUpdateGroup.class&#125;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">updateEntity</span><span class="params">(<span class="meta">@Valid</span> <span class="meta">@NotNull</span> MyEntity entity)</span> &#123;</span><br><span class="line">    <span class="comment">// 使用多个验证组对实体进行验证。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="RequestBodyAdvice"><a href="#RequestBodyAdvice" class="headerlink" title="@RequestBodyAdvice"></a>@RequestBodyAdvice</h2><p>@RequestBodyAdvice 注解用于在读取请求正文之前或之后对请求正文进行处理。<br>注解属性介绍</p>
+<ul>
+<li>beforeBodyRead: 指定在读取请求正文之前的处理。</li>
+<li>afterBodyRead: 指定在读取请求正文之后的处理。</li>
+</ul>
+<p>对请求正文进行日志记录或修改。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@ControllerAdvice</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MyRequestBodyAdvice</span> &#123;</span><br><span class="line">    <span class="meta">@RequestBodyAdvice(beforeBodyRead = &quot;logBeforeRead&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">logRequestBody</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">// 在读取请求正文之前进行日志记录。</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="ControllerAdvice"><a href="#ControllerAdvice" class="headerlink" title="@ControllerAdvice"></a>@ControllerAdvice</h2><p>@ControllerAdvice 注解用于定义一个类，该类可以包含多个@ExceptionHandler、@InitBinder和@ModelAttribute方法。<br>注解属性介绍</p>
+<ul>
+<li>basePackages: 指定要扫描的包。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@ControllerAdvice</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MyGlobalControllerAdvice</span> &#123;</span><br><span class="line">    <span class="comment">// 包含全局异常处理、属性初始化和模型属性的方法。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="MatrixParam"><a href="#MatrixParam" class="headerlink" title="@MatrixParam"></a>@MatrixParam</h2><p>@MatrixParam 注解用于从URL的矩阵变量中获取值。<br>注解属性介绍</p>
+<ul>
+<li>name: 矩阵变量的名称。</li>
+</ul>
+<p>从URL中获取矩阵变量的值：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">GET /users;role=admin/<span class="number">123</span></span><br><span class="line"> 注解业务案例</span><br><span class="line"></span><br><span class="line"><span class="meta">@GetMapping(&quot;/users/&#123;id&#125;&quot;)</span></span><br><span class="line"><span class="keyword">public</span> User <span class="title function_">getUser</span><span class="params">(<span class="meta">@MatrixParam(name = &quot;role&quot;)</span> String role)</span> &#123;</span><br><span class="line"><span class="comment">// 根据矩阵变量&quot;role&quot;获取用户角色。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="SessionAttributes"><a href="#SessionAttributes" class="headerlink" title="@SessionAttributes"></a>@SessionAttributes</h2><p>@SessionAttributes 注解用于将模型属性添加到HTTP会话中，以便在多个请求之间保持它们的值。</p>
+<p>注解属性介绍</p>
+<ul>
+<li>names: 要存储在会话中的属性名称数组。</li>
+<li>types: 要存储在会话中的属性类型。</li>
+</ul>
+<p>将用户信息存储在会话中，以便在用户会话期间保持状态：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">GET /user/profile</span><br><span class="line">Cookie: JSESSIONID=abc123; user=John Doe</span><br><span class="line"> 注解业务案例</span><br><span class="line"></span><br><span class="line"><span class="meta">@Controller</span></span><br><span class="line"><span class="meta">@SessionAttributes(&quot;user&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UserController</span> &#123;</span><br><span class="line"><span class="comment">// 这个控制器中的模型属性&quot;user&quot;将被存储在会话中。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="RequestAttribute-1"><a href="#RequestAttribute-1" class="headerlink" title="@RequestAttribute"></a>@RequestAttribute</h2><p>@RequestAttribute 注解用于将请求属性绑定到控制器方法的参数上。<br>注解属性介绍</p>
+<ul>
+<li>value: 请求属性的名称。</li>
+</ul>
+<p>从请求中获取属性”searchQuery”：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">GET /search?searchQuery=spring</span><br><span class="line"> 注解业务案例</span><br><span class="line"></span><br><span class="line"><span class="meta">@GetMapping(&quot;/search&quot;)</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">search</span><span class="params">(<span class="meta">@RequestAttribute(&quot;searchQuery&quot;)</span> String query)</span> &#123;</span><br><span class="line"><span class="comment">// 使用请求属性&quot;searchQuery&quot;执行搜索。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="ModelAttribute-1"><a href="#ModelAttribute-1" class="headerlink" title="@ModelAttribute"></a>@ModelAttribute</h2><p>@ModelAttribute 注解用于将请求参数或会话属性绑定到模型对象上。<br>注解属性介绍</p>
+<ul>
+<li>value: 模型对象的名称。</li>
+</ul>
+<p>将表单提交的参数绑定到用户对象上：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">POST /user/register</span><br><span class="line">Content-Type: application/x-www-form-urlencoded</span><br><span class="line"></span><br><span class="line">name=John+Doe&amp;email=&lt;john.doe<span class="meta">@example</span>.com&gt;</span><br><span class="line"> 注解业务案例</span><br><span class="line"></span><br><span class="line"><span class="meta">@PostMapping(&quot;/user/register&quot;)</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">registerUser</span><span class="params">(<span class="meta">@ModelAttribute(&quot;user&quot;)</span> User user)</span> &#123;</span><br><span class="line"><span class="comment">// 使用模型中的&quot;user&quot;对象注册新用户。</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="CookieValue-1"><a href="#CookieValue-1" class="headerlink" title="@CookieValue"></a>@CookieValue</h2><p>@CookieValue 注解用于将请求中的Cookie值绑定到控制器方法的参数上。<br>注解属性介绍</p>
+<ul>
+<li>value: Cookie的名称。</li>
+</ul>
+<p>从请求中获取名为”sessionId”的Cookie值：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">GET /user/profile</span><br><span class="line">Cookie: sessionId=abc123</span><br><span class="line"> 注解业务案例</span><br><span class="line"></span><br><span class="line"><span class="meta">@GetMapping(&quot;/user/profile&quot;)</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">showProfile</span><span class="params">(<span class="meta">@CookieValue(&quot;sessionId&quot;)</span> String sessionId)</span> &#123;</span><br><span class="line"><span class="comment">// 使用Cookie中的&quot;sessionId&quot;进行会话管理。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="RequestBody-1"><a href="#RequestBody-1" class="headerlink" title="@RequestBody"></a>@RequestBody</h2><p>@RequestBody 注解用于将请求正文绑定到控制器方法的参数上。</p>
+<p>接收JSON格式的请求正文：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">POST /api/data</span><br><span class="line">Content-Type: application/json</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;key&quot;</span>: <span class="string">&quot;value&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"> 注解业务案例</span><br><span class="line"></span><br><span class="line"><span class="meta">@PostMapping(&quot;/api/data&quot;)</span></span><br><span class="line"><span class="keyword">public</span> DataItem <span class="title function_">createDataItem</span><span class="params">(<span class="meta">@RequestBody</span> DataItem data)</span> &#123;</span><br><span class="line"><span class="comment">// 使用请求正文中的数据创建新的数据项。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="ResponseBody"><a href="#ResponseBody" class="headerlink" title="@ResponseBody"></a>@ResponseBody</h2><p>@ResponseBody 注解用于指示方法的返回值直接作为HTTP响应正文返回。</p>
+<p>返回JSON格式的响应正文：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">GET /api/data/<span class="number">1</span></span><br><span class="line">Content-Type: application/json</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;id&quot;</span>: <span class="number">1</span>,</span><br><span class="line">  <span class="string">&quot;key&quot;</span>: <span class="string">&quot;value&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"> 注解业务案例</span><br><span class="line"></span><br><span class="line"><span class="meta">@GetMapping(&quot;/api/data/&#123;id&#125;&quot;)</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="keyword">public</span> DataItem <span class="title function_">getDataItem</span><span class="params">(<span class="meta">@PathVariable</span> <span class="type">int</span> id)</span> &#123;</span><br><span class="line"><span class="comment">// 直接将数据项作为JSON响应正文返回。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="ResponseStatus-2"><a href="#ResponseStatus-2" class="headerlink" title="@ResponseStatus"></a>@ResponseStatus</h2><p>@ResponseStatus 注解用于设置响应的HTTP状态码。<br>注解属性介绍</p>
+<ul>
+<li>value: 指定的HTTP状态码。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@ResponseStatus(HttpStatus.NOT_FOUND)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ResourceNotFoundException</span> <span class="keyword">extends</span> <span class="title class_">RuntimeException</span> &#123;</span><br><span class="line">    <span class="comment">// 自定义异常，用于当资源未找到时。</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="ExceptionHandler-1"><a href="#ExceptionHandler-1" class="headerlink" title="@ExceptionHandler"></a>@ExceptionHandler</h2><p>@ExceptionHandler 注解用于处理控制器抛出的特定异常。<br>注解属性介绍</p>
+<ul>
+<li>value: 指定异常的类型。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@ControllerAdvice</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GlobalExceptionHandler</span> &#123;</span><br><span class="line">    <span class="meta">@ExceptionHandler(ResourceNotFoundException.class)</span></span><br><span class="line">    <span class="keyword">public</span> ResponseEntity&lt;String&gt; <span class="title function_">handleResourceNotFound</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">// 处理资源未找到的异常。</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="ControllerAdvice-1"><a href="#ControllerAdvice-1" class="headerlink" title="@ControllerAdvice"></a>@ControllerAdvice</h2><p>@ControllerAdvice 注解用于定义一个类，该类可以包含多个@ExceptionHandler、@InitBinder和@ModelAttribute方法，用于全局异常处理和数据绑定。<br>注解属性介绍</p>
+<ul>
+<li>basePackages: 指定要扫描的包。</li>
+</ul>
+<p>注解业务案例</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@ControllerAdvice</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GlobalControllerAdvice</span> &#123;</span><br><span class="line">    <span class="comment">// 包含全局异常处理、属性初始化和模型属性的方法。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="PostMapping-with-consumes-Attribute"><a href="#PostMapping-with-consumes-Attribute" class="headerlink" title="@PostMapping with consumes Attribute"></a>@PostMapping with consumes Attribute</h2><p>@PostMapping 注解与 consumes 属性结合使用，用于指定请求体的媒体类型。</p>
+<p>注解属性介绍</p>
+<ul>
+<li>consumes: 指定请求体的媒体类型，如 application&#x2F;json。</li>
+</ul>
+<p>发送POST请求创建新用户，请求体为JSON格式：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">POST /users</span><br><span class="line">Content-Type: application/json</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;name&quot;</span>: <span class="string">&quot;John Doe&quot;</span>,</span><br><span class="line">  <span class="string">&quot;email&quot;</span>: <span class="string">&quot;&lt;john.doe@example.com&gt;&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@PostMapping(value = &quot;/users&quot;, consumes = &quot;application/json&quot;)</span></span><br><span class="line"><span class="keyword">public</span> ResponseEntity&lt;User&gt; <span class="title function_">createUser</span><span class="params">(<span class="meta">@RequestBody</span> User user)</span> &#123;</span><br><span class="line"><span class="comment">// 使用JSON请求体中的数据创建新用户。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="GetMapping-with-produces-Attribute"><a href="#GetMapping-with-produces-Attribute" class="headerlink" title="@GetMapping with produces Attribute"></a>@GetMapping with produces Attribute</h2><p>@GetMapping 注解与 produces 属性结合使用，用于指定响应的媒体类型。<br>注解属性介绍</p>
+<ul>
+<li>produces: 指定响应的媒体类型，如 application&#x2F;json。</li>
+</ul>
+<p>发送GET请求获取用户列表，期望响应为JSON格式：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">GET /users</span><br><span class="line">Accept: application/json</span><br><span class="line"></span><br><span class="line"><span class="meta">@GetMapping(value = &quot;/users&quot;, produces = &quot;application/json&quot;)</span></span><br><span class="line"><span class="keyword">public</span> ResponseEntity&lt;List&lt;User&gt;&gt; <span class="title function_">getUsers</span><span class="params">()</span> &#123;</span><br><span class="line"><span class="comment">// 以JSON格式返回用户列表。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="ExceptionHandler-with-responseBody-Attribute"><a href="#ExceptionHandler-with-responseBody-Attribute" class="headerlink" title="@ExceptionHandler with responseBody Attribute"></a>@ExceptionHandler with responseBody Attribute</h2><p>@ExceptionHandler 注解与 responseBody 属性结合使用，用于返回异常信息。<br>注解属性介绍</p>
+<ul>
+<li>responseBody: 指定异常处理方法的返回值是否作为响应正文。</li>
+</ul>
+<p>处理资源未找到的异常，并返回JSON格式的错误信息：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">GET /users/<span class="number">999</span></span><br><span class="line">HTTP/<span class="number">1.1</span> <span class="number">404</span> Not Found</span><br><span class="line">Content-Type: application/json</span><br><span class="line"></span><br><span class="line">&#123;<span class="string">&quot;timestamp&quot;</span>: <span class="string">&quot;2023-10-10T12:00:00&quot;</span>, <span class="string">&quot;status&quot;</span>: <span class="number">404</span>, <span class="string">&quot;error&quot;</span>: <span class="string">&quot;Not Found&quot;</span>&#125;</span><br><span class="line"> 注解业务案例</span><br><span class="line"></span><br><span class="line"><span class="meta">@ControllerAdvice</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GlobalExceptionHandler</span> &#123;</span><br><span class="line"><span class="meta">@ExceptionHandler(ResourceNotFoundException.class)</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="keyword">public</span> ResponseEntity&lt;Object&gt; <span class="title function_">handleResourceNotFound</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 返回JSON格式的错误信息。</span></span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="ControllerAdvice-with-basePackages"><a href="#ControllerAdvice-with-basePackages" class="headerlink" title="@ControllerAdvice with basePackages"></a>@ControllerAdvice with basePackages</h2><p>@ControllerAdvice 注解与 basePackages 属性结合使用，用于定义全局异常处理和数据绑定的类。<br>注解属性介绍</p>
+<ul>
+<li>basePackages: 指定要扫描的包，这些包中的控制器将使用 @ControllerAdvice 类中定义的方法。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@ControllerAdvice(basePackages = &quot;com.example.web&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GlobalControllerAdvice</span> &#123;</span><br><span class="line">    <span class="comment">// 包含全局异常处理、属性初始化和模型属性的方法。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="SessionAttribute-with-name"><a href="#SessionAttribute-with-name" class="headerlink" title="@SessionAttribute with name"></a>@SessionAttribute with name</h2><p>@SessionAttribute 注解与 name 属性结合使用，用于从HTTP会话中获取属性。<br>注解属性介绍</p>
+<ul>
+<li>name: 指定会话属性的名称。</li>
+</ul>
+<p>从会话中获取名为”user”的属性：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">GET /user/profile</span><br><span class="line">Cookie: JSESSIONID=abc123; user=John Doe</span><br><span class="line"> 注解业务案例</span><br><span class="line"></span><br><span class="line"><span class="meta">@GetMapping(&quot;/user/profile&quot;)</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">showProfile</span><span class="params">(<span class="meta">@SessionAttribute(&quot;user&quot;)</span> String user)</span> &#123;</span><br><span class="line"><span class="comment">// 使用会话中的&quot;user&quot;属性展示用户信息。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="RequestHeader-1"><a href="#RequestHeader-1" class="headerlink" title="@RequestHeader"></a>@RequestHeader</h2><p>@RequestHeader 注解用于将特定的HTTP请求头值绑定到控制器方法的参数上。<br>注解属性介绍</p>
+<ul>
+<li>value: 请求头的名称。</li>
+<li>defaultValue: 当请求头不存在时使用的默认值。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">获取User-Agent请求头的值：</span><br><span class="line"></span><br><span class="line">GET /api/resource</span><br><span class="line">User-Agent: Mozilla/<span class="number">5.0</span> (Windows NT <span class="number">10.0</span>; Win64; x64)</span><br><span class="line"> 注解业务案例</span><br><span class="line"></span><br><span class="line"><span class="meta">@GetMapping(&quot;/api/resource&quot;)</span></span><br><span class="line"><span class="keyword">public</span> ResponseEntity&lt;?&gt; handleRequest(<span class="meta">@RequestHeader(&quot;User-Agent&quot;)</span> String userAgent) &#123;</span><br><span class="line"><span class="comment">// 根据User-Agent处理请求。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Component"><a href="#Component" class="headerlink" title="@Component"></a>@Component</h2><p>@Component 是Spring的通用注解，用于标识一个类为Spring组件，可以被自动扫描和注册为Spring应用上下文的Bean。<br>注解属性介绍</p>
+<ul>
+<li>value: 指定组件的名称。<br>注解业务案例</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@Component(&quot;myComponent&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MyComponent</span> &#123;</span><br><span class="line">    <span class="comment">// 这个类会被Spring自动注册为一个Bean。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Service"><a href="#Service" class="headerlink" title="@Service"></a>@Service</h2><p>@Service 是Spring的注解，用于标识一个类为服务层组件，通常包含业务逻辑。<br>注解业务案例</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MyService</span> &#123;</span><br><span class="line">    <span class="comment">// 服务层组件，包含业务逻辑。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Repository"><a href="#Repository" class="headerlink" title="@Repository"></a>@Repository</h2><p>@Repository 是Spring Data的注解，用于标识一个类为数据访问对象，通常用于数据库访问。</p>
+<p>注解业务案例</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@Repository</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">MyRepository</span> <span class="keyword">extends</span> <span class="title class_">JpaRepository</span>&lt;User, Long&gt; &#123;</span><br><span class="line">    <span class="comment">// 定义数据访问方法。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Profile-1"><a href="#Profile-1" class="headerlink" title="@Profile"></a>@Profile</h2><p>@Profile 注解用于根据激活的配置文件激活或禁用Bean。<br>注解属性介绍</p>
+<ul>
+<li>value: 指定配置文件的名称。</li>
+</ul>
+<p>注解业务案例</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@Profile(&quot;dev&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DevConfig</span> &#123;</span><br><span class="line">    <span class="comment">// 仅在&quot;dev&quot;配置文件激活时使用。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="RequestPart"><a href="#RequestPart" class="headerlink" title="@RequestPart"></a>@RequestPart</h2><p>@RequestPart 注解用于处理multipart&#x2F;form-data请求中的部分，如文件上传。<br>注解属性介绍</p>
+<ul>
+<li>value: 请求部分的名称。</li>
+</ul>
+<p>处理包含文件的multipart请求：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">POST /api/upload</span><br><span class="line">Content-Type: multipart/form-data; boundary=----WebKitFormBoundary</span><br><span class="line"></span><br><span class="line">------WebKitFormBoundary</span><br><span class="line">Content-Disposition: form-data; name=<span class="string">&quot;file&quot;</span>; filename=<span class="string">&quot;image.png&quot;</span></span><br><span class="line">Content-Type: image/png</span><br><span class="line"></span><br><span class="line">[文件内容]</span><br><span class="line"></span><br><span class="line">------WebKitFormBoundary--</span><br><span class="line"> 注解业务案例</span><br><span class="line"></span><br><span class="line"><span class="meta">@PostMapping(&quot;/api/upload&quot;)</span></span><br><span class="line"><span class="keyword">public</span> ResponseEntity&lt;String&gt; <span class="title function_">handleFileUpload</span><span class="params">(</span></span><br><span class="line"><span class="params"><span class="meta">@RequestPart(&quot;file&quot;)</span> MultipartFile file</span></span><br><span class="line"><span class="params">)</span> &#123;</span><br><span class="line"><span class="comment">// 处理上传的文件。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Spring-Boot-注解"><a href="#Spring-Boot-注解" class="headerlink" title="Spring Boot 注解"></a>Spring Boot 注解</h1><h1 id="Spring-Cloud-注解"><a href="#Spring-Cloud-注解" class="headerlink" title="Spring Cloud 注解"></a>Spring Cloud 注解</h1>]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>注解</tag>
       </tags>
   </entry>
 </search>
