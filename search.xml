@@ -12,29 +12,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Java技术栈的网址与文档</title>
-    <url>/2025/01/22/Java%E5%90%84%E4%B8%AA%E6%8A%80%E6%9C%AF%E6%A0%88%E7%9A%84%E5%AE%98%E6%96%B9%E7%BD%91%E5%9D%80/</url>
-    <content><![CDATA[<h2 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h2><p><a href="https://hqulzq.github.io/pdf/Java.pdf">尚硅谷Java文档，预览请转移至Book栏</a></p>
-<h2 id="Shell"><a href="#Shell" class="headerlink" title="Shell"></a>Shell</h2><p><a href="https://hqulzq.github.io/pdf/Shell.pdf">尚硅谷Shell文档，预览请转移至Book栏</a></p>
-<h2 id="Spring全家桶中文官网"><a href="#Spring全家桶中文官网" class="headerlink" title="Spring全家桶中文官网"></a>Spring全家桶中文官网</h2><p><a href="https://springdoc.cn/docs/">spring 中文文档 - spring 中文网</a></p>
-<h2 id="Spring"><a href="#Spring" class="headerlink" title="Spring"></a>Spring</h2><p>(<a href="https://docs.spring.io/spring-framework/reference/index.html">Spring Framework Documentation :: Spring Framework</a>)<br><a href="https://docs.spring.io/spring-boot/api/java/index.html">Overview (Spring Boot 3.4.1 API)</a></p>
-<h2 id="Spring-Boot"><a href="#Spring-Boot" class="headerlink" title="Spring Boot"></a>Spring Boot</h2><p><a href="https://docs.spring.io/spring-boot/index.html">Spring Boot :: Spring Boot</a><br><a href="https://docs.spring.io/spring-boot/api/java/index.html">Overview (Spring Boot 3.4.1 API)</a></p>
-<h2 id="Spring-Cloud"><a href="#Spring-Cloud" class="headerlink" title="Spring Cloud"></a>Spring Cloud</h2><p><a href="https://docs.spring.io/spring-cloud-release/reference/index.html">Spring Cloud Train Reference Documentation :: Spring Cloud Release</a><br><a href="https://www.yuque.com/leifengyang/sutong/oz4gbyh5maa0rmxu">SpringCloud - 快速通关</a></p>
-<h2 id="Spring-Cloud-Alibaba"><a href="#Spring-Cloud-Alibaba" class="headerlink" title="Spring Cloud Alibaba"></a>Spring Cloud Alibaba</h2><p><a href="https://sca.aliyun.com/docs/2023/overview/what-is-sca/?spm=5176.29160081.0.0.74805c720rxoP0">Spring Cloud Alibaba 是什么-阿里云Spring Cloud Alibaba官网</a></p>
-<h2 id="Mybatis"><a href="#Mybatis" class="headerlink" title="Mybatis"></a>Mybatis</h2><p><a href="https://mybatis.org/mybatis-3/zh_CN/index.html">Mybatis</a></p>
-<h2 id="Mybatis-Plus"><a href="#Mybatis-Plus" class="headerlink" title="Mybatis-Plus"></a>Mybatis-Plus</h2><p><a href="https://baomidou.com/introduce/">Mybatis-Plus</a></p>
-<h2 id="Docker"><a href="#Docker" class="headerlink" title="Docker"></a>Docker</h2><p><a href="https://www.yuque.com/leifengyang/sutong/au0lv3sv3eldsmn8">Docker - 快速通关 （3h）</a></p>
-<h2 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h2><p><a href="https://hqulzq.github.io/pdf/Linux.pdf">Linux命令总结，预览请转移至Book栏</a></p>
-<h2 id="Git"><a href="#Git" class="headerlink" title="Git"></a>Git</h2><p><a href="https://learngitbranching.js.org/">git练习网站</a><br>[git常用命令]<a href="https://www.cnblogs.com/jamiechoo/articles/18408791">https://www.cnblogs.com/jamiechoo/articles/18408791</a></p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>技术总结</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Knife4j快速入门</title>
     <url>/2025/01/22/Knife4j%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/</url>
     <content><![CDATA[<h3 id="6-2-4-Knife4j快速入门"><a href="#6-2-4-Knife4j快速入门" class="headerlink" title="6.2.4 Knife4j快速入门"></a>6.2.4 Knife4j快速入门</h3><h4 id="6-2-4-1-概述"><a href="#6-2-4-1-概述" class="headerlink" title="6.2.4.1 概述"></a>6.2.4.1 概述</h4><p>Knife4j是一个用于生成和展示API文档的工具，同时它还提供了在线调试的功能，下图是其工作界面。</p>
@@ -97,6 +74,29 @@
       <tags>
         <tag>Knife4j</tag>
         <tag>快速入门</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Java技术栈的网址与文档</title>
+    <url>/2025/01/22/Java%E5%90%84%E4%B8%AA%E6%8A%80%E6%9C%AF%E6%A0%88%E7%9A%84%E5%AE%98%E6%96%B9%E7%BD%91%E5%9D%80/</url>
+    <content><![CDATA[<h2 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h2><p><a href="https://hqulzq.github.io/pdf/Java.pdf">尚硅谷Java文档，预览请转移至Book栏</a></p>
+<h2 id="Shell"><a href="#Shell" class="headerlink" title="Shell"></a>Shell</h2><p><a href="https://hqulzq.github.io/pdf/Shell.pdf">尚硅谷Shell文档，预览请转移至Book栏</a></p>
+<h2 id="Spring全家桶中文官网"><a href="#Spring全家桶中文官网" class="headerlink" title="Spring全家桶中文官网"></a>Spring全家桶中文官网</h2><p><a href="https://springdoc.cn/docs/">spring 中文文档 - spring 中文网</a></p>
+<h2 id="Spring"><a href="#Spring" class="headerlink" title="Spring"></a>Spring</h2><p>(<a href="https://docs.spring.io/spring-framework/reference/index.html">Spring Framework Documentation :: Spring Framework</a>)<br><a href="https://docs.spring.io/spring-boot/api/java/index.html">Overview (Spring Boot 3.4.1 API)</a></p>
+<h2 id="Spring-Boot"><a href="#Spring-Boot" class="headerlink" title="Spring Boot"></a>Spring Boot</h2><p><a href="https://docs.spring.io/spring-boot/index.html">Spring Boot :: Spring Boot</a><br><a href="https://docs.spring.io/spring-boot/api/java/index.html">Overview (Spring Boot 3.4.1 API)</a></p>
+<h2 id="Spring-Cloud"><a href="#Spring-Cloud" class="headerlink" title="Spring Cloud"></a>Spring Cloud</h2><p><a href="https://docs.spring.io/spring-cloud-release/reference/index.html">Spring Cloud Train Reference Documentation :: Spring Cloud Release</a><br><a href="https://www.yuque.com/leifengyang/sutong/oz4gbyh5maa0rmxu">SpringCloud - 快速通关</a></p>
+<h2 id="Spring-Cloud-Alibaba"><a href="#Spring-Cloud-Alibaba" class="headerlink" title="Spring Cloud Alibaba"></a>Spring Cloud Alibaba</h2><p><a href="https://sca.aliyun.com/docs/2023/overview/what-is-sca/?spm=5176.29160081.0.0.74805c720rxoP0">Spring Cloud Alibaba 是什么-阿里云Spring Cloud Alibaba官网</a></p>
+<h2 id="Mybatis"><a href="#Mybatis" class="headerlink" title="Mybatis"></a>Mybatis</h2><p><a href="https://mybatis.org/mybatis-3/zh_CN/index.html">Mybatis</a></p>
+<h2 id="Mybatis-Plus"><a href="#Mybatis-Plus" class="headerlink" title="Mybatis-Plus"></a>Mybatis-Plus</h2><p><a href="https://baomidou.com/introduce/">Mybatis-Plus</a></p>
+<h2 id="Docker"><a href="#Docker" class="headerlink" title="Docker"></a>Docker</h2><p><a href="https://www.yuque.com/leifengyang/sutong/au0lv3sv3eldsmn8">Docker - 快速通关 （3h）</a></p>
+<h2 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h2><p><a href="https://hqulzq.github.io/pdf/Linux.pdf">Linux命令总结，预览请转移至Book栏</a></p>
+<h2 id="Git"><a href="#Git" class="headerlink" title="Git"></a>Git</h2><p><a href="https://learngitbranching.js.org/">git练习网站</a><br>[git常用命令]<a href="https://www.cnblogs.com/jamiechoo/articles/18408791">https://www.cnblogs.com/jamiechoo/articles/18408791</a></p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>技术总结</tag>
       </tags>
   </entry>
   <entry>
@@ -1320,23 +1320,8 @@
       </tags>
   </entry>
   <entry>
-    <title>Spring Boots全局异常处理</title>
-    <url>/2025/01/22/Spring-Boots%E5%85%A8%E5%B1%80%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/</url>
-    <content><![CDATA[<h2 id="为什么使用全局异常处理"><a href="#为什么使用全局异常处理" class="headerlink" title="为什么使用全局异常处理"></a>为什么使用全局异常处理</h2><p>在开发时，需要对可能有异常的Controller层方法增加<code>try-catch</code>逻辑，而使用Spring MVC提供的<strong>全局异常处理</strong>功能，可以将所有处理异常的逻辑集中起来，进而统一处理所有异常，可以使代码更容易维护。<br>具体用法如下，详细信息可参考<a href="https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-exceptionhandler.html">官方文档</a>：</p>
-<h2 id="例子-尚庭公寓全局异常处理："><a href="#例子-尚庭公寓全局异常处理：" class="headerlink" title="例子-尚庭公寓全局异常处理："></a>例子-尚庭公寓全局异常处理：</h2><p>在<strong>common模块</strong>中创建<code>com.atguigu.lease.common.exception.GlobalExceptionHandler</code>类，内容如下</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@ControllerAdvice</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GlobalExceptionHandler</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ExceptionHandler(Exception.class)</span></span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="keyword">public</span> Result <span class="title function_">error</span><span class="params">(Exception e)</span>&#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">        <span class="keyword">return</span> Result.fail();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">`</span><br><span class="line">上述代码中的关键注解的作用如下</span><br><span class="line">`<span class="meta">@ControllerAdvice</span>`用于声明处理全局Controller方法异常的类</span><br><span class="line">`<span class="meta">@ExceptionHandler</span>`用于声明处理异常的方法，`value`属性用于声明该方法处理的异常类型</span><br><span class="line">`<span class="meta">@ResponseBody</span>`表示将方法的返回值作为HTTP的响应体</span><br><span class="line">**注意：**</span><br><span class="line">全局异常处理功能由SpringMVC提供，因此需要在**common模块**的`pom.xml`中引入如下依赖</span><br><span class="line">```xml</span><br><span class="line">&lt;!--spring-web--&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>Spring</tag>
-        <tag>异常处理</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Mybatis-Plus入门</title>
-    <url>/2025/01/22/Mybatis-Plus%E5%85%A5%E9%97%A8/</url>
+    <url>/2025/01/22/Mybatis-Plus%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/</url>
     <content><![CDATA[<h1 id="MyBatis-Plus快速入门"><a href="#MyBatis-Plus快速入门" class="headerlink" title="MyBatis Plus快速入门"></a>MyBatis Plus快速入门</h1><h2 id="1、概述"><a href="#1、概述" class="headerlink" title="1、概述"></a>1、概述</h2><p>MyBatis-Plus（简称 MP）是一个MyBatis 的增强工具，在 MyBatis 的基础上只做增强不做改变，为简化开发、提高效率而生。其突出的特性如下：</p>
 <ul>
 <li><strong>无侵入</strong>：只做增强不做改变，引入它不会对现有工程产生影响，如丝般顺滑</li>
@@ -1523,19 +1508,19 @@
 <ol>
 <li><p><strong>安装插件</strong></p>
 <p>在IDEA插件市场搜索<code>MyBatisX</code>，进行在线安装</p>
-<p><img src="/2025/01/22/Mybatis-Plus%E5%85%A5%E9%97%A8/image-20250122173825745.png" alt="image-20250122173825745"></p>
+<p><img src="/2025/01/22/Mybatis-Plus%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/image-20250122173825745.png" alt="image-20250122173825745"></p>
 </li>
 <li><p><strong>配置数据库连接</strong></p>
 <p>在IDEA中配置数据库连接</p>
-<p><img src="/2025/01/22/Mybatis-Plus%E5%85%A5%E9%97%A8/image-20250122173835578.png" alt="image-20250122173835578"></p>
+<p><img src="/2025/01/22/Mybatis-Plus%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/image-20250122173835578.png" alt="image-20250122173835578"></p>
 </li>
 <li><p><strong>生成代码</strong></p>
 <p>首先将之前编写的<code>User</code>、<code>UserMapper</code>、<code>UserServcie</code>、<code>UserServiceImpl</code>全部删除，然后按照下图指示使用插件生成代码</p>
-<p><img src="/2025/01/22/Mybatis-Plus%E5%85%A5%E9%97%A8/image-20250122173844446.png" alt="image-20250122173844446"></p>
+<p><img src="/2025/01/22/Mybatis-Plus%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/image-20250122173844446.png" alt="image-20250122173844446"></p>
 <p>配置实体类相关信息</p>
-<p><img src="/2025/01/22/Mybatis-Plus%E5%85%A5%E9%97%A8/image-20250122173850326.png" alt="image-20250122173850326"></p>
+<p><img src="/2025/01/22/Mybatis-Plus%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/image-20250122173850326.png" alt="image-20250122173850326"></p>
 <p>配置代码模版信息</p>
-<p><img src="/2025/01/22/Mybatis-Plus%E5%85%A5%E9%97%A8/image-20250122173901559.png" alt="image-20250122173901559"></p>
+<p><img src="/2025/01/22/Mybatis-Plus%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/image-20250122173901559.png" alt="image-20250122173901559"></p>
 <p>点击Finish然后查看生成的代码。</p>
 </li>
 </ol>
@@ -2057,6 +2042,21 @@
       <tags>
         <tag>快速入门</tag>
         <tag>Redis</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Spring Boot全局异常处理</title>
+    <url>/2025/01/22/Spring-Boot%E5%85%A8%E5%B1%80%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/</url>
+    <content><![CDATA[<h2 id="为什么使用全局异常处理"><a href="#为什么使用全局异常处理" class="headerlink" title="为什么使用全局异常处理"></a>为什么使用全局异常处理</h2><p>在开发时，需要对可能有异常的Controller层方法增加<code>try-catch</code>逻辑，而使用Spring MVC提供的<strong>全局异常处理</strong>功能，可以将所有处理异常的逻辑集中起来，进而统一处理所有异常，可以使代码更容易维护。<br>具体用法如下，详细信息可参考<a href="https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-exceptionhandler.html">官方文档</a>：</p>
+<h2 id="例子-尚庭公寓全局异常处理："><a href="#例子-尚庭公寓全局异常处理：" class="headerlink" title="例子-尚庭公寓全局异常处理："></a>例子-尚庭公寓全局异常处理：</h2><p>在<strong>common模块</strong>中创建<code>com.atguigu.lease.common.exception.GlobalExceptionHandler</code>类，内容如下</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@ControllerAdvice</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GlobalExceptionHandler</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ExceptionHandler(Exception.class)</span></span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="keyword">public</span> Result <span class="title function_">error</span><span class="params">(Exception e)</span>&#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">        <span class="keyword">return</span> Result.fail();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">`</span><br><span class="line">上述代码中的关键注解的作用如下</span><br><span class="line">`<span class="meta">@ControllerAdvice</span>`用于声明处理全局Controller方法异常的类</span><br><span class="line">`<span class="meta">@ExceptionHandler</span>`用于声明处理异常的方法，`value`属性用于声明该方法处理的异常类型</span><br><span class="line">`<span class="meta">@ResponseBody</span>`表示将方法的返回值作为HTTP的响应体</span><br><span class="line">**注意：**</span><br><span class="line">全局异常处理功能由SpringMVC提供，因此需要在**common模块**的`pom.xml`中引入如下依赖</span><br><span class="line">```xml</span><br><span class="line">&lt;!--spring-web--&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Spring</tag>
+        <tag>异常处理</tag>
       </tags>
   </entry>
   <entry>
