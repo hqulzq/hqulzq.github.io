@@ -64,7 +64,7 @@
 <meta property="og:image" content="https://hqulzq.github.io/2025/01/20/Spring-web-%E6%B3%A8%E8%A7%A3/1709106100654-4f6b2adb-b033-42c6-8af9-ae4724aff9f5.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/01/20/Spring-web-%E6%B3%A8%E8%A7%A3/1709106101078-632fad2d-dbeb-4aa4-a3dd-2d80766d7adb.png">
 <meta property="article:published_time" content="2025-01-20T13:23:31.000Z">
-<meta property="article:modified_time" content="2025-01-22T12:24:19.863Z">
+<meta property="article:modified_time" content="2025-01-23T03:09:15.326Z">
 <meta property="article:author" content="Zongqing Li">
 <meta property="article:tag" content="Spring">
 <meta property="article:tag" content="注解">
@@ -169,7 +169,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">11</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">13</span></a>
 
   </li>
         <li class="menu-item menu-item-book">
@@ -262,7 +262,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-01-22 20:24:19" itemprop="dateModified" datetime="2025-01-22T20:24:19+08:00">2025-01-22</time>
+                <time title="修改时间：2025-01-23 11:09:15" itemprop="dateModified" datetime="2025-01-23T11:09:15+08:00">2025-01-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -309,6 +309,8 @@
 <p><font style="color:rgb(10, 191, 91);background-color:rgb(243, 245, 249);">@GetMapping</font><font style="color:rgb(51, 51, 51);">注解用于处理HTTP GET请求，并将请求映射到具体的处理方法中。具体来说，@GetMapping是一个组合注解，它相当于是</font><font style="color:rgb(10, 191, 91);background-color:rgb(243, 245, 249);">@RequestMapping(method&#x3D;RequestMethod.GET)</font><font style="color:rgb(51, 51, 51);">的快捷方式。</font></p>
 <p><font style="color:rgb(51, 51, 51);">下面是</font><font style="color:rgb(10, 191, 91);background-color:rgb(243, 245, 249);">@GetMapping</font><font style="color:rgb(51, 51, 51);">的一个使用示例：</font></p>
 <p><img src="/2025/01/20/Spring-web-%E6%B3%A8%E8%A7%A3/1709106096688-c0398558-79fb-4f6f-9ec4-7100c77dbd3b.jpeg"></p>
+<span id="more"></span>
+
 <p><strong><font style="color:rgb(51, 51, 51);">@PostMapping</font></strong></p>
 <p><font style="color:rgb(10, 191, 91);background-color:rgb(243, 245, 249);">@PostMapping</font><font style="color:rgb(51, 51, 51);">注解用于处理HTTP POST请求，并将请求映射到具体的处理方法中。@PostMapping与@GetMapping一样，也是一个组合注解，它相当于是</font><font style="color:rgb(10, 191, 91);background-color:rgb(243, 245, 249);">@RequestMapping(method&#x3D;HttpMethod.POST)</font><font style="color:rgb(51, 51, 51);">的快捷方式。</font></p>
 <p><font style="color:rgb(51, 51, 51);">下面是使用</font><font style="color:rgb(10, 191, 91);background-color:rgb(243, 245, 249);">@PostMapping</font><font style="color:rgb(51, 51, 51);">的一个示例：</font></p>
@@ -406,8 +408,6 @@
 <p><font style="color:rgb(51, 51, 51);">当一个Spring Bean被声明为prototype（原型模式）时，在每次需要使用到该类的时候，Spring IoC容器都会初始化一个新的改类的实例。在定义一个Bean时，可以设置Bean的scope属性为</font><font style="color:rgb(10, 191, 91);background-color:rgb(243, 245, 249);">prototype：scope&#x3D;“prototype”</font><font style="color:rgb(51, 51, 51);">,也可以使用@Scope注解设置，如下：</font></p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@<span class="title class_">Scope</span>(value=<span class="title class_">ConfigurableBeanFactory</span>.<span class="property">SCOPE_PROPTOTYPE</span>)</span><br></pre></td></tr></table></figure>
 
-
-
 <p><font style="color:rgb(51, 51, 51);">下面将给出两种不同的方式来使用@Scope注解，示例代码如下：</font></p>
 <p><img src="/2025/01/20/Spring-web-%E6%B3%A8%E8%A7%A3/1709106099941-81a1117f-f25b-451f-8b48-d5b6a748b83e.jpeg"></p>
 <p><strong><font style="color:rgb(51, 51, 51);">@Scope 单例模式</font></strong></p>
@@ -427,8 +427,6 @@
 <p><img src="/2025/01/20/Spring-web-%E6%B3%A8%E8%A7%A3/1709106100512-76f86389-942f-484b-8ab4-4ee1d3e03fb5.png"></p>
 <p><font style="color:rgb(51, 51, 51);">输出结果：</font></p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">this</span> is send <span class="title class_">DingDing</span> method message.</span><br></pre></td></tr></table></figure>
-
-
 
 <h4 id="PostConstruct与-PreDestroy"><a href="#PostConstruct与-PreDestroy" class="headerlink" title="@PostConstruct与@PreDestroy"></a><strong><font style="color:rgb(0, 0, 0);">@PostConstruct与@PreDestroy</font></strong></h4><p><font style="color:rgb(51, 51, 51);">值得注意的是，这两个注解不属于Spring,它们是源于JSR-250中的两个注解，位于</font><font style="color:rgb(10, 191, 91);background-color:rgb(243, 245, 249);">common-annotations.jar</font><font style="color:rgb(51, 51, 51);">中。@PostConstruct注解用于标注在Bean被Spring初始化之前需要执行的方法。@PreDestroy注解用于标注Bean被销毁前需要执行的方法。下面是具体的示例代码：</font></p>
 <p><img src="/2025/01/20/Spring-web-%E6%B3%A8%E8%A7%A3/1709106100654-4f6b2adb-b033-42c6-8af9-ae4724aff9f5.png"></p>
@@ -568,7 +566,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">13</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -586,6 +584,14 @@
       </div>
   </nav>
 </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hqulzq" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hqulzq" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hqulzq@163.com" title="E-Mail → mailto:hqulzq@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
 
 
 
@@ -598,7 +604,7 @@
     <h3 class="widget-title">Tag Cloud</h3>
     <div id="myCanvasContainer" class="widget tagcloud">
         <canvas width="250" height="250" id="resCanvas" style="width=100%">
-            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis/" rel="tag">Mybatis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">1</span></li></ul>
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis/" rel="tag">Mybatis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">2</span></li></ul>
         </canvas>
     </div>
 </div>

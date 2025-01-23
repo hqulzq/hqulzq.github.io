@@ -22,7 +22,7 @@
 
   <meta name="description" content="MyBatis Plus快速入门1、概述MyBatis-Plus（简称 MP）是一个MyBatis 的增强工具，在 MyBatis 的基础上只做增强不做改变，为简化开发、提高效率而生。其突出的特性如下：  无侵入：只做增强不做改变，引入它不会对现有工程产生影响，如丝般顺滑 强大的 CRUD 操作：内置通用 Mapper、通用 Service，提供了大量的通用的CRUD方法，因此可以省去大量手写sq">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Mybatis-Plus入门">
+<meta property="og:title" content="Mybatis-Plus快速入门">
 <meta property="og:url" content="https://hqulzq.github.io/2025/01/22/Mybatis-Plus%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/index.html">
 <meta property="og:site_name" content="Lzq&#39;s blog">
 <meta property="og:description" content="MyBatis Plus快速入门1、概述MyBatis-Plus（简称 MP）是一个MyBatis 的增强工具，在 MyBatis 的基础上只做增强不做改变，为简化开发、提高效率而生。其突出的特性如下：  无侵入：只做增强不做改变，引入它不会对现有工程产生影响，如丝般顺滑 强大的 CRUD 操作：内置通用 Mapper、通用 Service，提供了大量的通用的CRUD方法，因此可以省去大量手写sq">
@@ -33,7 +33,7 @@
 <meta property="og:image" content="https://hqulzq.github.io/2025/01/22/Mybatis-Plus%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/image-20250122173850326.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/01/22/Mybatis-Plus%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/image-20250122173901559.png">
 <meta property="article:published_time" content="2025-01-22T09:34:22.000Z">
-<meta property="article:modified_time" content="2025-01-23T02:37:16.714Z">
+<meta property="article:modified_time" content="2025-01-23T08:18:03.686Z">
 <meta property="article:author" content="Zongqing Li">
 <meta property="article:tag" content="快速入门">
 <meta property="article:tag" content="Mybatis-Plus">
@@ -54,7 +54,7 @@
   };
 </script>
 
-  <title>Mybatis-Plus入门 | Lzq's blog</title>
+  <title>Mybatis-Plus快速入门 | Lzq's blog</title>
   
 
 
@@ -139,7 +139,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">11</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">13</span></a>
 
   </li>
         <li class="menu-item menu-item-book">
@@ -215,7 +215,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Mybatis-Plus入门
+          Mybatis-Plus快速入门
         </h1>
 
         <div class="post-meta">
@@ -232,7 +232,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-01-23 10:37:16" itemprop="dateModified" datetime="2025-01-23T10:37:16+08:00">2025-01-23</time>
+                <time title="修改时间：2025-01-23 16:18:03" itemprop="dateModified" datetime="2025-01-23T16:18:03+08:00">2025-01-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -263,6 +263,8 @@
 <li><strong>内置分页插件</strong>：配置好插件之后，写分页等同于普通 List 查询，无需关注分页逻辑。</li>
 </ul>
 <p>下面通过一个简单案例快速熟悉MyBatis Plus的基本使用</p>
+<span id="more"></span>
+
 <h2 id="2、数据库准备"><a href="#2、数据库准备" class="headerlink" title="2、数据库准备"></a>2、数据库准备</h2><p>首先在数据库中准备一张表，为后序的学习做准备。</p>
 <ol>
 <li><p><strong>创建数据库</strong></p>
@@ -396,7 +398,7 @@
 <p>分页对象既作为分页查询的参数，也作为分页查询的返回结果，当作为查询参数时，通常只需提供<code>current</code>和<code>size</code>属性，如下</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">IPage&lt;T&gt; page = <span class="keyword">new</span> <span class="title class_">Page</span>&lt;&gt;(current, size);</span><br></pre></td></tr></table></figure>
 
-<p>注：<code>IPage</code>为分页接口，<code>Page</code>为<code>IPage</code>接口的一个实现类。</p>
+<p>注：<code>IPage</code>为分页接口，<code>Page</code>为<code>IPage</code>接口的一个实现类。<code>Page</code> 类是具体的实现类，主要用于创建分页对象、传递分页参数以及接收分页结果。<code>IPage</code> 接口是抽象的接口，用于定义分页的通用行为和属性，提升代码的灵活性与可扩展性。在实际开发中，通常先用 <code>Page</code> 类创建分页对象，再用 <code>IPage</code> 接口来接收和处理分页结果。</p>
 </li>
 <li><p>分页查询</p>
 <p>Mybatis Plus的<code>BaseMapper</code>和<code>ServiceImpl</code>均提供了常用的分页查询的方法，例如：</p>
@@ -558,7 +560,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">13</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -576,6 +578,14 @@
       </div>
   </nav>
 </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hqulzq" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hqulzq" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hqulzq@163.com" title="E-Mail → mailto:hqulzq@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
 
 
 
@@ -588,7 +598,7 @@
     <h3 class="widget-title">Tag Cloud</h3>
     <div id="myCanvasContainer" class="widget tagcloud">
         <canvas width="250" height="250" id="resCanvas" style="width=100%">
-            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis/" rel="tag">Mybatis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">1</span></li></ul>
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis/" rel="tag">Mybatis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">2</span></li></ul>
         </canvas>
     </div>
 </div>

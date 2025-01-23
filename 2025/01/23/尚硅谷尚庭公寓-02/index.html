@@ -20,28 +20,42 @@
     var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Lzq&#39;s blog">
-<meta property="og:url" content="https://hqulzq.github.io/index.html">
+  <meta name="description" content="尚硅谷尚庭公寓-02MinIo实现图片上传功能 配置Minio Client  引入Minio Maven依赖 在common模块的pom.xml文件增加如下内容： 1234&lt;dependency&gt;    &lt;groupId&gt;io.minio&lt;&#x2F;groupId&gt;    &lt;artifactId&gt;minio&lt;&#x2F;artifactId&gt;&lt;&#x2F;d">
+<meta property="og:type" content="article">
+<meta property="og:title" content="尚硅谷尚庭公寓-02">
+<meta property="og:url" content="https://hqulzq.github.io/2025/01/23/%E5%B0%9A%E7%A1%85%E8%B0%B7%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93-02/index.html">
 <meta property="og:site_name" content="Lzq&#39;s blog">
+<meta property="og:description" content="尚硅谷尚庭公寓-02MinIo实现图片上传功能 配置Minio Client  引入Minio Maven依赖 在common模块的pom.xml文件增加如下内容： 1234&lt;dependency&gt;    &lt;groupId&gt;io.minio&lt;&#x2F;groupId&gt;    &lt;artifactId&gt;minio&lt;&#x2F;artifactId&gt;&lt;&#x2F;d">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hqulzq.github.io/2025/01/23/%E5%B0%9A%E7%A1%85%E8%B0%B7%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93-02/%E7%99%BB%E5%BD%95%E6%B5%81%E7%A8%8B-%E5%9F%BA%E4%BA%8ESession.drawio.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/01/23/%E5%B0%9A%E7%A1%85%E8%B0%B7%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93-02/%E7%99%BB%E5%BD%95%E6%B5%81%E7%A8%8B-%E5%9F%BA%E4%BA%8EToken.drawio.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/01/23/%E5%B0%9A%E7%A1%85%E8%B0%B7%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93-02/JWT.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/01/23/%E5%B0%9A%E7%A1%85%E8%B0%B7%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93-02/%E5%90%8E%E5%8F%B0%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F-%E7%99%BB%E5%BD%95%E6%B5%81%E7%A8%8B.drawio.svg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/01/23/%E5%B0%9A%E7%A1%85%E8%B0%B7%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93-02/%E5%85%A8%E5%B1%80%E5%8F%82%E6%95%B0.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/01/23/%E5%B0%9A%E7%A1%85%E8%B0%B7%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93-02/knife4j%E6%8E%A5%E5%8F%A3%E8%AE%A4%E8%AF%81.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/01/23/%E5%B0%9A%E7%A1%85%E8%B0%B7%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93-02/ThreadLocal.drawio.png">
+<meta property="article:published_time" content="2025-01-23T03:21:49.000Z">
+<meta property="article:modified_time" content="2025-01-23T11:13:01.020Z">
 <meta property="article:author" content="Zongqing Li">
+<meta property="article:tag" content="尚庭公寓">
+<meta property="article:tag" content="项目实战">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hqulzq.github.io/2025/01/23/%E5%B0%9A%E7%A1%85%E8%B0%B7%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93-02/%E7%99%BB%E5%BD%95%E6%B5%81%E7%A8%8B-%E5%9F%BA%E4%BA%8ESession.drawio.png">
 
-<link rel="canonical" href="https://hqulzq.github.io/">
+<link rel="canonical" href="https://hqulzq.github.io/2025/01/23/%E5%B0%9A%E7%A1%85%E8%B0%B7%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93-02/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>Lzq's blog</title>
+  <title>尚硅谷尚庭公寓-02 | Lzq's blog</title>
   
 
 
@@ -182,66 +196,10 @@
         <div class="content-wrap">
           
 
-          <div class="content index posts-expand">
+          <div class="content post posts-expand">
             
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/01/23/Java%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
-      <meta itemprop="name" content="Zongqing Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lzq's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2025/01/23/Java%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">Java设计模式</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2025-01-23 11:53:44" itemprop="dateCreated datePublished" datetime="2025-01-23T11:53:44+08:00">2025-01-23</time>
-            </span>
-
-          
-
-        </div>
-      </header>
 
     
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
@@ -257,10 +215,9 @@
       <meta itemprop="name" content="Lzq's blog">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2025/01/23/%E5%B0%9A%E7%A1%85%E8%B0%B7%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93-02/" class="post-title-link" itemprop="url">尚硅谷尚庭公寓-02</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          尚硅谷尚庭公寓-02
+        </h1>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -293,7 +250,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="尚硅谷尚庭公寓-02"><a href="#尚硅谷尚庭公寓-02" class="headerlink" title="尚硅谷尚庭公寓-02"></a>尚硅谷尚庭公寓-02</h1><h2 id="MinIo实现图片上传功能"><a href="#MinIo实现图片上传功能" class="headerlink" title="MinIo实现图片上传功能"></a>MinIo实现图片上传功能</h2><ul>
+        <h1 id="尚硅谷尚庭公寓-02"><a href="#尚硅谷尚庭公寓-02" class="headerlink" title="尚硅谷尚庭公寓-02"></a>尚硅谷尚庭公寓-02</h1><h2 id="MinIo实现图片上传功能"><a href="#MinIo实现图片上传功能" class="headerlink" title="MinIo实现图片上传功能"></a>MinIo实现图片上传功能</h2><ul>
 <li><p><strong>配置Minio Client</strong></p>
 <ul>
 <li><p>引入Minio Maven依赖</p>
@@ -672,794 +629,38 @@ public SystemUserInfoVo getLoginUserInfo(Long userId) &#123;
 </li>
 </ul>
 
-      
     </div>
 
     
     
     
+
       <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
+          <div class="post-tags">
+              <a href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag"># 尚庭公寓</a>
+              <a href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag"># 项目实战</a>
+          </div>
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/01/22/%E6%B3%A8%E8%A7%A3%E5%A4%A7%E5%85%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
-      <meta itemprop="name" content="Zongqing Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lzq's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2025/01/22/%E6%B3%A8%E8%A7%A3%E5%A4%A7%E5%85%A8/" class="post-title-link" itemprop="url">注解大全</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2025-01-22 20:22:04" itemprop="dateCreated datePublished" datetime="2025-01-22T20:22:04+08:00">2025-01-22</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-01-23 16:58:40" itemprop="dateModified" datetime="2025-01-23T16:58:40+08:00">2025-01-23</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Spring-注解"><a href="#Spring-注解" class="headerlink" title="Spring 注解"></a>Spring 注解</h1><h2 id="和-DI-相关的注解"><a href="#和-DI-相关的注解" class="headerlink" title="和 DI 相关的注解"></a>和 DI 相关的注解</h2><h3 id="Autowired"><a href="#Autowired" class="headerlink" title="@Autowired"></a>@Autowired</h3><p>可以在构造函数、Setter 方法或字段注入中使用 @Autowired 注解，Spring 会解析并注入依赖。<br>构造函数注入：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Car</span> &#123;</span><br><span class="line">    Engine engine;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    Car(Engine engine) &#123;</span><br><span class="line">        <span class="built_in">this</span>.engine = engine;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>Setter 注入:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Car</span> &#123;</span><br><span class="line">    Engine engine;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">setEngine</span><span class="params">(Engine engine)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.engine = engine;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>字段注入：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Car</span> &#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    Engine engine;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>@Autowired 有一个名为 required 的 boolean 参数，默认值为 true。当 Spring 找不到合适的 Bean 进行注入时，它会控制 Spring 的行为。当值为 true 时，会抛出异常，反之则不会。<br>注意，如果使用构造函数注入，所有构造函数参数都是 必须的 。<br>从 Spring 4.3 开始，除非声明了至少两个构造函数，否则不需要用 @Autowired 明确注解构造函数。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/01/22/%E6%B3%A8%E8%A7%A3%E5%A4%A7%E5%85%A8/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
         
-      
-    </div>
 
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/01/22/Knife4j%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
-      <meta itemprop="name" content="Zongqing Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lzq's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2025/01/22/Knife4j%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" class="post-title-link" itemprop="url">Knife4j快速入门</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2025-01-22 19:23:05" itemprop="dateCreated datePublished" datetime="2025-01-22T19:23:05+08:00">2025-01-22</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-01-23 11:08:11" itemprop="dateModified" datetime="2025-01-23T11:08:11+08:00">2025-01-23</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Knife4j快速入门"><a href="#Knife4j快速入门" class="headerlink" title="Knife4j快速入门"></a>Knife4j快速入门</h1><h2 id="1-概述"><a href="#1-概述" class="headerlink" title="1 概述"></a>1 概述</h2><p>Knife4j是一个用于生成和展示API文档的工具，同时它还提供了在线调试的功能，下图是其工作界面。</p>
-<p><img src="/2025/01/22/Knife4j%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/Knife4j.png"></p>
-<p><strong>了解</strong>：</p>
-<ul>
-<li>Knife4j有多个版本，最新版的Knife4j基于开源项目<code>springdoc-openapi</code>，这个开源项目的核心功能就是根据SpringBoot项目中的代码自动生成符合OpenAPI规范的接口信息。</li>
-<li>OpenAPI规范定义接口文档的内容和格式，其前身是<code>Swagger</code>规范。
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/01/22/Knife4j%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
         
-      
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/01/22/%E6%B3%A8%E8%A7%A3%E5%A4%A7%E5%85%A8/" rel="prev" title="注解大全">
+      <i class="fa fa-chevron-left"></i> 注解大全
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2025/01/23/Java%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="next" title="Java设计模式">
+      Java设计模式 <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
       </footer>
+    
   </article>
   
   
   
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/01/22/Redis%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
-      <meta itemprop="name" content="Zongqing Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lzq's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2025/01/22/Redis%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" class="post-title-link" itemprop="url">Redis快速入门</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2025-01-22 17:47:56" itemprop="dateCreated datePublished" datetime="2025-01-22T17:47:56+08:00">2025-01-22</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-01-23 11:08:43" itemprop="dateModified" datetime="2025-01-23T11:08:43+08:00">2025-01-23</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Redis快速入门"><a href="#Redis快速入门" class="headerlink" title="Redis快速入门"></a>Redis快速入门</h1><h2 id="1-Redis概述"><a href="#1-Redis概述" class="headerlink" title="1 Redis概述"></a>1 Redis概述</h2><ol>
-<li><p><strong>Reids定义</strong></p>
-<p>Redis（Remote Dictionary Server）是一个<strong>基于内存</strong>的键值对存储系统，常用作缓存服务。由于Reids将数据都保存在内存中，因此其读写性能十分惊人，同时，为保证数据的可靠性，Redis会将数据备份到硬盘上，用于故障发生时的数据恢复。</p>
-</li>
-<li><p><strong>Redis特点</strong></p>
-<ul>
-<li><strong>高性能</strong>：Redis主要将数据存储在内存中，因此读写速度非常快，适合对速度有较高要求的场景。</li>
-<li><strong>支持多种数据结构</strong>：Redis中键值对的值（Value）支持多种数据结构，如字符串、哈希表、列表、集合等，这使得它可以应用于多种不同的场景。</li>
-<li><strong>持久化</strong>：Redis可以通过<strong>定期快照</strong>或者<strong>实时记录写操作日志</strong>的方式将内存中的数据持久化到硬盘，确保数据在重启后不会丢失。</li>
-<li><strong>灵活的数据过期策略</strong>：可以为每个键设置过期时间，一旦过期，Redis会自动删除。</li>
-</ul>
-</li>
-<li><p><strong>Redis应用场景</strong></p>
-<p>Redis最为常见的一个应用场景就是用作<strong>缓存</strong>，缓存可以显著提升访问速度，降低数据库压力。</p>
-<img src="缓存概述.drawio.svg" style="zoom:45%;" /></li>
-</ol>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/01/22/Redis%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/01/22/Minio%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
-      <meta itemprop="name" content="Zongqing Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lzq's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2025/01/22/Minio%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" class="post-title-link" itemprop="url">Minio快速入门</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2025-01-22 17:41:30" itemprop="dateCreated datePublished" datetime="2025-01-22T17:41:30+08:00">2025-01-22</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-01-23 11:08:33" itemprop="dateModified" datetime="2025-01-23T11:08:33+08:00">2025-01-23</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="MinIO快速入门"><a href="#MinIO快速入门" class="headerlink" title="MinIO快速入门"></a>MinIO快速入门</h1><h2 id="1-MinIO核心概念"><a href="#1-MinIO核心概念" class="headerlink" title="1 MinIO核心概念"></a>1 MinIO核心概念</h2><p>下面介绍MinIO中的几个核心概念，这些概念在所有的对象存储服务中也都是通用的。</p>
-<ul>
-<li><p><strong>对象（Object）</strong></p>
-<p>对象是实际的数据单元，例如我们上传的一个图片。</p>
-</li>
-<li><p><strong>存储桶（Bucket）</strong></p>
-<p>存储桶是用于组织对象的命名空间，类似于文件夹。每个存储桶可以包含多个对象。</p>
-</li>
-<li><p><strong>端点（Endpoint）</strong></p>
-<p>端点是MinIO服务器的网络地址，用于访问存储桶和对象，例如 <code>http://192.168.10.101:9000</code></p>
-<p><strong>注意：</strong></p>
-</li>
-</ul>
-<p><code>9000</code> 为MinIO的API的默认端口，前边配置的 <code>9001</code> 以为管理页面端口。</p>
-<ul>
-<li><p><strong>Access Key 和 Secret Key</strong></p>
-<p><strong>Access Key</strong>是用于标识和验证访问者身份的唯一标识符，相当于用户名。</p>
-<p><strong>Secret Key</strong>是与<strong>Access Key</strong>关联的密码，用于验证访问者的身份。</p>
-</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/01/22/Minio%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/01/22/Mybatis-Plus%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
-      <meta itemprop="name" content="Zongqing Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lzq's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2025/01/22/Mybatis-Plus%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" class="post-title-link" itemprop="url">Mybatis-Plus快速入门</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2025-01-22 17:34:22" itemprop="dateCreated datePublished" datetime="2025-01-22T17:34:22+08:00">2025-01-22</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-01-23 16:18:03" itemprop="dateModified" datetime="2025-01-23T16:18:03+08:00">2025-01-23</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="MyBatis-Plus快速入门"><a href="#MyBatis-Plus快速入门" class="headerlink" title="MyBatis Plus快速入门"></a>MyBatis Plus快速入门</h1><h2 id="1、概述"><a href="#1、概述" class="headerlink" title="1、概述"></a>1、概述</h2><p>MyBatis-Plus（简称 MP）是一个MyBatis 的增强工具，在 MyBatis 的基础上只做增强不做改变，为简化开发、提高效率而生。其突出的特性如下：</p>
-<ul>
-<li><strong>无侵入</strong>：只做增强不做改变，引入它不会对现有工程产生影响，如丝般顺滑</li>
-<li><strong>强大的 CRUD 操作</strong>：内置通用 Mapper、通用 Service，提供了大量的通用的CRUD方法，因此可以省去大量手写sql的语句的工作。</li>
-<li><strong>条件构造器</strong>：提供了强大的条件构造器，可以构造各种复杂的查询条件，以应对各种复杂查询。</li>
-<li><strong>内置分页插件</strong>：配置好插件之后，写分页等同于普通 List 查询，无需关注分页逻辑。</li>
-</ul>
-<p>下面通过一个简单案例快速熟悉MyBatis Plus的基本使用</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/01/22/Mybatis-Plus%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/01/22/Spring-Boot%E5%85%A8%E5%B1%80%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
-      <meta itemprop="name" content="Zongqing Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lzq's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2025/01/22/Spring-Boot%E5%85%A8%E5%B1%80%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" class="post-title-link" itemprop="url">Spring Boot全局异常处理</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2025-01-22 17:26:04" itemprop="dateCreated datePublished" datetime="2025-01-22T17:26:04+08:00">2025-01-22</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-01-23 11:08:52" itemprop="dateModified" datetime="2025-01-23T11:08:52+08:00">2025-01-23</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="为什么使用全局异常处理"><a href="#为什么使用全局异常处理" class="headerlink" title="为什么使用全局异常处理"></a>为什么使用全局异常处理</h2><p>在开发时，需要对可能有异常的Controller层方法增加<code>try-catch</code>逻辑，而使用Spring MVC提供的<strong>全局异常处理</strong>功能，可以将所有处理异常的逻辑集中起来，进而统一处理所有异常，可以使代码更容易维护。<br>具体用法如下，详细信息可参考<a target="_blank" rel="noopener" href="https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-exceptionhandler.html">官方文档</a>：</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/01/22/Spring-Boot%E5%85%A8%E5%B1%80%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/01/22/%E5%B0%9A%E7%A1%85%E8%B0%B7%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93-01/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
-      <meta itemprop="name" content="Zongqing Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lzq's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2025/01/22/%E5%B0%9A%E7%A1%85%E8%B0%B7%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93-01/" class="post-title-link" itemprop="url">尚硅谷尚庭公寓-01</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2025-01-22 15:51:48" itemprop="dateCreated datePublished" datetime="2025-01-22T15:51:48+08:00">2025-01-22</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-01-23 11:22:54" itemprop="dateModified" datetime="2025-01-23T11:22:54+08:00">2025-01-23</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>记录在实战项目尚庭公寓中的重要知识点或者遇到的坑</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/01/22/%E5%B0%9A%E7%A1%85%E8%B0%B7%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93-01/">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/01/22/Linux%E7%9F%A5%E8%AF%86%E7%82%B91/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
-      <meta itemprop="name" content="Zongqing Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lzq's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2025/01/22/Linux%E7%9F%A5%E8%AF%86%E7%82%B91/" class="post-title-link" itemprop="url">Linux知识点1</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2025-01-22 15:33:52" itemprop="dateCreated datePublished" datetime="2025-01-22T15:33:52+08:00">2025-01-22</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-01-23 11:08:28" itemprop="dateModified" datetime="2025-01-23T11:08:28+08:00">2025-01-23</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/OS/" itemprop="url" rel="index"><span itemprop="name">OS</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="1-Linux文件系统目录结构"><a href="#1-Linux文件系统目录结构" class="headerlink" title="1. Linux文件系统目录结构"></a>1. Linux文件系统目录结构</h1><p>理解和熟悉Linux系统的文件系统目录结构，对于有效的管理和定位文件十分重要。Linux文件系统的目录结构如下图所示：</p>
-<p><img src="/2025/01/22/Linux%E7%9F%A5%E8%AF%86%E7%82%B91/image-20250122170306448.png" alt="image-20250122170306448"></p>
-<p>其中各目录的作用如下表所示</p>
-<table>
-<thead>
-<tr>
-<th>目录</th>
-<th>说明</th>
-<th>作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>&#x2F;</td>
-<td>根目录</td>
-<td>根目录是整个文件系统的起点，所有其他目录和文件都位于根目录之下。</td>
-</tr>
-<tr>
-<td>&#x2F;home</td>
-<td>家目录</td>
-<td>每个用户的个人目录都位于这个目录下，通常以用户名命名。例如，用户<code>john</code>的主目录路径为<code>/home/john</code>。</td>
-</tr>
-<tr>
-<td>&#x2F;root</td>
-<td>root用户的家目录</td>
-<td>保存root用户的个人数据</td>
-</tr>
-<tr>
-<td>&#x2F;boot</td>
-<td>引导文件所在目录</td>
-<td>保存系统启动时所需的各种文件</td>
-</tr>
-<tr>
-<td>&#x2F;usr</td>
-<td>User System Resources的简写，说法不唯一</td>
-<td>存放用户可用的软件和程序文件，也包括了一些共享的数据和库文件。</td>
-</tr>
-<tr>
-<td>&#x2F;bin</td>
-<td>binary的简写</td>
-<td>存放系统的基本命令（如ls、cp等）和其余可执行文件。</td>
-</tr>
-<tr>
-<td>&#x2F;sbin</td>
-<td>system binary的简写</td>
-<td>存放系统管理和维护方面的二进制文件。</td>
-</tr>
-<tr>
-<td>&#x2F;etc</td>
-<td>etcetera的简写</td>
-<td>存放系统的配置文件，包括各种程序的配置文件和系统的全局配置文件。</td>
-</tr>
-<tr>
-<td>&#x2F;var</td>
-<td>variable的简写</td>
-<td>存放系统运行时产生的可变数据，如日志文件、数据库文件等。</td>
-</tr>
-<tr>
-<td>&#x2F;opt</td>
-<td>optional的简写</td>
-<td>存放一些可选的软件包，通常由用户自行安装。</td>
-</tr>
-<tr>
-<td>&#x2F;tmp</td>
-<td>temporary的简写</td>
-<td>存放临时文件，系统会定期清理该目录</td>
-</tr>
-</tbody></table>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/01/22/Linux%E7%9F%A5%E8%AF%86%E7%82%B91/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-
-  
-  <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
-  </nav>
 
 
 
@@ -1511,6 +712,7 @@ public SystemUserInfoVo getLoginUserInfo(Long userId) &#123;
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B0%9A%E7%A1%85%E8%B0%B7%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93-02"><span class="nav-number">1.</span> <span class="nav-text">尚硅谷尚庭公寓-02</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#MinIo%E5%AE%9E%E7%8E%B0%E5%9B%BE%E7%89%87%E4%B8%8A%E4%BC%A0%E5%8A%9F%E8%83%BD"><span class="nav-number">1.1.</span> <span class="nav-text">MinIo实现图片上传功能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Spring-Boot%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1"><span class="nav-number">1.2.</span> <span class="nav-text">Spring Boot定时任务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%86%E7%A0%81%E5%8A%A0%E5%AF%86%E5%A4%84%E7%90%86"><span class="nav-number">1.3.</span> <span class="nav-text">密码加密处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mybatis-Plus-update-strategy"><span class="nav-number">1.4.</span> <span class="nav-text">Mybatis-Plus update strategy</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%99%BB%E5%BD%95%E5%8A%9F%E8%83%BD%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.5.</span> <span class="nav-text">登录功能的实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%83%8C%E6%99%AF%E7%9F%A5%E8%AF%86"><span class="nav-number">1.5.1.</span> <span class="nav-text">背景知识</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%99%BB%E5%BD%95%E6%B5%81%E7%A8%8B"><span class="nav-number">1.5.2.</span> <span class="nav-text">登录流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A5%E5%8F%A3%E5%BC%80%E5%8F%91"><span class="nav-number">1.5.3.</span> <span class="nav-text">接口开发</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E8%8E%B7%E5%8F%96%E5%9B%BE%E5%BD%A2%E9%AA%8C%E8%AF%81%E7%A0%81"><span class="nav-number">1.5.3.1.</span> <span class="nav-text">1. 获取图形验证码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E7%99%BB%E5%BD%95%E6%8E%A5%E5%8F%A3"><span class="nav-number">1.5.3.2.</span> <span class="nav-text">2. 登录接口</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E8%8E%B7%E5%8F%96%E7%99%BB%E5%BD%95%E7%94%A8%E6%88%B7%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF"><span class="nav-number">1.5.3.3.</span> <span class="nav-text">3.获取登录用户个人信息</span></a></li></ol></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
