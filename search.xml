@@ -1,17 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Java_Bug_总结</title>
-    <url>/2025/01/22/Java-Bug-%E6%80%BB%E7%BB%93/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>Bug总结</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Java技术栈的网址与文档</title>
     <url>/2025/01/22/Java%E5%90%84%E4%B8%AA%E6%8A%80%E6%9C%AF%E6%A0%88%E7%9A%84%E5%AE%98%E6%96%B9%E7%BD%91%E5%9D%80/</url>
     <content><![CDATA[<h2 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h2><p><a href="https://hqulzq.github.io/pdf/Java.pdf">尚硅谷Java文档，预览请转移至Book栏</a></p>
@@ -34,6 +23,17 @@
       </categories>
       <tags>
         <tag>技术总结</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Java_Bug_总结</title>
+    <url>/2025/01/22/Java-Bug-%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Bug总结</tag>
       </tags>
   </entry>
   <entry>
@@ -107,123 +107,220 @@
       </tags>
   </entry>
   <entry>
-    <title>Minio快速入门</title>
-    <url>/2025/01/22/Minio%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/</url>
-    <content><![CDATA[<h1 id="MinIO快速入门"><a href="#MinIO快速入门" class="headerlink" title="MinIO快速入门"></a>MinIO快速入门</h1><h2 id="1-MinIO核心概念"><a href="#1-MinIO核心概念" class="headerlink" title="1 MinIO核心概念"></a>1 MinIO核心概念</h2><p>下面介绍MinIO中的几个核心概念，这些概念在所有的对象存储服务中也都是通用的。</p>
+    <title>Mybatis-Plus快速入门</title>
+    <url>/2025/01/22/Mybatis-Plus%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/</url>
+    <content><![CDATA[<h1 id="MyBatis-Plus快速入门"><a href="#MyBatis-Plus快速入门" class="headerlink" title="MyBatis Plus快速入门"></a>MyBatis Plus快速入门</h1><h2 id="1、概述"><a href="#1、概述" class="headerlink" title="1、概述"></a>1、概述</h2><p>MyBatis-Plus（简称 MP）是一个MyBatis 的增强工具，在 MyBatis 的基础上只做增强不做改变，为简化开发、提高效率而生。其突出的特性如下：</p>
 <ul>
-<li><p><strong>对象（Object）</strong></p>
-<p>对象是实际的数据单元，例如我们上传的一个图片。</p>
-</li>
-<li><p><strong>存储桶（Bucket）</strong></p>
-<p>存储桶是用于组织对象的命名空间，类似于文件夹。每个存储桶可以包含多个对象。</p>
-</li>
-<li><p><strong>端点（Endpoint）</strong></p>
-<p>端点是MinIO服务器的网络地址，用于访问存储桶和对象，例如 <code>http://192.168.10.101:9000</code></p>
-<p><strong>注意：</strong></p>
-</li>
+<li><strong>无侵入</strong>：只做增强不做改变，引入它不会对现有工程产生影响，如丝般顺滑</li>
+<li><strong>强大的 CRUD 操作</strong>：内置通用 Mapper、通用 Service，提供了大量的通用的CRUD方法，因此可以省去大量手写sql的语句的工作。</li>
+<li><strong>条件构造器</strong>：提供了强大的条件构造器，可以构造各种复杂的查询条件，以应对各种复杂查询。</li>
+<li><strong>内置分页插件</strong>：配置好插件之后，写分页等同于普通 List 查询，无需关注分页逻辑。</li>
 </ul>
-<p><code>9000</code> 为MinIO的API的默认端口，前边配置的 <code>9001</code> 以为管理页面端口。</p>
-<ul>
-<li><p><strong>Access Key 和 Secret Key</strong></p>
-<p><strong>Access Key</strong>是用于标识和验证访问者身份的唯一标识符，相当于用户名。</p>
-<p><strong>Secret Key</strong>是与<strong>Access Key</strong>关联的密码，用于验证访问者的身份。</p>
-</li>
-</ul>
+<p>下面通过一个简单案例快速熟悉MyBatis Plus的基本使用</p>
 <span id="more"></span>
 
-<h2 id="2-MinIO管理页面操作"><a href="#2-MinIO管理页面操作" class="headerlink" title="2 MinIO管理页面操作"></a>2 MinIO管理页面操作</h2><ol>
-<li><p><strong>登录</strong></p>
-<p>管理页面的地址为<a href="http://192.168.10.101:9001，登录的用户名和密码为部署时在">http://192.168.10.101:9001，登录的用户名和密码为部署时在</a> <code>EnvironmentFile</code> 文件中配置的如下参数</p>
-</li>
-</ol>
-<figure class="highlight ini"><table><tr><td class="code"><pre><span class="line"><span class="attr">MINIO_ROOT_USER</span>=minioadmin</span><br><span class="line"><span class="attr">MINIO_ROOT_PASSWORD</span>=minioadmin</span><br></pre></td></tr></table></figure>
-
-<ol start="2">
-<li><p><strong>创建存储桶</strong></p>
-<p><img src="/2025/01/22/Minio%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/MinIO%E5%85%A5%E9%97%A8-%E5%88%9B%E5%BB%BA%E6%A1%B6.png"></p>
-</li>
-<li><p><strong>上传图片</strong></p>
-<ul>
-<li><p>找到目标桶</p>
-<p><img src="/2025/01/22/Minio%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/MinIO%E5%85%A5%E9%97%A8-%E9%80%89%E6%8B%A9%E6%A1%B6.png"></p>
-</li>
-<li><p>上传图片</p>
-<p><img src="/2025/01/22/Minio%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/MinIO%E5%85%A5%E9%97%A8-%E4%B8%8A%E4%BC%A0%E5%9B%BE%E7%89%87.png"></p>
-</li>
-</ul>
-</li>
-<li><p><strong>访问图片</strong></p>
-<ul>
-<li><p><strong>图片URL</strong></p>
-<p>由于MinIO提供了HTTP访问功能，所以可以通过浏览器直接访问对象。对象URL为MinIO的 <code>Endpoint</code> + <code>对象的存储路径</code> ，例如下图中的图片对象的URL为<a href="http://192.168.10.101:9000/test/%E5%85%AC%E5%AF%93-%E5%A4%96%E8%A7%82.jpg">http:192.168.10.101:9000&#x2F;test&#x2F;公寓-外观.jpg</a>。</p>
-<p><img src="/2025/01/22/Minio%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/MinIO%E5%85%A5%E9%97%A8-%E5%AD%98%E5%82%A8%E8%B7%AF%E5%BE%84.png"></p>
-</li>
-<li><p><strong>访问权限</strong></p>
-<p>不出意外的话，使用浏览器访问上述URL，会得到如下响应，很显然是没有访问权限。</p>
-</li>
-</ul>
-</li>
-</ol>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Error</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Code</span>&gt;</span>AccessDenied<span class="tag">&lt;/<span class="name">Code</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Message</span>&gt;</span>Access Denied.<span class="tag">&lt;/<span class="name">Message</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Key</span>&gt;</span>公寓-外观.jpg<span class="tag">&lt;/<span class="name">Key</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">BucketName</span>&gt;</span>test<span class="tag">&lt;/<span class="name">BucketName</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Resource</span>&gt;</span>/test/公寓-外观.jpg<span class="tag">&lt;/<span class="name">Resource</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">RequestId</span>&gt;</span>177BC92022FC5684<span class="tag">&lt;/<span class="name">RequestId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">HostId</span>&gt;</span>dd9025bab4ad464b049177c95eb6ebf374d3b3fd1af9251148b658df7ac2e3e8<span class="tag">&lt;/<span class="name">HostId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Error</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<pre><code> 若想继续访问图片，需要修改图片**所在桶**的访问权限，如下图所示
-
- ![](MinIO入门-访问权限.png)
-
- 如上图所示，可选的访问权限共有三个选项，分别是 `Private` 、 `Public` 和 `Custom` ，具体说明如下
-
- - `Private`
-
-   只允许桶的所有者对该桶进行读写。
-
- - `Public`
-
-   允许所有人对该桶进行读写。
-
- - `Custom`
-
-   自定义访问权限。
-
- 若想将权限设置为只允许所有者写，但允许所有人读，就需要自定义访问权限。自定义访问权限，需要使用一个规定格式的JSON字符串进行描述，具体格式可参考[官方文档](https://min.io/docs/minio/linux/administration/identity-access-management/policy-based-access-control.html#policy-document-structure)。
-
- 例如以下JSON字符串表达的含义是：允许( `Allow` )所有人( `*` )读取( `s3:GetObject` )指定桶( `test` )的所有内容。
-
- 
-</code></pre>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;Statement&quot;</span> <span class="punctuation">:</span> <span class="punctuation">[</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;Action&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;s3:GetObject&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;Effect&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;Allow&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;Principal&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;*&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;Resource&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;arn:aws:s3:::test/*&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span> <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;Version&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;2012-10-17&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
-<pre><code> 将 `test` 桶访问权限设置为 `Custom` ，并添加上述内容
-
- ![](MinIO入门-自定义权限.png)
-
- 重新访问[http:192.168.10.101:9000/test/公寓-外观.jpg](http:192.168.10.101:9000/test/公寓-外观.jpg)，观察是否正常。
-</code></pre>
-<h2 id="3-MinIO-Java-SDK"><a href="#3-MinIO-Java-SDK" class="headerlink" title="3 MinIO Java SDK"></a>3 MinIO Java SDK</h2><p>MinIO提供了多种语言的SDK供开发者使用，本项目需要用到Java SDK，下面通过一个简单案例熟悉一下其基本用法，具体内容可参考<a href="https://www.minio.org.cn/docs/minio/linux/developers/java/minio-java.html#">官方文档</a>。</p>
+<h2 id="2、数据库准备"><a href="#2、数据库准备" class="headerlink" title="2、数据库准备"></a>2、数据库准备</h2><p>首先在数据库中准备一张表，为后序的学习做准备。</p>
 <ol>
-<li><p><strong>创建一个Maven项目</strong></p>
+<li><p><strong>创建数据库</strong></p>
+<p>在MySQL中创建一个数据库<code>hello_mp</code></p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> DATABASE hello_mp <span class="type">CHARACTER</span> <span class="keyword">SET</span> utf8mb4 <span class="keyword">COLLATE</span> utf8mb4_general_ci;</span><br></pre></td></tr></table></figure>
 </li>
-<li><p><strong>引入如下依赖</strong></p>
+<li><p><strong>创建表</strong></p>
+<p>在<code>hello-mp</code>库中创建一个表<code>user</code></p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> IF <span class="keyword">EXISTS</span> <span class="keyword">user</span>;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="keyword">user</span></span><br><span class="line">(</span><br><span class="line">    id <span class="type">BIGINT</span>(<span class="number">20</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT COMMENT <span class="string">&#x27;主键ID&#x27;</span>,</span><br><span class="line">    name <span class="type">VARCHAR</span>(<span class="number">30</span>) <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;姓名&#x27;</span>,</span><br><span class="line">    age <span class="type">INT</span>(<span class="number">11</span>) <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;年龄&#x27;</span>,</span><br><span class="line">    email <span class="type">VARCHAR</span>(<span class="number">50</span>) <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;邮箱&#x27;</span>,</span><br><span class="line">    <span class="keyword">PRIMARY</span> KEY (id)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
 </li>
+<li><p><strong>插入数据</strong></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">INSERT INTO user (<span class="built_in">id</span>, name, age, email) VALUES</span><br><span class="line">(1, <span class="string">&#x27;Jone&#x27;</span>, 18, <span class="string">&#x27;test1@baomidou.com&#x27;</span>),</span><br><span class="line">(2, <span class="string">&#x27;Jack&#x27;</span>, 20, <span class="string">&#x27;test2@baomidou.com&#x27;</span>),</span><br><span class="line">(3, <span class="string">&#x27;Tom&#x27;</span>, 28, <span class="string">&#x27;test3@baomidou.com&#x27;</span>),</span><br><span class="line">(4, <span class="string">&#x27;Sandy&#x27;</span>, 21, <span class="string">&#x27;test4@baomidou.com&#x27;</span>),</span><br><span class="line">(5, <span class="string">&#x27;Billie&#x27;</span>, 24, <span class="string">&#x27;test5@baomidou.com&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
 </ol>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.minio<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>minio<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>8.5.3<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="3-与SpringBoot集成"><a href="#3-与SpringBoot集成" class="headerlink" title="3 与SpringBoot集成"></a>3 与SpringBoot集成</h2><p>Mybatis Plus与SpringBoot的集成十分简单，具体操作如下</p>
+<ol>
+<li><p><strong>引入Maven 依赖</strong></p>
+<p>提前创建好一个SpringBoot项目，然后在项目中引入MyBatis Plus依赖</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.baomidou<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mybatis-plus-boot-starter<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.5.3.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-<ol start="3">
-<li><strong>编写如下内容</strong></li>
+<p>本案例完整的<code>pom.xml</code>文件如下</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">project</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0&quot;</span> <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span></span><br><span class="line"><span class="tag">         <span class="attr">xsi:schemaLocation</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">modelVersion</span>&gt;</span>4.0.0<span class="tag">&lt;/<span class="name">modelVersion</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">parent</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-parent<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.0.9<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">relativePath</span>/&gt;</span> <span class="comment">&lt;!-- lookup parent from repository --&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">parent</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.atguigu<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>hello-mp<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>0.0.1-SNAPSHOT<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hello-mp<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">description</span>&gt;</span>hello-mp<span class="tag">&lt;/<span class="name">description</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">java.version</span>&gt;</span>17<span class="tag">&lt;/<span class="name">java.version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.mysql<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mysql-connector-j<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">scope</span>&gt;</span>runtime<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">optional</span>&gt;</span>true<span class="tag">&lt;/<span class="name">optional</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-test<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.baomidou<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mybatis-plus-boot-starter<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.5.3.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">build</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">plugins</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-maven-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">plugins</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">build</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>配置<code>application.yml</code>文件</strong></p>
+<p>配置数据库相关内容如下</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">datasource:</span></span><br><span class="line">    <span class="attr">driver-class-name:</span> <span class="string">com.mysql.cj.jdbc.Driver</span></span><br><span class="line">    <span class="attr">username:</span> <span class="string">root</span></span><br><span class="line">    <span class="attr">password:</span> <span class="string">Atguigu.123</span></span><br><span class="line">    <span class="attr">url:</span> <span class="string">jdbc:mysql://192.168.10.101:3306/hello_mp?useUnicode=true&amp;characterEncoding=utf-8&amp;serverTimezone=GMT%2b8</span></span><br></pre></td></tr></table></figure></li>
 </ol>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">App</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException, NoSuchAlgorithmException, InvalidKeyException &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">//构造MinIO Client</span></span><br><span class="line">            <span class="type">MinioClient</span> <span class="variable">minioClient</span> <span class="operator">=</span> MinioClient.builder()</span><br><span class="line">                    .endpoint(<span class="string">&quot;http://192.168.10.101:9000&quot;</span>)</span><br><span class="line">                    .credentials(<span class="string">&quot;minioadmin&quot;</span>, <span class="string">&quot;minioadmin&quot;</span>)</span><br><span class="line">                    .build();</span><br><span class="line"></span><br><span class="line">            <span class="comment">//创建hello-minio桶</span></span><br><span class="line">            <span class="type">boolean</span> <span class="variable">found</span> <span class="operator">=</span> minioClient.bucketExists(BucketExistsArgs.builder().bucket(<span class="string">&quot;hello-minio&quot;</span>).build());</span><br><span class="line">            <span class="keyword">if</span> (!found) &#123;</span><br><span class="line">                <span class="comment">//创建hello-minio桶</span></span><br><span class="line">                minioClient.makeBucket(MakeBucketArgs.builder().bucket(<span class="string">&quot;hello-minio&quot;</span>).build());</span><br><span class="line">                <span class="comment">//设置hello-minio桶的访问权限</span></span><br><span class="line">                <span class="type">String</span> <span class="variable">policy</span> <span class="operator">=</span> <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                        &#123;</span></span><br><span class="line"><span class="string">                          &quot;Statement&quot; : [ &#123;</span></span><br><span class="line"><span class="string">                            &quot;Action&quot; : &quot;s3:GetObject&quot;,</span></span><br><span class="line"><span class="string">                            &quot;Effect&quot; : &quot;Allow&quot;,</span></span><br><span class="line"><span class="string">                            &quot;Principal&quot; : &quot;*&quot;,</span></span><br><span class="line"><span class="string">                            &quot;Resource&quot; : &quot;arn:aws:s3:::hello-minio/*&quot;</span></span><br><span class="line"><span class="string">                          &#125; ],</span></span><br><span class="line"><span class="string">                          &quot;Version&quot; : &quot;2012-10-17&quot;</span></span><br><span class="line"><span class="string">                        &#125;&quot;&quot;&quot;</span>;</span><br><span class="line">                minioClient.setBucketPolicy(SetBucketPolicyArgs.builder().bucket(<span class="string">&quot;hello-minio&quot;</span>).config(policy).build());</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                System.out.println(<span class="string">&quot;Bucket &#x27;hello-minio&#x27; already exists.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">//上传图片</span></span><br><span class="line">            minioClient.uploadObject(</span><br><span class="line">                    UploadObjectArgs.builder()</span><br><span class="line">                            .bucket(<span class="string">&quot;hello-minio&quot;</span>)</span><br><span class="line">                            .object(<span class="string">&quot;公寓-外观.jpg&quot;</span>)</span><br><span class="line">                            .filename(<span class="string">&quot;D:\\workspace\\hello-minio\\src\\main\\resources\\公寓-外观.jpg&quot;</span>)</span><br><span class="line">                            .build());</span><br><span class="line">            System.out.println(<span class="string">&quot;上传成功&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (MinioException e) &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;Error occurred: &quot;</span> + e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="4-创建实体类"><a href="#4-创建实体类" class="headerlink" title="4 创建实体类"></a>4 创建实体类</h2><p>创建与<code>user</code>表相对应的实体类，如下</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="meta">@TableName(&quot;user&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">User</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@TableId(value = &quot;id&quot;, type = IdType.AUTO)</span></span><br><span class="line">    <span class="keyword">private</span> Long id;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@TableField(&quot;name&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@TableField(&quot;age&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> Integer age;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@TableField(&quot;email&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String email;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<ol start="4">
-<li><p><strong>运行测试</strong></p>
-<p>运行上述代码，然后查看MinIO管理页面，观察是否上传成功。</p>
+<p><strong>知识点</strong>：</p>
+<p>实体类中的三个注解的含义如下</p>
+<ul>
+<li><p><code>@TableName</code>：表名注解，用于标识实体类所对应的表</p>
+<ul>
+<li><code>value</code>：用于声明表名</li>
+</ul>
+</li>
+<li><p><code>@TableId</code>：主键注解，用于标识主键字段</p>
+<ul>
+<li><code>value</code>：用于声明主键的字段名</li>
+<li><code>type</code>：用于声明主键的生成策略，常用的策略有<code>AUTO</code>、<code>ASSIGN_UUID</code>、<code>INPUT</code>等等</li>
+</ul>
+</li>
+<li><p><code>@TableField</code>：普通字段注解，用于标识属性所对应的表字段</p>
+<ul>
+<li><code>value</code>：用于声明普通字段的字段名</li>
+</ul>
+</li>
+</ul>
+<h2 id="5-通用Mapper"><a href="#5-通用Mapper" class="headerlink" title="5 通用Mapper"></a>5 通用Mapper</h2><p>通用Mapper提供了通用的CRUD方法，使用它可以省去大量编写简单重复的SQL语句的工作，具体用法如下</p>
+<ol>
+<li><p><strong>创建Mapper接口</strong></p>
+<p>创建<code>UserMapper</code>接口，并继承由Mybatis Plus提供的<code>BaseMapper&lt;T&gt;</code>接口，如下</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Mapper</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">UserMapper</span> <span class="keyword">extends</span> <span class="title class_">BaseMapper</span>&lt;User&gt; &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>知识点</strong>：</p>
+<p>若Mapper接口过多，可不用逐一配置<code>@Mapper</code>注解，而使用<code>@MapperScan</code>注解指定包扫描路径进行统一管理，例如</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="meta">@MapperScan(&quot;com.atguigu.hellomp.mapper&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">HelloMpApplication</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        SpringApplication.run(HelloMpApplication.class, args);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>测试通用Mapper</strong></p>
+<p>创建<code>userMapperTest</code>测试类型，内容如下</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">UserMapperTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> UserMapper userMapper;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testSelectList</span><span class="params">()</span> &#123;</span><br><span class="line">        List&lt;User&gt; users = userMapper.selectList(<span class="literal">null</span>);</span><br><span class="line">        users.forEach(System.out::println);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testSelectById</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> userMapper.selectById(<span class="number">1</span>);</span><br><span class="line">        System.out.println(user);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testInsert</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">User</span>();</span><br><span class="line">        user.setName(<span class="string">&quot;zhangsan&quot;</span>);</span><br><span class="line">        user.setAge(<span class="number">11</span>);</span><br><span class="line">        user.setEmail(<span class="string">&quot;test@test.com&quot;</span>);</span><br><span class="line">        userMapper.insert(user);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testUpdateById</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> userMapper.selectById(<span class="number">1</span>);</span><br><span class="line">        user.setName(<span class="string">&quot;xiaoming&quot;</span>);</span><br><span class="line">        userMapper.updateById(user);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testDeleteById</span><span class="params">()</span> &#123;</span><br><span class="line">        userMapper.deleteById(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="6-通用Service"><a href="#6-通用Service" class="headerlink" title="6 通用Service"></a>6 通用Service</h2><p>通用Service进一步封装了通用Mapper的CRUD方法，并提供了例如<code>saveOrUpdate</code>、<code>saveBatch</code>等高级方法。</p>
+<ol>
+<li><p><strong>创建Service接口</strong></p>
+<p>创建<code>UserService</code>，内容如下</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">UserService</span> <span class="keyword">extends</span> <span class="title class_">IService</span>&lt;User&gt; &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>创建Service实现类</strong></p>
+<p>创建<code>UserServiceImpl</code>，内容如下</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UserServiceImpl</span> <span class="keyword">extends</span> <span class="title class_">ServiceImpl</span>&lt;UserMapper, User&gt; <span class="keyword">implements</span> <span class="title class_">UserService</span> &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>测试通用Service</strong></p>
+<p>创建<code>UserServiceImplTest</code>测试类，内容如下</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">UserServiceImplTest</span> &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> UserService userService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testSaveOrUpdate</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">User</span> <span class="variable">user1</span> <span class="operator">=</span> userService.getById(<span class="number">2</span>);</span><br><span class="line">        user1.setName(<span class="string">&quot;xiaohu&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="type">User</span> <span class="variable">user2</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">User</span>();</span><br><span class="line">        user2.setName(<span class="string">&quot;lisi&quot;</span>);</span><br><span class="line">        user2.setAge(<span class="number">27</span>);</span><br><span class="line">        user2.setEmail(<span class="string">&quot;lisi@email.com&quot;</span>);</span><br><span class="line">        userService.saveOrUpdate(user1);</span><br><span class="line">        userService.saveOrUpdate(user2);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testSaveBatch</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">User</span> <span class="variable">user1</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">User</span>();</span><br><span class="line">        user1.setName(<span class="string">&quot;dongdong&quot;</span>);</span><br><span class="line">        user1.setAge(<span class="number">49</span>);</span><br><span class="line">        user1.setEmail(<span class="string">&quot;dongdong@email.com&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="type">User</span> <span class="variable">user2</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">User</span>();</span><br><span class="line">        user2.setName(<span class="string">&quot;nannan&quot;</span>);</span><br><span class="line">        user2.setAge(<span class="number">29</span>);</span><br><span class="line">        user2.setEmail(<span class="string">&quot;nannan@email.com&quot;</span>);</span><br><span class="line"></span><br><span class="line">        List&lt;User&gt; users = List.of(user1, user2);</span><br><span class="line">        userService.saveBatch(users);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="7-条件构造器"><a href="#7-条件构造器" class="headerlink" title="7 条件构造器"></a>7 条件构造器</h2><p>条件构造器用于构造复杂的查询条件，例如获取<code>name=&#39;zhangsan&#39;</code>的用户。MyBatis Plus共提供了两类构造器，分别是<code>QueryWrapper</code>和<code>UpdateWrapper</code>。其中<code>QueryWrapper</code>主要用于查询、删除操作，<code>UpdateWrapper</code>主要用于更新操作，下面通过几个案例学习条件构造器的基础用法。</p>
+<ol>
+<li><p>创建<code>WrapperTest</code>测试类，内容如下</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">WrapperTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> UserService userService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testQueryWrapper</span><span class="params">()</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//查询name=Tom的所有用户</span></span><br><span class="line">        QueryWrapper&lt;User&gt; queryWrapper1 = <span class="keyword">new</span> <span class="title class_">QueryWrapper</span>&lt;&gt;();</span><br><span class="line">        queryWrapper1.eq(<span class="string">&quot;name&quot;</span>, <span class="string">&quot;Tom&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//查询邮箱域名为baomidou.com的所有用户</span></span><br><span class="line">        QueryWrapper&lt;User&gt; queryWrapper2 = <span class="keyword">new</span> <span class="title class_">QueryWrapper</span>&lt;&gt;();</span><br><span class="line">        queryWrapper2.like(<span class="string">&quot;email&quot;</span>, <span class="string">&quot;baomidou.com&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//查询所有用户信息并按照age字段降序排序</span></span><br><span class="line">        QueryWrapper&lt;User&gt; queryWrapper3 = <span class="keyword">new</span> <span class="title class_">QueryWrapper</span>&lt;&gt;();</span><br><span class="line">        queryWrapper3.orderByDesc(<span class="string">&quot;age&quot;</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//查询age介于[20,30]的所有用户</span></span><br><span class="line">        QueryWrapper&lt;User&gt; queryWrapper4 = <span class="keyword">new</span> <span class="title class_">QueryWrapper</span>&lt;&gt;();</span><br><span class="line">        queryWrapper4.between(<span class="string">&quot;age&quot;</span>, <span class="number">20</span>, <span class="number">30</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//查询age小于20或大于30的用户</span></span><br><span class="line">        QueryWrapper&lt;User&gt; queryWrapper5 = <span class="keyword">new</span> <span class="title class_">QueryWrapper</span>&lt;&gt;();</span><br><span class="line">        queryWrapper5.lt(<span class="string">&quot;age&quot;</span>, <span class="number">20</span>).or().gt(<span class="string">&quot;age&quot;</span>, <span class="number">30</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//邮箱域名为baomidou.com且年龄小于30或大于40且的用户</span></span><br><span class="line">        QueryWrapper&lt;User&gt; queryWrapper6 = <span class="keyword">new</span> <span class="title class_">QueryWrapper</span>&lt;&gt;();</span><br><span class="line">        queryWrapper6.like(<span class="string">&quot;email&quot;</span>, <span class="string">&quot;baomidou.com&quot;</span>).and(wrapper -&gt; wrapper.lt(<span class="string">&quot;age&quot;</span>, <span class="number">30</span>).or().gt(<span class="string">&quot;age&quot;</span>, <span class="number">40</span>));</span><br><span class="line">        </span><br><span class="line">        List&lt;User&gt; list = userService.list(queryWrapper6);</span><br><span class="line">        list.forEach(System.out::println);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testUpdateWrapper</span><span class="params">()</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//将name=Tom的用户的email改为Tom@baobidou.com</span></span><br><span class="line">        UpdateWrapper&lt;User&gt; updateWrapper = <span class="keyword">new</span> <span class="title class_">UpdateWrapper</span>&lt;&gt;();</span><br><span class="line">        updateWrapper.eq(<span class="string">&quot;name&quot;</span>, <span class="string">&quot;Tom&quot;</span>);</span><br><span class="line">        updateWrapper.set(<span class="string">&quot;email&quot;</span>, <span class="string">&quot;Tom@baobidou.com&quot;</span>);</span><br><span class="line"></span><br><span class="line">        userService.update(updateWrapper);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建<code>LambdaWrapperTest</code>测试类，内容如下</p>
+<p>上述的<code>QueryWrapper</code>和<code>UpdateWrapper</code>均有一个<code>Lambda</code>版本，也就是<code>LambdaQueryWrapper</code>和<code>LambdaUpdateWrapper</code>，<code>Lambda</code>版本的优势在于，可以省去字段名的硬编码，具体案例如下：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">LambdaWrapperTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> UserService userService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testLambdaQueryWrapper</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">//查询name=Tom的所有用户</span></span><br><span class="line">        LambdaQueryWrapper&lt;User&gt; lambdaQueryWrapper = <span class="keyword">new</span> <span class="title class_">LambdaQueryWrapper</span>&lt;&gt;();</span><br><span class="line">        lambdaQueryWrapper.eq(User::getName, <span class="string">&quot;Tom&quot;</span>);</span><br><span class="line"></span><br><span class="line">        List&lt;User&gt; list = userService.list(lambdaQueryWrapper);</span><br><span class="line">        list.forEach(System.out::println);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testLambdaUpdateWrapper</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">//将name=Tom的用户的邮箱改为Tom@tom.com</span></span><br><span class="line">        LambdaUpdateWrapper&lt;User&gt; lambdaUpdateWrapper = <span class="keyword">new</span> <span class="title class_">LambdaUpdateWrapper</span>&lt;&gt;();</span><br><span class="line">        lambdaUpdateWrapper.eq(User::getName, <span class="string">&quot;Tom&quot;</span>);</span><br><span class="line">        lambdaUpdateWrapper.set(User::getEmail, <span class="string">&quot;Tom@Tom.com&quot;</span>);</span><br><span class="line"></span><br><span class="line">        userService.update(lambdaUpdateWrapper);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="8-分页插件"><a href="#8-分页插件" class="headerlink" title="8 分页插件"></a>8 分页插件</h2><p>分页查询是一个很常见的需求，故Mybatis-Plus提供了一个分页插件，使用它可以十分方便的完成分页查询。下面介绍Mybatis-Plus分页插件的用法，详细信息可参考<a href="https://baomidou.com/pages/97710a/">官方文档</a>。</p>
+<ul>
+<li><p>配置分页插件</p>
+<p>创建<code>com.atguigu.hellomp.config.MPConfiguration</code>配置类，增加如下内容</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MPConfiguration</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> MybatisPlusInterceptor <span class="title function_">mybatisPlusInterceptor</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">MybatisPlusInterceptor</span> <span class="variable">interceptor</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MybatisPlusInterceptor</span>();</span><br><span class="line">        interceptor.addInnerInterceptor(<span class="keyword">new</span> <span class="title class_">PaginationInnerInterceptor</span>(DbType.MYSQL));</span><br><span class="line">        <span class="keyword">return</span> interceptor;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>分页插件使用说明</p>
+<ul>
+<li><p>构造分页对象</p>
+<p>分页对象包含了分页的各项信息，其核心属性如下：</p>
+<table>
+<thead>
+<tr>
+<th>属性名</th>
+<th>类型</th>
+<th>默认值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>records</td>
+<td>List</td>
+<td>emptyList</td>
+<td>查询数据列表</td>
+</tr>
+<tr>
+<td>total</td>
+<td>Long</td>
+<td>0</td>
+<td>查询列表总记录数</td>
+</tr>
+<tr>
+<td>size</td>
+<td>Long</td>
+<td>10</td>
+<td>每页显示条数，默认<code>10</code></td>
+</tr>
+<tr>
+<td>current</td>
+<td>Long</td>
+<td>1</td>
+<td>当前页</td>
+</tr>
+</tbody></table>
+<p>分页对象既作为分页查询的参数，也作为分页查询的返回结果，当作为查询参数时，通常只需提供<code>current</code>和<code>size</code>属性，如下</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">IPage&lt;T&gt; page = <span class="keyword">new</span> <span class="title class_">Page</span>&lt;&gt;(current, size);</span><br></pre></td></tr></table></figure>
+
+<p>注：<code>IPage</code>为分页接口，<code>Page</code>为<code>IPage</code>接口的一个实现类。<code>Page</code> 类是具体的实现类，主要用于创建分页对象、传递分页参数以及接收分页结果。<code>IPage</code> 接口是抽象的接口，用于定义分页的通用行为和属性，提升代码的灵活性与可扩展性。在实际开发中，通常先用 <code>Page</code> 类创建分页对象，再用 <code>IPage</code> 接口来接收和处理分页结果。</p>
+</li>
+<li><p>分页查询</p>
+<p>Mybatis Plus的<code>BaseMapper</code>和<code>ServiceImpl</code>均提供了常用的分页查询的方法，例如：</p>
+<ul>
+<li><p><code>BaseMapper</code>的分页查询：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">IPage&lt;T&gt; <span class="title function_">selectPage</span><span class="params">(IPage&lt;T&gt; page,Wrapper&lt;T&gt; queryWrapper)</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>ServiceImpl</code>的分页查询：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 无条件分页查询</span></span><br><span class="line">IPage&lt;T&gt; <span class="title function_">page</span><span class="params">(IPage&lt;T&gt; page)</span>;</span><br><span class="line"><span class="comment">// 条件分页查询</span></span><br><span class="line">IPage&lt;T&gt; <span class="title function_">page</span><span class="params">(IPage&lt;T&gt; page, Wrapper&lt;T&gt; queryWrapper)</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>自定义Mapper</p>
+<p>对于自定义SQL，也可以十分方便的完成分页查询，如下</p>
+<p><code>Mapper</code>接口：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">IPage&lt;UserVo&gt; <span class="title function_">selectPageVo</span><span class="params">(IPage&lt;?&gt; page, Integer state)</span>;</span><br></pre></td></tr></table></figure>
+
+<p><code>Mapper.xml</code>：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">&lt;select id=<span class="string">&quot;selectPageVo&quot;</span> resultType=<span class="string">&quot;xxx.xxx.xxx.UserVo&quot;</span>&gt;</span><br><span class="line">    SELECT id,name FROM user WHERE state=#&#123;state&#125;</span><br><span class="line">&lt;/select&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意</strong>：<code>Mapper.xml</code>中的SQL只需实现查询<code>list</code>的逻辑即可，无需关注分页的逻辑。</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>案例实操</p>
+<p>分页查询案例如下：</p>
+<p>创建<code>PageTest</code>测试类，内容如下</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PageTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> UserService userService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> UserMapper userMapper;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//通用Service分页查询</span></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testPageService</span><span class="params">()</span> &#123;</span><br><span class="line">        Page&lt;User&gt; page = <span class="keyword">new</span> <span class="title class_">Page</span>&lt;&gt;(<span class="number">2</span>, <span class="number">3</span>);</span><br><span class="line">        Page&lt;User&gt; userPage = userService.page(page);</span><br><span class="line">        userPage.getRecords().forEach(System.out::println);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//通用Mapper分页查询</span></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testPageMapper</span><span class="params">()</span> &#123;</span><br><span class="line">        IPage&lt;User&gt; page = <span class="keyword">new</span> <span class="title class_">Page</span>&lt;&gt;(<span class="number">2</span>, <span class="number">3</span>);</span><br><span class="line">        IPage&lt;User&gt; userPage = userMapper.selectPage(page, <span class="literal">null</span>);</span><br><span class="line">        userPage.getRecords().forEach(System.out::println);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//自定义SQL分页查询</span></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testCustomMapper</span><span class="params">()</span> &#123;</span><br><span class="line">        IPage&lt;User&gt; page = <span class="keyword">new</span> <span class="title class_">Page</span>&lt;&gt;(<span class="number">2</span>, <span class="number">3</span>);</span><br><span class="line">        IPage&lt;User&gt; userPage = userMapper.selectUserPage(page);</span><br><span class="line">        userPage.getRecords().forEach(System.out::println);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在UserMapper中声明分页查询方法如下</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">IPage&lt;User&gt; <span class="title function_">selectUserPage</span><span class="params">(IPage&lt;User&gt; page)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>创建<code>resources/mapper/UserMapper.xml</code>文件，内容如下</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">mapper</span></span></span><br><span class="line"><span class="meta">        <span class="keyword">PUBLIC</span> <span class="string">&quot;-//mybatis.org//DTD Mapper 3.0//EN&quot;</span></span></span><br><span class="line"><span class="meta">        <span class="string">&quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">mapper</span> <span class="attr">namespace</span>=<span class="string">&quot;com.atguigu.hellomp.mapper.UserMapper&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">&quot;selectUserPage&quot;</span> <span class="attr">resultType</span>=<span class="string">&quot;com.atguigu.hellomp.entity.User&quot;</span>&gt;</span></span><br><span class="line">        select *</span><br><span class="line">        from user</span><br><span class="line">    <span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">mapper</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>注意</strong>：</p>
+<p>Mybatis-Plus中<code>Mapper.xml</code>文件路径默认为：<code>classpath*:/mapper/**/*.xml</code>，可在<code>application.yml</code>中配置以下参数进行修改</p>
+   <figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">mybatis-plus:</span></span><br><span class="line">  <span class="attr">mapper-locations:</span> <span class="string">classpath*:/mapper/**/*.xml</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="9-MyBatisX插件"><a href="#9-MyBatisX插件" class="headerlink" title="9 MyBatisX插件"></a>9 MyBatisX插件</h2><p>MyBatis Plus提供了一个IDEA插件——<code>MybatisX</code>,使用它可根据数据库快速生成<code>Entity</code>、<code>Mapper</code>、<code>Mapper.xml</code>、<code>Service</code>、<code>ServiceImpl</code>等代码，使用户更专注于业务。</p>
+<p>下面演示具体用法</p>
+<ol>
+<li><p><strong>安装插件</strong></p>
+<p>在IDEA插件市场搜索<code>MyBatisX</code>，进行在线安装</p>
+<p><img src="/2025/01/22/Mybatis-Plus%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/image-20250122173825745.png" alt="image-20250122173825745"></p>
+</li>
+<li><p><strong>配置数据库连接</strong></p>
+<p>在IDEA中配置数据库连接</p>
+<p><img src="/2025/01/22/Mybatis-Plus%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/image-20250122173835578.png" alt="image-20250122173835578"></p>
+</li>
+<li><p><strong>生成代码</strong></p>
+<p>首先将之前编写的<code>User</code>、<code>UserMapper</code>、<code>UserServcie</code>、<code>UserServiceImpl</code>全部删除，然后按照下图指示使用插件生成代码</p>
+<p><img src="/2025/01/22/Mybatis-Plus%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/image-20250122173844446.png" alt="image-20250122173844446"></p>
+<p>配置实体类相关信息</p>
+<p><img src="/2025/01/22/Mybatis-Plus%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/image-20250122173850326.png" alt="image-20250122173850326"></p>
+<p>配置代码模版信息</p>
+<p><img src="/2025/01/22/Mybatis-Plus%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/image-20250122173901559.png" alt="image-20250122173901559"></p>
+<p>点击Finish然后查看生成的代码。</p>
 </li>
 </ol>
 ]]></content>
       <categories>
-        <category>数据库</category>
+        <category>Java</category>
       </categories>
       <tags>
         <tag>快速入门</tag>
-        <tag>MinIO</tag>
+        <tag>Mybatis-Plus</tag>
+        <tag>Mybatis</tag>
       </tags>
   </entry>
   <entry>
@@ -1308,6 +1405,126 @@
       </tags>
   </entry>
   <entry>
+    <title>Minio快速入门</title>
+    <url>/2025/01/22/Minio%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/</url>
+    <content><![CDATA[<h1 id="MinIO快速入门"><a href="#MinIO快速入门" class="headerlink" title="MinIO快速入门"></a>MinIO快速入门</h1><h2 id="1-MinIO核心概念"><a href="#1-MinIO核心概念" class="headerlink" title="1 MinIO核心概念"></a>1 MinIO核心概念</h2><p>下面介绍MinIO中的几个核心概念，这些概念在所有的对象存储服务中也都是通用的。</p>
+<ul>
+<li><p><strong>对象（Object）</strong></p>
+<p>对象是实际的数据单元，例如我们上传的一个图片。</p>
+</li>
+<li><p><strong>存储桶（Bucket）</strong></p>
+<p>存储桶是用于组织对象的命名空间，类似于文件夹。每个存储桶可以包含多个对象。</p>
+</li>
+<li><p><strong>端点（Endpoint）</strong></p>
+<p>端点是MinIO服务器的网络地址，用于访问存储桶和对象，例如 <code>http://192.168.10.101:9000</code></p>
+<p><strong>注意：</strong></p>
+</li>
+</ul>
+<p><code>9000</code> 为MinIO的API的默认端口，前边配置的 <code>9001</code> 以为管理页面端口。</p>
+<ul>
+<li><p><strong>Access Key 和 Secret Key</strong></p>
+<p><strong>Access Key</strong>是用于标识和验证访问者身份的唯一标识符，相当于用户名。</p>
+<p><strong>Secret Key</strong>是与<strong>Access Key</strong>关联的密码，用于验证访问者的身份。</p>
+</li>
+</ul>
+<span id="more"></span>
+
+<h2 id="2-MinIO管理页面操作"><a href="#2-MinIO管理页面操作" class="headerlink" title="2 MinIO管理页面操作"></a>2 MinIO管理页面操作</h2><ol>
+<li><p><strong>登录</strong></p>
+<p>管理页面的地址为<a href="http://192.168.10.101:9001，登录的用户名和密码为部署时在">http://192.168.10.101:9001，登录的用户名和密码为部署时在</a> <code>EnvironmentFile</code> 文件中配置的如下参数</p>
+</li>
+</ol>
+<figure class="highlight ini"><table><tr><td class="code"><pre><span class="line"><span class="attr">MINIO_ROOT_USER</span>=minioadmin</span><br><span class="line"><span class="attr">MINIO_ROOT_PASSWORD</span>=minioadmin</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><p><strong>创建存储桶</strong></p>
+<p><img src="/2025/01/22/Minio%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/MinIO%E5%85%A5%E9%97%A8-%E5%88%9B%E5%BB%BA%E6%A1%B6.png"></p>
+</li>
+<li><p><strong>上传图片</strong></p>
+<ul>
+<li><p>找到目标桶</p>
+<p><img src="/2025/01/22/Minio%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/MinIO%E5%85%A5%E9%97%A8-%E9%80%89%E6%8B%A9%E6%A1%B6.png"></p>
+</li>
+<li><p>上传图片</p>
+<p><img src="/2025/01/22/Minio%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/MinIO%E5%85%A5%E9%97%A8-%E4%B8%8A%E4%BC%A0%E5%9B%BE%E7%89%87.png"></p>
+</li>
+</ul>
+</li>
+<li><p><strong>访问图片</strong></p>
+<ul>
+<li><p><strong>图片URL</strong></p>
+<p>由于MinIO提供了HTTP访问功能，所以可以通过浏览器直接访问对象。对象URL为MinIO的 <code>Endpoint</code> + <code>对象的存储路径</code> ，例如下图中的图片对象的URL为<a href="http://192.168.10.101:9000/test/%E5%85%AC%E5%AF%93-%E5%A4%96%E8%A7%82.jpg">http:192.168.10.101:9000&#x2F;test&#x2F;公寓-外观.jpg</a>。</p>
+<p><img src="/2025/01/22/Minio%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/MinIO%E5%85%A5%E9%97%A8-%E5%AD%98%E5%82%A8%E8%B7%AF%E5%BE%84.png"></p>
+</li>
+<li><p><strong>访问权限</strong></p>
+<p>不出意外的话，使用浏览器访问上述URL，会得到如下响应，很显然是没有访问权限。</p>
+</li>
+</ul>
+</li>
+</ol>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Error</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Code</span>&gt;</span>AccessDenied<span class="tag">&lt;/<span class="name">Code</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Message</span>&gt;</span>Access Denied.<span class="tag">&lt;/<span class="name">Message</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Key</span>&gt;</span>公寓-外观.jpg<span class="tag">&lt;/<span class="name">Key</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">BucketName</span>&gt;</span>test<span class="tag">&lt;/<span class="name">BucketName</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Resource</span>&gt;</span>/test/公寓-外观.jpg<span class="tag">&lt;/<span class="name">Resource</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">RequestId</span>&gt;</span>177BC92022FC5684<span class="tag">&lt;/<span class="name">RequestId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">HostId</span>&gt;</span>dd9025bab4ad464b049177c95eb6ebf374d3b3fd1af9251148b658df7ac2e3e8<span class="tag">&lt;/<span class="name">HostId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Error</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<pre><code> 若想继续访问图片，需要修改图片**所在桶**的访问权限，如下图所示
+
+ ![](MinIO入门-访问权限.png)
+
+ 如上图所示，可选的访问权限共有三个选项，分别是 `Private` 、 `Public` 和 `Custom` ，具体说明如下
+
+ - `Private`
+
+   只允许桶的所有者对该桶进行读写。
+
+ - `Public`
+
+   允许所有人对该桶进行读写。
+
+ - `Custom`
+
+   自定义访问权限。
+
+ 若想将权限设置为只允许所有者写，但允许所有人读，就需要自定义访问权限。自定义访问权限，需要使用一个规定格式的JSON字符串进行描述，具体格式可参考[官方文档](https://min.io/docs/minio/linux/administration/identity-access-management/policy-based-access-control.html#policy-document-structure)。
+
+ 例如以下JSON字符串表达的含义是：允许( `Allow` )所有人( `*` )读取( `s3:GetObject` )指定桶( `test` )的所有内容。
+
+ 
+</code></pre>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;Statement&quot;</span> <span class="punctuation">:</span> <span class="punctuation">[</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;Action&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;s3:GetObject&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;Effect&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;Allow&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;Principal&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;*&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;Resource&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;arn:aws:s3:::test/*&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span> <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;Version&quot;</span> <span class="punctuation">:</span> <span class="string">&quot;2012-10-17&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<pre><code> 将 `test` 桶访问权限设置为 `Custom` ，并添加上述内容
+
+ ![](MinIO入门-自定义权限.png)
+
+ 重新访问[http:192.168.10.101:9000/test/公寓-外观.jpg](http:192.168.10.101:9000/test/公寓-外观.jpg)，观察是否正常。
+</code></pre>
+<h2 id="3-MinIO-Java-SDK"><a href="#3-MinIO-Java-SDK" class="headerlink" title="3 MinIO Java SDK"></a>3 MinIO Java SDK</h2><p>MinIO提供了多种语言的SDK供开发者使用，本项目需要用到Java SDK，下面通过一个简单案例熟悉一下其基本用法，具体内容可参考<a href="https://www.minio.org.cn/docs/minio/linux/developers/java/minio-java.html#">官方文档</a>。</p>
+<ol>
+<li><p><strong>创建一个Maven项目</strong></p>
+</li>
+<li><p><strong>引入如下依赖</strong></p>
+</li>
+</ol>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.minio<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>minio<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>8.5.3<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li><strong>编写如下内容</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">App</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException, NoSuchAlgorithmException, InvalidKeyException &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">//构造MinIO Client</span></span><br><span class="line">            <span class="type">MinioClient</span> <span class="variable">minioClient</span> <span class="operator">=</span> MinioClient.builder()</span><br><span class="line">                    .endpoint(<span class="string">&quot;http://192.168.10.101:9000&quot;</span>)</span><br><span class="line">                    .credentials(<span class="string">&quot;minioadmin&quot;</span>, <span class="string">&quot;minioadmin&quot;</span>)</span><br><span class="line">                    .build();</span><br><span class="line"></span><br><span class="line">            <span class="comment">//创建hello-minio桶</span></span><br><span class="line">            <span class="type">boolean</span> <span class="variable">found</span> <span class="operator">=</span> minioClient.bucketExists(BucketExistsArgs.builder().bucket(<span class="string">&quot;hello-minio&quot;</span>).build());</span><br><span class="line">            <span class="keyword">if</span> (!found) &#123;</span><br><span class="line">                <span class="comment">//创建hello-minio桶</span></span><br><span class="line">                minioClient.makeBucket(MakeBucketArgs.builder().bucket(<span class="string">&quot;hello-minio&quot;</span>).build());</span><br><span class="line">                <span class="comment">//设置hello-minio桶的访问权限</span></span><br><span class="line">                <span class="type">String</span> <span class="variable">policy</span> <span class="operator">=</span> <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                        &#123;</span></span><br><span class="line"><span class="string">                          &quot;Statement&quot; : [ &#123;</span></span><br><span class="line"><span class="string">                            &quot;Action&quot; : &quot;s3:GetObject&quot;,</span></span><br><span class="line"><span class="string">                            &quot;Effect&quot; : &quot;Allow&quot;,</span></span><br><span class="line"><span class="string">                            &quot;Principal&quot; : &quot;*&quot;,</span></span><br><span class="line"><span class="string">                            &quot;Resource&quot; : &quot;arn:aws:s3:::hello-minio/*&quot;</span></span><br><span class="line"><span class="string">                          &#125; ],</span></span><br><span class="line"><span class="string">                          &quot;Version&quot; : &quot;2012-10-17&quot;</span></span><br><span class="line"><span class="string">                        &#125;&quot;&quot;&quot;</span>;</span><br><span class="line">                minioClient.setBucketPolicy(SetBucketPolicyArgs.builder().bucket(<span class="string">&quot;hello-minio&quot;</span>).config(policy).build());</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                System.out.println(<span class="string">&quot;Bucket &#x27;hello-minio&#x27; already exists.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">//上传图片</span></span><br><span class="line">            minioClient.uploadObject(</span><br><span class="line">                    UploadObjectArgs.builder()</span><br><span class="line">                            .bucket(<span class="string">&quot;hello-minio&quot;</span>)</span><br><span class="line">                            .object(<span class="string">&quot;公寓-外观.jpg&quot;</span>)</span><br><span class="line">                            .filename(<span class="string">&quot;D:\\workspace\\hello-minio\\src\\main\\resources\\公寓-外观.jpg&quot;</span>)</span><br><span class="line">                            .build());</span><br><span class="line">            System.out.println(<span class="string">&quot;上传成功&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (MinioException e) &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;Error occurred: &quot;</span> + e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li><p><strong>运行测试</strong></p>
+<p>运行上述代码，然后查看MinIO管理页面，观察是否上传成功。</p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>数据库</category>
+      </categories>
+      <tags>
+        <tag>快速入门</tag>
+        <tag>MinIO</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Nginx快速入门</title>
     <url>/2025/01/25/Nginx%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/</url>
     <content><![CDATA[<h1 id="Nginx快速入门"><a href="#Nginx快速入门" class="headerlink" title="Nginx快速入门"></a>Nginx快速入门</h1><h2 id="Nginx安装"><a href="#Nginx安装" class="headerlink" title="Nginx安装"></a>Nginx安装</h2><p>根据前文的部署方案，需要在<code>server02</code>部署Nginx。Nginx官网有详细的安装步骤，具体内容可参考<a href="https://nginx.org/en/linux_packages.html">官方文档</a>。</p>
@@ -1478,240 +1695,6 @@
       <tags>
         <tag>快速入门</tag>
         <tag>Nginx</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Mybatis-Plus快速入门</title>
-    <url>/2025/01/22/Mybatis-Plus%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/</url>
-    <content><![CDATA[<h1 id="MyBatis-Plus快速入门"><a href="#MyBatis-Plus快速入门" class="headerlink" title="MyBatis Plus快速入门"></a>MyBatis Plus快速入门</h1><h2 id="1、概述"><a href="#1、概述" class="headerlink" title="1、概述"></a>1、概述</h2><p>MyBatis-Plus（简称 MP）是一个MyBatis 的增强工具，在 MyBatis 的基础上只做增强不做改变，为简化开发、提高效率而生。其突出的特性如下：</p>
-<ul>
-<li><strong>无侵入</strong>：只做增强不做改变，引入它不会对现有工程产生影响，如丝般顺滑</li>
-<li><strong>强大的 CRUD 操作</strong>：内置通用 Mapper、通用 Service，提供了大量的通用的CRUD方法，因此可以省去大量手写sql的语句的工作。</li>
-<li><strong>条件构造器</strong>：提供了强大的条件构造器，可以构造各种复杂的查询条件，以应对各种复杂查询。</li>
-<li><strong>内置分页插件</strong>：配置好插件之后，写分页等同于普通 List 查询，无需关注分页逻辑。</li>
-</ul>
-<p>下面通过一个简单案例快速熟悉MyBatis Plus的基本使用</p>
-<span id="more"></span>
-
-<h2 id="2、数据库准备"><a href="#2、数据库准备" class="headerlink" title="2、数据库准备"></a>2、数据库准备</h2><p>首先在数据库中准备一张表，为后序的学习做准备。</p>
-<ol>
-<li><p><strong>创建数据库</strong></p>
-<p>在MySQL中创建一个数据库<code>hello_mp</code></p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> DATABASE hello_mp <span class="type">CHARACTER</span> <span class="keyword">SET</span> utf8mb4 <span class="keyword">COLLATE</span> utf8mb4_general_ci;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>创建表</strong></p>
-<p>在<code>hello-mp</code>库中创建一个表<code>user</code></p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> IF <span class="keyword">EXISTS</span> <span class="keyword">user</span>;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="keyword">user</span></span><br><span class="line">(</span><br><span class="line">    id <span class="type">BIGINT</span>(<span class="number">20</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT COMMENT <span class="string">&#x27;主键ID&#x27;</span>,</span><br><span class="line">    name <span class="type">VARCHAR</span>(<span class="number">30</span>) <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;姓名&#x27;</span>,</span><br><span class="line">    age <span class="type">INT</span>(<span class="number">11</span>) <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;年龄&#x27;</span>,</span><br><span class="line">    email <span class="type">VARCHAR</span>(<span class="number">50</span>) <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;邮箱&#x27;</span>,</span><br><span class="line">    <span class="keyword">PRIMARY</span> KEY (id)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>插入数据</strong></p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">INSERT INTO user (<span class="built_in">id</span>, name, age, email) VALUES</span><br><span class="line">(1, <span class="string">&#x27;Jone&#x27;</span>, 18, <span class="string">&#x27;test1@baomidou.com&#x27;</span>),</span><br><span class="line">(2, <span class="string">&#x27;Jack&#x27;</span>, 20, <span class="string">&#x27;test2@baomidou.com&#x27;</span>),</span><br><span class="line">(3, <span class="string">&#x27;Tom&#x27;</span>, 28, <span class="string">&#x27;test3@baomidou.com&#x27;</span>),</span><br><span class="line">(4, <span class="string">&#x27;Sandy&#x27;</span>, 21, <span class="string">&#x27;test4@baomidou.com&#x27;</span>),</span><br><span class="line">(5, <span class="string">&#x27;Billie&#x27;</span>, 24, <span class="string">&#x27;test5@baomidou.com&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
-</ol>
-<h2 id="3-与SpringBoot集成"><a href="#3-与SpringBoot集成" class="headerlink" title="3 与SpringBoot集成"></a>3 与SpringBoot集成</h2><p>Mybatis Plus与SpringBoot的集成十分简单，具体操作如下</p>
-<ol>
-<li><p><strong>引入Maven 依赖</strong></p>
-<p>提前创建好一个SpringBoot项目，然后在项目中引入MyBatis Plus依赖</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.baomidou<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mybatis-plus-boot-starter<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.5.3.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>本案例完整的<code>pom.xml</code>文件如下</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">project</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0&quot;</span> <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span></span><br><span class="line"><span class="tag">         <span class="attr">xsi:schemaLocation</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">modelVersion</span>&gt;</span>4.0.0<span class="tag">&lt;/<span class="name">modelVersion</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">parent</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-parent<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.0.9<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">relativePath</span>/&gt;</span> <span class="comment">&lt;!-- lookup parent from repository --&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">parent</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.atguigu<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>hello-mp<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>0.0.1-SNAPSHOT<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hello-mp<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">description</span>&gt;</span>hello-mp<span class="tag">&lt;/<span class="name">description</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">java.version</span>&gt;</span>17<span class="tag">&lt;/<span class="name">java.version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.mysql<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mysql-connector-j<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">scope</span>&gt;</span>runtime<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">optional</span>&gt;</span>true<span class="tag">&lt;/<span class="name">optional</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-test<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.baomidou<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mybatis-plus-boot-starter<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.5.3.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">build</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">plugins</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-maven-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">plugins</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">build</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>配置<code>application.yml</code>文件</strong></p>
-<p>配置数据库相关内容如下</p>
-<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">datasource:</span></span><br><span class="line">    <span class="attr">driver-class-name:</span> <span class="string">com.mysql.cj.jdbc.Driver</span></span><br><span class="line">    <span class="attr">username:</span> <span class="string">root</span></span><br><span class="line">    <span class="attr">password:</span> <span class="string">Atguigu.123</span></span><br><span class="line">    <span class="attr">url:</span> <span class="string">jdbc:mysql://192.168.10.101:3306/hello_mp?useUnicode=true&amp;characterEncoding=utf-8&amp;serverTimezone=GMT%2b8</span></span><br></pre></td></tr></table></figure></li>
-</ol>
-<h2 id="4-创建实体类"><a href="#4-创建实体类" class="headerlink" title="4 创建实体类"></a>4 创建实体类</h2><p>创建与<code>user</code>表相对应的实体类，如下</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="meta">@TableName(&quot;user&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">User</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@TableId(value = &quot;id&quot;, type = IdType.AUTO)</span></span><br><span class="line">    <span class="keyword">private</span> Long id;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@TableField(&quot;name&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@TableField(&quot;age&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> Integer age;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@TableField(&quot;email&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String email;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>知识点</strong>：</p>
-<p>实体类中的三个注解的含义如下</p>
-<ul>
-<li><p><code>@TableName</code>：表名注解，用于标识实体类所对应的表</p>
-<ul>
-<li><code>value</code>：用于声明表名</li>
-</ul>
-</li>
-<li><p><code>@TableId</code>：主键注解，用于标识主键字段</p>
-<ul>
-<li><code>value</code>：用于声明主键的字段名</li>
-<li><code>type</code>：用于声明主键的生成策略，常用的策略有<code>AUTO</code>、<code>ASSIGN_UUID</code>、<code>INPUT</code>等等</li>
-</ul>
-</li>
-<li><p><code>@TableField</code>：普通字段注解，用于标识属性所对应的表字段</p>
-<ul>
-<li><code>value</code>：用于声明普通字段的字段名</li>
-</ul>
-</li>
-</ul>
-<h2 id="5-通用Mapper"><a href="#5-通用Mapper" class="headerlink" title="5 通用Mapper"></a>5 通用Mapper</h2><p>通用Mapper提供了通用的CRUD方法，使用它可以省去大量编写简单重复的SQL语句的工作，具体用法如下</p>
-<ol>
-<li><p><strong>创建Mapper接口</strong></p>
-<p>创建<code>UserMapper</code>接口，并继承由Mybatis Plus提供的<code>BaseMapper&lt;T&gt;</code>接口，如下</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Mapper</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">UserMapper</span> <span class="keyword">extends</span> <span class="title class_">BaseMapper</span>&lt;User&gt; &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>知识点</strong>：</p>
-<p>若Mapper接口过多，可不用逐一配置<code>@Mapper</code>注解，而使用<code>@MapperScan</code>注解指定包扫描路径进行统一管理，例如</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="meta">@MapperScan(&quot;com.atguigu.hellomp.mapper&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">HelloMpApplication</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        SpringApplication.run(HelloMpApplication.class, args);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>测试通用Mapper</strong></p>
-<p>创建<code>userMapperTest</code>测试类型，内容如下</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">UserMapperTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> UserMapper userMapper;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testSelectList</span><span class="params">()</span> &#123;</span><br><span class="line">        List&lt;User&gt; users = userMapper.selectList(<span class="literal">null</span>);</span><br><span class="line">        users.forEach(System.out::println);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testSelectById</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> userMapper.selectById(<span class="number">1</span>);</span><br><span class="line">        System.out.println(user);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testInsert</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">User</span>();</span><br><span class="line">        user.setName(<span class="string">&quot;zhangsan&quot;</span>);</span><br><span class="line">        user.setAge(<span class="number">11</span>);</span><br><span class="line">        user.setEmail(<span class="string">&quot;test@test.com&quot;</span>);</span><br><span class="line">        userMapper.insert(user);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testUpdateById</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> userMapper.selectById(<span class="number">1</span>);</span><br><span class="line">        user.setName(<span class="string">&quot;xiaoming&quot;</span>);</span><br><span class="line">        userMapper.updateById(user);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testDeleteById</span><span class="params">()</span> &#123;</span><br><span class="line">        userMapper.deleteById(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ol>
-<h2 id="6-通用Service"><a href="#6-通用Service" class="headerlink" title="6 通用Service"></a>6 通用Service</h2><p>通用Service进一步封装了通用Mapper的CRUD方法，并提供了例如<code>saveOrUpdate</code>、<code>saveBatch</code>等高级方法。</p>
-<ol>
-<li><p><strong>创建Service接口</strong></p>
-<p>创建<code>UserService</code>，内容如下</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">UserService</span> <span class="keyword">extends</span> <span class="title class_">IService</span>&lt;User&gt; &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>创建Service实现类</strong></p>
-<p>创建<code>UserServiceImpl</code>，内容如下</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UserServiceImpl</span> <span class="keyword">extends</span> <span class="title class_">ServiceImpl</span>&lt;UserMapper, User&gt; <span class="keyword">implements</span> <span class="title class_">UserService</span> &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>测试通用Service</strong></p>
-<p>创建<code>UserServiceImplTest</code>测试类，内容如下</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">UserServiceImplTest</span> &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> UserService userService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testSaveOrUpdate</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">User</span> <span class="variable">user1</span> <span class="operator">=</span> userService.getById(<span class="number">2</span>);</span><br><span class="line">        user1.setName(<span class="string">&quot;xiaohu&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="type">User</span> <span class="variable">user2</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">User</span>();</span><br><span class="line">        user2.setName(<span class="string">&quot;lisi&quot;</span>);</span><br><span class="line">        user2.setAge(<span class="number">27</span>);</span><br><span class="line">        user2.setEmail(<span class="string">&quot;lisi@email.com&quot;</span>);</span><br><span class="line">        userService.saveOrUpdate(user1);</span><br><span class="line">        userService.saveOrUpdate(user2);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testSaveBatch</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">User</span> <span class="variable">user1</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">User</span>();</span><br><span class="line">        user1.setName(<span class="string">&quot;dongdong&quot;</span>);</span><br><span class="line">        user1.setAge(<span class="number">49</span>);</span><br><span class="line">        user1.setEmail(<span class="string">&quot;dongdong@email.com&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="type">User</span> <span class="variable">user2</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">User</span>();</span><br><span class="line">        user2.setName(<span class="string">&quot;nannan&quot;</span>);</span><br><span class="line">        user2.setAge(<span class="number">29</span>);</span><br><span class="line">        user2.setEmail(<span class="string">&quot;nannan@email.com&quot;</span>);</span><br><span class="line"></span><br><span class="line">        List&lt;User&gt; users = List.of(user1, user2);</span><br><span class="line">        userService.saveBatch(users);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ol>
-<h2 id="7-条件构造器"><a href="#7-条件构造器" class="headerlink" title="7 条件构造器"></a>7 条件构造器</h2><p>条件构造器用于构造复杂的查询条件，例如获取<code>name=&#39;zhangsan&#39;</code>的用户。MyBatis Plus共提供了两类构造器，分别是<code>QueryWrapper</code>和<code>UpdateWrapper</code>。其中<code>QueryWrapper</code>主要用于查询、删除操作，<code>UpdateWrapper</code>主要用于更新操作，下面通过几个案例学习条件构造器的基础用法。</p>
-<ol>
-<li><p>创建<code>WrapperTest</code>测试类，内容如下</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">WrapperTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> UserService userService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testQueryWrapper</span><span class="params">()</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//查询name=Tom的所有用户</span></span><br><span class="line">        QueryWrapper&lt;User&gt; queryWrapper1 = <span class="keyword">new</span> <span class="title class_">QueryWrapper</span>&lt;&gt;();</span><br><span class="line">        queryWrapper1.eq(<span class="string">&quot;name&quot;</span>, <span class="string">&quot;Tom&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//查询邮箱域名为baomidou.com的所有用户</span></span><br><span class="line">        QueryWrapper&lt;User&gt; queryWrapper2 = <span class="keyword">new</span> <span class="title class_">QueryWrapper</span>&lt;&gt;();</span><br><span class="line">        queryWrapper2.like(<span class="string">&quot;email&quot;</span>, <span class="string">&quot;baomidou.com&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//查询所有用户信息并按照age字段降序排序</span></span><br><span class="line">        QueryWrapper&lt;User&gt; queryWrapper3 = <span class="keyword">new</span> <span class="title class_">QueryWrapper</span>&lt;&gt;();</span><br><span class="line">        queryWrapper3.orderByDesc(<span class="string">&quot;age&quot;</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//查询age介于[20,30]的所有用户</span></span><br><span class="line">        QueryWrapper&lt;User&gt; queryWrapper4 = <span class="keyword">new</span> <span class="title class_">QueryWrapper</span>&lt;&gt;();</span><br><span class="line">        queryWrapper4.between(<span class="string">&quot;age&quot;</span>, <span class="number">20</span>, <span class="number">30</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//查询age小于20或大于30的用户</span></span><br><span class="line">        QueryWrapper&lt;User&gt; queryWrapper5 = <span class="keyword">new</span> <span class="title class_">QueryWrapper</span>&lt;&gt;();</span><br><span class="line">        queryWrapper5.lt(<span class="string">&quot;age&quot;</span>, <span class="number">20</span>).or().gt(<span class="string">&quot;age&quot;</span>, <span class="number">30</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//邮箱域名为baomidou.com且年龄小于30或大于40且的用户</span></span><br><span class="line">        QueryWrapper&lt;User&gt; queryWrapper6 = <span class="keyword">new</span> <span class="title class_">QueryWrapper</span>&lt;&gt;();</span><br><span class="line">        queryWrapper6.like(<span class="string">&quot;email&quot;</span>, <span class="string">&quot;baomidou.com&quot;</span>).and(wrapper -&gt; wrapper.lt(<span class="string">&quot;age&quot;</span>, <span class="number">30</span>).or().gt(<span class="string">&quot;age&quot;</span>, <span class="number">40</span>));</span><br><span class="line">        </span><br><span class="line">        List&lt;User&gt; list = userService.list(queryWrapper6);</span><br><span class="line">        list.forEach(System.out::println);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testUpdateWrapper</span><span class="params">()</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//将name=Tom的用户的email改为Tom@baobidou.com</span></span><br><span class="line">        UpdateWrapper&lt;User&gt; updateWrapper = <span class="keyword">new</span> <span class="title class_">UpdateWrapper</span>&lt;&gt;();</span><br><span class="line">        updateWrapper.eq(<span class="string">&quot;name&quot;</span>, <span class="string">&quot;Tom&quot;</span>);</span><br><span class="line">        updateWrapper.set(<span class="string">&quot;email&quot;</span>, <span class="string">&quot;Tom@baobidou.com&quot;</span>);</span><br><span class="line"></span><br><span class="line">        userService.update(updateWrapper);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>创建<code>LambdaWrapperTest</code>测试类，内容如下</p>
-<p>上述的<code>QueryWrapper</code>和<code>UpdateWrapper</code>均有一个<code>Lambda</code>版本，也就是<code>LambdaQueryWrapper</code>和<code>LambdaUpdateWrapper</code>，<code>Lambda</code>版本的优势在于，可以省去字段名的硬编码，具体案例如下：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">LambdaWrapperTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> UserService userService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testLambdaQueryWrapper</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">//查询name=Tom的所有用户</span></span><br><span class="line">        LambdaQueryWrapper&lt;User&gt; lambdaQueryWrapper = <span class="keyword">new</span> <span class="title class_">LambdaQueryWrapper</span>&lt;&gt;();</span><br><span class="line">        lambdaQueryWrapper.eq(User::getName, <span class="string">&quot;Tom&quot;</span>);</span><br><span class="line"></span><br><span class="line">        List&lt;User&gt; list = userService.list(lambdaQueryWrapper);</span><br><span class="line">        list.forEach(System.out::println);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testLambdaUpdateWrapper</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">//将name=Tom的用户的邮箱改为Tom@tom.com</span></span><br><span class="line">        LambdaUpdateWrapper&lt;User&gt; lambdaUpdateWrapper = <span class="keyword">new</span> <span class="title class_">LambdaUpdateWrapper</span>&lt;&gt;();</span><br><span class="line">        lambdaUpdateWrapper.eq(User::getName, <span class="string">&quot;Tom&quot;</span>);</span><br><span class="line">        lambdaUpdateWrapper.set(User::getEmail, <span class="string">&quot;Tom@Tom.com&quot;</span>);</span><br><span class="line"></span><br><span class="line">        userService.update(lambdaUpdateWrapper);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ol>
-<h2 id="8-分页插件"><a href="#8-分页插件" class="headerlink" title="8 分页插件"></a>8 分页插件</h2><p>分页查询是一个很常见的需求，故Mybatis-Plus提供了一个分页插件，使用它可以十分方便的完成分页查询。下面介绍Mybatis-Plus分页插件的用法，详细信息可参考<a href="https://baomidou.com/pages/97710a/">官方文档</a>。</p>
-<ul>
-<li><p>配置分页插件</p>
-<p>创建<code>com.atguigu.hellomp.config.MPConfiguration</code>配置类，增加如下内容</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MPConfiguration</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> MybatisPlusInterceptor <span class="title function_">mybatisPlusInterceptor</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">MybatisPlusInterceptor</span> <span class="variable">interceptor</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MybatisPlusInterceptor</span>();</span><br><span class="line">        interceptor.addInnerInterceptor(<span class="keyword">new</span> <span class="title class_">PaginationInnerInterceptor</span>(DbType.MYSQL));</span><br><span class="line">        <span class="keyword">return</span> interceptor;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>分页插件使用说明</p>
-<ul>
-<li><p>构造分页对象</p>
-<p>分页对象包含了分页的各项信息，其核心属性如下：</p>
-<table>
-<thead>
-<tr>
-<th>属性名</th>
-<th>类型</th>
-<th>默认值</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>records</td>
-<td>List</td>
-<td>emptyList</td>
-<td>查询数据列表</td>
-</tr>
-<tr>
-<td>total</td>
-<td>Long</td>
-<td>0</td>
-<td>查询列表总记录数</td>
-</tr>
-<tr>
-<td>size</td>
-<td>Long</td>
-<td>10</td>
-<td>每页显示条数，默认<code>10</code></td>
-</tr>
-<tr>
-<td>current</td>
-<td>Long</td>
-<td>1</td>
-<td>当前页</td>
-</tr>
-</tbody></table>
-<p>分页对象既作为分页查询的参数，也作为分页查询的返回结果，当作为查询参数时，通常只需提供<code>current</code>和<code>size</code>属性，如下</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">IPage&lt;T&gt; page = <span class="keyword">new</span> <span class="title class_">Page</span>&lt;&gt;(current, size);</span><br></pre></td></tr></table></figure>
-
-<p>注：<code>IPage</code>为分页接口，<code>Page</code>为<code>IPage</code>接口的一个实现类。<code>Page</code> 类是具体的实现类，主要用于创建分页对象、传递分页参数以及接收分页结果。<code>IPage</code> 接口是抽象的接口，用于定义分页的通用行为和属性，提升代码的灵活性与可扩展性。在实际开发中，通常先用 <code>Page</code> 类创建分页对象，再用 <code>IPage</code> 接口来接收和处理分页结果。</p>
-</li>
-<li><p>分页查询</p>
-<p>Mybatis Plus的<code>BaseMapper</code>和<code>ServiceImpl</code>均提供了常用的分页查询的方法，例如：</p>
-<ul>
-<li><p><code>BaseMapper</code>的分页查询：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">IPage&lt;T&gt; <span class="title function_">selectPage</span><span class="params">(IPage&lt;T&gt; page,Wrapper&lt;T&gt; queryWrapper)</span>;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>ServiceImpl</code>的分页查询：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 无条件分页查询</span></span><br><span class="line">IPage&lt;T&gt; <span class="title function_">page</span><span class="params">(IPage&lt;T&gt; page)</span>;</span><br><span class="line"><span class="comment">// 条件分页查询</span></span><br><span class="line">IPage&lt;T&gt; <span class="title function_">page</span><span class="params">(IPage&lt;T&gt; page, Wrapper&lt;T&gt; queryWrapper)</span>;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>自定义Mapper</p>
-<p>对于自定义SQL，也可以十分方便的完成分页查询，如下</p>
-<p><code>Mapper</code>接口：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">IPage&lt;UserVo&gt; <span class="title function_">selectPageVo</span><span class="params">(IPage&lt;?&gt; page, Integer state)</span>;</span><br></pre></td></tr></table></figure>
-
-<p><code>Mapper.xml</code>：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">&lt;select id=<span class="string">&quot;selectPageVo&quot;</span> resultType=<span class="string">&quot;xxx.xxx.xxx.UserVo&quot;</span>&gt;</span><br><span class="line">    SELECT id,name FROM user WHERE state=#&#123;state&#125;</span><br><span class="line">&lt;/select&gt;</span><br></pre></td></tr></table></figure>
-
-<p><strong>注意</strong>：<code>Mapper.xml</code>中的SQL只需实现查询<code>list</code>的逻辑即可，无需关注分页的逻辑。</p>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>案例实操</p>
-<p>分页查询案例如下：</p>
-<p>创建<code>PageTest</code>测试类，内容如下</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PageTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> UserService userService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> UserMapper userMapper;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//通用Service分页查询</span></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testPageService</span><span class="params">()</span> &#123;</span><br><span class="line">        Page&lt;User&gt; page = <span class="keyword">new</span> <span class="title class_">Page</span>&lt;&gt;(<span class="number">2</span>, <span class="number">3</span>);</span><br><span class="line">        Page&lt;User&gt; userPage = userService.page(page);</span><br><span class="line">        userPage.getRecords().forEach(System.out::println);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//通用Mapper分页查询</span></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testPageMapper</span><span class="params">()</span> &#123;</span><br><span class="line">        IPage&lt;User&gt; page = <span class="keyword">new</span> <span class="title class_">Page</span>&lt;&gt;(<span class="number">2</span>, <span class="number">3</span>);</span><br><span class="line">        IPage&lt;User&gt; userPage = userMapper.selectPage(page, <span class="literal">null</span>);</span><br><span class="line">        userPage.getRecords().forEach(System.out::println);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//自定义SQL分页查询</span></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">testCustomMapper</span><span class="params">()</span> &#123;</span><br><span class="line">        IPage&lt;User&gt; page = <span class="keyword">new</span> <span class="title class_">Page</span>&lt;&gt;(<span class="number">2</span>, <span class="number">3</span>);</span><br><span class="line">        IPage&lt;User&gt; userPage = userMapper.selectUserPage(page);</span><br><span class="line">        userPage.getRecords().forEach(System.out::println);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>在UserMapper中声明分页查询方法如下</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">IPage&lt;User&gt; <span class="title function_">selectUserPage</span><span class="params">(IPage&lt;User&gt; page)</span>;</span><br></pre></td></tr></table></figure>
-
-<p>创建<code>resources/mapper/UserMapper.xml</code>文件，内容如下</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">mapper</span></span></span><br><span class="line"><span class="meta">        <span class="keyword">PUBLIC</span> <span class="string">&quot;-//mybatis.org//DTD Mapper 3.0//EN&quot;</span></span></span><br><span class="line"><span class="meta">        <span class="string">&quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">mapper</span> <span class="attr">namespace</span>=<span class="string">&quot;com.atguigu.hellomp.mapper.UserMapper&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">&quot;selectUserPage&quot;</span> <span class="attr">resultType</span>=<span class="string">&quot;com.atguigu.hellomp.entity.User&quot;</span>&gt;</span></span><br><span class="line">        select *</span><br><span class="line">        from user</span><br><span class="line">    <span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">mapper</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>注意</strong>：</p>
-<p>Mybatis-Plus中<code>Mapper.xml</code>文件路径默认为：<code>classpath*:/mapper/**/*.xml</code>，可在<code>application.yml</code>中配置以下参数进行修改</p>
-   <figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">mybatis-plus:</span></span><br><span class="line">  <span class="attr">mapper-locations:</span> <span class="string">classpath*:/mapper/**/*.xml</span></span><br></pre></td></tr></table></figure></li>
-</ul>
-<h2 id="9-MyBatisX插件"><a href="#9-MyBatisX插件" class="headerlink" title="9 MyBatisX插件"></a>9 MyBatisX插件</h2><p>MyBatis Plus提供了一个IDEA插件——<code>MybatisX</code>,使用它可根据数据库快速生成<code>Entity</code>、<code>Mapper</code>、<code>Mapper.xml</code>、<code>Service</code>、<code>ServiceImpl</code>等代码，使用户更专注于业务。</p>
-<p>下面演示具体用法</p>
-<ol>
-<li><p><strong>安装插件</strong></p>
-<p>在IDEA插件市场搜索<code>MyBatisX</code>，进行在线安装</p>
-<p><img src="/2025/01/22/Mybatis-Plus%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/image-20250122173825745.png" alt="image-20250122173825745"></p>
-</li>
-<li><p><strong>配置数据库连接</strong></p>
-<p>在IDEA中配置数据库连接</p>
-<p><img src="/2025/01/22/Mybatis-Plus%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/image-20250122173835578.png" alt="image-20250122173835578"></p>
-</li>
-<li><p><strong>生成代码</strong></p>
-<p>首先将之前编写的<code>User</code>、<code>UserMapper</code>、<code>UserServcie</code>、<code>UserServiceImpl</code>全部删除，然后按照下图指示使用插件生成代码</p>
-<p><img src="/2025/01/22/Mybatis-Plus%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/image-20250122173844446.png" alt="image-20250122173844446"></p>
-<p>配置实体类相关信息</p>
-<p><img src="/2025/01/22/Mybatis-Plus%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/image-20250122173850326.png" alt="image-20250122173850326"></p>
-<p>配置代码模版信息</p>
-<p><img src="/2025/01/22/Mybatis-Plus%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/image-20250122173901559.png" alt="image-20250122173901559"></p>
-<p>点击Finish然后查看生成的代码。</p>
-</li>
-</ol>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>快速入门</tag>
-        <tag>Mybatis-Plus</tag>
-        <tag>Mybatis</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Spring Boot全局异常处理</title>
-    <url>/2025/01/22/Spring-Boot%E5%85%A8%E5%B1%80%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/</url>
-    <content><![CDATA[<h2 id="为什么使用全局异常处理"><a href="#为什么使用全局异常处理" class="headerlink" title="为什么使用全局异常处理"></a>为什么使用全局异常处理</h2><p>在开发时，需要对可能有异常的Controller层方法增加<code>try-catch</code>逻辑，而使用Spring MVC提供的<strong>全局异常处理</strong>功能，可以将所有处理异常的逻辑集中起来，进而统一处理所有异常，可以使代码更容易维护。<br>具体用法如下，详细信息可参考<a href="https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-exceptionhandler.html">官方文档</a>：</p>
-<span id="more"></span>
-
-<h2 id="例子-尚庭公寓全局异常处理"><a href="#例子-尚庭公寓全局异常处理" class="headerlink" title="例子-尚庭公寓全局异常处理"></a>例子-尚庭公寓全局异常处理</h2><p>在<strong>common模块</strong>中创建<code>com.atguigu.lease.common.exception.GlobalExceptionHandler</code>类，内容如下</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@ControllerAdvice</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GlobalExceptionHandler</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ExceptionHandler(Exception.class)</span></span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="keyword">public</span> Result <span class="title function_">error</span><span class="params">(Exception e)</span>&#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">        <span class="keyword">return</span> Result.fail();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">`</span><br><span class="line">上述代码中的关键注解的作用如下</span><br><span class="line">`<span class="meta">@ControllerAdvice</span>`用于声明处理全局Controller方法异常的类</span><br><span class="line">`<span class="meta">@ExceptionHandler</span>`用于声明处理异常的方法，`value`属性用于声明该方法处理的异常类型</span><br><span class="line">`<span class="meta">@ResponseBody</span>`表示将方法的返回值作为HTTP的响应体</span><br><span class="line">**注意：**</span><br><span class="line">全局异常处理功能由SpringMVC提供，因此需要在**common模块**的`pom.xml`中引入如下依赖</span><br><span class="line">```xml</span><br><span class="line">&lt;!--spring-web--&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>Spring</tag>
-        <tag>异常处理</tag>
       </tags>
   </entry>
   <entry>
@@ -2221,6 +2204,128 @@
       </tags>
   </entry>
   <entry>
+    <title>Spring Boot全局异常处理</title>
+    <url>/2025/01/22/Spring-Boot%E5%85%A8%E5%B1%80%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/</url>
+    <content><![CDATA[<h2 id="为什么使用全局异常处理"><a href="#为什么使用全局异常处理" class="headerlink" title="为什么使用全局异常处理"></a>为什么使用全局异常处理</h2><p>在开发时，需要对可能有异常的Controller层方法增加<code>try-catch</code>逻辑，而使用Spring MVC提供的<strong>全局异常处理</strong>功能，可以将所有处理异常的逻辑集中起来，进而统一处理所有异常，可以使代码更容易维护。<br>具体用法如下，详细信息可参考<a href="https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-exceptionhandler.html">官方文档</a>：</p>
+<span id="more"></span>
+
+<h2 id="例子-尚庭公寓全局异常处理"><a href="#例子-尚庭公寓全局异常处理" class="headerlink" title="例子-尚庭公寓全局异常处理"></a>例子-尚庭公寓全局异常处理</h2><p>在<strong>common模块</strong>中创建<code>com.atguigu.lease.common.exception.GlobalExceptionHandler</code>类，内容如下</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@ControllerAdvice</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GlobalExceptionHandler</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ExceptionHandler(Exception.class)</span></span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="keyword">public</span> Result <span class="title function_">error</span><span class="params">(Exception e)</span>&#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">        <span class="keyword">return</span> Result.fail();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">`</span><br><span class="line">上述代码中的关键注解的作用如下</span><br><span class="line">`<span class="meta">@ControllerAdvice</span>`用于声明处理全局Controller方法异常的类</span><br><span class="line">`<span class="meta">@ExceptionHandler</span>`用于声明处理异常的方法，`value`属性用于声明该方法处理的异常类型</span><br><span class="line">`<span class="meta">@ResponseBody</span>`表示将方法的返回值作为HTTP的响应体</span><br><span class="line">**注意：**</span><br><span class="line">全局异常处理功能由SpringMVC提供，因此需要在**common模块**的`pom.xml`中引入如下依赖</span><br><span class="line">```xml</span><br><span class="line">&lt;!--spring-web--&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Spring</tag>
+        <tag>异常处理</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>尚硅谷尚庭公寓-01</title>
+    <url>/2025/01/22/%E5%B0%9A%E7%A1%85%E8%B0%B7%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93-01/</url>
+    <content><![CDATA[<h1 id="枚举类型转换（WebDataBinder、TypeHandler、HTTPMessageConverter）"><a href="#枚举类型转换（WebDataBinder、TypeHandler、HTTPMessageConverter）" class="headerlink" title="枚举类型转换（WebDataBinder、TypeHandler、HTTPMessageConverter）"></a>枚举类型转换（WebDataBinder、TypeHandler、HTTPMessageConverter）</h1><h2 id="为什么要用枚举类"><a href="#为什么要用枚举类" class="headerlink" title="为什么要用枚举类"></a>为什么要用枚举类</h2><ul>
+<li><p>实体类中的公共字段（例如<code>id</code>、<code>create_time</code>、<code>update_time</code>、<code>is_deleted</code>）抽取到一个基类，进行统一管理，然后让各实体类继承该基类。</p>
+</li>
+<li><p>实体类中的状态字段（例如<code>status</code>）或类型字段（例如<code>type</code>），全部使用枚举类型。</p>
+<blockquote>
+<p>状态（类型）字段，在数据库中通常用一个数字表示一个状态（类型）。例如：订单状态（1:待支付，2:待发货，3:待收货，4:已收货，5:已完结）。若实体类中对应的字段也用数字类型，例如<code>int</code>，那么程序中就会有大量的如下代码：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">order.setStatus(<span class="number">1</span>);</span><br><span class="line"><span class="keyword">if</span> (order.getStatus() == <span class="number">1</span>) &#123;</span><br><span class="line"> order.setStatus(<span class="number">2</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这些代码后期维护起来会十分麻烦，所以本项目中所有的此类字段均使用枚举类型。例如上述订单状态可定义为以下枚举：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> <span class="title class_">Status</span> &#123;</span><br><span class="line"></span><br><span class="line"> CANCEL(<span class="number">0</span>, <span class="string">&quot;已取消&quot;</span>),</span><br><span class="line"> WAIT_PAY(<span class="number">1</span>, <span class="string">&quot;待支付&quot;</span>),</span><br><span class="line"> WAIT_TRANSFER(<span class="number">2</span>, <span class="string">&quot;待发货&quot;</span>),</span><br><span class="line"> WAIT_RECEIPT(<span class="number">3</span>, <span class="string">&quot;待收货&quot;</span>),</span><br><span class="line"> RECEIVE(<span class="number">4</span>, <span class="string">&quot;已收货&quot;</span>),</span><br><span class="line"> COMPLETE(<span class="number">5</span>, <span class="string">&quot;已完结&quot;</span>);</span><br><span class="line"> </span><br><span class="line"> <span class="keyword">private</span> <span class="keyword">final</span> Integer value;</span><br><span class="line"> <span class="keyword">private</span> <span class="keyword">final</span> String desc;</span><br><span class="line"> </span><br><span class="line"> <span class="keyword">public</span> Integer <span class="title function_">value</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> value;</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">public</span> String <span class="title function_">desc</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> desc;</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>订单实体类中的状态字段定义为<code>Status</code>类型：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Order</span>&#123;</span><br><span class="line">  <span class="keyword">private</span> Integer id;</span><br><span class="line">  <span class="keyword">private</span> Integer userId;</span><br><span class="line">  <span class="keyword">private</span> Status status;</span><br><span class="line"> ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样上述代码便可调整为如下效果，后期维护起来会容易许多。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">order.setStatus(Status.WAIT_PAY);</span><br></pre></td></tr></table></figure></blockquote>
+</li>
+</ul>
+<span id="more"></span>
+
+<h2 id="转换场景"><a href="#转换场景" class="headerlink" title="转换场景"></a>转换场景</h2><p>在[根据类型]查询标签列表API中，前端携带的参数为枚举类的<strong>code</strong>变量值，在<strong>controller层</strong>需要将<strong>code</strong>转换为完整的枚举类，需要使用<strong>WebDataBinder</strong>进行转换，在于数据库的交互中，需要将枚举类的<strong>type</strong>值拿出来与数据库中的字段匹配，需要使用<strong>Mybatis-Plus</strong>的<strong>TypeHandler</strong>进行转换，在返回数据至前端的过程中，又需要使用<strong>HTTPMessageConverter</strong>将<strong>Controller</strong>方法的返回值（Java对象）转换为HTTP响应体中的JSON字符串。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Operation(summary = &quot;（根据类型）查询标签列表&quot;)</span></span><br><span class="line"><span class="meta">@GetMapping(&quot;list&quot;)</span></span><br><span class="line"><span class="keyword">public</span> Result&lt;List&lt;LabelInfo&gt;&gt; <span class="title function_">labelList</span><span class="params">(<span class="meta">@RequestParam(required = false)</span> ItemType type)</span> &#123;</span><br><span class="line"></span><br><span class="line">    LambdaQueryWrapper&lt;LabelInfo&gt; queryWrapper = <span class="keyword">new</span> <span class="title class_">LambdaQueryWrapper</span>&lt;&gt;();</span><br><span class="line">    queryWrapper.eq(type != <span class="literal">null</span>, LabelInfo::getType, type);</span><br><span class="line">    List&lt;LabelInfo&gt; list = service.list(queryWrapper);</span><br><span class="line">    <span class="keyword">return</span> Result.ok(list);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上述接口的功能是根据<strong>type</strong>（公寓&#x2F;房间），查询标签列表。由于这个<strong>type</strong>字段在数据库、实体类、前后端交互的过程中有多种不同的形式，因此在请求和响应的过程中，<strong>type</strong>字段会涉及到多次类型转换。</p>
+<p>首先明确一下<strong>type</strong>字段的各种形式：</p>
+<ul>
+<li><p><strong>数据库中</strong></p>
+<p>数据库中的<strong>type</strong>字段为<code>tinyint</code>类型</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">+-------------+--------------+</span><br><span class="line">| Field       | Type         |</span><br><span class="line">+-------------+--------------+</span><br><span class="line">| id          | bigint       |</span><br><span class="line">| type        | tinyint      |</span><br><span class="line">| name        | varchar(255) |</span><br><span class="line">| create_time | timestamp    |</span><br><span class="line">| update_time | timestamp    |</span><br><span class="line">| is_deleted  | tinyint      |</span><br><span class="line">+-------------+--------------+</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>实体类</strong></p>
+<p>实体类中的<strong>type</strong>字段为<code>ItemType</code>枚举类型</p>
+<p><code>LabelInfo</code>实体类如下</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Schema(description = &quot;标签信息表&quot;)</span></span><br><span class="line"><span class="meta">@TableName(value = &quot;label_info&quot;)</span></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">LabelInfo</span> <span class="keyword">extends</span> <span class="title class_">BaseEntity</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">long</span> <span class="variable">serialVersionUID</span> <span class="operator">=</span> <span class="number">1L</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Schema(description = &quot;类型&quot;)</span></span><br><span class="line">    <span class="meta">@TableField(value = &quot;type&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> ItemType type;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Schema(description = &quot;标签名称&quot;)</span></span><br><span class="line">    <span class="meta">@TableField(value = &quot;name&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>ItemType</code>枚举类如下</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> <span class="title class_">ItemType</span> &#123;</span><br><span class="line"></span><br><span class="line">    APARTMENT(<span class="number">1</span>, <span class="string">&quot;公寓&quot;</span>),</span><br><span class="line">    ROOM(<span class="number">2</span>, <span class="string">&quot;房间&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Integer code;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    ItemType(Integer code, String name) &#123;</span><br><span class="line">        <span class="built_in">this</span>.code = code;</span><br><span class="line">        <span class="built_in">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>前后端交互中</strong></p>
+<p>前后端交互所传递的数据中<strong>type</strong>字段为<strong>数字</strong>（1&#x2F;2)。</p>
+<img src="image-20250122160519880.png" style="zoom: 70%; border: 1px solid rgb(0, 0, 0);" /></li>
+</ul>
+<p>具体转换过程如下图所示：</p>
+<ul>
+<li><p><strong>请求流程</strong></p>
+<img src="枚举类型转换过程-请求参数.drawio.png" style="zoom: 200%;" />
+
+<p><strong>说明</strong></p>
+<ul>
+<li>SpringMVC中的<code>WebDataBinder</code>组件负责将HTTP的请求参数绑定到Controller方法的参数，并实现参数类型的转换。</li>
+<li>Mybatis中的<code>TypeHandler</code>用于处理Java中的实体对象与数据库之间的数据类型转换。</li>
+</ul>
+</li>
+<li><p><strong>响应流程</strong></p>
+<img src="枚举类型转换过程-响应体.drawio.png" style="zoom:200%;" />
+
+<p><strong>说明</strong></p>
+<ul>
+<li>SpringMVC中的<code>HTTPMessageConverter</code>组件负责将Controller方法的返回值（Java对象）转换为HTTP响应体中的JSON字符串，或者将请求体中的JSON字符串转换为Controller方法中的参数（Java对象），例如下一个接口<strong>保存或更新标签信息</strong></li>
+</ul>
+<img src="枚举类型转换过程-请求体.drawio.png" style="zoom:200%;" /></li>
+</ul>
+<h2 id="WebDataBinder枚举类型和属性的转换"><a href="#WebDataBinder枚举类型和属性的转换" class="headerlink" title="WebDataBinder枚举类型和属性的转换"></a>WebDataBinder枚举类型和属性的转换</h2><p><code>WebDataBinder</code>依赖于<a href="https://docs.spring.io/spring-framework/reference/core/validation/convert.html"><code>Converter</code></a>实现类型转换，若Controller方法声明的<code>@RequestParam</code>参数的类型不是<code>String</code>，<code>WebDataBinder</code>就会自动进行数据类型转换。SpringMVC提供了常用类型的转换器，例如<code>String</code>到<code>Integer</code>、<code>String</code>到<code>Date</code>，<code>String</code>到<code>Boolean</code>等等，其中也包括<code>String</code>到枚举类型，但是<code>String</code>到枚举类型的默认转换规则是根据实例名称（”APARTMENT”）转换为枚举对象实例（ItemType.APARTMENT）。若想实现<code>code</code>属性到枚举对象实例的转换，需要自定义<code>Converter</code>，代码如下，具体内容可参考<a href="https://docs.spring.io/spring-framework/reference/core/validation/convert.html#core-convert-Converter-API">官方文档</a>。</p>
+<ul>
+<li><p>在<strong>web-admin模块</strong>自定义<code>com.atguigu.lease.web.admin.custom.converter.StringToItemTypeConverter</code></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">StringToItemTypeConverter</span> <span class="keyword">implements</span> <span class="title class_">Converter</span>&lt;String, ItemType&gt; &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> ItemType <span class="title function_">convert</span><span class="params">(String code)</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (ItemType value : ItemType.values()) &#123;</span><br><span class="line">            <span class="keyword">if</span> (value.getCode().equals(Integer.valueOf(code))) &#123;</span><br><span class="line">                <span class="keyword">return</span> value;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>(<span class="string">&quot;code非法&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>注册上述的<code>StringToItemTypeConverter</code>，在<strong>web-admin模块</strong>创建<code>com.atguigu.lease.web.admin.custom.config.WebMvcConfiguration</code>，内容如下：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">WebMvcConfiguration</span> <span class="keyword">implements</span> <span class="title class_">WebMvcConfigurer</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> StringToItemTypeConverter stringToItemTypeConverter;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">addFormatters</span><span class="params">(FormatterRegistry registry)</span> &#123;</span><br><span class="line">        registry.addConverter(<span class="built_in">this</span>.stringToItemTypeConverter);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>但是我们有很多的枚举类型都需要考虑类型转换这个问题，按照上述思路，我们需要为每个枚举类型都定义一个Converter，并且每个Converter的转换逻辑都完全相同，针对这种情况，我们使用<a href="https://docs.spring.io/spring-framework/reference/core/validation/convert.html#core-convert-ConverterFactory-SPI"><code>ConverterFactory</code></a>接口更为合适，这个接口可以将同一个转换逻辑应用到一个接口的所有实现类，因此我们可以定义一个<code>BaseEnum</code>接口，然后另所有的枚举类都实现该接口，然后就可以自定义<code>ConverterFactory</code>，集中编写各枚举类的转换逻辑了。具体实现如下：</p>
+<ul>
+<li><p>在<strong>model模块</strong>定义<code>com.atguigu.lease.model.enums.BaseEnum</code>接口</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">BaseEnum</span> &#123;</span><br><span class="line">    Integer <span class="title function_">getCode</span><span class="params">()</span>;</span><br><span class="line">    String <span class="title function_">getName</span><span class="params">()</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>令所有<code>com.atguigu.lease.model.enums</code>包下的枚举类都实现<code>BaseEnun</code>接口</p>
+</li>
+<li><p>在<strong>web-admin模块</strong>自定义<code>com.atguigu.lease.web.admin.custom.converter.StringToBaseEnumConverterFactory</code></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">StringToBaseEnumConverterFactory</span> <span class="keyword">implements</span> <span class="title class_">ConverterFactory</span>&lt;String, BaseEnum&gt; &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> &lt;T <span class="keyword">extends</span> <span class="title class_">BaseEnum</span>&gt; Converter&lt;String, T&gt; <span class="title function_">getConverter</span><span class="params">(Class&lt;T&gt; targetType)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Converter</span>&lt;String, T&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="keyword">public</span> T <span class="title function_">convert</span><span class="params">(String source)</span> &#123;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">for</span> (T enumConstant : targetType.getEnumConstants()) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (enumConstant.getCode().equals(Integer.valueOf(source))) &#123;</span><br><span class="line">                        <span class="keyword">return</span> enumConstant;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>(<span class="string">&quot;非法的枚举值:&quot;</span> + source);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>注册上述的<code>ConverterFactory</code>，在<strong>web-admin模块</strong>创建<code>com.atguigu.lease.web.admin.custom.config.WebMvcConfiguration</code>，内容如下：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">WebMvcConfiguration</span> <span class="keyword">implements</span> <span class="title class_">WebMvcConfigurer</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> StringToBaseEnumConverterFactory stringToBaseEnumConverterFactory;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">addFormatters</span><span class="params">(FormatterRegistry registry)</span> &#123;</span><br><span class="line">        registry.addConverterFactory(<span class="built_in">this</span>.stringToBaseEnumConverterFactory);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意：</strong></p>
+<p>最终采用的是<code>ConverterFactory</code>方案，因此<code>StringToItemTypeConverter</code>相关代码可以直接删除。</p>
+</li>
+</ul>
+<h2 id="TypeHandler枚举类型和属性的转换"><a href="#TypeHandler枚举类型和属性的转换" class="headerlink" title="TypeHandler枚举类型和属性的转换"></a>TypeHandler枚举类型和属性的转换</h2><p>Mybatis预置的<code>TypeHandler</code>可以处理常用的数据类型转换，例如<code>String</code>、<code>Integer</code>、<code>Date</code>等等，其中也包含枚举类型，但是枚举类型的默认转换规则是枚举对象实例（ItemType.APARTMENT）和实例名称（”APARTMENT”）相互映射。若想实现<code>code</code>属性到枚举对象实例的相互映射，需要自定义<code>TypeHandler</code>。</p>
+<p>不过MybatisPlus提供了一个<a href="https://baomidou.com/pages/8390a4/">通用的处理枚举类型的TypeHandler</a>。其使用十分简单，只需在<code>ItemType</code>枚举类的<code>code</code>属性上增加一个注解<code>@EnumValue</code>，Mybatis-Plus便可完成从<code>ItemType</code>对象到<code>code</code>属性之间的相互映射，具体配置如下。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> <span class="title class_">ItemType</span> &#123;</span><br><span class="line"></span><br><span class="line">    APARTMENT(<span class="number">1</span>, <span class="string">&quot;公寓&quot;</span>),</span><br><span class="line">    ROOM(<span class="number">2</span>, <span class="string">&quot;房间&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="meta">@EnumValue</span></span><br><span class="line">    <span class="keyword">private</span> Integer code;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    ItemType(Integer code, String name) &#123;</span><br><span class="line">        <span class="built_in">this</span>.code = code;</span><br><span class="line">        <span class="built_in">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="HTTPMessageConverter实现枚举类型和属性的转换"><a href="#HTTPMessageConverter实现枚举类型和属性的转换" class="headerlink" title="HTTPMessageConverter实现枚举类型和属性的转换"></a>HTTPMessageConverter实现枚举类型和属性的转换</h2><p><code>HttpMessageConverter</code>依赖于Json序列化框架（默认使用Jackson）。其对枚举类型的默认处理规则也是枚举对象实例（ItemType.APARTMENT）和实例名称（”APARTMENT”）相互映射。不过其提供了一个注解<code>@JsonValue</code>，同样只需在<code>ItemType</code>枚举类的<code>code</code>属性上增加一个注解<code>@JsonValue</code>，Jackson便可完成从<code>ItemType</code>对象到<code>code</code>属性之间的互相映射。具体配置如下，详细信息可参考Jackson<a href="https://fasterxml.github.io/jackson-annotations/javadoc/2.8/com/fasterxml/jackson/annotation/JsonValue.html">官方文档</a>。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Getter</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> <span class="title class_">ItemType</span> &#123;</span><br><span class="line"></span><br><span class="line">    APARTMENT(<span class="number">1</span>, <span class="string">&quot;公寓&quot;</span>),</span><br><span class="line">    ROOM(<span class="number">2</span>, <span class="string">&quot;房间&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="meta">@EnumValue</span></span><br><span class="line">   <span class="meta">@JsonValue</span></span><br><span class="line">    <span class="keyword">private</span> Integer code;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    ItemType(Integer code, String name) &#123;</span><br><span class="line">        <span class="built_in">this</span>.code = code;</span><br><span class="line">        <span class="built_in">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>尚庭公寓</tag>
+        <tag>项目实战</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Spring web 注解</title>
     <url>/2025/01/20/Spring-web-%E6%B3%A8%E8%A7%A3/</url>
     <content><![CDATA[<h3 id="一、Spring-Web-MVC-与-Spring-Bean-注解"><a href="#一、Spring-Web-MVC-与-Spring-Bean-注解" class="headerlink" title="一、Spring Web MVC 与 Spring Bean 注解"></a><strong><font style="color:rgb(0, 0, 0);">一、Spring Web MVC 与 Spring Bean 注解</font></strong></h3><h4 id="Spring-Web-MVC-注解"><a href="#Spring-Web-MVC-注解" class="headerlink" title="Spring Web MVC 注解"></a><strong><font style="color:rgb(0, 0, 0);">Spring Web MVC 注解</font></strong></h4><p><strong><font style="color:rgb(51, 51, 51);">@RequestMapping</font></strong></p>
@@ -2414,111 +2519,6 @@
       <tags>
         <tag>Spring</tag>
         <tag>注解</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>尚硅谷尚庭公寓-01</title>
-    <url>/2025/01/22/%E5%B0%9A%E7%A1%85%E8%B0%B7%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93-01/</url>
-    <content><![CDATA[<h1 id="枚举类型转换（WebDataBinder、TypeHandler、HTTPMessageConverter）"><a href="#枚举类型转换（WebDataBinder、TypeHandler、HTTPMessageConverter）" class="headerlink" title="枚举类型转换（WebDataBinder、TypeHandler、HTTPMessageConverter）"></a>枚举类型转换（WebDataBinder、TypeHandler、HTTPMessageConverter）</h1><h2 id="为什么要用枚举类"><a href="#为什么要用枚举类" class="headerlink" title="为什么要用枚举类"></a>为什么要用枚举类</h2><ul>
-<li><p>实体类中的公共字段（例如<code>id</code>、<code>create_time</code>、<code>update_time</code>、<code>is_deleted</code>）抽取到一个基类，进行统一管理，然后让各实体类继承该基类。</p>
-</li>
-<li><p>实体类中的状态字段（例如<code>status</code>）或类型字段（例如<code>type</code>），全部使用枚举类型。</p>
-<blockquote>
-<p>状态（类型）字段，在数据库中通常用一个数字表示一个状态（类型）。例如：订单状态（1:待支付，2:待发货，3:待收货，4:已收货，5:已完结）。若实体类中对应的字段也用数字类型，例如<code>int</code>，那么程序中就会有大量的如下代码：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">order.setStatus(<span class="number">1</span>);</span><br><span class="line"><span class="keyword">if</span> (order.getStatus() == <span class="number">1</span>) &#123;</span><br><span class="line"> order.setStatus(<span class="number">2</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这些代码后期维护起来会十分麻烦，所以本项目中所有的此类字段均使用枚举类型。例如上述订单状态可定义为以下枚举：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> <span class="title class_">Status</span> &#123;</span><br><span class="line"></span><br><span class="line"> CANCEL(<span class="number">0</span>, <span class="string">&quot;已取消&quot;</span>),</span><br><span class="line"> WAIT_PAY(<span class="number">1</span>, <span class="string">&quot;待支付&quot;</span>),</span><br><span class="line"> WAIT_TRANSFER(<span class="number">2</span>, <span class="string">&quot;待发货&quot;</span>),</span><br><span class="line"> WAIT_RECEIPT(<span class="number">3</span>, <span class="string">&quot;待收货&quot;</span>),</span><br><span class="line"> RECEIVE(<span class="number">4</span>, <span class="string">&quot;已收货&quot;</span>),</span><br><span class="line"> COMPLETE(<span class="number">5</span>, <span class="string">&quot;已完结&quot;</span>);</span><br><span class="line"> </span><br><span class="line"> <span class="keyword">private</span> <span class="keyword">final</span> Integer value;</span><br><span class="line"> <span class="keyword">private</span> <span class="keyword">final</span> String desc;</span><br><span class="line"> </span><br><span class="line"> <span class="keyword">public</span> Integer <span class="title function_">value</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> value;</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">public</span> String <span class="title function_">desc</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> desc;</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>订单实体类中的状态字段定义为<code>Status</code>类型：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Order</span>&#123;</span><br><span class="line">  <span class="keyword">private</span> Integer id;</span><br><span class="line">  <span class="keyword">private</span> Integer userId;</span><br><span class="line">  <span class="keyword">private</span> Status status;</span><br><span class="line"> ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这样上述代码便可调整为如下效果，后期维护起来会容易许多。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">order.setStatus(Status.WAIT_PAY);</span><br></pre></td></tr></table></figure></blockquote>
-</li>
-</ul>
-<span id="more"></span>
-
-<h2 id="转换场景"><a href="#转换场景" class="headerlink" title="转换场景"></a>转换场景</h2><p>在[根据类型]查询标签列表API中，前端携带的参数为枚举类的<strong>code</strong>变量值，在<strong>controller层</strong>需要将<strong>code</strong>转换为完整的枚举类，需要使用<strong>WebDataBinder</strong>进行转换，在于数据库的交互中，需要将枚举类的<strong>type</strong>值拿出来与数据库中的字段匹配，需要使用<strong>Mybatis-Plus</strong>的<strong>TypeHandler</strong>进行转换，在返回数据至前端的过程中，又需要使用<strong>HTTPMessageConverter</strong>将<strong>Controller</strong>方法的返回值（Java对象）转换为HTTP响应体中的JSON字符串。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Operation(summary = &quot;（根据类型）查询标签列表&quot;)</span></span><br><span class="line"><span class="meta">@GetMapping(&quot;list&quot;)</span></span><br><span class="line"><span class="keyword">public</span> Result&lt;List&lt;LabelInfo&gt;&gt; <span class="title function_">labelList</span><span class="params">(<span class="meta">@RequestParam(required = false)</span> ItemType type)</span> &#123;</span><br><span class="line"></span><br><span class="line">    LambdaQueryWrapper&lt;LabelInfo&gt; queryWrapper = <span class="keyword">new</span> <span class="title class_">LambdaQueryWrapper</span>&lt;&gt;();</span><br><span class="line">    queryWrapper.eq(type != <span class="literal">null</span>, LabelInfo::getType, type);</span><br><span class="line">    List&lt;LabelInfo&gt; list = service.list(queryWrapper);</span><br><span class="line">    <span class="keyword">return</span> Result.ok(list);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>上述接口的功能是根据<strong>type</strong>（公寓&#x2F;房间），查询标签列表。由于这个<strong>type</strong>字段在数据库、实体类、前后端交互的过程中有多种不同的形式，因此在请求和响应的过程中，<strong>type</strong>字段会涉及到多次类型转换。</p>
-<p>首先明确一下<strong>type</strong>字段的各种形式：</p>
-<ul>
-<li><p><strong>数据库中</strong></p>
-<p>数据库中的<strong>type</strong>字段为<code>tinyint</code>类型</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">+-------------+--------------+</span><br><span class="line">| Field       | Type         |</span><br><span class="line">+-------------+--------------+</span><br><span class="line">| id          | bigint       |</span><br><span class="line">| type        | tinyint      |</span><br><span class="line">| name        | varchar(255) |</span><br><span class="line">| create_time | timestamp    |</span><br><span class="line">| update_time | timestamp    |</span><br><span class="line">| is_deleted  | tinyint      |</span><br><span class="line">+-------------+--------------+</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>实体类</strong></p>
-<p>实体类中的<strong>type</strong>字段为<code>ItemType</code>枚举类型</p>
-<p><code>LabelInfo</code>实体类如下</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Schema(description = &quot;标签信息表&quot;)</span></span><br><span class="line"><span class="meta">@TableName(value = &quot;label_info&quot;)</span></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">LabelInfo</span> <span class="keyword">extends</span> <span class="title class_">BaseEntity</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">long</span> <span class="variable">serialVersionUID</span> <span class="operator">=</span> <span class="number">1L</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Schema(description = &quot;类型&quot;)</span></span><br><span class="line">    <span class="meta">@TableField(value = &quot;type&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> ItemType type;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Schema(description = &quot;标签名称&quot;)</span></span><br><span class="line">    <span class="meta">@TableField(value = &quot;name&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><code>ItemType</code>枚举类如下</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> <span class="title class_">ItemType</span> &#123;</span><br><span class="line"></span><br><span class="line">    APARTMENT(<span class="number">1</span>, <span class="string">&quot;公寓&quot;</span>),</span><br><span class="line">    ROOM(<span class="number">2</span>, <span class="string">&quot;房间&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Integer code;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    ItemType(Integer code, String name) &#123;</span><br><span class="line">        <span class="built_in">this</span>.code = code;</span><br><span class="line">        <span class="built_in">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>前后端交互中</strong></p>
-<p>前后端交互所传递的数据中<strong>type</strong>字段为<strong>数字</strong>（1&#x2F;2)。</p>
-<img src="image-20250122160519880.png" style="zoom: 70%; border: 1px solid rgb(0, 0, 0);" /></li>
-</ul>
-<p>具体转换过程如下图所示：</p>
-<ul>
-<li><p><strong>请求流程</strong></p>
-<img src="枚举类型转换过程-请求参数.drawio.png" style="zoom: 200%;" />
-
-<p><strong>说明</strong></p>
-<ul>
-<li>SpringMVC中的<code>WebDataBinder</code>组件负责将HTTP的请求参数绑定到Controller方法的参数，并实现参数类型的转换。</li>
-<li>Mybatis中的<code>TypeHandler</code>用于处理Java中的实体对象与数据库之间的数据类型转换。</li>
-</ul>
-</li>
-<li><p><strong>响应流程</strong></p>
-<img src="枚举类型转换过程-响应体.drawio.png" style="zoom:200%;" />
-
-<p><strong>说明</strong></p>
-<ul>
-<li>SpringMVC中的<code>HTTPMessageConverter</code>组件负责将Controller方法的返回值（Java对象）转换为HTTP响应体中的JSON字符串，或者将请求体中的JSON字符串转换为Controller方法中的参数（Java对象），例如下一个接口<strong>保存或更新标签信息</strong></li>
-</ul>
-<img src="枚举类型转换过程-请求体.drawio.png" style="zoom:200%;" /></li>
-</ul>
-<h2 id="WebDataBinder枚举类型和属性的转换"><a href="#WebDataBinder枚举类型和属性的转换" class="headerlink" title="WebDataBinder枚举类型和属性的转换"></a>WebDataBinder枚举类型和属性的转换</h2><p><code>WebDataBinder</code>依赖于<a href="https://docs.spring.io/spring-framework/reference/core/validation/convert.html"><code>Converter</code></a>实现类型转换，若Controller方法声明的<code>@RequestParam</code>参数的类型不是<code>String</code>，<code>WebDataBinder</code>就会自动进行数据类型转换。SpringMVC提供了常用类型的转换器，例如<code>String</code>到<code>Integer</code>、<code>String</code>到<code>Date</code>，<code>String</code>到<code>Boolean</code>等等，其中也包括<code>String</code>到枚举类型，但是<code>String</code>到枚举类型的默认转换规则是根据实例名称（”APARTMENT”）转换为枚举对象实例（ItemType.APARTMENT）。若想实现<code>code</code>属性到枚举对象实例的转换，需要自定义<code>Converter</code>，代码如下，具体内容可参考<a href="https://docs.spring.io/spring-framework/reference/core/validation/convert.html#core-convert-Converter-API">官方文档</a>。</p>
-<ul>
-<li><p>在<strong>web-admin模块</strong>自定义<code>com.atguigu.lease.web.admin.custom.converter.StringToItemTypeConverter</code></p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">StringToItemTypeConverter</span> <span class="keyword">implements</span> <span class="title class_">Converter</span>&lt;String, ItemType&gt; &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> ItemType <span class="title function_">convert</span><span class="params">(String code)</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (ItemType value : ItemType.values()) &#123;</span><br><span class="line">            <span class="keyword">if</span> (value.getCode().equals(Integer.valueOf(code))) &#123;</span><br><span class="line">                <span class="keyword">return</span> value;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>(<span class="string">&quot;code非法&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>注册上述的<code>StringToItemTypeConverter</code>，在<strong>web-admin模块</strong>创建<code>com.atguigu.lease.web.admin.custom.config.WebMvcConfiguration</code>，内容如下：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">WebMvcConfiguration</span> <span class="keyword">implements</span> <span class="title class_">WebMvcConfigurer</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> StringToItemTypeConverter stringToItemTypeConverter;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">addFormatters</span><span class="params">(FormatterRegistry registry)</span> &#123;</span><br><span class="line">        registry.addConverter(<span class="built_in">this</span>.stringToItemTypeConverter);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
-<p>但是我们有很多的枚举类型都需要考虑类型转换这个问题，按照上述思路，我们需要为每个枚举类型都定义一个Converter，并且每个Converter的转换逻辑都完全相同，针对这种情况，我们使用<a href="https://docs.spring.io/spring-framework/reference/core/validation/convert.html#core-convert-ConverterFactory-SPI"><code>ConverterFactory</code></a>接口更为合适，这个接口可以将同一个转换逻辑应用到一个接口的所有实现类，因此我们可以定义一个<code>BaseEnum</code>接口，然后另所有的枚举类都实现该接口，然后就可以自定义<code>ConverterFactory</code>，集中编写各枚举类的转换逻辑了。具体实现如下：</p>
-<ul>
-<li><p>在<strong>model模块</strong>定义<code>com.atguigu.lease.model.enums.BaseEnum</code>接口</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">BaseEnum</span> &#123;</span><br><span class="line">    Integer <span class="title function_">getCode</span><span class="params">()</span>;</span><br><span class="line">    String <span class="title function_">getName</span><span class="params">()</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>令所有<code>com.atguigu.lease.model.enums</code>包下的枚举类都实现<code>BaseEnun</code>接口</p>
-</li>
-<li><p>在<strong>web-admin模块</strong>自定义<code>com.atguigu.lease.web.admin.custom.converter.StringToBaseEnumConverterFactory</code></p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">StringToBaseEnumConverterFactory</span> <span class="keyword">implements</span> <span class="title class_">ConverterFactory</span>&lt;String, BaseEnum&gt; &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> &lt;T <span class="keyword">extends</span> <span class="title class_">BaseEnum</span>&gt; Converter&lt;String, T&gt; <span class="title function_">getConverter</span><span class="params">(Class&lt;T&gt; targetType)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Converter</span>&lt;String, T&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="keyword">public</span> T <span class="title function_">convert</span><span class="params">(String source)</span> &#123;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">for</span> (T enumConstant : targetType.getEnumConstants()) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (enumConstant.getCode().equals(Integer.valueOf(source))) &#123;</span><br><span class="line">                        <span class="keyword">return</span> enumConstant;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>(<span class="string">&quot;非法的枚举值:&quot;</span> + source);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>注册上述的<code>ConverterFactory</code>，在<strong>web-admin模块</strong>创建<code>com.atguigu.lease.web.admin.custom.config.WebMvcConfiguration</code>，内容如下：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">WebMvcConfiguration</span> <span class="keyword">implements</span> <span class="title class_">WebMvcConfigurer</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> StringToBaseEnumConverterFactory stringToBaseEnumConverterFactory;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">addFormatters</span><span class="params">(FormatterRegistry registry)</span> &#123;</span><br><span class="line">        registry.addConverterFactory(<span class="built_in">this</span>.stringToBaseEnumConverterFactory);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>注意：</strong></p>
-<p>最终采用的是<code>ConverterFactory</code>方案，因此<code>StringToItemTypeConverter</code>相关代码可以直接删除。</p>
-</li>
-</ul>
-<h2 id="TypeHandler枚举类型和属性的转换"><a href="#TypeHandler枚举类型和属性的转换" class="headerlink" title="TypeHandler枚举类型和属性的转换"></a>TypeHandler枚举类型和属性的转换</h2><p>Mybatis预置的<code>TypeHandler</code>可以处理常用的数据类型转换，例如<code>String</code>、<code>Integer</code>、<code>Date</code>等等，其中也包含枚举类型，但是枚举类型的默认转换规则是枚举对象实例（ItemType.APARTMENT）和实例名称（”APARTMENT”）相互映射。若想实现<code>code</code>属性到枚举对象实例的相互映射，需要自定义<code>TypeHandler</code>。</p>
-<p>不过MybatisPlus提供了一个<a href="https://baomidou.com/pages/8390a4/">通用的处理枚举类型的TypeHandler</a>。其使用十分简单，只需在<code>ItemType</code>枚举类的<code>code</code>属性上增加一个注解<code>@EnumValue</code>，Mybatis-Plus便可完成从<code>ItemType</code>对象到<code>code</code>属性之间的相互映射，具体配置如下。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> <span class="title class_">ItemType</span> &#123;</span><br><span class="line"></span><br><span class="line">    APARTMENT(<span class="number">1</span>, <span class="string">&quot;公寓&quot;</span>),</span><br><span class="line">    ROOM(<span class="number">2</span>, <span class="string">&quot;房间&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="meta">@EnumValue</span></span><br><span class="line">    <span class="keyword">private</span> Integer code;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    ItemType(Integer code, String name) &#123;</span><br><span class="line">        <span class="built_in">this</span>.code = code;</span><br><span class="line">        <span class="built_in">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="HTTPMessageConverter实现枚举类型和属性的转换"><a href="#HTTPMessageConverter实现枚举类型和属性的转换" class="headerlink" title="HTTPMessageConverter实现枚举类型和属性的转换"></a>HTTPMessageConverter实现枚举类型和属性的转换</h2><p><code>HttpMessageConverter</code>依赖于Json序列化框架（默认使用Jackson）。其对枚举类型的默认处理规则也是枚举对象实例（ItemType.APARTMENT）和实例名称（”APARTMENT”）相互映射。不过其提供了一个注解<code>@JsonValue</code>，同样只需在<code>ItemType</code>枚举类的<code>code</code>属性上增加一个注解<code>@JsonValue</code>，Jackson便可完成从<code>ItemType</code>对象到<code>code</code>属性之间的互相映射。具体配置如下，详细信息可参考Jackson<a href="https://fasterxml.github.io/jackson-annotations/javadoc/2.8/com/fasterxml/jackson/annotation/JsonValue.html">官方文档</a>。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Getter</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> <span class="title class_">ItemType</span> &#123;</span><br><span class="line"></span><br><span class="line">    APARTMENT(<span class="number">1</span>, <span class="string">&quot;公寓&quot;</span>),</span><br><span class="line">    ROOM(<span class="number">2</span>, <span class="string">&quot;房间&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="meta">@EnumValue</span></span><br><span class="line">   <span class="meta">@JsonValue</span></span><br><span class="line">    <span class="keyword">private</span> Integer code;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    ItemType(Integer code, String name) &#123;</span><br><span class="line">        <span class="built_in">this</span>.code = code;</span><br><span class="line">        <span class="built_in">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>尚庭公寓</tag>
-        <tag>项目实战</tag>
       </tags>
   </entry>
   <entry>
