@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="1. Linux文件系统目录结构理解和熟悉Linux系统的文件系统目录结构，对于有效的管理和定位文件十分重要。Linux文件系统的目录结构如下图所示：  其中各目录的作用如下表所示    目录 说明 作用    &#x2F; 根目录 根目录是整个文件系统的起点，所有其他目录和文件都位于根目录之下。   &#x2F;home 家目录 每个用户的个人目录都位于这个目录下，通常以用户名命名。例如，用户j">
+  <meta name="description" content="1. Linux文件系统目录结构理解和熟悉Linux系统的文件系统目录结构，对于有效的管理和定位文件十分重要。Linux文件系统的目录结构如下图所示：  其中各目录的作用如下表所示     目录 说明 作用     &#x2F; 根目录 根目录是整个文件系统的起点，所有其他目录和文件都位于根目录之下。   &#x2F;home 家目录 每个用户的个人目录都位于这个目录下，通常以用户名命名。例如，用户john的主目录路">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Linux知识点1">
 <meta property="og:url" content="https://hqulzq.github.io/2025/01/22/Linux%E7%9F%A5%E8%AF%86%E7%82%B91/index.html">
 <meta property="og:site_name" content="Lzq&#39;s blog">
-<meta property="og:description" content="1. Linux文件系统目录结构理解和熟悉Linux系统的文件系统目录结构，对于有效的管理和定位文件十分重要。Linux文件系统的目录结构如下图所示：  其中各目录的作用如下表所示    目录 说明 作用    &#x2F; 根目录 根目录是整个文件系统的起点，所有其他目录和文件都位于根目录之下。   &#x2F;home 家目录 每个用户的个人目录都位于这个目录下，通常以用户名命名。例如，用户j">
+<meta property="og:description" content="1. Linux文件系统目录结构理解和熟悉Linux系统的文件系统目录结构，对于有效的管理和定位文件十分重要。Linux文件系统的目录结构如下图所示：  其中各目录的作用如下表所示     目录 说明 作用     &#x2F; 根目录 根目录是整个文件系统的起点，所有其他目录和文件都位于根目录之下。   &#x2F;home 家目录 每个用户的个人目录都位于这个目录下，通常以用户名命名。例如，用户john的主目录路">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://hqulzq.github.io/2025/01/22/Linux%E7%9F%A5%E8%AF%86%E7%82%B91/image-20250122170306448.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/01/22/Linux%E7%9F%A5%E8%AF%86%E7%82%B91/image-20250122170435993.png">
@@ -88,7 +88,9 @@
   </style>
 </noscript>
 
-</head>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --></head>
 
 <body itemscope itemtype="http://schema.org/WebPage">
   <div class="container use-motion">
@@ -132,17 +134,17 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">29</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">31</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">10</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">11</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">28</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">29</span></a>
 
   </li>
         <li class="menu-item menu-item-book">
@@ -259,8 +261,9 @@
 
       
         <h1 id="1-Linux文件系统目录结构"><a href="#1-Linux文件系统目录结构" class="headerlink" title="1. Linux文件系统目录结构"></a>1. Linux文件系统目录结构</h1><p>理解和熟悉Linux系统的文件系统目录结构，对于有效的管理和定位文件十分重要。Linux文件系统的目录结构如下图所示：</p>
-<p><img src="/2025/01/22/Linux%E7%9F%A5%E8%AF%86%E7%82%B91/image-20250122170306448.png" alt="image-20250122170306448"></p>
+<p><img src="image-20250122170306448.png" alt="image-20250122170306448"></p>
 <p>其中各目录的作用如下表所示</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -269,70 +272,70 @@
 <th>作用</th>
 </tr>
 </thead>
-<tbody><tr>
-<td>&#x2F;</td>
+<tbody>
+<tr>
+<td>/</td>
 <td>根目录</td>
 <td>根目录是整个文件系统的起点，所有其他目录和文件都位于根目录之下。</td>
 </tr>
 <tr>
-<td>&#x2F;home</td>
+<td>/home</td>
 <td>家目录</td>
 <td>每个用户的个人目录都位于这个目录下，通常以用户名命名。例如，用户<code>john</code>的主目录路径为<code>/home/john</code>。</td>
 </tr>
 <tr>
-<td>&#x2F;root</td>
+<td>/root</td>
 <td>root用户的家目录</td>
 <td>保存root用户的个人数据</td>
 </tr>
 <tr>
-<td>&#x2F;boot</td>
+<td>/boot</td>
 <td>引导文件所在目录</td>
 <td>保存系统启动时所需的各种文件</td>
 </tr>
 <tr>
-<td>&#x2F;usr</td>
+<td>/usr</td>
 <td>User System Resources的简写，说法不唯一</td>
 <td>存放用户可用的软件和程序文件，也包括了一些共享的数据和库文件。</td>
 </tr>
 <tr>
-<td>&#x2F;bin</td>
+<td>/bin</td>
 <td>binary的简写</td>
 <td>存放系统的基本命令（如ls、cp等）和其余可执行文件。</td>
 </tr>
 <tr>
-<td>&#x2F;sbin</td>
+<td>/sbin</td>
 <td>system binary的简写</td>
 <td>存放系统管理和维护方面的二进制文件。</td>
 </tr>
 <tr>
-<td>&#x2F;etc</td>
+<td>/etc</td>
 <td>etcetera的简写</td>
 <td>存放系统的配置文件，包括各种程序的配置文件和系统的全局配置文件。</td>
 </tr>
 <tr>
-<td>&#x2F;var</td>
+<td>/var</td>
 <td>variable的简写</td>
 <td>存放系统运行时产生的可变数据，如日志文件、数据库文件等。</td>
 </tr>
 <tr>
-<td>&#x2F;opt</td>
+<td>/opt</td>
 <td>optional的简写</td>
 <td>存放一些可选的软件包，通常由用户自行安装。</td>
 </tr>
 <tr>
-<td>&#x2F;tmp</td>
+<td>/tmp</td>
 <td>temporary的简写</td>
 <td>存放临时文件，系统会定期清理该目录</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <span id="more"></span>
-
 <h1 id="2-Linux交互界面"><a href="#2-Linux交互界面" class="headerlink" title="2. Linux交互界面"></a>2. Linux交互界面</h1><p>服务器中Linux系统，通常不会安装图形用户界面（GUI，Graphical User Interface），因此我们与操作系统的交互主要靠命令行界面（CLI，Command Line Interface），如下图所示</p>
-<img src="image-20250122170435993.png" style="zoom:80%;"/>
-
+<p><img src="image-20250122170435993.png" style="zoom:80%;"/></p>
 <p>在命令行界面，用户通过输入一些列命令来和操作系统进行交互，例如通过<code>mkdir /test</code>来创建<code>/test</code>目录。这些命令通常由shell解释并执行。</p>
-<img src="image-20250122170712358.png" />
-
+<p><img src="image-20250122170712358.png" /></p>
 <h1 id="3-Linux常用命令"><a href="#3-Linux常用命令" class="headerlink" title="3. Linux常用命令"></a>3. Linux常用命令</h1><h2 id="3-1-文件和目录相关"><a href="#3-1-文件和目录相关" class="headerlink" title="3.1 文件和目录相关"></a>3.1 文件和目录相关</h2><ol>
 <li><p><strong>pwd（print working directory）</strong></p>
 <ul>
@@ -344,7 +347,8 @@
 </li>
 <li><p><strong>案例实操</strong></p>
 <p>显示当前工作目录的绝对路径</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# pwd</span><br><span class="line">/root</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# pwd</span><br><span class="line">/root</span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 </li>
 <li><p><strong>ls（list）</strong></p>
@@ -356,22 +360,7 @@
 <p><code>ls [选项] [目录或是文件]</code></p>
 </li>
 <li><p><strong>选项说明</strong></p>
-<table>
-<thead>
-<tr>
-<th>选项</th>
-<th>功能</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>-a</td>
-<td>全部的文件，连同隐藏文件( 开头为 . 的文件) 一起列出来</td>
-</tr>
-<tr>
-<td>-l</td>
-<td>使用较长（详细）的格式列出信息，包含文件的属性与权限等等数据</td>
-</tr>
-</tbody></table>
+<p>| 选项 | 功能                                                         |<br>| —— | —————————————————————————————— |<br>| -a   | 全部的文件，连同隐藏文件( 开头为 . 的文件) 一起列出来        |<br>| -l   | 使用较长（详细）的格式列出信息，包含文件的属性与权限等等数据 |</p>
 </li>
 <li><p><strong>实操案例</strong></p>
 <p>查看当前目录的所有内容信息</p>
@@ -391,34 +380,7 @@
 <p><code>cd [参数]</code></p>
 </li>
 <li><p><strong>参数说明</strong></p>
-<table>
-<thead>
-<tr>
-<th>参数</th>
-<th>功能</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>cd 绝对路径</td>
-<td><strong>切换路径</strong></td>
-</tr>
-<tr>
-<td>cd 相对路径</td>
-<td><strong>切换路径</strong></td>
-</tr>
-<tr>
-<td>cd ~或者cd</td>
-<td>回到自己的家目录</td>
-</tr>
-<tr>
-<td>cd -</td>
-<td>回到上一次所在目录</td>
-</tr>
-<tr>
-<td>cd ..</td>
-<td>回到当前目录的上一级目录</td>
-</tr>
-</tbody></table>
+<p>| 参数        | 功能                     |<br>| —————- | ———————————— |<br>| cd 绝对路径 | <strong>切换路径</strong>             |<br>| cd 相对路径 | <strong>切换路径</strong>             |<br>| cd ~或者cd  | 回到自己的家目录         |<br>| cd -        | 回到上一次所在目录       |<br>| cd ..       | 回到当前目录的上一级目录 |</p>
 </li>
 </ul>
 </li>
@@ -431,29 +393,18 @@
 <p><code>mkdir [选项] 要创建的目录</code></p>
 </li>
 <li><p><strong>选项说明</strong></p>
-<table>
-<thead>
-<tr>
-<th>选项</th>
-<th>功能</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>-p</td>
-<td>创建多层目录</td>
-</tr>
-</tbody></table>
+<p>| 选项 | 功能         |<br>| —— | —————— |<br>| -p   | 创建多层目录 |</p>
 </li>
 <li><p><strong>实操案例</strong></p>
 <ul>
 <li>创建一个目录</li>
 </ul>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# mkdir hello</span><br><span class="line"></span><br><span class="line">[root@localhost ~]# mkdir hello/world</span><br></pre></td></tr></table></figure>
-
 <ul>
 <li>创建一个多级目录</li>
 </ul>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# mkdir -p big/world</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# mkdir -p big/world</span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 </li>
 <li><p><strong>cp（copy）</strong></p>
@@ -465,47 +416,21 @@
 <p><code>cp [选项] source dest</code></p>
 </li>
 <li><p><strong>选项说明</strong></p>
-<table>
-<thead>
-<tr>
-<th>选项</th>
-<th>功能</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>-r</td>
-<td>递归复制整个文件夹</td>
-</tr>
-</tbody></table>
+<p>| 选项 | 功能               |<br>| —— | ————————— |<br>| -r   | 递归复制整个文件夹 |</p>
 </li>
 <li><p><strong>参数说明</strong></p>
-<table>
-<thead>
-<tr>
-<th>参数</th>
-<th>功能</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>source</td>
-<td>源文件</td>
-</tr>
-<tr>
-<td>dest</td>
-<td>目标文件</td>
-</tr>
-</tbody></table>
+<p>| 参数   | 功能     |<br>| ——— | ———— |<br>| source | 源文件   |<br>| dest   | 目标文件 |</p>
 </li>
 <li><p>实操案例</p>
 <ul>
 <li>复制文件</li>
 </ul>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# cp ./initial-setup-ks.cfg ./hello</span><br></pre></td></tr></table></figure>
-
 <ul>
 <li>递归复制整个文件夹</li>
 </ul>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# cp -r ./big ./hello</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# cp -r ./big ./hello</span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 </li>
 <li><p><strong>rm（remove）</strong></p>
@@ -517,28 +442,14 @@
 <p><code>rm [选项] deleteFile</code></p>
 </li>
 <li><p><strong>选项说明</strong></p>
-<table>
-<thead>
-<tr>
-<th>选项</th>
-<th>功能</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>-r</td>
-<td>递归删除目录所有内容</td>
-</tr>
-<tr>
-<td>-f</td>
-<td>强制删除,不提示用户进行确认</td>
-</tr>
-</tbody></table>
+<p>| 选项 | 功能                        |<br>| —— | —————————————- |<br>| -r   | 递归删除目录所有内容        |<br>| -f   | 强制删除,不提示用户进行确认 |</p>
 </li>
 <li><p><strong>实操案例</strong></p>
 <ul>
 <li>递归删除目录中所有内容</li>
 </ul>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# rm -rf ./big</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# rm -rf ./big</span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 </li>
 <li><p><strong>mv（move）</strong></p>
@@ -552,7 +463,8 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mv 源文件 目标目录</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>重命名</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mv 源文件 目标文件</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mv 源文件 目标文件</span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 </li>
 <li><p><strong>案例实操</strong></p>
@@ -562,9 +474,12 @@
 </li>
 <li><p>移动文件并重命名</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost world]# mv initial-setup-ks.cfg ../hello.cfg</span><br></pre></td></tr></table></figure>
-</li>
+<ul>
 <li><p>重命名</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost hello]# mv hello.cfg initial-setup-ks.cfg</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost hello]# mv hello.cfg initial-setup-ks.cfg</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -578,22 +493,12 @@
 <p><code>cat  [选项] 文件</code></p>
 </li>
 <li><p><strong>选项说明</strong></p>
-<table>
-<thead>
-<tr>
-<th>选项</th>
-<th>功能描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>- n</td>
-<td>显示所有行的行号,包括空行</td>
-</tr>
-</tbody></table>
+<p>| 选项 | 功能描述                  |<br>| —— | ————————————- |<br>| - n  | 显示所有行的行号,包括空行 |</p>
 </li>
 <li><p><strong>实操案例</strong></p>
 <p>查看文件内容并显示行号</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[atguigu@localhost ~]$ cat -n hello.cfg</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[atguigu@localhost ~]$ cat -n hello.cfg</span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 </li>
 <li><p><strong>tail</strong></p>
@@ -609,38 +514,23 @@
 </ul>
 </li>
 <li><p><strong>选项说明</strong></p>
-<table>
-<thead>
-<tr>
-<th>选项</th>
-<th>功能</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>-n&lt;行数&gt;</td>
-<td>输出文件尾部n行内容</td>
-</tr>
-<tr>
-<td>-f</td>
-<td>显示文件最新追加的内容，监视文件变化</td>
-</tr>
-</tbody></table>
+<p>| 选项     | 功能                                 |<br>| ———— | —————————————————— |<br>| -n&lt;行数&gt; | 输出文件尾部n行内容                  |<br>| -f       | 显示文件最新追加的内容，监视文件变化 |</p>
 </li>
 <li><p><strong>实操案例</strong></p>
 <ul>
 <li>查看文件最后50行内容</li>
 </ul>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# tail -n 50 helle.cfg</span><br></pre></td></tr></table></figure>
-
 <ul>
 <li>实时追踪该档的所有更新</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# tail -f hello.cfg</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# tail -f hello.cfg</span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 </li>
 </ol>
-<h2 id="3-2-文本编辑相关"><a href="#3-2-文本编辑相关" class="headerlink" title="3.2 文本编辑相关"></a>3.2 文本编辑相关</h2><p><img src="/2025/01/22/Linux%E7%9F%A5%E8%AF%86%E7%82%B91/image-20250122170812705.png" alt="image-20250122170812705"></p>
-<p>在命令行界面下，最常用的文本编辑器就是<strong>Vi&#x2F;Vim</strong>。其中<strong>Vi</strong> 是 Linux操作系统中最通用的文本编辑器。 <strong>Vim</strong>编辑器是<strong>Vi</strong>的增强版，相较于<strong>Vi</strong>，提供了代码高亮等功能。两者用法完全兼容。下面介绍<strong>Vim</strong>的用法。</p>
+<h2 id="3-2-文本编辑相关"><a href="#3-2-文本编辑相关" class="headerlink" title="3.2 文本编辑相关"></a>3.2 文本编辑相关</h2><p><img src="image-20250122170812705.png" alt="image-20250122170812705"></p>
+<p>在命令行界面下，最常用的文本编辑器就是<strong>Vi/Vim</strong>。其中<strong>Vi</strong> 是 Linux操作系统中最通用的文本编辑器。 <strong>Vim</strong>编辑器是<strong>Vi</strong>的增强版，相较于<strong>Vi</strong>，提供了代码高亮等功能。两者用法完全兼容。下面介绍<strong>Vim</strong>的用法。</p>
 <ul>
 <li><p><strong>基础语法</strong></p>
 <p><code>vim 文件</code></p>
@@ -653,7 +543,7 @@
 <li><strong>命令行模式（Command Mode）</strong>：用于执行命令，如保存、退出等。</li>
 </ul>
 <p>下图为各模式之间的切换方法</p>
-<p><img src="/2025/01/22/Linux%E7%9F%A5%E8%AF%86%E7%82%B91/image-20250122170959561.png" alt="image-20250122170959561"></p>
+<p><img src="image-20250122170959561.png" alt="image-20250122170959561"></p>
 </li>
 </ul>
 <p>下面分别介绍各模式下的用法</p>
@@ -665,119 +555,19 @@
 <p>在这个模式中， 可以使用上下左右按键来移动光标，也开通过一些简单的操作来复制粘贴以及删除文本，具体操作如下</p>
 <ul>
 <li><p>光标操作</p>
-<table>
-<thead>
-<tr>
-<th>快捷键</th>
-<th>操作</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>shift+6(^)</code></td>
-<td>移动到行头</td>
-</tr>
-<tr>
-<td><code>shift+4($)</code></td>
-<td>移动到行尾</td>
-</tr>
-<tr>
-<td><code>shift+g</code></td>
-<td>移动到页尾</td>
-</tr>
-<tr>
-<td><code>gg</code></td>
-<td>移动到页头</td>
-</tr>
-</tbody></table>
+<p>| 快捷键       | 操作       |<br>| —————— | ————— |<br>| <code>shift+6(^)</code> | 移动到行头 |<br>| <code>shift+4($)</code> | 移动到行尾 |<br>| <code>shift+g</code>    | 移动到页尾 |<br>| <code>gg</code>         | 移动到页头 |</p>
 </li>
 <li><p>复制粘贴操作</p>
-<table>
-<thead>
-<tr>
-<th>快捷键</th>
-<th>操作</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>yy</code></td>
-<td>复制光标当前行</td>
-</tr>
-<tr>
-<td><code>yw</code></td>
-<td>复制光标当前词</td>
-</tr>
-<tr>
-<td><code>p</code></td>
-<td>粘贴</td>
-</tr>
-</tbody></table>
+<p>| 快捷键 | 操作           |<br>| ——— | ——————— |<br>| <code>yy</code>   | 复制光标当前行 |<br>| <code>yw</code>   | 复制光标当前词 |<br>| <code>p</code>    | 粘贴           |</p>
 </li>
 <li><p>删除操作</p>
-<table>
-<thead>
-<tr>
-<th>快捷键</th>
-<th>操作</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>dd</code></td>
-<td>删除光标当前行</td>
-</tr>
-<tr>
-<td><code>d n d</code></td>
-<td>删除当前光标所处行及其以下共n行</td>
-</tr>
-<tr>
-<td><code>x</code></td>
-<td>删除当前光标处的一个字符</td>
-</tr>
-</tbody></table>
+<p>| 快捷键  | 操作                            |<br>| ———- | ———————————————- |<br>| <code>dd</code>    | 删除光标当前行                  |<br>| <code>d n d</code> | 删除当前光标所处行及其以下共n行 |<br>| <code>x</code>     | 删除当前光标处的一个字符        |</p>
 </li>
 </ul>
 </li>
 <li><p><strong>命令模式</strong></p>
 <p>命令模式下可通过一些命令实现存盘、退出、显示行号、搜索、批量替换等功能，具体命令如下</p>
-<table>
-<thead>
-<tr>
-<th>命令</th>
-<th>操作</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>:w</code></td>
-<td>保存</td>
-</tr>
-<tr>
-<td><code>:q</code></td>
-<td>退出</td>
-</tr>
-<tr>
-<td><code>:!</code></td>
-<td>强制执行</td>
-</tr>
-<tr>
-<td><code>:set nu</code></td>
-<td>显示行号</td>
-</tr>
-<tr>
-<td><code>:set nonu</code></td>
-<td>取消行号</td>
-</tr>
-<tr>
-<td><code>/文本</code></td>
-<td>搜索文本，输入n：光标指向下一个，输入N：贯标指向上一个</td>
-</tr>
-<tr>
-<td><code>:nohl</code></td>
-<td>搜索文本后，匹配内容会高亮显示，该命令可取消高亮</td>
-</tr>
-<tr>
-<td><code>:s/old/new/g</code></td>
-<td>在全局范围内使用new替换old内容</td>
-</tr>
-</tbody></table>
+<p>| 命令           | 操作                                                   |<br>| ——————— | ——————————————————————————— |<br>| <code>:w</code>           | 保存                                                   |<br>| <code>:q</code>           | 退出                                                   |<br>| <code>:!</code>           | 强制执行                                               |<br>| <code>:set nu</code>      | 显示行号                                               |<br>| <code>:set nonu</code>    | 取消行号                                               |<br>| <code>/文本</code>        | 搜索文本，输入n：光标指向下一个，输入N：贯标指向上一个 |<br>| <code>:nohl</code>        | 搜索文本后，匹配内容会高亮显示，该命令可取消高亮       |<br>| <code>:s/old/new/g</code> | 在全局范围内使用new替换old内容                         |</p>
 </li>
 </ul>
 <h2 id="3-3-文件权限相关"><a href="#3-3-文件权限相关" class="headerlink" title="3.3 文件权限相关"></a>3.3 文件权限相关</h2><h3 id="3-3-1-文件权限概述"><a href="#3-3-1-文件权限概述" class="headerlink" title="3.3.1 文件权限概述"></a>3.3.1 文件权限概述</h3><p>Linux中的所有文件均有严格的访问权限控制，只有当用户拥有某个文件的相关权限时，才可对文件执行相关操作。</p>
@@ -826,76 +616,35 @@
 </ul>
 </li>
 <li><p><code>chmod [选项] 777 文件或目录</code></p>
-<table>
-<thead>
-<tr>
-<th>权限表示法</th>
-<th>user</th>
-<th>group</th>
-<th>other</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>字符串</td>
-<td>rwx</td>
-<td>r-x</td>
-<td>rw-</td>
-</tr>
-<tr>
-<td>数字（二进制）</td>
-<td>111</td>
-<td>101</td>
-<td>110</td>
-</tr>
-<tr>
-<td>数字（八进制）</td>
-<td>7</td>
-<td>5</td>
-<td>6</td>
-</tr>
-</tbody></table>
+<p>| 权限表示法     | user | group | other |<br>| ——————— | —— | ——- | ——- |<br>| 字符串         | rwx  | r-x   | rw-   |<br>| 数字（二进制） | 111  | 101   | 110   |<br>| 数字（八进制） | 7    | 5     | 6     |</p>
 </li>
 </ul>
 </li>
 <li><p><strong>选项说明</strong></p>
-<table>
-<thead>
-<tr>
-<th>选项</th>
-<th>功能</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>-R</td>
-<td>递归操作</td>
-</tr>
-</tbody></table>
+<p> | 选项 | 功能     |<br> | —— | ———— |<br> | -R   | 递归操作 |</p>
 <ul>
 <li><p><strong>实操案例</strong></p>
 <ul>
 <li>修改文件使其所属主用户具有执行权限</li>
 </ul>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# chmod u+x hello.cfg</span><br></pre></td></tr></table></figure>
-
 <ul>
 <li>修改文件使其所属组用户具有执行权限</li>
 </ul>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# chmod g+x hello.cfg</span><br></pre></td></tr></table></figure>
-
 <ul>
 <li>修改文件所属主用户执行权限,并使其他用户具有执行权限</li>
 </ul>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# chmod u-x,o+x hello.cfg</span><br></pre></td></tr></table></figure>
-
 <ul>
 <li>采用数字的方式，设置文件所有者、所属组、其他用户都具有可读可写可执行权限。</li>
 </ul>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# chmod 777 hello.txt</span><br></pre></td></tr></table></figure>
-
 <ul>
 <li>修改整个文件夹里面的所有文件的所有者、所属组、其他用户都具有可读写执行权限。</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# chmod -R 777 hello/</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# chmod -R 777 hello/</span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 </li>
 </ul>
@@ -909,29 +658,18 @@
 <p><code>chown [选项] 用户[:用户组] 文件或目录</code></p>
 <ul>
 <li><p><strong>选项说明</strong></p>
-<table>
-<thead>
-<tr>
-<th>选项</th>
-<th>功能</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>-R</td>
-<td>递归操作</td>
-</tr>
-</tbody></table>
+<p>| 选项 | 功能     |<br>| —— | ———— |<br>| -R   | 递归操作 |</p>
 </li>
 <li><p><strong>实操案例</strong></p>
 <ul>
 <li>修改文件所有者</li>
 </ul>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# chown atguigu helle.cfg </span><br></pre></td></tr></table></figure>
-
 <ul>
 <li>递归改变文件所有者和所有组</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# chown -R atguigu:atguigu hello/</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# chown -R atguigu:atguigu hello/</span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 </li>
 </ul>
@@ -946,29 +684,9 @@
 <ul>
 <li><p><strong><code>ps aux</code></strong></p>
 <p>选项说明如下</p>
-<table>
-<thead>
-<tr>
-<th>选项</th>
-<th>功能</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>a</td>
-<td>显示所有前台进程</td>
-</tr>
-<tr>
-<td>u</td>
-<td>以用户友好的方式打印进程信息</td>
-</tr>
-<tr>
-<td>x</td>
-<td>显示后台进程</td>
-</tr>
-</tbody></table>
+<p>| 选项 | 功能                         |<br>| —— | —————————————— |<br>| a    | 显示所有前台进程             |<br>| u    | 以用户友好的方式打印进程信息 |<br>| x    | 显示后台进程                 |</p>
 <p><code>ps aux</code>显示内容如下</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">USER        PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</span><br><span class="line">root          1  0.0  0.1 193964  7048 ?        Ss   08:56   0:01 /usr/lib/systemd/systemd</span><br><span class="line">root          2  0.0  0.0      0     0 ?        S    08:56   0:00 [kthreadd]</span><br><span class="line">root          4  0.0  0.0      0     0 ?        S&lt;   08:56   0:00 [kworker/0:0H]</span><br><span class="line">root          5  0.0  0.0      0     0 ?        S    08:56   0:00 [kworker/u256:0]</span><br></pre></td></tr></table></figure>
-
 <p>注：</p>
 <ul>
 <li><strong>USER</strong>：启动该进程的用户</li>
@@ -980,25 +698,9 @@
 </li>
 <li><p><strong><code>ps -ef</code></strong></p>
 <p>选项说明如下</p>
-<table>
-<thead>
-<tr>
-<th>选项</th>
-<th>功能</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>-e</td>
-<td>显示所有进程</td>
-</tr>
-<tr>
-<td>-f</td>
-<td>以完整的格式显示进程的详细信息</td>
-</tr>
-</tbody></table>
+<p>| 选项 | 功能                           |<br>| —— | ——————————————— |<br>| -e   | 显示所有进程                   |<br>| -f   | 以完整的格式显示进程的详细信息 |</p>
 <p><code>ps -ef</code>显示内容如下</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">UID         PID   PPID  C STIME TTY          TIME CMD</span><br><span class="line">root          1      0  0 08:56 ?        00:00:01 /usr/lib/systemd/systemd </span><br><span class="line">root          2      0  0 08:56 ?        00:00:00 [kthreadd]</span><br><span class="line">root          4      2  0 08:56 ?        00:00:00 [kworker/0:0H]</span><br><span class="line">root          5      2  0 08:56 ?        00:00:00 [kworker/u256:0]</span><br><span class="line">root          6      2  0 08:56 ?        00:00:00 [ksoftirqd/0]</span><br><span class="line">root          7      2  0 08:56 ?        00:00:00 [migration/0]</span><br></pre></td></tr></table></figure>
-
 <p>注：</p>
 <ul>
 <li><strong>UID</strong>：用户ID</li>
@@ -1013,7 +715,6 @@
 <p>日常查看进程时，通常会将上述命令与<code>grep</code>命令配合使用，<code>grep</code>可用于过滤文本行。</p>
 <p>例如想查看所有的Java进程，便可执行以下命令</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -ef | grep java</span><br></pre></td></tr></table></figure>
-
 <p><code>|</code>符号称为管道符，其作用是将前边命令的输出作为下一命令的输入。</p>
 </li>
 </ul>
@@ -1025,18 +726,7 @@
 <p><code>kill [选项] 进程号</code></p>
 </li>
 <li><p>选项说明</p>
-<table>
-<thead>
-<tr>
-<th>选项</th>
-<th>功能</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>-9</td>
-<td>表示强迫进程立即停止</td>
-</tr>
-</tbody></table>
+<p>| 选项 | 功能                 |<br>| —— | —————————— |<br>| -9   | 表示强迫进程立即停止 |</p>
 </li>
 <li><p>案例实操，启动火狐浏览器，并杀死相关进程。</p>
 <p>提示：火狐浏览器的英文名称为firefox。</p>
@@ -1045,37 +735,15 @@
 </li>
 </ul>
 <h2 id="3-5-压缩归档相关"><a href="#3-5-压缩归档相关" class="headerlink" title="3.5 压缩归档相关"></a>3.5 压缩归档相关</h2><ol>
-<li><p><strong>zip&#x2F;unzip</strong></p>
+<li><p><strong>zip/unzip</strong></p>
 <p><code>zip/unzip</code>可用于压缩和解压缩zip文件，使用方式如下</p>
 <ul>
 <li><p><strong>基本语法</strong></p>
 <p><code>zip [选项] XXX.zip 文件或路径</code><br><code>unzip [选项] XXX.zip</code></p>
 </li>
 <li><p><strong>选项说明</strong></p>
-<table>
-<thead>
-<tr>
-<th>zip选项</th>
-<th>功能</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>-r</td>
-<td>压缩目录</td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th>unzip选项</th>
-<th>功能</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>-d 目录</td>
-<td>指定解压后文件的存放目录</td>
-</tr>
-</tbody></table>
+<p>| zip选项 | 功能     |<br>| ———- | ———— |<br>| -r      | 压缩目录 |</p>
+<p>| unzip选项 | 功能                     |<br>| ————- | ———————————— |<br>| -d 目录   | 指定解压后文件的存放目录 |</p>
 </li>
 <li><p><strong>案例实操</strong></p>
 <ul>
@@ -1088,7 +756,8 @@
 </li>
 <li><p>解压</p>
 <p>创建一个<code>zip</code>目录，并将<code>first.zip</code>中的内容解压到<code>zip</code>目录</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@lcoalhost ~]# mkdir zip</span><br><span class="line">[root@lcoalhost ~]# unzip first.zip -d zip/</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@lcoalhost ~]# mkdir zip</span><br><span class="line">[root@lcoalhost ~]# unzip first.zip -d zip/</span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 </li>
 </ul>
@@ -1101,45 +770,7 @@
 <p>解包：<code>tar [选项] -x -f 包名 -C 指定目录</code></p>
 </li>
 <li><p><strong>选项说明</strong></p>
-<table>
-<thead>
-<tr>
-<th>选项</th>
-<th>功能</th>
-<th></th>
-</tr>
-</thead>
-<tbody><tr>
-<td>-c</td>
-<td>打包</td>
-<td></td>
-</tr>
-<tr>
-<td>-x</td>
-<td>解包</td>
-<td></td>
-</tr>
-<tr>
-<td>-z</td>
-<td>打包的同时进行压缩（解包的时候进行解压）</td>
-<td></td>
-</tr>
-<tr>
-<td>-v</td>
-<td>打包或解包时显示正在处理的文件信息</td>
-<td></td>
-</tr>
-<tr>
-<td>-f 包名</td>
-<td>指定打包后的文件名后者要解包的文件名</td>
-<td></td>
-</tr>
-<tr>
-<td>-C 目录</td>
-<td>解包到指定目录</td>
-<td></td>
-</tr>
-</tbody></table>
+<p>| 选项    | 功能                                     |      |<br>| ———- | ———————————————————— | —— |<br>| -c      | 打包                                     |      |<br>| -x      | 解包                                     |      |<br>| -z      | 打包的同时进行压缩（解包的时候进行解压） |      |<br>| -v      | 打包或解包时显示正在处理的文件信息       |      |<br>| -f 包名 | 指定打包后的文件名后者要解包的文件名     |      |<br>| -C 目录 | 解包到指定目录                           |      |</p>
 </li>
 <li><p><strong>案例实操</strong></p>
 <ul>
@@ -1150,7 +781,8 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@lcoalhost ~]# tar -zcvf first.tar.gz file1.txt file2.txt</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>解包并解压<code>first.tar.gz</code>到<code>tar</code>目录</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@lcoalhost ~]# mkdir tar</span><br><span class="line">[root@lcoalhost ~]# tar -zxvf first.tar.gz -C ./tar</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@lcoalhost ~]# mkdir tar</span><br><span class="line">[root@lcoalhost ~]# tar -zxvf first.tar.gz -C ./tar</span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 </li>
 </ul>
@@ -1169,29 +801,10 @@
 <p><code>rpm -ivh 软件包路径</code></p>
 </li>
 <li><p>选项说明</p>
-<table>
-<thead>
-<tr>
-<th>选项</th>
-<th>功能</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>-i</td>
-<td>-i&#x3D;install，安装</td>
-</tr>
-<tr>
-<td>-v</td>
-<td>-v&#x3D;verbose，显示详细信息</td>
-</tr>
-<tr>
-<td>-h</td>
-<td>-h&#x3D;hash，进度条</td>
-</tr>
-</tbody></table>
+<p>| 选项 | 功能                     |<br>| —— | ———————————— |<br>| -i   | -i=install，安装         |<br>| -v   | -v=verbose，显示详细信息 |<br>| -h   | -h=hash，进度条          |</p>
 </li>
 <li><p>案例实操</p>
-<p>在以下地址下载一个<em><strong>sl软件</strong></em>的rpm安装包，并安装</p>
+<p>在以下地址下载一个<strong><em>sl软件</em></strong>的rpm安装包，并安装</p>
 <p>下载地址：<a target="_blank" rel="noopener" href="https://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/s/sl-5.02-1.el7.x86_64.rpm">https://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/s/sl-5.02-1.el7.x86_64.rpm</a></p>
 </li>
 </ul>
@@ -1202,26 +815,12 @@
 <p><code>rpm -qa</code>（功能描述：查询所安装的所有rpm软件包）</p>
 </li>
 <li><p>选项说明</p>
-<table>
-<thead>
-<tr>
-<th>选项</th>
-<th>功能</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>-q</td>
-<td>查询模式</td>
-</tr>
-<tr>
-<td>-a</td>
-<td>表示所有</td>
-</tr>
-</tbody></table>
+<p>| 选项 | 功能     |<br>| —— | ———— |<br>| -q   | 查询模式 |<br>| -a   | 表示所有 |</p>
 </li>
 <li><p>案例实操</p>
 <p>查询刚刚安装的软件</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# rpm -qa | grep sl</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# rpm -qa | grep sl</span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 </li>
 <li><p><strong>卸载</strong></p>
@@ -1231,7 +830,8 @@
 </li>
 <li><p>案例实操</p>
 <p>卸载刚刚安装的sl软件</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# rpm -e sl-5.02-1.el7.x86_64</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# rpm -e sl-5.02-1.el7.x86_64</span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 </li>
 </ul>
@@ -1250,39 +850,27 @@
 <p><code>yum [选项] install 软件包名</code></p>
 </li>
 <li><p>选项说明</p>
-<table>
-<thead>
-<tr>
-<th>选项</th>
-<th>功能</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>-y</td>
-<td>对所有提问都回答“yes”</td>
-</tr>
-</tbody></table>
+<p>| 选项 | 功能                  |<br>| —— | ——————————- |<br>| -y   | 对所有提问都回答“yes” |</p>
 </li>
 <li><p>案例实操</p>
-<p>使用yum在线安装<em><strong>sl</strong></em>软件</p>
+<p>使用yum在线安装<strong><em>sl</em></strong>软件</p>
 <ul>
 <li><p>查询sl软件的包名</p>
-<p>可在如下网站搜索Linux中的各种软件包，地址为<a target="_blank" rel="noopener" href="https://pkgs.org/%EF%BC%8C%E6%90%9C%E7%B4%A2sl%EF%BC%8C%E5%B9%B6%E6%9F%A5%E7%9C%8B%E5%AF%B9%E5%BA%94%E7%9A%84Linux%E5%8F%91%E8%A1%8C%E7%89%88%EF%BC%8C%E6%90%9C%E7%B4%A2%E7%BB%93%E6%9E%9C%E4%B8%BA%60yum">https://pkgs.org/，搜索sl，并查看对应的Linux发行版，搜索结果为`yum</a> install sl&#96;。</p>
+<p>可在如下网站搜索Linux中的各种软件包，地址为<a target="_blank" rel="noopener" href="https://pkgs.org/，搜索sl，并查看对应的Linux发行版，搜索结果为`yum">https://pkgs.org/，搜索sl，并查看对应的Linux发行版，搜索结果为`yum</a> install sl`。</p>
 </li>
 <li><p>执行yum安装命令</p>
 <p>执行<code>yum install sl</code>后的结果为</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">没有可用软件包 sl。</span><br><span class="line">错误：无须任何处理</span><br></pre></td></tr></table></figure>
-
 <p>原因分析，yum的工作原理是从我们所配置的远程仓库下载rpm包，然后进行安装，远程仓库的配置文件位于<code>/etc/yum.repo.d/</code>目录中。上述问题的原因就是sl软件的rpm包不在系统预先配置的这些远程仓库中。因此需要先配置sl所在的远程仓库，才可使用yum进行安装，具体操作如下。</p>
 </li>
 <li><p>配置远程仓库</p>
 <p>远程仓库可手动配置，也可在线配置，下面在线配置</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# yum -y install epel-release </span><br></pre></td></tr></table></figure>
-
 <p>完成后观察<code>/etc/yum.repo.d/</code>目录下配置文件的变化。</p>
 </li>
 <li><p>重新安装sl</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# yum -y install sl</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# yum -y install sl</span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 </li>
 </ul>
@@ -1296,13 +884,14 @@
 </li>
 <li><p><strong>案例实操</strong></p>
 <p>卸载sl软件</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# yum remove sl</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# yum remove sl</span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 </li>
 </ol>
 <h1 id="4-Linux系统远程访问"><a href="#4-Linux系统远程访问" class="headerlink" title="4. Linux系统远程访问"></a>4. Linux系统远程访问</h1><p>多数情况下，工作时所用的服务器并不在身边，这些计算机要么位于机房，要么位于云端，因此我们不能向操作个人电脑一样操作服务器，而是需要通过远程登录的方式来操作。</p>
 <h2 id="4-1-SSH概述"><a href="#4-1-SSH概述" class="headerlink" title="4.1 SSH概述"></a>4.1 SSH概述</h2><p>SSH（Secure Shell）使用一种网络协议，用于在计算机之间建立加密的连接，从而允许用户以安全的方式在远程的计算机中执行命令。</p>
-<p><img src="/2025/01/22/Linux%E7%9F%A5%E8%AF%86%E7%82%B91/image-20250122171024978.png" alt="image-20250122171024978"></p>
+<p><img src="image-20250122171024978.png" alt="image-20250122171024978"></p>
 <h2 id="4-2-SSH实操"><a href="#4-2-SSH实操" class="headerlink" title="4.2 SSH实操"></a>4.2 SSH实操</h2><p>Linux系统中都会预装SSH服务，因此我们只需在自己的个人电脑安装SSH客户端，然后配置连接即可。可以选择的SSH客户端有很多，目前，比较主流的有 Xshell, SecureCRT，FinalShell，MobaXterm 等，同学们可以根据自己的习惯自行选择。本课程使用MobaXterm，下面演示具体使用方式。</p>
 <ol>
 <li><p>在Windows主机安装MobaXterm软件，安装包位于项目资料中。</p>
@@ -1310,20 +899,19 @@
 <li><p>查询虚拟机IP地址</p>
 <p>使用<code>ifconfig</code>（network interfaces configuring）命令可查看虚拟机ip地址，其输出内容如下</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">ens33: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500</span><br><span class="line">        inet 172.17.0.104  netmask 255.255.255.0  broadcast 172.17.0.255</span><br><span class="line">        inet6 fe80::5fdd:f01e:a4fb:966  prefixlen 64  scopeid 0x20&lt;link&gt;</span><br><span class="line">        ether 00:0c:29:fc:a3:fe  txqueuelen 1000  (Ethernet)</span><br><span class="line">        RX packets 183030  bytes 70503744 (67.2 MiB)</span><br><span class="line">        RX errors 0  dropped 78  overruns 0  frame 0</span><br><span class="line">        TX packets 23385  bytes 1917128 (1.8 MiB)</span><br><span class="line">        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</span><br><span class="line"></span><br><span class="line">lo: flags=73&lt;UP,LOOPBACK,RUNNING&gt;  mtu 65536</span><br><span class="line">        inet 127.0.0.1  netmask 255.0.0.0</span><br><span class="line">        inet6 ::1  prefixlen 128  scopeid 0x10&lt;host&gt;</span><br><span class="line">        loop  txqueuelen 1000  (Local Loopback)</span><br><span class="line">        RX packets 0  bytes 0 (0.0 B)</span><br><span class="line">        RX errors 0  dropped 0  overruns 0  frame 0</span><br><span class="line">        TX packets 0  bytes 0 (0.0 B)</span><br><span class="line">        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</span><br><span class="line"></span><br><span class="line">virbr0: flags=4099&lt;UP,BROADCAST,MULTICAST&gt;  mtu 1500</span><br><span class="line">        inet 192.168.122.1  netmask 255.255.255.0  broadcast 192.168.122.255</span><br><span class="line">        ether 52:54:00:ea:8a:fb  txqueuelen 1000  (Ethernet)</span><br><span class="line">        RX packets 0  bytes 0 (0.0 B)</span><br><span class="line">        RX errors 0  dropped 0  overruns 0  frame 0</span><br><span class="line">        TX packets 0  bytes 0 (0.0 B)</span><br><span class="line">        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</span><br></pre></td></tr></table></figure>
-
 <p>其中<code>ens33</code>，为虚拟机的以太网络接口，此处获取的ip地址为<code>172.17.0.104</code>。</p>
 </li>
 <li><p>在MobaXterm中配置SSH（Secure Shell）连接</p>
 <ul>
 <li><p>点击Session选项</p>
-<p><img src="/2025/01/22/Linux%E7%9F%A5%E8%AF%86%E7%82%B91/image-20250122171033492.png" alt="image-20250122171033492"></p>
+<p><img src="image-20250122171033492.png" alt="image-20250122171033492"></p>
 </li>
 <li><p>点击SSH选项，并配置连接信息</p>
-<p><img src="/2025/01/22/Linux%E7%9F%A5%E8%AF%86%E7%82%B91/image-20250122171039845.png" alt="image-20250122171039845"></p>
+<p><img src="image-20250122171039845.png" alt="image-20250122171039845"></p>
 </li>
 <li><p>输入root用户密码</p>
-<p><img src="/2025/01/22/Linux%E7%9F%A5%E8%AF%86%E7%82%B91/image-20250122171046864.png" alt="image-20250122171046864">远程登录成功，如下图所示</p>
-<p><img src="/2025/01/22/Linux%E7%9F%A5%E8%AF%86%E7%82%B91/image-20250122171052673.png" alt="image-20250122171052673"></p>
+<p><img src="image-20250122171046864.png" alt="image-20250122171046864">远程登录成功，如下图所示</p>
+<p><img src="image-20250122171052673.png" alt="image-20250122171052673"></p>
 </li>
 </ul>
 </li>
@@ -1427,20 +1015,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-count">29</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-count">11</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-count">31</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1465,7 +1053,7 @@
     <h3 class="widget-title">Tag Cloud</h3>
     <div id="myCanvasContainer" class="widget tagcloud">
         <canvas width="250" height="250" id="resCanvas" style="width=100%">
-            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis/" rel="tag">Mybatis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B6%88%E6%81%AF%E4%B8%AD%E9%97%B4%E4%BB%B6/" rel="tag">消息中间件</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis/" rel="tag">Mybatis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B6%88%E6%81%AF%E4%B8%AD%E9%97%B4%E4%BB%B6/" rel="tag">消息中间件</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
         </canvas>
     </div>
 </div>
