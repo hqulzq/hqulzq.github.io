@@ -215,7 +215,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2025-02-07 14:14:22 / 修改时间：20:38:28" itemprop="dateCreated datePublished" datetime="2025-02-07T14:14:22+08:00">2025-02-07</time>
+              <time title="创建时间：2025-02-07 14:14:22 / 修改时间：20:47:16" itemprop="dateCreated datePublished" datetime="2025-02-07T14:14:22+08:00">2025-02-07</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -239,7 +239,7 @@
 
       
           <h2 id="DDPM奠基之作：《Denoising-Diffusion-Probabilistic-Models》"><a href="#DDPM奠基之作：《Denoising-Diffusion-Probabilistic-Models》" class="headerlink" title="DDPM奠基之作：《Denoising Diffusion Probabilistic Models》"></a>DDPM奠基之作：《Denoising Diffusion Probabilistic Models》</h2><p>推荐理由：本文是DDPM的奠基之作，是本领域最经典的论文之一。其实扩散模型并不是一个新的概念，这篇论文第一个给出了严谨的数学推导，可以复现的代码，完善了整个推理过程。后面diffusion models相关的论文基本都继承了前向加噪-反向降噪-训练这样的体系。所以强烈推荐初学者精读这篇论文！<br><a target="_blank" rel="noopener" href="https://github.com/lucidrains/denoising-diffusion-pytorch">代码地址：GitHub</a></p>
-<h2 id="从DDPM到DDIM：《Denoising-Diffusion-Implicit-Models》"><a href="#从DDPM到DDIM：《Denoising-Diffusion-Implicit-Models》" class="headerlink" title="从DDPM到DDIM：《Denoising Diffusion Implicit Models》"></a>从DDPM到DDIM：《Denoising Diffusion Implicit Models》</h2><p>推荐理由：作者使用简单的重参数化和混合学习目标来学习反向过程方差，该目标将VLB与DDPM的简化目标相结合。在混合目标下，所提出模型获得的对数似然比通过直接优化对数似然获得的对数似然更好，并发现后一个目标在训练期间具有更多的梯度噪声。最关键的是，原先的DDPM需要长达1000steps的推理步骤，而DDIM改善了反向扩散过程中的噪声水平，改变了xt递推公式，在更少的推理步骤(如100步)上取得了更好的结果。这项成果堪称革命性的，后面的大部分diffusion models论文(特别是运算量高的)都采用这一改进技术。</p>
+<h2 id="从DDPM到DDIM：《Denoising-Diffusion-Implicit-Models》"><a href="#从DDPM到DDIM：《Denoising-Diffusion-Implicit-Models》" class="headerlink" title="从DDPM到DDIM：《Denoising Diffusion Implicit Models》"></a>从DDPM到DDIM：《Denoising Diffusion Implicit Models》</h2><p>推荐理由：作者使用简单的重参数化和混合学习目标来学习反向过程方差，该目标将VLB与DDPM的简化目标相结合。在混合目标下，所提出模型获得的对数似然比通过直接优化对数似然获得的对数似然更好，并发现后一个目标在训练期间具有更多的梯度噪声。最关键的是，原先的DDPM需要长达1000steps的推理步骤，而DDIM改善了反向扩散过程中的噪声水平，改变了<script type="math/tex">x_t</script>递推公式，在更少的推理步骤(如100步)上取得了更好的结果。这项成果堪称革命性的，后面的大部分diffusion models论文(特别是运算量高的)都采用这一改进技术。</p>
 <p><a href="hthttps://github.com/ermongroup/ddim">代码地址：GitHub</a></p>
 <h2 id="第一波高潮！首次击败GANs：《Diffusion-Models-Beat-GANs-on-Image-Synthesis》"><a href="#第一波高潮！首次击败GANs：《Diffusion-Models-Beat-GANs-on-Image-Synthesis》" class="headerlink" title="第一波高潮！首次击败GANs：《Diffusion Models Beat GANs on Image Synthesis》"></a>第一波高潮！首次击败GANs：《Diffusion Models Beat GANs on Image Synthesis》</h2><p>推荐理由：其实前面diffusion models也只是在生成领域小火了一把，并没有引起太多人的关注。主要原因有两点：一是扩散模型并没有太多数学理论上的创新；二是在生成指标上不如GANs。而这篇论文的出现把diffusion models的推向了第一波高潮！这篇论文有三个需要重点学习的地方：</p>
 <p>一是在Unet基础上有了很多改进的小trick(不亏是OpenAI的作品)，改进之后的Unet更能适配噪声，因此指标上也进步了很多：</p>
@@ -1280,6 +1280,63 @@ document.querySelectorAll('.pdfobject-container').forEach(element => {
 
 
   
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
 
   
 
