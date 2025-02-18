@@ -30,8 +30,11 @@
 <meta property="og:image" content="https://hqulzq.github.io/2025/02/07/diffusion%E5%8E%9F%E7%90%86/struct.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/02/07/diffusion%E5%8E%9F%E7%90%86/image_0.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/02/07/diffusion%E5%8E%9F%E7%90%86/image_1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/07/diffusion%E5%8E%9F%E7%90%86/vae.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/07/diffusion%E5%8E%9F%E7%90%86/dm_1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/07/diffusion%E5%8E%9F%E7%90%86/dm_2.png">
 <meta property="article:published_time" content="2025-02-07T12:57:57.000Z">
-<meta property="article:modified_time" content="2025-02-10T05:43:04.720Z">
+<meta property="article:modified_time" content="2025-02-18T11:46:52.229Z">
 <meta property="article:author" content="Zongqing Li">
 <meta property="article:tag" content="diffusion">
 <meta name="twitter:card" content="summary">
@@ -230,7 +233,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-02-10 13:43:04" itemprop="dateModified" datetime="2025-02-10T13:43:04+08:00">2025-02-10</time>
+                <time title="修改时间：2025-02-18 19:46:52" itemprop="dateModified" datetime="2025-02-18T19:46:52+08:00">2025-02-18</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -321,6 +324,41 @@ where \sim \tilde{\mu}_t &= \frac{1}{\sqrt{\alpha_t}}(x_t - \frac{\beta_t}{\sqrt
 <h4 id="回到第一步的理想目标"><a href="#回到第一步的理想目标" class="headerlink" title="回到第一步的理想目标"></a>回到第一步的理想目标</h4><p>通过上述推导发现要得到$x_{t - 1}$，反向过程的目的就是预测前向过程每一次加入的噪声，因此这里的高斯分布$\widetilde{z}_t$是深度学习模型所预测的噪声（即重参数化时从标准高斯分布中采样的噪声），可以看做$z_{\theta}(x_t, t)$，由此得到均值为：</p>
 <script type="math/tex; mode=display">
 \mu_{\theta}(x_t, t) = \frac{1}{\sqrt{\alpha_t}}(x_t - \frac{\beta_t}{\sqrt{1 - \overline{\alpha}_t}}z_{\theta}(x_t, t)) (11)</script><p>网络的最终目的就是预测$z_{\theta}(x_t, t)$，或者说是均值$\mu_{\theta}(x_t, t)$，至于方差$\Sigma_{\theta}(x_t, t)$从推导来看它是一个固定值，论文中也提到当做固定值效果更好。</p>
+<h3 id="最大似然-gt-最小KL散度推导"><a href="#最大似然-gt-最小KL散度推导" class="headerlink" title="最大似然-&gt;最小KL散度推导"></a>最大似然-&gt;最小KL散度推导</h3><ol>
+<li>从数据分布中采样：<ul>
+<li>Sample $\{x^{1},x^{2},\ldots,x^{m}\} from P_{data}(x)$</li>
+</ul>
+</li>
+<li>求最优参数$\theta^{*}$的推导过程：<ul>
+<li>$\theta^{*}=\arg\max_{\theta}\prod_{i = 1}^{m}P_{\theta}(x^{i})=\arg\max_{\theta}\log\prod_{i = 1}^{m}P_{\theta}(x^{i})$</li>
+<li>$=\arg\max_{\theta}\sum_{i = 1}^{m}\log P_{\theta}(x^{i})\approx\arg\max_{\theta}E_{x\sim P_{data}}[\log P_{\theta}(x)]$</li>
+<li>$=\arg\max_{\theta}\int_{x}P_{data}(x)\log P_{\theta}(x)dx-\int_{x}P_{data}(x)\log P_{data}(x)dx$</li>
+<li>$=\arg\max_{\theta}\int_{x}P_{data}(x)\log\frac{P_{\theta}(x)}{P_{data}(x)}dx=\arg\min_{\theta}KL(P_{data}||P_{\theta})$</li>
+</ul>
+</li>
+</ol>
+<p><code>公式推导解释</code></p>
+<ol>
+<li><strong>第一步到第二步</strong>：<ul>
+<li>对$\prod_{i = 1}^{m}P_{\theta}(x^{i})$取对数，这是因为对数函数是单调递增函数，所以$\arg\max_{\theta}\prod_{i = 1}^{m}P_{\theta}(x^{i})$和$\arg\max_{\theta}\log\prod_{i = 1}^{m}P_{\theta}(x^{i})$的解是相同的。同时，根据对数的运算法则$\log(ab)=\log a+\log b$，$\log\prod_{i = 1}^{m}P_{\theta}(x^{i})=\sum_{i = 1}^{m}\log P_{\theta}(x^{i})$ 。</li>
+</ul>
+</li>
+<li><strong>第二步到第三步</strong>：<ul>
+<li>这里使用了大数定律的思想。$\sum_{i = 1}^{m}\log P_{\theta}(x^{i})$是从数据分布$P_{data}(x)$中采样的$m$个样本的$\log P_{\theta}(x)$的和。当$m$足够大时，$\frac{1}{m}\sum_{i = 1}^{m}\log P_{\theta}(x^{i})$近似等于期望$E_{x\sim P_{data}}[\log P_{\theta}(x)]$，所以$\arg\max_{\theta}\sum_{i = 1}^{m}\log P_{\theta}(x^{i})\approx\arg\max_{\theta}E_{x\sim P_{data}}[\log P_{\theta}(x)]$。</li>
+</ul>
+</li>
+<li><strong>第三步到第四步</strong>：<ul>
+<li>根据期望的定义，对于连续型随机变量，$E_{x\sim P_{data}}[\log P_{\theta}(x)]=\int_{x}P_{data}(x)\log P_{\theta}(x)dx$ 。而$\int_{x}P_{data}(x)\log P_{data}(x)dx$与$\theta$无关，在求$\arg\max_{\theta}$时可以减去这一项，不影响$\theta$的最优解。</li>
+</ul>
+</li>
+<li><strong>第四步到第五步</strong>：<ul>
+<li>利用对数运算法则$\log\frac{a}{b}=\log a - \log b$，将$\int_{x}P_{data}(x)\log P_{\theta}(x)dx-\int_{x}P_{data}(x)\log P_{data}(x)dx$变形为$\int_{x}P_{data}(x)\log\frac{P_{\theta}(x)}{P_{data}(x)}dx$。这里$\int_{x}P_{data}(x)\log\frac{P_{\theta}(x)}{P_{data}(x)}dx$ 是$P_{data}(x)$和$P_{\theta}(x)$之间的Kullback - Leibler（KL）散度的相反数，即$KL(P_{data}||P_{\theta})=\int_{x}P_{data}(x)\log\frac{P_{data}(x)}{P_{\theta}(x)}dx=-\int_{x}P_{data}(x)\log\frac{P_{\theta}(x)}{P_{data}(x)}dx$，所以$\arg\max_{\theta}\int_{x}P_{data}(x)\log\frac{P_{\theta}(x)}{P_{data}(x)}dx=\arg\min_{\theta}KL(P_{data}||P_{\theta})$。</li>
+</ul>
+</li>
+</ol>
+<p>整个推导过程的核心是通过数学变换将从数据分布中学习参数$\theta$的问题转化为最小化数据分布$P_{data}(x)$和模型分布$P_{\theta}(x)$之间的KL散度的问题 。 </p>
+<h3 id="VAE-Lower-bound-of-logP-x"><a href="#VAE-Lower-bound-of-logP-x" class="headerlink" title="VAE: Lower bound of logP(x)"></a>VAE: Lower bound of logP(x)</h3><p><img src="vae.png" alt=""></p>
+<h3 id="DDPM-Compute-P-theta-x"><a href="#DDPM-Compute-P-theta-x" class="headerlink" title="DDPM: Compute $P_{\theta}(x)$"></a>DDPM: Compute $P_{\theta}(x)$</h3><p>首先计算$logp(x)$的下界，计算过程与VAE类似。<br><img src="dm_1.png" alt=""><br><img src="dm_2.png" alt=""></p>
 <h2 id="疑问"><a href="#疑问" class="headerlink" title="疑问"></a>疑问</h2><h3 id="为什么如果-q-x-t-x-t-1-满足高斯分布并且-beta-t-足够小，-q-x-t-1-x-t-仍然是一个高斯分布"><a href="#为什么如果-q-x-t-x-t-1-满足高斯分布并且-beta-t-足够小，-q-x-t-1-x-t-仍然是一个高斯分布" class="headerlink" title="为什么如果$q(x_t|x_{t - 1})$满足高斯分布并且$\beta_t$足够小，$q(x_{t - 1}|x_t)$仍然是一个高斯分布"></a>为什么如果$q(x_t|x_{t - 1})$满足高斯分布并且$\beta_t$足够小，$q(x_{t - 1}|x_t)$仍然是一个高斯分布</h3><p>扩散模型的反向过程 $ q(x_{t-1} \mid x_t) $ 在大多数情况下被建模为高斯分布，这一设计基于以下原因：</p>
 <p><strong>正向过程的高斯特性</strong><br>正向过程通过逐步添加高斯噪声将数据破坏为纯噪声，其定义为：</p>
 <script type="math/tex; mode=display">
@@ -432,7 +470,7 @@ q(x_{t-1} \mid x_t, x_0) = \mathcal{N}\left(x_{t-1}; \tilde{\mu}(x_t, x_0), \til
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AC%E5%BC%8F%E6%8E%A8%E5%AF%BC"><span class="nav-number">1.</span> <span class="nav-text">公式推导</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%89%8D%E5%90%91%E6%8E%A8%E5%AF%BC"><span class="nav-number">1.1.</span> <span class="nav-text">前向推导</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%89%8D%E5%90%91%E8%BF%87%E7%A8%8B%E4%BB%8E-x-t-1-%E5%88%B0-x-t-%E7%9A%84%E5%85%AC%E5%BC%8F"><span class="nav-number">1.1.1.</span> <span class="nav-text">前向过程从$x_{t-1}$到$x_{t}$的公式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%8E-x-0-%E5%88%B0-x-t"><span class="nav-number">1.1.2.</span> <span class="nav-text">从$x_0$到$x_t$</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E-x-t-1-%E5%88%B0-x-t-%E7%9A%84%E4%B8%80%E4%B8%AA%E7%96%91%E9%97%AE"><span class="nav-number">1.1.3.</span> <span class="nav-text">关于$x_{t - 1}$到$x_t$的一个疑问</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8D%E5%90%91%E6%8E%A8%E5%AF%BC"><span class="nav-number">1.2.</span> <span class="nav-text">反向推导</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B7%B2%E7%9F%A5-x-t-%EF%BC%8C%E9%A2%84%E6%B5%8B-x-t-1"><span class="nav-number">1.2.1.</span> <span class="nav-text">已知$x_t$，预测$x_{t-1}$</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%A2%9D%E5%A4%96%E5%B7%B2%E7%9F%A5-x-0-%E7%9A%84%E6%83%85%E5%86%B5%E4%B8%8B%E7%9A%84%E5%8F%8D%E5%90%91%E8%BF%87%E7%A8%8B"><span class="nav-number">1.2.2.</span> <span class="nav-text">额外已知$x_0$的情况下的反向过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9B%9E%E5%88%B0%E7%AC%AC%E4%B8%80%E6%AD%A5%E7%9A%84%E7%90%86%E6%83%B3%E7%9B%AE%E6%A0%87"><span class="nav-number">1.2.3.</span> <span class="nav-text">回到第一步的理想目标</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%96%91%E9%97%AE"><span class="nav-number">2.</span> <span class="nav-text">疑问</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%A6%82%E6%9E%9C-q-x-t-x-t-1-%E6%BB%A1%E8%B6%B3%E9%AB%98%E6%96%AF%E5%88%86%E5%B8%83%E5%B9%B6%E4%B8%94-beta-t-%E8%B6%B3%E5%A4%9F%E5%B0%8F%EF%BC%8C-q-x-t-1-x-t-%E4%BB%8D%E7%84%B6%E6%98%AF%E4%B8%80%E4%B8%AA%E9%AB%98%E6%96%AF%E5%88%86%E5%B8%83"><span class="nav-number">2.1.</span> <span class="nav-text">为什么如果$q(x_t|x_{t - 1})$满足高斯分布并且$\beta_t$足够小，$q(x_{t - 1}|x_t)$仍然是一个高斯分布</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AC%E5%BC%8F%E6%8E%A8%E5%AF%BC"><span class="nav-number">1.</span> <span class="nav-text">公式推导</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%89%8D%E5%90%91%E6%8E%A8%E5%AF%BC"><span class="nav-number">1.1.</span> <span class="nav-text">前向推导</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%89%8D%E5%90%91%E8%BF%87%E7%A8%8B%E4%BB%8E-x-t-1-%E5%88%B0-x-t-%E7%9A%84%E5%85%AC%E5%BC%8F"><span class="nav-number">1.1.1.</span> <span class="nav-text">前向过程从$x_{t-1}$到$x_{t}$的公式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%8E-x-0-%E5%88%B0-x-t"><span class="nav-number">1.1.2.</span> <span class="nav-text">从$x_0$到$x_t$</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E-x-t-1-%E5%88%B0-x-t-%E7%9A%84%E4%B8%80%E4%B8%AA%E7%96%91%E9%97%AE"><span class="nav-number">1.1.3.</span> <span class="nav-text">关于$x_{t - 1}$到$x_t$的一个疑问</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8D%E5%90%91%E6%8E%A8%E5%AF%BC"><span class="nav-number">1.2.</span> <span class="nav-text">反向推导</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B7%B2%E7%9F%A5-x-t-%EF%BC%8C%E9%A2%84%E6%B5%8B-x-t-1"><span class="nav-number">1.2.1.</span> <span class="nav-text">已知$x_t$，预测$x_{t-1}$</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%A2%9D%E5%A4%96%E5%B7%B2%E7%9F%A5-x-0-%E7%9A%84%E6%83%85%E5%86%B5%E4%B8%8B%E7%9A%84%E5%8F%8D%E5%90%91%E8%BF%87%E7%A8%8B"><span class="nav-number">1.2.2.</span> <span class="nav-text">额外已知$x_0$的情况下的反向过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9B%9E%E5%88%B0%E7%AC%AC%E4%B8%80%E6%AD%A5%E7%9A%84%E7%90%86%E6%83%B3%E7%9B%AE%E6%A0%87"><span class="nav-number">1.2.3.</span> <span class="nav-text">回到第一步的理想目标</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E5%A4%A7%E4%BC%BC%E7%84%B6-gt-%E6%9C%80%E5%B0%8FKL%E6%95%A3%E5%BA%A6%E6%8E%A8%E5%AF%BC"><span class="nav-number">1.3.</span> <span class="nav-text">最大似然-&gt;最小KL散度推导</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#VAE-Lower-bound-of-logP-x"><span class="nav-number">1.4.</span> <span class="nav-text">VAE: Lower bound of logP(x)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DDPM-Compute-P-theta-x"><span class="nav-number">1.5.</span> <span class="nav-text">DDPM: Compute $P_{\theta}(x)$</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%96%91%E9%97%AE"><span class="nav-number">2.</span> <span class="nav-text">疑问</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%A6%82%E6%9E%9C-q-x-t-x-t-1-%E6%BB%A1%E8%B6%B3%E9%AB%98%E6%96%AF%E5%88%86%E5%B8%83%E5%B9%B6%E4%B8%94-beta-t-%E8%B6%B3%E5%A4%9F%E5%B0%8F%EF%BC%8C-q-x-t-1-x-t-%E4%BB%8D%E7%84%B6%E6%98%AF%E4%B8%80%E4%B8%AA%E9%AB%98%E6%96%AF%E5%88%86%E5%B8%83"><span class="nav-number">2.1.</span> <span class="nav-text">为什么如果$q(x_t|x_{t - 1})$满足高斯分布并且$\beta_t$足够小，$q(x_{t - 1}|x_t)$仍然是一个高斯分布</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
