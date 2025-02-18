@@ -493,7 +493,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-02-17 18:38:29" itemprop="dateModified" datetime="2025-02-17T18:38:29+08:00">2025-02-17</time>
+                <time title="修改时间：2025-02-18 09:37:04" itemprop="dateModified" datetime="2025-02-18T09:37:04+08:00">2025-02-18</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -643,16 +643,19 @@ L&=\mathbb{E}_{q}\left[-log p\left(x_{T}\right)-\sum_{t \geq 1} log \frac{p_{\th
 <h3 id="Background部分"><a href="#Background部分" class="headerlink" title="Background部分"></a>Background部分</h3><h4 id="p-theta-x-0-T-详解"><a href="#p-theta-x-0-T-详解" class="headerlink" title="$p_{\theta}(x_{0:T})$详解"></a>$p_{\theta}(x_{0:T})$详解</h4><p>$p_{\theta}(x_{0:T})$是一个联合概率密度分布，它在扩散模型中描述了包含原始数据$x_0$以及一系列潜在变量$x_1,\cdots,x_T$的联合概率情况。在扩散模型中，$p_{\theta}(x_{0:T})$通常被定义为马尔可夫链形式：$p_{\theta}(x_{0:T}) = p(x_T)\prod_{t = 1}^{T}p_{\theta}(x_{t - 1}|x_t)$ ，其中：</p>
 <ul>
 <li><strong>$p(x_T)$</strong>：是先验分布，如$p(x_T) = \mathcal{N}(x_T; 0, I)$，表示$x_T$服从均值为$0$、协方差矩阵为单位矩阵$I$的高斯分布，它给出了反向过程起始状态$x_T$的概率分布情况。</li>
-<li><strong>$\prod_{t = 1}^{T}p_{\theta}(x_{t - 1}|x_t)$</strong>：是从$x_T$到$x_0$的各步条件概率分布的乘积。$p_{\theta}(x_{t - 1}|x_t)$是在参数$\theta$下，从$x_t$到$x_{t - 1}$的条件概率分布，通常也被设定为高斯分布，如$p_{\theta}(x_{t - 1}|x_t) = \mathcal{N}(x_{t - 1}; \mu_{\theta}(x_t, t), \sum_{\theta}(x_t, t))$，由均值函数$\mu_{\theta}(x_t, t)$和协方差矩阵函数$\sum_{\theta}(x_t, t)$决定。这个乘积体现了从$x_T$逐步经过$T$个步骤转移到$x_0$的联合概率关系。</li>
+<li><p><strong>$\prod_{t = 1}^{T}p_{\theta}(x_{t - 1}|x_t)$</strong>：是从$x_T$到$x_0$的各步条件概率分布的乘积。$p_{\theta}(x_{t - 1}|x_t)$是在参数$\theta$下，从$x_t$到$x_{t - 1}$的条件概率分布，通常也被设定为高斯分布，如$p_{\theta}(x_{t - 1}|x_t) = \mathcal{N}(x_{t - 1}; \mu_{\theta}(x_t, t), \sum_{\theta}(x_t, t))$，由均值函数$\mu_{\theta}(x_t, t)$和协方差矩阵函数$\sum_{\theta}(x_t, t)$决定。这个乘积体现了从$x_T$逐步经过$T$个步骤转移到$x_0$的联合概率关系。</p>
+</li>
+<li><p><strong>链式法则</strong>：用于计算多个随机变量联合概率的重要工具。对于随机变量序列$x_0,x_1,\cdots,x_T$，其联合概率$p_{\theta}(x_{0:T})$可以根据链式法则展开。链式法则的一般形式为 $p(x_1,x_2,\cdots,x_n)=p(x_n)p(x_{n - 1}|x_n)\cdots p(x_1|x_2,x_3,\cdots,x_n)$。</p>
+</li>
 </ul>
-<h4 id="p-theta-x-t-1-x-t-mathcal-N-x-t-1-mu-theta-x-t-t-sum-theta-x-t-t-详解"><a href="#p-theta-x-t-1-x-t-mathcal-N-x-t-1-mu-theta-x-t-t-sum-theta-x-t-t-详解" class="headerlink" title="$p_{\theta}(x_{t - 1}|x_t) := \mathcal{N}(x_{t - 1}; \mu_{\theta}(x_t, t), \sum_{\theta}(x_t, t))$详解"></a>$p_{\theta}(x_{t - 1}|x_t) := \mathcal{N}(x_{t - 1}; \mu_{\theta}(x_t, t), \sum_{\theta}(x_t, t))$详解</h4><p>该公式是扩散模型中反向过程转移概率的定义式，下面从各部分含义、整体意义等方面进行详细解释：</p>
+<h4 id="q-x-1-T-x-0-详解"><a href="#q-x-1-T-x-0-详解" class="headerlink" title="$q(x_{1:T}|x_0)$详解"></a>$q(x_{1:T}|x_0)$详解</h4><p>这个公式描述的是在给定初始状态 $x_0$ 的条件下，状态序列 $x_1,x_2,\cdots,x_T$ 的联合条件概率，它基于马尔可夫性质和概率的链式法则得出，以下详细解释：</p>
 <ul>
-<li><strong>$p_{\theta}(x_{t - 1}|x_t)$</strong>：表示在参数$\theta$下，给定$x_t$时$x_{t - 1}$的条件概率分布。其中，$x_{t - 1}$和$x_t$是扩散模型中不同时间步的潜在变量，$x_t$是当前时间步的量，$x_{t - 1}$是前一个时间步的变量，$\theta$是模型中可学习的参数，例如神经网络中的权重和偏置等，这些参数会影响条件概率分布的具体形式。</li>
-<li><strong>$\mathcal{N}(\cdot)$</strong>：代表高斯分布（正态分布），它是一种常见的连续型概率分布，具有许多良好的数学性质，在概率建模中广泛应用。其概率密度函数呈现出钟形曲线的形态。</li>
-<li><strong>$x_{t - 1}$</strong>：是高斯分布的随机变量，即该分布所描述的对象，它表示在反向过程中，从当前时间步$x_t$恢复到前一个时间步的潜在变量。</li>
-<li><strong>$\mu_{\theta}(x_t, t)$</strong>：是高斯分布的均值函数，它依赖于参数$\theta$、当前时间步的变量$x_t$以及时间步序号$t$。这个函数的作用是根据$x_t$和$t$计算出在当前情况下$x_{t - 1}$期望取值，即给定$x_t$时，$x_{t - 1}$的平均状态。</li>
-<li><strong>$\sum_{\theta}(x_t, t)$</strong>：是高斯分布的协方差矩阵函数，同样依赖于参数$\theta$、当前时间步的变量$x_t$以及时间步序号$t$。协方差矩阵描述了随机变量不同维度之间的相关性和方差息，这里的$\sum_{\theta}(x_t, t)$决定了$x_{t - 1}$各个维度之间的相关性以及每个维度的方差情况。</li>
+<li><p><strong>马尔可夫性质</strong>：指的是在已知当前状态的情况下，未来的状态只依赖于当前状态，而与过去的状态无关。在该公式所描述的情境中，假设状态序列 $x_0,x_1,\cdots,x_T$ 构成一个马尔可夫链，即对于任意的 $t$，$x_t$ 只依赖于 $x_{t - 1}$，可表示为 $q(x_t|x_{0:t - 1}) = q(x_t|x_{t - 1})$ 。这意味着在从 $x_0$ 到 $x_T$ 的状态转移过程中，每一步的状态转移只与前一步的状态相关，而不需要考虑更前面的所有状态。</p>
+</li>
+<li><p><strong>概率的链式法则</strong>：用于计算多个随机变量的联合概率。对于随机变量 $X_1,X_2,\cdots,X_n$，其联合概率 $P(X_1,X_2,\cdots,X_n)$ 可以按照链式法则展开为 $P(X_1,X_2,\cdots,X_n)=P(X_1)P(X_2|X_1)P(X_3|X_1,X_2)\cdots P(X_n|X_1,X_2,\cdots,X_{n - 1})$ 。</p>
+</li>
 </ul>
+<p>结合上述马尔可夫性质，对于条件概率 $q(x_{1:T}|x_0)$（即在给定 $x_0$ 的条件下，$x_1$ 到 $x_T$ 的联合条件概率），根据链式法则原本为 $q(x_{1:T}|x_0)=q(x_1|x_0)q(x_2|x_0,x_1)q(x_3|x_0,x_1,x_2)\cdots q(x_T|x_0,x_1,\cdots,x_{T - 1})$ ，但由于马尔可夫性质，$q(x_2|x_0,x_1)=q(x_2|x_1)$，$q(x_3|x_0,x_1,x_2)=q(x_3|x_2)$ ，以此类推，最终就得到了 $q(x_{1:T}|x_0)=\prod_{t = 1}^{T}q(x_t|x_{t - 1})$ ，即将联合条件概率表示为从 $t = 1$ 到 $t = T$ 每一步相邻状态间条件概率的乘积。</p>
 <h2 id="读后总结"><a href="#读后总结" class="headerlink" title="读后总结"></a>读后总结</h2>
       
     </div>
