@@ -34,7 +34,7 @@
 <meta property="og:image" content="https://hqulzq.github.io/2025/02/07/diffusion%E5%8E%9F%E7%90%86/dm_1.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/02/07/diffusion%E5%8E%9F%E7%90%86/dm_2.png">
 <meta property="article:published_time" content="2025-02-07T12:57:57.000Z">
-<meta property="article:modified_time" content="2025-02-18T11:46:52.229Z">
+<meta property="article:modified_time" content="2025-02-18T12:09:19.242Z">
 <meta property="article:author" content="Zongqing Li">
 <meta property="article:tag" content="diffusion">
 <meta name="twitter:card" content="summary">
@@ -233,7 +233,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-02-18 19:46:52" itemprop="dateModified" datetime="2025-02-18T19:46:52+08:00">2025-02-18</time>
+                <time title="修改时间：2025-02-18 20:09:19" itemprop="dateModified" datetime="2025-02-18T20:09:19+08:00">2025-02-18</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -259,8 +259,7 @@
         <h2 id="公式推导"><a href="#公式推导" class="headerlink" title="公式推导"></a>公式推导</h2><p>如下图所示，给大家一个直观的认识：Diffusion Model分为前向过程和反向过程，前向过程将输入图$x_{0}$变为纯高斯噪声$x_{T}$，反向过程就是将噪声$x_{T}$还原为图片$x_{0}$的过程（就是一个不断去噪的过程）<br><img src="struct.png" alt="struct"></p>
 <h3 id="前向推导"><a href="#前向推导" class="headerlink" title="前向推导"></a>前向推导</h3><h4 id="前向过程从-x-t-1-到-x-t-的公式"><a href="#前向过程从-x-t-1-到-x-t-的公式" class="headerlink" title="前向过程从$x_{t-1}$到$x_{t}$的公式"></a>前向过程从$x_{t-1}$到$x_{t}$的公式</h4><p>给定真实图片$x_0 \sim q(x)$，前向过程中diffusion model对其添加了$T$次高斯噪声，分别得到图$x_{0},x_{1},…,x_{T}$（随着$t$的增加，$x$包含越来越多的噪声），这个过程如下表示</p>
 <script type="math/tex; mode=display">q(x_{t}|x_{t-1}) = \mathcal{N}(x_{t};\sqrt{1-\beta}x_{t-1},\beta I)</script><p>下图展示了前向加噪的过程中图片的变化，从左到右为$x_{0},x_{1},…,x_{T}$</p>
-<p><img src="image_0.png" alt="image_0"></p>
-<p>整个前向加噪过程是马尔科夫过程，即$t$时刻的状态只与$t-1$时刻有关，在不断加噪的过程中，$x_{t}$不断接近纯噪声，$T\rightarrow \infty$，$x_t$变为正态分布的高斯噪声，在论文中$ \beta_{t}$是从0.0001到0.02线性插值的，取$T=1000$，也就是说$\beta_{t}$是不断增加的，$1-\beta_{t}$是不断减小的。</p>
+<p><img src="image_0.png" alt="image_0"><br><span id="more"></span><br>整个前向加噪过程是马尔科夫过程，即$t$时刻的状态只与$t-1$时刻有关，在不断加噪的过程中，$x_{t}$不断接近纯噪声，$T\rightarrow \infty$，$x_t$变为正态分布的高斯噪声，在论文中$ \beta_{t}$是从0.0001到0.02线性插值的，取$T=1000$，也就是说$\beta_{t}$是不断增加的，$1-\beta_{t}$是不断减小的。</p>
 <p>回过头来再看上述分布$\mathcal{N}(x_{t};\sqrt{1-\beta_{t}}x_{t-1},\beta_{t}I)$，随着$t$增加，$x_{t}$的均值是$x_{t-1}$的$\sqrt{1-\beta_{t}}&lt;1$倍，因此最终$x_t$的均值不断变小，趋近于0，而标准正态分布的均值也为0。</p>
 <p>下面是$\beta_{t}$和$\sqrt{1-\beta_{T}}$随着$t$增加的变化曲线</p>
 <p><img src="image_1.png" alt="image_1"></p>
