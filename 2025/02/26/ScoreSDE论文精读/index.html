@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="SCORE-BASED GENERATIVE MODELING THROUGH STOCHASTIC DIFFERENTIAL EQUATIONS论文精读全文翻译摘要从数据中生成噪声很容易；而从噪声中生成数据则是生成式建模。我们提出一种随机微分方程（SDE），通过缓慢注入噪声，将复杂的数据分布平滑地转换为已知的先验分布；同时提出一种相应的逆向时间SDE，通过逐渐去除噪声，将先验分布转换回数据分布。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ScoreSDE论文精读">
+<meta property="og:url" content="https://hqulzq.github.io/2025/02/26/ScoreSDE%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/index.html">
+<meta property="og:site_name" content="Lzq&#39;s blog">
+<meta property="og:description" content="SCORE-BASED GENERATIVE MODELING THROUGH STOCHASTIC DIFFERENTIAL EQUATIONS论文精读全文翻译摘要从数据中生成噪声很容易；而从噪声中生成数据则是生成式建模。我们提出一种随机微分方程（SDE），通过缓慢注入噪声，将复杂的数据分布平滑地转换为已知的先验分布；同时提出一种相应的逆向时间SDE，通过逐渐去除噪声，将先验分布转换回数据分布。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/26/ScoreSDE%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/26/ScoreSDE%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f2.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/26/ScoreSDE%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/26/ScoreSDE%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t2_3.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/26/ScoreSDE%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f3.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/26/ScoreSDE%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f4.png">
+<meta property="article:published_time" content="2025-02-26T03:20:27.000Z">
+<meta property="article:modified_time" content="2025-03-04T07:26:28.524Z">
+<meta property="article:author" content="Zongqing Li">
+<meta property="article:tag" content="diffusion">
+<meta property="article:tag" content="论文">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hqulzq.github.io/2025/02/26/ScoreSDE%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f1.png">
+
+<link rel="canonical" href="https://hqulzq.github.io/2025/02/26/ScoreSDE%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>ScoreSDE论文精读 | Lzq's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lzq's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">31</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">43</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book">
+
+    <a href="/book" rel="section"><i class="fas fa-book fa-fw"></i>Book</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/02/26/ScoreSDE%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/head.png?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ScoreSDE论文精读
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-02-26 11:20:27" itemprop="dateCreated datePublished" datetime="2025-02-26T11:20:27+08:00">2025-02-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-03-04 15:26:28" itemprop="dateModified" datetime="2025-03-04T15:26:28+08:00">2025-03-04</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="SCORE-BASED-GENERATIVE-MODELING-THROUGH-STOCHASTIC-DIFFERENTIAL-EQUATIONS论文精读"><a href="#SCORE-BASED-GENERATIVE-MODELING-THROUGH-STOCHASTIC-DIFFERENTIAL-EQUATIONS论文精读" class="headerlink" title="SCORE-BASED GENERATIVE MODELING THROUGH STOCHASTIC DIFFERENTIAL EQUATIONS论文精读"></a>SCORE-BASED GENERATIVE MODELING THROUGH STOCHASTIC DIFFERENTIAL EQUATIONS论文精读</h1><h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>从数据中生成噪声很容易；而从噪声中生成数据则是生成式建模。我们提出一种随机微分方程（SDE），通过缓慢注入噪声，将复杂的数据分布平滑地转换为已知的先验分布；同时提出一种相应的逆向时间SDE，通过逐渐去除噪声，将先验分布转换回数据分布。关键在于，逆向时间SDE仅依赖于受扰动数据分布的时变梯度场（即分数）。利用基于分数的生成式建模的进展，我们可以用神经网络精确估计这些分数，并使用数值SDE求解器生成样本。我们表明，这个框架涵盖了先前基于分数的生成式建模和扩散概率建模方法，为新的采样过程和建模能力提供了可能。具体而言，我们引入了一个预测 - 校正框架，以纠正离散化逆向时间SDE演化过程中的误差。我们还推导了一个等效的神经常微分方程（ODE），它与SDE从相同分布中采样，但还能实现精确的似然计算，并提高采样效率。此外，我们提供了一种使用基于分数的模型解决逆问题的新方法，并通过类条件生成、图像修复和上色实验进行了验证。结合多种架构改进，我们在CIFAR - 10上的无条件图像生成任务中取得了突破性的成果，Inception分数达到9.89，FID为2.20，以2.99比特/维度的似然性创造了新纪录，并且首次从基于分数的生成模型中生成了高保真的1024×1024图像。<br><span id="more"></span></p>
+<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1 引言"></a>1 引言</h3><p>两类成功的概率生成模型，一类是通过逐渐增加噪声来依次破坏训练数据，另一类是学习逆转这种破坏过程，从而构建数据的生成模型。基于朗之万动力学的分数匹配（SMLD）（Song &amp; Ermon, 2019）在每个噪声尺度上估计分数（即对数概率密度关于数据的梯度），然后在生成过程中使用朗之万动力学从一系列逐渐减小的噪声尺度中进行采样。去噪扩散概率模型（DDPM）（Sohl-Dickstein等人, 2015; Ho等人, 2020）训练一系列概率模型来逆转噪声破坏的每一步，利用逆向分布的函数形式使训练易于处理。对于连续状态空间，DDPM的训练目标会在每个噪声尺度上隐式地计算分数。因此，我们将这两类模型统称为基于分数的生成模型。</p>
+<p>基于分数的生成模型及相关技术（Bordes等人, 2017; Goyal等人, 2017; Du &amp; Mordatch, 2019）已被证明在图像生成（Song &amp; Ermon, 2019; 2020; Ho等人, 2020）、音频生成（Chen等人, 2020; Kong等人, 2020）、图生成（Niu等人, 2020）和形状生成（Cai等人, 2020）等方面是有效的。为了实现新的采样方法并进一步扩展基于分数的生成模型的能力，我们提出了一个统一的框架，通过随机微分方程（SDEs）对先前的方法进行了推广。</p>
+<p>具体来说，我们不再使用有限数量的噪声分布来扰动数据，而是考虑根据扩散过程随时间演化的连续分布。这个过程将一个数据点逐渐扩散为随机噪声，由一个预先设定的SDE给出，该SDE不依赖于数据且没有可训练参数。通过逆转这个过程，我们可以将随机噪声平滑地塑造为数据以进行样本生成。关键是，这个逆向过程满足一个逆向时间SDE（Anderson, 1982），在已知边际概率密度的分数作为时间的函数的情况下，可以从正向SDE推导得出。因此，我们可以通过训练一个依赖时间的神经网络来估计分数，从而近似逆向时间SDE，然后使用数值SDE求解器生成样本。我们的核心思想如图1所示。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f1.png" alt="f1"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图1：求解反向时间随机微分方程可得到一个基于分数的生成模型。将数据转换为简单的噪声分布可以通过连续时间随机微分方程来实现。如果我们知道每个中间时间步的分布分数 $\nabla_{x} \log p_{t}(x)$ ，那么这个随机微分方程就可以反向求解。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>我们提出的框架在理论和实践上有以下贡献：</p>
+<ul>
+<li><strong>灵活的采样和似然计算</strong>：我们可以使用任何通用的SDE求解器对逆向时间SDE进行积分以进行采样。此外，我们提出了两种对一般SDE不可行的特殊方法：（i）预测-校正（PC）采样器，它将数值SDE求解器与基于分数的MCMC方法（如朗之万MCMC（Parisi, 1981）和HMC（Neal等人, 2011））相结合；（ii）基于概率流常微分方程（ODE）的确定性采样器。前者统一并改进了现有的基于分数模型的采样方法。后者允许通过黑箱ODE求解器进行快速自适应采样，通过潜在代码进行灵活的数据操作，具有唯一可识别的编码，并且值得注意的是，能够进行精确的似然计算。</li>
+<li><strong>可控生成</strong>：我们可以通过在训练期间不可用的信息进行条件设定来调节生成过程，因为条件逆向时间SDE可以从无条件分数中有效估计。这使得诸如类条件生成、图像修复、上色和其他逆问题等应用成为可能，所有这些都可以使用单个无条件基于分数的模型实现，而无需重新训练。</li>
+<li><strong>统一框架</strong>：我们的框架提供了一种统一的方式来探索和调整各种SDE，以改进基于分数的生成模型。SMLD和DDPM的方法可以作为两个不同SDE的离散化合并到我们的框架中。尽管最近有报道称DDPM（Ho等人, 2020）比SMLD（Song &amp; Ermon, 2019; 2020）能实现更高质量的样本，但我们表明，通过我们框架所允许的更好的架构和新的采样算法，SMLD可以追平DDPM的效果——在CIFAR-10上，SMLD达到了新的最先进的Inception分数（9.89）和FID分数（2.20），并且首次从基于分数的模型中生成了高保真的1024×1024图像。此外，我们在框架内提出了一种新的SDE，在均匀去量化的CIFAR-10图像上实现了2.99比特/维度的似然值，为该任务创造了新纪录。</li>
+</ul>
+<h3 id="2-背景"><a href="#2-背景" class="headerlink" title="2 背景"></a>2 背景</h3><h4 id="2-1-基于朗之万动力学的去噪分数匹配（SMLD）"><a href="#2-1-基于朗之万动力学的去噪分数匹配（SMLD）" class="headerlink" title="2.1 基于朗之万动力学的去噪分数匹配（SMLD）"></a>2.1 基于朗之万动力学的去噪分数匹配（SMLD）</h4><p>设$p_{\sigma}(\tilde{x} | x):=N(\tilde{x} ; x, \sigma^{2} I)$为扰动核，$p_{\sigma}(\tilde{x}):=\int p_{data }(x) p_{\sigma}(\tilde{x} | x) d x$，其中$p_{data }(x)$表示数据分布。考虑一系列正的噪声尺度$\sigma_{min }=\sigma_{1}&lt;\sigma_{2}&lt;\cdots&lt;\sigma_{N}=\sigma_{max }$。通常，$\sigma_{min }$足够小，使得$p_{\sigma_{min }}(x) ≈p_{data }(x)$，而$\sigma_{max }$足够大，使得$p_{\sigma_{max }}(x) ≈N(x ; 0, \sigma_{max }^{2} I)$。Song和Ermon（2019）提出训练一个噪声条件分数网络（Noise Conditional Score Network，NCSN），记为$s_{\theta}(x, \sigma)$，其目标函数为去噪分数匹配（Vincent，2011）目标的加权和：</p>
+<script type="math/tex; mode=display">\theta^{*}=\underset{\theta}{argmin} \sum_{i=1}^{N} \sigma_{i}^{2} \mathbb{E}_{p_{data }(x)} \mathbb{E}_{p_{\sigma_{i}}(\tilde{x} | x)}\left[\left\| s_{\theta}\left(\tilde{x}, \sigma_{i}\right)-\nabla_{\tilde{x}} log p_{\sigma_{i}}(\tilde{x} | x)\right\|_{2}^{2}\right]\tag{1}</script><p>在数据充足且模型容量足够的情况下，最优的基于分数的模型 <script type="math/tex">s_{\theta^{*}}(x, \sigma)</script> 在<script type="math/tex">\sigma \in\{\sigma_{i}\}_{i = 1}^{N}</script>时，几乎处处与$\nabla_{x} log p_{\sigma}(x)$相匹配。在采样时，Song和Ermon（2019）对每个$p_{\sigma_{i}}(x)$依次运行$M$步朗之万蒙特卡罗（Langevin MCMC）以获得样本：</p>
+<script type="math/tex; mode=display">x_{i}^{m}=x_{i}^{m - 1}+\epsilon_{i} s_{\theta^{*}}\left(x_{i}^{m - 1}, \sigma_{i}\right)+\sqrt{2 \epsilon_{i}} z_{i}^{m}, m = 1,2, \cdots, M, \tag{2}</script><p>其中$\epsilon_{i}&gt;0$是步长，$z_{i}^{m}$是标准正态分布。上述过程从$i = N$开始，依次对$i = N - 1, \cdots, 1$进行，且$x_{N}^{0} \sim N(x | 0, \sigma_{max }^{2} I)$，当$i &lt; N$时，$x_{i}^{0}=x_{i + 1}^{M}$。在某些正则条件下，当$M \to \infty$且对所有$i$都有$\epsilon_{i} \to 0$时，$x_{1}^{M}$成为来自$p_{\sigma_{min }}(x) ≈p_{data }(x)$的精确样本。</p>
+<h4 id="2-2-去噪扩散概率模型（DDPM）"><a href="#2-2-去噪扩散概率模型（DDPM）" class="headerlink" title="2.2 去噪扩散概率模型（DDPM）"></a>2.2 去噪扩散概率模型（DDPM）</h4><p>Sohl-Dickstein等人（2015）；Ho等人（2020）考虑一系列正的噪声尺度$0&lt;\beta_{1}, \beta_{2}, \cdots, \beta_{N}&lt;1$。对于每个训练数据点$x_{0} \sim p_{data }(x)$，构建一个离散马尔可夫链$\{x_{0}, x_{1}, \cdots, x_{N}\}$，使得$p(x_{i} | x_{i - 1})=N(x_{i} ; \sqrt{1-\beta_{i}} x_{i - 1}, \beta_{i} I)$，因此$p_{\alpha_{i}}(x_{i} | x_{0})=N(x_{i} ; \sqrt{\alpha_{i}} x_{0},(1-\alpha_{i}) I)$，其中$\alpha_{i}:=\prod_{j = 1}^{i}(1-\beta_{j})$。与SMLD类似，我们可以将受扰动的数据分布表示为$p_{\alpha_{i}}(\tilde{x}):=\int p_{data }(x) p_{\alpha_{i}}(\tilde{x} | x)dx$。噪声尺度的设置使得$x_{N}$近似服从$N(0, I)$分布。逆向的变分马尔可夫链由$p_{\theta}(x_{i - 1} | x_{i})=N(x_{i - 1} ; \frac{1}{\sqrt{1-\beta_{i}}}(x_{i}+\beta_{i} s_{\theta}(x_{i}, i)), \beta_{i} I)$参数化，并使用证据下界（ELBO）的加权变体进行训练：</p>
+<script type="math/tex; mode=display">\theta^{*}=\underset{\theta}{arg min } \sum_{i = 1}^{N}\left(1-\alpha_{i}\right) \mathbb{E}_{p_{data }(x)} \mathbb{E}_{p_{\alpha_{i}}(\tilde{x} | x)}\left[\left\| s_{\theta}(\tilde{x}, i)-\nabla_{\tilde{x}} log p_{\alpha_{i}}(\tilde{x} | x)\right\|_{2}^{2}\right] \tag{3}</script><p>求解上述方程得到最优模型<script type="math/tex">s_{\theta^{*}}(x, i)</script>后，可以从<script type="math/tex">x_{N} \sim N(0, I)</script>开始，按照估计的逆向马尔可夫链生成样本：</p>
+<script type="math/tex; mode=display">x_{i - 1}=\frac{1}{\sqrt{1-\beta_{i}}}\left(x_{i}+\beta_{i} s_{\theta^{*}}\left(x_{i}, i\right)\right)+\sqrt{\beta_{i}} z_{i}, i = N, N - 1, \cdots, 1 \tag{4}</script><p>我们将这种方法称为祖先采样（ancestral sampling），因为它相当于从图形模型$\prod_{i = 1}^{N} p_{\theta}(x_{i - 1} | x_{i})$进行祖先采样。这里描述的目标方程（3）是Ho等人（2020）中的$L_{simple }$，写成这种形式是为了更明显地展示它与方程（1）的相似性。与方程（1）一样，方程（3）也是去噪分数匹配目标的加权和，这意味着最优模型<script type="math/tex">s_{\theta^{*}}(\tilde{x}, i)</script>与受扰动数据分布的分数$\nabla_{x} log p_{\alpha_{i}}(x)$相匹配。值得注意的是，方程（1）和方程（3）中第$i$个求和项的权重，即$\sigma_{i}^{2}$和$(1-\alpha_{i})$，与相应的扰动核具有相同的函数形式：<script type="math/tex">\sigma_{i}^{2} \propto 1 / \mathbb{E}[\left\|\nabla_{x} log p_{\sigma_{i}}(\tilde{x} | x)\right\|_{2}^{2}]</script>和<script type="math/tex">(1-\alpha_{i}) \propto 1 / \mathbb{E}[\left\|\nabla_{x} log p_{\alpha_{i}}(\tilde{x} | x)\right\|_{2}^{2}]</script>。</p>
+<h3 id="3-基于随机微分方程的分数生成建模"><a href="#3-基于随机微分方程的分数生成建模" class="headerlink" title="3 基于随机微分方程的分数生成建模"></a>3 基于随机微分方程的分数生成建模</h3><p>在之前的方法中，用多个噪声尺度扰动数据是成功的关键。我们提议进一步将这个想法扩展到无穷多个噪声尺度，使得受扰动的数据分布会随着噪声增强，依据随机微分方程进行演化。图2展示了我们框架的概述。</p>
+<h4 id="3-1-用随机微分方程扰动数据"><a href="#3-1-用随机微分方程扰动数据" class="headerlink" title="3.1 用随机微分方程扰动数据"></a>3.1 用随机微分方程扰动数据</h4><p>我们的目标是构建一个由连续时间变量 $t \in [0, T]$ 索引的扩散过程 $\{x(t)\}_{t = 0}^{T}$，使得 $x(0) \sim p_{0}$（我们有来自该分布的独立同分布样本数据集），并且 $x(T) \sim p_{T}$（我们可以高效地从这个分布生成样本）。换句话说，$p_{0}$ 是数据分布，$p_{T}$ 是先验分布。这个扩散过程可以建模为一个伊藤随机微分方程的解：</p>
+<script type="math/tex; mode=display">dx = f(x, t)dt + g(t)dw \tag{5}</script><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f2.png" alt="f2"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图2：基于随机微分方程的分数生成建模概述。我们可以用一个随机微分方程将数据映射到噪声分布（先验分布）（3.1节），并反向求解这个随机微分方程进行生成建模（3.2节）。我们也可以反向求解相关的概率流常微分方程（4.3节），这会产生一个确定性过程，从与随机微分方程相同的分布中采样。反向时间随机微分方程和概率流常微分方程都可以通过估计分数 $\nabla_{x}\log p_{t}(x)$ 得到（3.3节）。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>其中 $w$ 是标准维纳过程（也称为布朗运动），$f(\cdot, t): \mathbb{R}^{d} \to \mathbb{R}^{d}$ 是一个向量值函数，称为 $x(t)$ 的漂移系数，$g(\cdot): \mathbb{R} \to \mathbb{R}$ 是一个标量函数，称为 $x(t)$ 的扩散系数。为了便于表述，我们假设扩散系数是一个标量（而不是 $d \times d$ 矩阵）并且不依赖于 $x$，但我们的理论可以推广到更一般的情况（见附录A）。只要系数在状态和时间上全局满足利普希茨条件，该随机微分方程就有唯一的强解（Øksendal, 2003）。此后，我们用 $p_{t}(x)$ 表示 $x(t)$ 的概率密度，用 $p_{st}(x(t)|x(s))$ 表示从 $x(s)$ 到 $x(t)$ 的转移核，其中 $0 \leq s &lt; t \leq T$。</p>
+<p>通常，$p_{T}$ 是一个无结构的先验分布，不包含 $p_{0}$ 的任何信息，比如具有固定均值和方差的高斯分布。有多种设计公式（5）中随机微分方程的方法，使其能将数据分布扩散为固定的先验分布。在3.4节中，我们会给出几个例子，它们是从SMLD和DDPM的连续推广中推导出来的。</p>
+<h4 id="3-2-通过反向随机微分方程生成样本"><a href="#3-2-通过反向随机微分方程生成样本" class="headerlink" title="3.2 通过反向随机微分方程生成样本"></a>3.2 通过反向随机微分方程生成样本</h4><p>从 $x(T) \sim p_{T}$ 的样本出发，反向进行这个过程，我们可以得到 $x(0) \sim p_{0}$ 的样本。Anderson（1982）的一个重要结果表明，扩散过程的反向也是一个扩散过程，只不过是在时间上反向运行，由反向时间随机微分方程给出：</p>
+<script type="math/tex; mode=display">dx = \left[f(x, t) - g(t)^{2}\nabla_{x}\log p_{t}(x)\right]dt + g(t)d\overline{w}</script><p>其中 $\overline{w}$ 是时间从 $T$ 到 $0$ 反向流动时的标准维纳过程，$dt$ 是一个无穷小的负时间步长。一旦知道了所有 $t$ 时刻每个边际分布的分数 $\nabla_{x}\log p_{t}(x)$，我们就可以从公式（6）推导出反向扩散过程，并对其进行模拟，从而从 $p_{0}$ 中采样。</p>
+<h4 id="3-3-估计随机微分方程的分数"><a href="#3-3-估计随机微分方程的分数" class="headerlink" title="3.3 估计随机微分方程的分数"></a>3.3 估计随机微分方程的分数</h4><p>分布的分数可以通过在样本上使用分数匹配（Hyvärinen, 2005; Song等人, 2019a）训练一个基于分数的模型来估计。为了估计 $\nabla_{x}\log p_{t}(x)$，我们可以通过对公式（1）和（3）进行连续推广，训练一个依赖于时间的基于分数的模型 $s_{\theta}(x, t)$：</p>
+<script type="math/tex; mode=display">\theta^{*} = \underset{\theta}{\text{arg min}} \mathbb{E}_{t}\left\{\lambda(t) \mathbb{E}_{x(0)} \mathbb{E}_{x(t)|x(0)}\left[\left\| s_{\theta}(x(t), t) - \nabla_{x(t)}\log p_{0t}(x(t)|x(0))\right\|_{2}^{2}\right]\right\} \tag{7}</script><p>这里 $\lambda: [0, T] \to \mathbb{R}_{&gt;0}$ 是一个正加权函数，$t$ 是在 $[0, T]$ 上均匀采样得到的，$x(0) \sim p_{0}(x)$，$x(t) \sim p_{0t}(x(t)|x(0))$。在数据充足和模型容量足够的情况下，分数匹配可以确保公式（7）的最优解 $s_{\theta *}(x, t)$，对于几乎所有的 $x$ 和 $t$，都等于 $\nabla_{x}\log p_{t}(x)$ 。与SMLD和DDPM类似，我们通常可以选择 $\lambda \propto 1 / \mathbb{E}[\left|\nabla_{x(t)}\log p_{0t}(x(t)|x(0))\right|_{2}^{2}]$ 。需要注意的是，公式（7）使用的是去噪分数匹配，但其他分数匹配目标，如切片分数匹配（Song等人, 2019a）和有限差分分数匹配（Pang等人, 2020）在这里也同样适用。</p>
+<p>通常，我们需要知道转移核 $p_{0t}(x(t)|x(0))$ 才能高效地求解公式（7）。当 $f(\cdot, t)$ 是仿射函数时，转移核总是高斯分布，其均值和方差通常可以用标准方法得到封闭形式的解（见Särkkä和Solin (2019) 中的5.5节）。对于更一般的随机微分方程，我们可以通过求解柯尔莫哥洛夫前向方程（Øksendal, 2003）来得到 $p_{0t}(x(t)|x(0))$ 。或者，我们可以模拟随机微分方程从 $p_{0t}(x(t)|x(0))$ 中采样，并在公式（7）中用切片分数匹配替代去噪分数匹配进行模型训练，这样可以绕过对 $\nabla_{x(t)}\log p_{0t}(x(t)|x(0))$ 的计算（见附录A）。</p>
+<h4 id="3-4-示例：VE、VP随机微分方程及其他"><a href="#3-4-示例：VE、VP随机微分方程及其他" class="headerlink" title="3.4 示例：VE、VP随机微分方程及其他"></a>3.4 示例：VE、VP随机微分方程及其他</h4><p>SMLD和DDPM中使用的噪声扰动可以看作是两种不同随机微分方程的离散化形式。下面我们简要讨论一下，更多细节见附录B。</p>
+<p>当总共使用 $N$ 个噪声尺度时，SMLD的每个扰动核 $p_{\sigma_{i}}(x|x_{0})$ 对应于以下马尔可夫链中 $x_{i}$ 的分布：</p>
+<script type="math/tex; mode=display">x_{i} = x_{i - 1} + \sqrt{\sigma_{i}^{2} - \sigma_{i - 1}^{2}}z_{i - 1}, \quad i = 1, \cdots, N</script><p>其中 $z_{i - 1} \sim N(0, I)$，为简化符号，我们引入了 $\sigma_{0} = 0$ 。当 $N \to \infty$ 时，$\sigma_{i}$ 变成一个函数 $\sigma(t)$，$z_{i}$ 变成 $z(t)$，马尔可夫链 $\{x_{i}\}_{i = 1}^{N}$ 变成一个连续随机过程 $\{x(t)\}_{t = 0}^{1}$，这里我们使用连续时间变量 $t \in [0, 1]$ 进行索引，而不是整数 $i$ 。这个过程 $\{x(t)\}_{t = 0}^{1}$ 由以下随机微分方程给出：</p>
+<script type="math/tex; mode=display">dx = \sqrt{\frac{d[\sigma^{2}(t)]}{dt}}dw \tag{9}</script><p>同样地，对于DDPM的扰动核 $\{p_{\alpha_{i}}(x|x_{0})\}_{i = 1}^{N}$，其离散马尔可夫链为：</p>
+<script type="math/tex; mode=display">x_{i} = \sqrt{1 - \beta_{i}}x_{i - 1} + \sqrt{\beta_{i}}z_{i - 1}, \quad i = 1, \cdots, N</script><p>当 $N \to \infty$ 时，公式（10）收敛到以下随机微分方程：</p>
+<script type="math/tex; mode=display">dx = -\frac{1}{2}\beta(t)xdt + \sqrt{\beta(t)}dw \tag{11}</script><p>因此，SMLD和DDPM中使用的噪声扰动分别对应于公式（9）和（11）中随机微分方程的离散化。有趣的是，当 $t \to \infty$ 时，公式（9）中的随机微分方程总是产生方差爆炸的过程，而公式（11）中的随机微分方程在初始分布具有单位方差时，会产生方差固定为1的过程（证明见附录B）。由于这种差异，我们将公式（9）称为方差爆炸（VE）随机微分方程，将公式（11）称为方差保持（VP）随机微分方程。</p>
+<p>受VP随机微分方程的启发，我们提出了一种新型的随机微分方程，在似然性方面表现尤为出色（见4.3节），其表达式为：</p>
+<script type="math/tex; mode=display">dx = -\frac{1}{2}\beta(t)xdt + \sqrt{\beta(t)(1 - e^{-2\int_{0}^{t}\beta(s)ds})}dw \tag{12}</script><p>当使用相同的 $\beta(t)$ 并从相同的初始分布开始时，公式（12）所诱导的随机过程的方差在每个中间时间步都始终受到VP随机微分方程的限制（证明见附录B）。因此，我们将公式（12）命名为亚VP随机微分方程。</p>
+<p>由于VE、VP和亚VP随机微分方程都具有仿射漂移系数，它们的扰动核 $p_{0t}(x(t)|x(0))$ 都是高斯分布，可以使用Särkkä和Solin (2019) 中的公式（5.50）和（5.51）进行计算：</p>
+<script type="math/tex; mode=display">p_{0t}(x(t)|x(0)) = 
+\begin{cases}
+\mathcal{N}(x(t); x(0), [\sigma^{2}(t) - \sigma^{2}(0)]I), & \text{(VE随机微分方程)} \\
+\mathcal{N}(x(t); x(0)e^{-\frac{1}{2}\int_{0}^{t}\beta(s)ds}, I - Ie^{-\int_{0}^{t}\beta(s)ds}) & \text{(VP随机微分方程)} \\
+\mathcal{N}(x(t); x(0)e^{-\frac{1}{2}\int_{0}^{t}\beta(s)ds}, [1 - e^{-\int_{0}^{t}\beta(s)ds}]^{2}I) & \text{(亚VP随机微分方程)}
+\end{cases} \tag{29}</script><p>因此，这里介绍的所有随机微分方程都可以用公式（7）中的目标函数进行高效训练。 </p>
+<h3 id="4-求解反向随机微分方程"><a href="#4-求解反向随机微分方程" class="headerlink" title="4 求解反向随机微分方程"></a>4 求解反向随机微分方程</h3><p>训练完一个依赖时间的基于分数的模型 $s_{\theta}$ 后，我们可以用它构建反向时间随机微分方程，然后用数值方法对其进行模拟，从 $p_{0}$ 中生成样本。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t1.png" alt="t1"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表 1：CIFAR-10 数据集上不同反向时间随机微分方程求解器的比较。阴影区域是在相同计算量（分数函数评估次数）下获得的结果。报告的是五次采样运行的平均值和标准差。“P1000” 或 “P2000”：分别表示使用 1000 步和 2000 步的仅预测采样器；“C2000”：使用 2000 步的仅校正采样器；“PC1000”：使用 1000 步预测和 1000 步校正的预测 - 校正（PC）采样器</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="4-1-通用数值随机微分方程求解器"><a href="#4-1-通用数值随机微分方程求解器" class="headerlink" title="4.1 通用数值随机微分方程求解器"></a>4.1 通用数值随机微分方程求解器</h4><p>数值求解器能给出随机微分方程的近似轨迹。有许多通用的数值方法可用于求解随机微分方程，如欧拉 - 丸山法（Euler-Maruyama）和随机龙格 - 库塔法（stochastic Runge-Kutta）（Kloeden &amp; Platen, 2013），它们对应于对随机动力学的不同离散化方式。我们可以将这些方法中的任何一种应用于反向时间随机微分方程来生成样本。</p>
+<p>DDPM的采样方法——祖先采样（公式(4)），实际上对应于反向时间VP随机微分方程（公式(11)）的一种特殊离散化（见附录E）。然而，为新的随机微分方程推导祖先采样规则可能并不容易。为了解决这个问题，我们提出了反向扩散采样器（详见附录E），它对反向时间随机微分方程的离散化方式与正向随机微分方程相同，因此，只要知道正向离散化方式，就可以很容易地推导出来。如表1所示，在CIFAR-10数据集上，反向扩散采样器对于SMLD和DDPM模型的表现都略优于祖先采样（DDPM类型的祖先采样也适用于SMLD模型，见附录F）。</p>
+<h4 id="4-2-预测-校正采样器"><a href="#4-2-预测-校正采样器" class="headerlink" title="4.2 预测-校正采样器"></a>4.2 预测-校正采样器</h4><p>与一般的随机微分方程不同，我们拥有额外信息来改进求解结果。由于我们有一个基于分数的模型 $s_{\theta^{*}}(x, t) \approx \nabla_{x}\log p_{t}(x)$，我们可以采用基于分数的马尔可夫链蒙特卡罗（MCMC）方法，如朗之万MCMC（Parisi, 1981; Grenander &amp; Miller, 1994）或哈密顿蒙特卡罗（HMC）（Neal等人, 2011），直接从 $p_{t}$ 中采样，并校正数值随机微分方程求解器的解。</p>
+<p>具体来说，在每个时间步，数值随机微分方程求解器首先给出下一个时间步样本的估计值，起到 “预测器” 的作用。然后，基于分数的MCMC方法校正估计样本的边际分布，起到 “校正器” 的作用。这个想法类似于预测-校正方法（一种用于求解方程组的数值延拓技术，Allgower &amp; Georg, 2012），我们也将这种混合采样算法命名为预测-校正（PC）采样器。伪代码和完整描述见附录G。PC采样器推广了SMLD和DDPM原来的采样方法：前者使用恒等函数作为预测器，退火朗之万动力学作为校正器；后者使用祖先采样作为预测器，恒等函数作为校正器。</p>
+<p>我们在使用公式(1)和(3)给出的原始离散目标训练的SMLD和DDPM模型上测试PC采样器（见附录G中的算法2和算法3），这展示了PC采样器与用固定数量噪声尺度训练的基于分数的模型的兼容性。我们在表1中总结了不同采样器的性能，其中概率流是将在4.3节讨论的一种预测器。附录G给出了详细的实验设置和更多结果。我们观察到，我们的反向扩散采样器总是优于祖先采样，并且在相同计算量下，仅使用校正器的方法（C2000）比其他竞争方法（P2000、PC1000）表现更差（实际上，为了达到与其他采样器相同的性能，每个噪声尺度我们需要更多的校正器步骤，因此计算量更大）。对于所有预测器，每个预测器步骤添加一个校正器步骤（PC1000）虽然会使计算量翻倍，但总能提高样本质量（与P1000相比）。此外，它通常比不添加校正器但将预测器步骤数量翻倍（P2000）的效果更好，对于SMLD/DDPM模型，在P2000方法中，我们必须以一种临时的方式在噪声尺度之间进行插值（详见附录G）。在附录G的图9中，我们还对用公式(7)中的连续目标在256×256的LSUN图像上训练的模型和VE随机微分方程进行了定性比较，结果表明，在计算量相当的情况下，使用适当数量的校正器步骤时，PC采样器明显优于仅使用预测器的采样器。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t2_3.png" alt="t2_3"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">*表 2：CIFAR-10 数据集上的负对数似然（NLL）和 FID（常微分方程）</td>
+<td>表 3：CIFAR-10 数据集上的样本质量。*</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="4-3-概率流以及与神经常微分方程的联系"><a href="#4-3-概率流以及与神经常微分方程的联系" class="headerlink" title="4.3 概率流以及与神经常微分方程的联系"></a>4.3 概率流以及与神经常微分方程的联系</h4><p>基于分数的模型为求解反向时间随机微分方程提供了另一种数值方法。对于所有扩散过程，都存在一个相应的确定性过程，其轨迹与随机微分方程具有相同的边际概率密度 $\{p_{t}(x)\}_{t = 0}^{T}$ 。这个确定性过程满足一个常微分方程（更多细节见附录D.1）：</p>
+<script type="math/tex; mode=display">dx = \left[f(x, t) - \frac{1}{2}g(t)^{2}\nabla_{x}\log p_{t}(x)\right]dt \tag{13}</script><p>一旦知道了分数，就可以从随机微分方程推导出这个常微分方程。我们将公式(13)中的常微分方程称为概率流常微分方程。当分数函数由依赖时间的基于分数的模型（通常是神经网络）近似时，这就是神经常微分方程的一个例子（Chen等人, 2018）。</p>
+<ul>
+<li><strong>精确似然计算</strong>：利用与神经常微分方程的联系，我们可以通过瞬时变量变换公式（Chen等人, 2018）计算公式(13)定义的密度。这使我们能够计算任何输入数据的精确似然（详细信息见附录D.2）。例如，我们在表2中报告了CIFAR-10数据集上以比特/维度为单位测量的负对数似然（NLL）。我们对均匀去量化的数据计算对数似然，并且只与以相同方式评估的模型进行比较（不包括使用变分去量化（Ho等人, 2019）或离散数据评估的模型），但DDPM（$(L / L_{simple})$ ）除外，其ELBO值（标注有*）是在离散数据上报告的。主要结果如下：(i) 对于Ho等人（2020）中的相同DDPM模型，由于我们的似然是精确的，所以得到了比ELBO更好的比特/维度结果；(ii) 使用相同的架构，我们用公式(7)中的连续目标训练了另一个DDPM模型（即DDPM cont.），这进一步提高了似然；(iii) 与VP随机微分方程相比，使用亚VP随机微分方程时，我们总是能得到更高的似然；(iv) 通过改进架构（即DDPM++ cont.，详见4.4节）和亚VP随机微分方程，即使不进行最大似然训练，我们也能在均匀去量化的CIFAR-10上创造2.99比特/维度的新记录。</li>
+<li><strong>操纵潜在表示</strong>：通过对公式(13)进行积分，我们可以将任何数据点 $x(0)$ 编码到潜在空间 $x(T)$ 中。解码可以通过对反向时间随机微分方程对应的常微分方程进行积分来实现。与其他可逆模型（如神经常微分方程和归一化流，Dinh等人, 2016; Kingma &amp; Dhariwal, 2018）一样，我们可以操纵这个潜在表示进行图像编辑，如插值和温度缩放（见图3和附录D.4）。</li>
+<li><strong>唯一可识别编码</strong>：与目前大多数可逆模型不同，我们的编码是唯一可识别的。这意味着在有足够的训练数据、模型容量和优化精度的情况下，输入的编码由数据分布唯一确定（Roeder等人, 2020）。这是因为我们的正向随机微分方程（公式(5)）没有可训练参数，并且在分数估计完美的情况下，其相关的概率流常微分方程（公式(13)）会提供相同的轨迹。我们在附录D.5中对这一属性进行了更多的实证验证。</li>
+<li><strong>高效采样</strong>：与神经常微分方程一样，我们可以通过从不同的最终条件 $x(T) \sim p_{T}$ 求解公式(13)来采样 $x(0) \sim p_{0}$ 。使用固定的离散化策略，我们可以生成具有竞争力的样本，特别是与校正器结合使用时（表1，“概率流采样器”，详见附录D.3）。使用黑盒常微分方程求解器（Dormand &amp; Prince, 1980）不仅能生成高质量的样本（表2，详见附录D.4），还能让我们在准确性和效率之间进行明确的权衡。在允许更大误差容限的情况下，函数评估的次数可以减少90%以上，且不影响样本的视觉质量（图3）。</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f3.png" alt="f3"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图 3：概率流常微分方程使得在改变数值精度时能够使用自适应步长进行快速采样（左图），并且在不损害质量的情况下减少了分数函数评估的次数（中图）。从潜在空间到图像的可逆映射允许进行插值操作（右图）</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="4-4-架构改进"><a href="#4-4-架构改进" class="headerlink" title="4.4 架构改进"></a>4.4 架构改进</h4><p>我们探索了几种适用于基于分数的模型的新架构设计，这些模型同时使用VE和VP随机微分方程（详见附录H），我们用与SMLD/DDPM中相同的离散目标训练这些模型。由于VP和亚VP随机微分方程的相似性，我们直接将适用于VP随机微分方程的架构应用于亚VP随机微分方程。我们为VE随机微分方程设计的最优架构名为NCSN++，在使用PC采样器的情况下，在CIFAR-10上达到了2.45的FID分数；而我们为VP随机微分方程设计的最优架构DDPM++，达到了2.78的FID分数。</p>
+<p>通过切换到公式(7)中的连续训练目标并增加网络深度，我们可以进一步提高所有模型的样本质量。得到的架构在表3中分别表示为NCSN++ cont.和DDPM++ cont.，分别对应于VE和VP/亚VP随机微分方程。表3中报告的结果是训练过程中FID分数最小的检查点的结果，样本由PC采样器生成。相比之下，表2中的FID分数和NLL值是最后一个训练检查点的结果，样本通过黑盒常微分方程求解器获得。如表3所示，VE随机微分方程通常能提供比VP/亚VP随机微分方程更好的样本质量，但我们也通过实验观察到，其似然比VP/亚VP随机微分方程对应的似然更差。这表明从业者可能需要针对不同的领域和架构尝试不同的随机微分方程。</p>
+<p>我们在样本质量方面表现最佳的模型NCSN++ cont. (deep, VE)，将网络深度翻倍，在CIFAR-10的无条件生成任务中，Inception分数和FID分数均创下新纪录。令人惊讶的是，我们在不需要标签数据的情况下，获得了比之前最好的条件生成模型更好的FID分数。通过所有改进，我们还首次从基于分数的模型中获得了CelebA-HQ 1024×1024的高保真样本（见附录H.3）。在似然方面表现最佳的模型DDPM++ cont. (deep, sub-VP)，同样将网络深度翻倍，使用公式(7)中的连续目标，达到了2.99比特/维度的对数似然。据我们所知，这是均匀去量化的CIFAR-10上的最高似然。 </p>
+<h3 id="5-可控生成"><a href="#5-可控生成" class="headerlink" title="5 可控生成"></a>5 可控生成</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f4.png" alt="f4"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图4：左图为32×32的CIFAR-10数据集上的类别条件样本。前四行是汽车，后四行是马。右图为256×256的LSUN数据集上的图像修复（前两行）和上色（后两行）结果。第一列是原始图像，第二列是掩码/灰度图像，其余列是采样得到的图像补全或上色结果。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>我们的框架具有连续结构，这不仅使我们能够从 $p_0$ 中生成数据样本，而且在已知 $p_t(y|x(t))$ 时，还能从 $p_0(x(0)|y)$ 中生成样本。对于如公式（5）所示的正向随机微分方程，我们可以从 $p_T(x(T)|y)$ 出发，通过求解条件反向时间随机微分方程来从 $p_t(x(t)|y)$ 中采样：</p>
+<script type="math/tex; mode=display">dx = \left\{f(x, t) - g(t)^2\left[\nabla_x \log p_t(x) + \nabla_x \log p_t(y|x)\right]\right\}dt + g(t)d\overline{w} \tag{14}</script><p>一般来说，一旦我们得到正向过程的梯度估计 $\nabla_x \log p_t(y|x(t))$，就可以使用公式（14），基于分数的生成模型来求解一大类逆问题。在某些情况下，可以训练一个单独的模型来学习正向过程 $\log p_t(y|x(t))$ 并计算其梯度。否则，我们可以利用启发式方法和领域知识来估计梯度。在附录I.4中，我们提供了一种广泛适用的方法，无需训练辅助模型即可获得此类估计。</p>
+<p>我们考虑使用这种方法进行可控生成的三个应用：类别条件生成、图像修复和上色。当 $y$ 表示类别标签时，我们可以训练一个依赖时间的分类器 $p_t(y|x(t))$ 用于类别条件采样。由于正向随机微分方程易于处理，我们可以通过先从数据集中采样 $(x(0), y)$，然后采样 $x(t) \sim p_{0t}(x(t)|x(0))$，轻松为依赖时间的分类器创建训练数据 $(x(t), y)$ 。之后，我们可以像公式（7）那样，使用不同时间步的交叉熵损失的混合来训练依赖时间的分类器 $p_t(y|x(t))$ 。我们在图4（左）中展示了类别条件CIFAR-10样本，更多细节和结果见附录I。</p>
+<p>图像修复是条件采样的一个特殊情况。假设我们有一个不完整的数据点 $y$，其中只有某个子集 $\Omega(y)$ 是已知的。图像修复就相当于从 $p(x(0)|\Omega(y))$ 中采样，我们可以使用无条件模型来完成（见附录I.2）。上色是图像修复的一个特殊情况，只是已知的数据维度是相关联的。我们可以通过正交线性变换将这些数据维度解耦，在变换后的空间中进行修复，然后再将所有内容变换回原始图像空间（详见附录I.3）。图4（右）展示了使用无条件依赖时间的基于分数的模型实现的图像修复和上色结果。 </p>
+<h3 id="6-结论"><a href="#6-结论" class="headerlink" title="6 结论"></a>6 结论</h3><p>我们提出了一个基于随机微分方程（SDE）的分数生成建模框架。我们的工作有助于更好地理解现有方法，推动新采样算法的发展，实现精确的似然计算、唯一可识别的编码、潜在代码的操纵，并为分数生成模型家族带来新的条件生成能力。<br>虽然我们提出的采样方法改进了结果并实现了更高效的采样，但在相同数据集上，它们的采样速度仍比生成对抗网络（GANs，Goodfellow等人，2014）慢。探索如何将分数生成模型的稳定学习与GANs等隐式模型的快速采样相结合，仍然是一个重要的研究方向。此外，在使用分数函数时，可用的采样器种类繁多，会引入大量超参数。未来的工作可以探索更有效的方法来自动选择和调整这些超参数，并更深入地研究各种采样器的优缺点。 </p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/diffusion/" rel="tag"># diffusion</a>
+              <a href="/tags/%E8%AE%BA%E6%96%87/" rel="tag"># 论文</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/02/21/Diffusion-Models-Beat-GANs-on-Image-Synthesis%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" rel="prev" title="Diffusion Models Beat GANs on Image Synthesis论文精读">
+      <i class="fa fa-chevron-left"></i> Diffusion Models Beat GANs on Image Synthesis论文精读
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2025/02/27/%E5%8A%A0%E9%80%9F%E9%87%87%E6%A0%B7%E7%BB%BC%E8%BF%B0-wgy/" rel="next" title="加速采样综述-wgy">
+      加速采样综述-wgy <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#SCORE-BASED-GENERATIVE-MODELING-THROUGH-STOCHASTIC-DIFFERENTIAL-EQUATIONS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB"><span class="nav-number">1.</span> <span class="nav-text">SCORE-BASED GENERATIVE MODELING THROUGH STOCHASTIC DIFFERENTIAL EQUATIONS论文精读</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.1.2.</span> <span class="nav-text">1 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%83%8C%E6%99%AF"><span class="nav-number">1.1.3.</span> <span class="nav-text">2 背景</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E5%9F%BA%E4%BA%8E%E6%9C%97%E4%B9%8B%E4%B8%87%E5%8A%A8%E5%8A%9B%E5%AD%A6%E7%9A%84%E5%8E%BB%E5%99%AA%E5%88%86%E6%95%B0%E5%8C%B9%E9%85%8D%EF%BC%88SMLD%EF%BC%89"><span class="nav-number">1.1.3.1.</span> <span class="nav-text">2.1 基于朗之万动力学的去噪分数匹配（SMLD）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E5%8E%BB%E5%99%AA%E6%89%A9%E6%95%A3%E6%A6%82%E7%8E%87%E6%A8%A1%E5%9E%8B%EF%BC%88DDPM%EF%BC%89"><span class="nav-number">1.1.3.2.</span> <span class="nav-text">2.2 去噪扩散概率模型（DDPM）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%9F%BA%E4%BA%8E%E9%9A%8F%E6%9C%BA%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E7%9A%84%E5%88%86%E6%95%B0%E7%94%9F%E6%88%90%E5%BB%BA%E6%A8%A1"><span class="nav-number">1.1.4.</span> <span class="nav-text">3 基于随机微分方程的分数生成建模</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E7%94%A8%E9%9A%8F%E6%9C%BA%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E6%89%B0%E5%8A%A8%E6%95%B0%E6%8D%AE"><span class="nav-number">1.1.4.1.</span> <span class="nav-text">3.1 用随机微分方程扰动数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E9%80%9A%E8%BF%87%E5%8F%8D%E5%90%91%E9%9A%8F%E6%9C%BA%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E7%94%9F%E6%88%90%E6%A0%B7%E6%9C%AC"><span class="nav-number">1.1.4.2.</span> <span class="nav-text">3.2 通过反向随机微分方程生成样本</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-%E4%BC%B0%E8%AE%A1%E9%9A%8F%E6%9C%BA%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E7%9A%84%E5%88%86%E6%95%B0"><span class="nav-number">1.1.4.3.</span> <span class="nav-text">3.3 估计随机微分方程的分数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-%E7%A4%BA%E4%BE%8B%EF%BC%9AVE%E3%80%81VP%E9%9A%8F%E6%9C%BA%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E5%8F%8A%E5%85%B6%E4%BB%96"><span class="nav-number">1.1.4.4.</span> <span class="nav-text">3.4 示例：VE、VP随机微分方程及其他</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%B1%82%E8%A7%A3%E5%8F%8D%E5%90%91%E9%9A%8F%E6%9C%BA%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B"><span class="nav-number">1.1.5.</span> <span class="nav-text">4 求解反向随机微分方程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E9%80%9A%E7%94%A8%E6%95%B0%E5%80%BC%E9%9A%8F%E6%9C%BA%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E6%B1%82%E8%A7%A3%E5%99%A8"><span class="nav-number">1.1.5.1.</span> <span class="nav-text">4.1 通用数值随机微分方程求解器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E9%A2%84%E6%B5%8B-%E6%A0%A1%E6%AD%A3%E9%87%87%E6%A0%B7%E5%99%A8"><span class="nav-number">1.1.5.2.</span> <span class="nav-text">4.2 预测-校正采样器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-%E6%A6%82%E7%8E%87%E6%B5%81%E4%BB%A5%E5%8F%8A%E4%B8%8E%E7%A5%9E%E7%BB%8F%E5%B8%B8%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E7%9A%84%E8%81%94%E7%B3%BB"><span class="nav-number">1.1.5.3.</span> <span class="nav-text">4.3 概率流以及与神经常微分方程的联系</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-%E6%9E%B6%E6%9E%84%E6%94%B9%E8%BF%9B"><span class="nav-number">1.1.5.4.</span> <span class="nav-text">4.4 架构改进</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E5%8F%AF%E6%8E%A7%E7%94%9F%E6%88%90"><span class="nav-number">1.1.6.</span> <span class="nav-text">5 可控生成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E7%BB%93%E8%AE%BA"><span class="nav-number">1.1.7.</span> <span class="nav-text">6 结论</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zongqing Li"
+      src="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/head.png?raw=true">
+  <p class="site-author-name" itemprop="name">Zongqing Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hqulzq" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hqulzq" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hqulzq@163.com" title="E-Mail → mailto:hqulzq@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+      
+<script type="text/javascript" charset="utf-8" src="/js/tagcloud.js"></script>
+<script type="text/javascript" charset="utf-8" src="/js/tagcanvas.js"></script>
+<div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div id="myCanvasContainer" class="widget tagcloud">
+        <canvas width="250" height="250" id="resCanvas" style="width=100%">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+        </canvas>
+    </div>
+</div>
+
+
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zongqing Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('post.copy_button').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('post.copy_success')
+          else $(this).text('post.copy_failure')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('post.copy_button')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>

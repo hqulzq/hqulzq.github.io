@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Nginx快速入门Nginx安装根据前文的部署方案，需要在server02部署Nginx。Nginx官网有详细的安装步骤，具体内容可参考官方文档。  配置Nginx yum存储库 创建&#x2F;etc&#x2F;yum.repos.d&#x2F;nginx.repo文件 1vim &#x2F;etc&#x2F;yum.repos.d&#x2F;nginx.repo 增加如下内容 123456789101112131415[nginx-stable]nam">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Nginx快速入门">
+<meta property="og:url" content="https://hqulzq.github.io/2025/01/25/Nginx%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/index.html">
+<meta property="og:site_name" content="Lzq&#39;s blog">
+<meta property="og:description" content="Nginx快速入门Nginx安装根据前文的部署方案，需要在server02部署Nginx。Nginx官网有详细的安装步骤，具体内容可参考官方文档。  配置Nginx yum存储库 创建&#x2F;etc&#x2F;yum.repos.d&#x2F;nginx.repo文件 1vim &#x2F;etc&#x2F;yum.repos.d&#x2F;nginx.repo 增加如下内容 123456789101112131415[nginx-stable]nam">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hqulzq.github.io/2025/01/25/Nginx%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/images/Nginx%E9%A6%96%E9%A1%B5.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/01/25/Nginx%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/images/nginx%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84.drawio.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/01/25/Nginx%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/images/nginx%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84-conf.drawio.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/01/25/Nginx%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/images/nginx-%E8%99%9A%E6%8B%9F%E4%B8%BB%E6%9C%BA.drawio.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/01/25/Nginx%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/images/Nginx%E6%A1%88%E4%BE%8B-http%E6%9C%8D%E5%8A%A1.png">
+<meta property="article:published_time" content="2025-01-25T02:36:28.000Z">
+<meta property="article:modified_time" content="2025-02-07T13:01:42.887Z">
+<meta property="article:author" content="Zongqing Li">
+<meta property="article:tag" content="快速入门">
+<meta property="article:tag" content="Nginx">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hqulzq.github.io/2025/01/25/Nginx%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/images/Nginx%E9%A6%96%E9%A1%B5.png">
+
+<link rel="canonical" href="https://hqulzq.github.io/2025/01/25/Nginx%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Nginx快速入门 | Lzq's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lzq's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">31</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">43</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book">
+
+    <a href="/book" rel="section"><i class="fas fa-book fa-fw"></i>Book</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/01/25/Nginx%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/head.png?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Nginx快速入门
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-01-25 10:36:28" itemprop="dateCreated datePublished" datetime="2025-01-25T10:36:28+08:00">2025-01-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-02-07 21:01:42" itemprop="dateModified" datetime="2025-02-07T21:01:42+08:00">2025-02-07</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%BB%A3%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">代理</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Nginx快速入门"><a href="#Nginx快速入门" class="headerlink" title="Nginx快速入门"></a>Nginx快速入门</h1><h2 id="Nginx安装"><a href="#Nginx安装" class="headerlink" title="Nginx安装"></a>Nginx安装</h2><p>根据前文的部署方案，需要在<code>server02</code>部署Nginx。Nginx官网有详细的安装步骤，具体内容可参考<a target="_blank" rel="noopener" href="https://nginx.org/en/linux_packages.html">官方文档</a>。</p>
+<ol>
+<li><p><strong>配置Nginx yum存储库</strong></p>
+<p>创建<code>/etc/yum.repos.d/nginx.repo</code>文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/yum.repos.d/nginx.repo</span><br></pre></td></tr></table></figure>
+<p>增加如下内容</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[nginx-stable]</span></span><br><span class="line"><span class="attr">name</span>=nginx stable repo</span><br><span class="line"><span class="attr">baseurl</span>=http://nginx.org/packages/centos/<span class="variable">$releasever</span>/<span class="variable">$basearch</span>/</span><br><span class="line"><span class="attr">gpgcheck</span>=<span class="number">1</span></span><br><span class="line"><span class="attr">enabled</span>=<span class="number">1</span></span><br><span class="line"><span class="attr">gpgkey</span>=https://nginx.org/keys/nginx_signing.key</span><br><span class="line"><span class="attr">module_hotfixes</span>=<span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="section">[nginx-mainline]</span></span><br><span class="line"><span class="attr">name</span>=nginx mainline repo</span><br><span class="line"><span class="attr">baseurl</span>=http://nginx.org/packages/mainline/centos/<span class="variable">$releasever</span>/<span class="variable">$basearch</span>/</span><br><span class="line"><span class="attr">gpgcheck</span>=<span class="number">1</span></span><br><span class="line"><span class="attr">enabled</span>=<span class="number">0</span></span><br><span class="line"><span class="attr">gpgkey</span>=https://nginx.org/keys/nginx_signing.key</span><br><span class="line"><span class="attr">module_hotfixes</span>=<span class="literal">true</span></span><br></pre></td></tr></table></figure>
+<span id="more"></span></li>
+<li><p><strong>在线安装Nginx</strong></p>
+<p>执行以下命令，安装Nginx</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y install nginx</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>启动Nginx</strong></p>
+<p>执行以下命令启动Nginx</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start nginx</span><br></pre></td></tr></table></figure>
+<p>执行以下命令查看Nginx运行状态</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl status nginx</span><br></pre></td></tr></table></figure>
+<p>执行以下命令设置开机自启</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl <span class="built_in">enable</span> nginx</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>访问Nginx服务默认首页</strong></p>
+<p>访问<code>http://192.168.10.102</code>，能访问到如下页面，则证明Nginx运行正常。</p>
+<p><img src="images/Nginx首页.png" style="zoom:50%;" /></p>
+</li>
+</ol>
+<h2 id="9-2-2-重要的目录、文件"><a href="#9-2-2-重要的目录、文件" class="headerlink" title="9.2.2 重要的目录、文件"></a>9.2.2 重要的目录、文件</h2><p>Nginx中有很多十分重要的目录或者文件，下面对核心内容进行介绍</p>
+<ol>
+<li><strong>配置文件相关</strong><ul>
+<li><code>/etc/nginx/</code>：主要的Nginx配置文件目录。</li>
+<li><code>/etc/nginx/nginx.conf</code>：Nginx的主配置文件，包含全局配置信息。</li>
+</ul>
+</li>
+<li><strong>日志相关</strong><ul>
+<li><code>/var/log/nginx/</code>：Nginx的日志文件目录，包括访问日志和错误日志。</li>
+<li><code>/var/log/nginx/access.log</code>：访问日志，记录所有进入服务器的请求。</li>
+<li><code>/var/log/nginx/error.log</code>：错误日志，记录服务器处理过程中的错误信息。</li>
+</ul>
+</li>
+</ol>
+<h2 id="9-2-3-配置文件概述"><a href="#9-2-3-配置文件概述" class="headerlink" title="9.2.3 配置文件概述"></a>9.2.3 配置文件概述</h2><ol>
+<li><p><strong>配置文件结构</strong></p>
+<p><code>nginx.conf</code>文件层次分明，整个文件分为多个区块（block），每个区块下可配置各种参数，也可包含其子级区块，具体结构如下图所示</p>
+<p><img src="images/nginx配置文件结构.drawio.png" style="zoom:50%;" /></p>
+<p><code>nginx.conf</code>通过<code>include /etc/nginx/conf.d/*.conf</code>引入了<code>/etc/nginx/conf.d</code>目录下的所有<code>.conf</code>文件，该目录下的配置文件结构如下图所示</p>
+<p><img src="images/nginx配置文件结构-conf.drawio.png" style="zoom: 50%;" /></p>
+</li>
+<li><p><strong>重要配置说明</strong></p>
+<p>下面分块介绍重要的配置参数</p>
+<ul>
+<li><p><strong>main block</strong></p>
+<p><code>main block</code>位于配置文件的最外层，其包含了影响Nginx服务器整体行为的全局参数，例如</p>
+<ul>
+<li><code>user</code>：定义Nginx工作进程的用户和用户组。</li>
+<li><code>worker_processes</code>：指定Nginx使用的工作进程数。</li>
+<li><code>error_log</code>：配置全局错误日志文件路径。</li>
+</ul>
+</li>
+<li><p><strong>events block</strong></p>
+<p><code>events block</code>位于<code>main block</code>中，用于配置Nginx服务器的事件处理机制，主要配置Nginx如何处理客户端连接。</p>
+</li>
+<li><p><strong>http block</strong></p>
+<p><code>http block</code>位于<code>main block</code>中，用于配置HTTP服务器相关功能。例如</p>
+<ul>
+<li><code>access_log</code>：指定访问日志的路径</li>
+<li><code>log_format</code>：指定访问日志的格式</li>
+</ul>
+</li>
+<li><p><strong>server block</strong></p>
+<p><code>server block</code>位于<code>http block</code>，用于配置虚拟主机，一个Nginx服务可包含多个虚拟主机，每个虚拟主机都可以独立的提供服务，因此借助Nginx，我们可以在一台服务器部署多个独立的网站，如下图所示</p>
+<p><img src="images/nginx-虚拟主机.drawio.png" style="zoom:50%;" /></p>
+<p>每个虚拟主机使用一个<code>server block</code>进行配置，配置的内容包括</p>
+<ul>
+<li><code>listen</code>：虚拟主机监听的端口号。</li>
+<li><code>server_name</code>：指定虚拟主机的域名或者IP。</li>
+</ul>
+</li>
+<li><p><strong>location block</strong></p>
+<p><code>location block</code>位于<code>server block</code>，用于配置请求的处理逻辑，一个<code>server block</code>中可以包含多个<code>location block</code>，例如</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">    <span class="attribute">server_name</span> www.atguigu.com;</span><br><span class="line">    <span class="section">location</span> /index &#123;</span><br><span class="line">        <span class="attribute">root</span> /var/www/html;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="section">location</span> /api &#123;</span><br><span class="line">        <span class="attribute">proxy_pass</span> http://backend-api;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="9-2-4-静态资源服务器案例"><a href="#9-2-4-静态资源服务器案例" class="headerlink" title="9.2.4 静态资源服务器案例"></a>9.2.4 静态资源服务器案例</h2><p>下面完成一个简单案例，使用Nginx作为静态资源服务器。</p>
+<p>项目资料中有一个简单的前端项目<code>hello-nginx</code>，其中只包含html、css等静态资源，现将其部署在<code>server02</code>上。</p>
+<ol>
+<li><p><strong>上传静态资源到服务器</strong></p>
+<p>将<code>hello-nginx.zip</code>上传到<code>server02</code>服务器任意路径。</p>
+</li>
+<li><p><strong>解压<code>hello-nginx.zip</code>到<code>/usr/share/nginx/html</code>中</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">unzip hello-nginx.zip -d /usr/share/nginx/html</span><br></pre></td></tr></table></figure>
+<p>最终的路径结构如下</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">/usr</span><br><span class="line">└── share</span><br><span class="line">    └── nginx</span><br><span class="line">        └── html</span><br><span class="line">            └── hello-nginx</span><br><span class="line">                ├── css</span><br><span class="line">                │   └── style.css</span><br><span class="line">                ├── images</span><br><span class="line">                │   └── img.png</span><br><span class="line">                └── index.html</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>配置Nginx虚拟主机</strong></p>
+<p>虚拟主机的配置应位于<code>/etc/nginx/nginx.conf</code>的<strong>server block</strong>中，由于<code>/etc/nginx/nginx.conf</code>的<strong>http bolck</strong>中引入了<code>/etc/nginx/conf.d/*.conf</code>，所以虚拟主机在<code>/etc/nginx/conf.d/</code>目录下的任意<code>.conf</code>文件配置即可。</p>
+<ul>
+<li><p>创建<code>/etc/nginx/conf.d/hello-nginx.conf</code>文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/nginx/conf.d/hello-nginx.conf</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>添加如下内容</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span>       <span class="number">8080</span>;</span><br><span class="line">    <span class="attribute">server_name</span>  <span class="number">192.168.10.102</span>;</span><br><span class="line"></span><br><span class="line">    <span class="section">location</span> /hello-nginx &#123;</span><br><span class="line">        <span class="attribute">root</span>   /usr/share/nginx/html;</span><br><span class="line">        <span class="attribute">index</span>  index.html;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>重新加载Nginx的配置文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl reload nginx</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p><strong>访问项目</strong></p>
+<p>访问路径为<a target="_blank" rel="noopener" href="http://192.168.10.102:8080/hello-nginx，若部署成功，可见到如下页面">http://192.168.10.102:8080/hello-nginx，若部署成功，可见到如下页面</a></p>
+<p><img src="images/Nginx案例-http服务.png" style="zoom: 67%;" /></p>
+</li>
+<li><p><strong>案例剖析</strong></p>
+<p>下面通过上述案例来了解Ngxin处理请求的逻辑。</p>
+<ul>
+<li><p><strong>匹配server</strong></p>
+<p>由于Nginx中可存在多个虚拟主机的配置，故接收到一个请求后，Nginx首先要确定请求交给哪个虚拟主机进行处理。这很显然是根据<code>server_name</code>和<code>listen</code>进行判断的。例如上述的请求路径<a target="_blank" rel="noopener" href="http://192.168.10.102:8080/hello-nginx，就会匹配到以下的虚拟主机">http://192.168.10.102:8080/hello-nginx，就会匹配到以下的虚拟主机</a></p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span>       <span class="number">8080</span>;</span><br><span class="line">    <span class="attribute">server_name</span>  <span class="number">192.168.10.102</span>;</span><br><span class="line"> ......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>匹配location</strong></p>
+<p>由于一个<strong>server block</strong>中可能包含多个<strong>location block</strong>，故Nginx在完成<strong>server</strong>匹配后，还要匹配<strong>location</strong>，<strong>location</strong>的匹配是根据请求路径进行判断的。例如以下写法<code>location</code>关键字后边的<code>/hello-nginx</code>就是匹配规则，它表达的含义是匹配以<code>/hello-nginx</code>为前缀的请求，例如上述的<a target="_blank" rel="noopener" href="http://192.168.10.102:8080/hello-nginx请求就会匹配到该**location**，而">http://192.168.10.102:8080/hello-nginx请求就会匹配到该**location**，而</a></p>
+<p><a target="_blank" rel="noopener" href="http://192.168.10.102:8080/nginx则不会。">http://192.168.10.102:8080/nginx则不会。</a></p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">location</span> /hello-nginx &#123;</span><br><span class="line"> ......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>定位文件</strong></p>
+<p>完成<strong>location</strong>的匹配后，Nginx会以<strong>location block</strong>中的<code>root</code>作为根目录，然后查找请求路径对应的资源，例如以下配置</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">location</span> /hello-nginx &#123;</span><br><span class="line">    <span class="attribute">root</span>   /usr/share/nginx/html;</span><br><span class="line">    <span class="attribute">index</span>  index.html;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当请求<a target="_blank" rel="noopener" href="http://192.168.10.102:8080/hello-nginx">http://192.168.10.102:8080/hello-nginx</a> 时，Ngxin会在<code>/usr/share/nginx/html/hello-nginx</code>路径中查找资源，由于该路径为<strong>目录</strong>（而非文件），故Nginx会在该目录下寻找<code>index</code>，也就是上述配置的<code>index.html</code>。然后将<code>index.html</code>响应给客户端。至此，该请求的处理就结束了。</p>
+<p><strong>注意</strong>：上述提到的<strong>server_name</strong>和<strong>location</strong>均有多种匹配模式，例如精确匹配、前缀匹配、正则匹配，此处不再展开。</p>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="9-2-5-反向代理案例"><a href="#9-2-5-反向代理案例" class="headerlink" title="9.2.5 反向代理案例"></a>9.2.5 反向代理案例</h2><p>下面完成一个简单案例，使用Nginx作为反向代理。</p>
+<p>使用Nginx反向代理其他网站，比如<code>http://www.atguigu.com</code>。</p>
+<ol>
+<li><p><strong>配置虚拟主机</strong></p>
+<p>创建<code>/etc/nginx/conf.d/hello-proxy.conf</code>文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/nginx/conf.d/hello-proxy.conf</span><br></pre></td></tr></table></figure>
+<p>内容如下</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span>       <span class="number">9090</span>;</span><br><span class="line">    <span class="attribute">server_name</span>  <span class="number">192.168.10.102</span>;</span><br><span class="line"></span><br><span class="line">    <span class="section">location</span> / &#123;</span><br><span class="line">        <span class="attribute">proxy_pass</span> http://www.atguigu.com;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>重新加载Nginx配置文件</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl reload nginx</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>观察代理效果</strong></p>
+<p>使用浏览器访问<a href="http://192.168.10.102:9090，观察响应结果。">http://192.168.10.102:9090，观察响应结果。</a></p>
+</li>
+</ol>
+<p><strong>注意</strong>：借助反向代理功能，Nginx可以实现负载均衡等高级功能，此处不再展开。</p>
+<h2 id="9-3-配置域名映射"><a href="#9-3-配置域名映射" class="headerlink" title="9.3 配置域名映射"></a>9.3 配置域名映射</h2><p>现实生活中，几乎所有的网站都是通过域名去访问。真正的域名需要付费购买，此处在宿主机本地配置一下域名映射，模拟一下域名的效果即可。</p>
+<p>我们准备两个域名<code>lease.atguigu.com</code>和<code>admin.lease.atguigu.com</code>，前者用于访问移动端网站，后者用于访问后台管理系统。由于两个前端项目都部署在<code>server02</code>上，所以两个域名均指向<code>server02</code>的IP。</p>
+<p>Windows的域名映射配置文件位于<code>C:\Windows\System32\drivers\etc\hosts</code>，需要使用管理员身份修改。使用管理员身份运行任意文本编辑器，然后使用其打开<code>hosts</code>文件，并增加如下内容：</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">192.168.10.102 lease.atguigu.com admin.lease.atguigu.com</span><br></pre></td></tr></table></figure>
+<p>修改完毕记得保存。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag"># 快速入门</a>
+              <a href="/tags/Nginx/" rel="tag"># Nginx</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/01/24/%E5%B0%9A%E7%A1%85%E8%B0%B7%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93-03/" rel="prev" title="尚硅谷尚庭公寓-03">
+      <i class="fa fa-chevron-left"></i> 尚硅谷尚庭公寓-03
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2025/01/27/%E8%8B%A5%E4%BE%9D%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91%E5%B8%9D%E5%8F%AF%E5%BE%97%E5%90%8E%E5%8F%B0%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/" rel="next" title="若依二次开发帝可得后台管理系统">
+      若依二次开发帝可得后台管理系统 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Nginx%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8"><span class="nav-number">1.</span> <span class="nav-text">Nginx快速入门</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Nginx%E5%AE%89%E8%A3%85"><span class="nav-number">1.1.</span> <span class="nav-text">Nginx安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-2-2-%E9%87%8D%E8%A6%81%E7%9A%84%E7%9B%AE%E5%BD%95%E3%80%81%E6%96%87%E4%BB%B6"><span class="nav-number">1.2.</span> <span class="nav-text">9.2.2 重要的目录、文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-2-3-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E6%A6%82%E8%BF%B0"><span class="nav-number">1.3.</span> <span class="nav-text">9.2.3 配置文件概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-2-4-%E9%9D%99%E6%80%81%E8%B5%84%E6%BA%90%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%A1%88%E4%BE%8B"><span class="nav-number">1.4.</span> <span class="nav-text">9.2.4 静态资源服务器案例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-2-5-%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E6%A1%88%E4%BE%8B"><span class="nav-number">1.5.</span> <span class="nav-text">9.2.5 反向代理案例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-3-%E9%85%8D%E7%BD%AE%E5%9F%9F%E5%90%8D%E6%98%A0%E5%B0%84"><span class="nav-number">1.6.</span> <span class="nav-text">9.3 配置域名映射</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zongqing Li"
+      src="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/head.png?raw=true">
+  <p class="site-author-name" itemprop="name">Zongqing Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hqulzq" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hqulzq" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hqulzq@163.com" title="E-Mail → mailto:hqulzq@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+      
+<script type="text/javascript" charset="utf-8" src="/js/tagcloud.js"></script>
+<script type="text/javascript" charset="utf-8" src="/js/tagcanvas.js"></script>
+<div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div id="myCanvasContainer" class="widget tagcloud">
+        <canvas width="250" height="250" id="resCanvas" style="width=100%">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+        </canvas>
+    </div>
+</div>
+
+
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zongqing Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('post.copy_button').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('post.copy_success')
+          else $(this).text('post.copy_failure')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('post.copy_button')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>

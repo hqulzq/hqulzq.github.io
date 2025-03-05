@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="记录在实战项目尚庭公寓中的重要知识点或者遇到的坑">
+<meta property="og:type" content="article">
+<meta property="og:title" content="尚硅谷尚庭公寓-01">
+<meta property="og:url" content="https://hqulzq.github.io/2025/01/22/%E5%B0%9A%E7%A1%85%E8%B0%B7%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93-01/index.html">
+<meta property="og:site_name" content="Lzq&#39;s blog">
+<meta property="og:description" content="记录在实战项目尚庭公寓中的重要知识点或者遇到的坑">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hqulzq.github.io/2025/01/22/%E5%B0%9A%E7%A1%85%E8%B0%B7%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93-01/image-20250122160519880.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/01/22/%E5%B0%9A%E7%A1%85%E8%B0%B7%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93-01/%E6%9E%9A%E4%B8%BE%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2%E8%BF%87%E7%A8%8B-%E8%AF%B7%E6%B1%82%E5%8F%82%E6%95%B0.drawio.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/01/22/%E5%B0%9A%E7%A1%85%E8%B0%B7%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93-01/%E6%9E%9A%E4%B8%BE%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2%E8%BF%87%E7%A8%8B-%E5%93%8D%E5%BA%94%E4%BD%93.drawio.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/01/22/%E5%B0%9A%E7%A1%85%E8%B0%B7%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93-01/%E6%9E%9A%E4%B8%BE%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2%E8%BF%87%E7%A8%8B-%E8%AF%B7%E6%B1%82%E4%BD%93.drawio.png">
+<meta property="article:published_time" content="2025-01-22T07:51:48.000Z">
+<meta property="article:modified_time" content="2025-01-23T03:22:54.797Z">
+<meta property="article:author" content="Zongqing Li">
+<meta property="article:tag" content="尚庭公寓">
+<meta property="article:tag" content="项目实战">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hqulzq.github.io/2025/01/22/%E5%B0%9A%E7%A1%85%E8%B0%B7%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93-01/image-20250122160519880.png">
+
+<link rel="canonical" href="https://hqulzq.github.io/2025/01/22/%E5%B0%9A%E7%A1%85%E8%B0%B7%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93-01/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>尚硅谷尚庭公寓-01 | Lzq's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lzq's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">31</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">43</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book">
+
+    <a href="/book" rel="section"><i class="fas fa-book fa-fw"></i>Book</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/01/22/%E5%B0%9A%E7%A1%85%E8%B0%B7%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93-01/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/head.png?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          尚硅谷尚庭公寓-01
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-01-22 15:51:48" itemprop="dateCreated datePublished" datetime="2025-01-22T15:51:48+08:00">2025-01-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-01-23 11:22:54" itemprop="dateModified" datetime="2025-01-23T11:22:54+08:00">2025-01-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">记录在实战项目尚庭公寓中的重要知识点或者遇到的坑</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="枚举类型转换（WebDataBinder、TypeHandler、HTTPMessageConverter）"><a href="#枚举类型转换（WebDataBinder、TypeHandler、HTTPMessageConverter）" class="headerlink" title="枚举类型转换（WebDataBinder、TypeHandler、HTTPMessageConverter）"></a>枚举类型转换（WebDataBinder、TypeHandler、HTTPMessageConverter）</h1><h2 id="为什么要用枚举类"><a href="#为什么要用枚举类" class="headerlink" title="为什么要用枚举类"></a>为什么要用枚举类</h2><ul>
+<li><p>实体类中的公共字段（例如<code>id</code>、<code>create_time</code>、<code>update_time</code>、<code>is_deleted</code>）抽取到一个基类，进行统一管理，然后让各实体类继承该基类。</p>
+</li>
+<li><p>实体类中的状态字段（例如<code>status</code>）或类型字段（例如<code>type</code>），全部使用枚举类型。</p>
+<blockquote>
+<p>状态（类型）字段，在数据库中通常用一个数字表示一个状态（类型）。例如：订单状态（1:待支付，2:待发货，3:待收货，4:已收货，5:已完结）。若实体类中对应的字段也用数字类型，例如<code>int</code>，那么程序中就会有大量的如下代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">order.setStatus(<span class="number">1</span>);</span><br><span class="line"><span class="keyword">if</span> (order.getStatus() == <span class="number">1</span>) &#123;</span><br><span class="line"> order.setStatus(<span class="number">2</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这些代码后期维护起来会十分麻烦，所以本项目中所有的此类字段均使用枚举类型。例如上述订单状态可定义为以下枚举：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> <span class="title class_">Status</span> &#123;</span><br><span class="line"></span><br><span class="line"> CANCEL(<span class="number">0</span>, <span class="string">&quot;已取消&quot;</span>),</span><br><span class="line"> WAIT_PAY(<span class="number">1</span>, <span class="string">&quot;待支付&quot;</span>),</span><br><span class="line"> WAIT_TRANSFER(<span class="number">2</span>, <span class="string">&quot;待发货&quot;</span>),</span><br><span class="line"> WAIT_RECEIPT(<span class="number">3</span>, <span class="string">&quot;待收货&quot;</span>),</span><br><span class="line"> RECEIVE(<span class="number">4</span>, <span class="string">&quot;已收货&quot;</span>),</span><br><span class="line"> COMPLETE(<span class="number">5</span>, <span class="string">&quot;已完结&quot;</span>);</span><br><span class="line"> </span><br><span class="line"> <span class="keyword">private</span> <span class="keyword">final</span> Integer value;</span><br><span class="line"> <span class="keyword">private</span> <span class="keyword">final</span> String desc;</span><br><span class="line"> </span><br><span class="line"> <span class="keyword">public</span> Integer <span class="title function_">value</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> value;</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">public</span> String <span class="title function_">desc</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> desc;</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>订单实体类中的状态字段定义为<code>Status</code>类型：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Order</span>&#123;</span><br><span class="line">  <span class="keyword">private</span> Integer id;</span><br><span class="line">  <span class="keyword">private</span> Integer userId;</span><br><span class="line">  <span class="keyword">private</span> Status status;</span><br><span class="line"> ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样上述代码便可调整为如下效果，后期维护起来会容易许多。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">order.setStatus(Status.WAIT_PAY);</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
+</blockquote>
+</li>
+</ul>
+<h2 id="转换场景"><a href="#转换场景" class="headerlink" title="转换场景"></a>转换场景</h2><p>在[根据类型]查询标签列表API中，前端携带的参数为枚举类的<strong>code</strong>变量值，在<strong>controller层</strong>需要将<strong>code</strong>转换为完整的枚举类，需要使用<strong>WebDataBinder</strong>进行转换，在于数据库的交互中，需要将枚举类的<strong>type</strong>值拿出来与数据库中的字段匹配，需要使用<strong>Mybatis-Plus</strong>的<strong>TypeHandler</strong>进行转换，在返回数据至前端的过程中，又需要使用<strong>HTTPMessageConverter</strong>将<strong>Controller</strong>方法的返回值（Java对象）转换为HTTP响应体中的JSON字符串。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Operation(summary = &quot;（根据类型）查询标签列表&quot;)</span></span><br><span class="line"><span class="meta">@GetMapping(&quot;list&quot;)</span></span><br><span class="line"><span class="keyword">public</span> Result&lt;List&lt;LabelInfo&gt;&gt; <span class="title function_">labelList</span><span class="params">(<span class="meta">@RequestParam(required = false)</span> ItemType type)</span> &#123;</span><br><span class="line"></span><br><span class="line">    LambdaQueryWrapper&lt;LabelInfo&gt; queryWrapper = <span class="keyword">new</span> <span class="title class_">LambdaQueryWrapper</span>&lt;&gt;();</span><br><span class="line">    queryWrapper.eq(type != <span class="literal">null</span>, LabelInfo::getType, type);</span><br><span class="line">    List&lt;LabelInfo&gt; list = service.list(queryWrapper);</span><br><span class="line">    <span class="keyword">return</span> Result.ok(list);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述接口的功能是根据<strong>type</strong>（公寓/房间），查询标签列表。由于这个<strong>type</strong>字段在数据库、实体类、前后端交互的过程中有多种不同的形式，因此在请求和响应的过程中，<strong>type</strong>字段会涉及到多次类型转换。</p>
+<p>首先明确一下<strong>type</strong>字段的各种形式：</p>
+<ul>
+<li><p><strong>数据库中</strong></p>
+<p>数据库中的<strong>type</strong>字段为<code>tinyint</code>类型</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">+-------------+--------------+</span><br><span class="line">| Field       | Type         |</span><br><span class="line">+-------------+--------------+</span><br><span class="line">| id          | bigint       |</span><br><span class="line">| type        | tinyint      |</span><br><span class="line">| name        | varchar(255) |</span><br><span class="line">| create_time | timestamp    |</span><br><span class="line">| update_time | timestamp    |</span><br><span class="line">| is_deleted  | tinyint      |</span><br><span class="line">+-------------+--------------+</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>实体类</strong></p>
+<p>实体类中的<strong>type</strong>字段为<code>ItemType</code>枚举类型</p>
+<p><code>LabelInfo</code>实体类如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Schema(description = &quot;标签信息表&quot;)</span></span><br><span class="line"><span class="meta">@TableName(value = &quot;label_info&quot;)</span></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">LabelInfo</span> <span class="keyword">extends</span> <span class="title class_">BaseEntity</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">long</span> <span class="variable">serialVersionUID</span> <span class="operator">=</span> <span class="number">1L</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Schema(description = &quot;类型&quot;)</span></span><br><span class="line">    <span class="meta">@TableField(value = &quot;type&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> ItemType type;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Schema(description = &quot;标签名称&quot;)</span></span><br><span class="line">    <span class="meta">@TableField(value = &quot;name&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>ItemType</code>枚举类如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> <span class="title class_">ItemType</span> &#123;</span><br><span class="line"></span><br><span class="line">    APARTMENT(<span class="number">1</span>, <span class="string">&quot;公寓&quot;</span>),</span><br><span class="line">    ROOM(<span class="number">2</span>, <span class="string">&quot;房间&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Integer code;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    ItemType(Integer code, String name) &#123;</span><br><span class="line">        <span class="built_in">this</span>.code = code;</span><br><span class="line">        <span class="built_in">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>前后端交互中</strong></p>
+<p>前后端交互所传递的数据中<strong>type</strong>字段为<strong>数字</strong>（1/2)。</p>
+<p><img src="image-20250122160519880.png" style="zoom: 70%; border: 1px solid rgb(0, 0, 0);" /></p>
+</li>
+</ul>
+<p>具体转换过程如下图所示：</p>
+<ul>
+<li><p><strong>请求流程</strong></p>
+<p><img src="枚举类型转换过程-请求参数.drawio.png" style="zoom: 200%;" /></p>
+<p><strong>说明</strong></p>
+<ul>
+<li>SpringMVC中的<code>WebDataBinder</code>组件负责将HTTP的请求参数绑定到Controller方法的参数，并实现参数类型的转换。</li>
+<li>Mybatis中的<code>TypeHandler</code>用于处理Java中的实体对象与数据库之间的数据类型转换。</li>
+</ul>
+</li>
+<li><p><strong>响应流程</strong></p>
+<p><img src="枚举类型转换过程-响应体.drawio.png" style="zoom:200%;" /></p>
+<p><strong>说明</strong></p>
+<ul>
+<li>SpringMVC中的<code>HTTPMessageConverter</code>组件负责将Controller方法的返回值（Java对象）转换为HTTP响应体中的JSON字符串，或者将请求体中的JSON字符串转换为Controller方法中的参数（Java对象），例如下一个接口<strong>保存或更新标签信息</strong></li>
+</ul>
+<p><img src="枚举类型转换过程-请求体.drawio.png" style="zoom:200%;" /></p>
+</li>
+</ul>
+<h2 id="WebDataBinder枚举类型和属性的转换"><a href="#WebDataBinder枚举类型和属性的转换" class="headerlink" title="WebDataBinder枚举类型和属性的转换"></a>WebDataBinder枚举类型和属性的转换</h2><p><code>WebDataBinder</code>依赖于<a target="_blank" rel="noopener" href="https://docs.spring.io/spring-framework/reference/core/validation/convert.html"><code>Converter</code></a>实现类型转换，若Controller方法声明的<code>@RequestParam</code>参数的类型不是<code>String</code>，<code>WebDataBinder</code>就会自动进行数据类型转换。SpringMVC提供了常用类型的转换器，例如<code>String</code>到<code>Integer</code>、<code>String</code>到<code>Date</code>，<code>String</code>到<code>Boolean</code>等等，其中也包括<code>String</code>到枚举类型，但是<code>String</code>到枚举类型的默认转换规则是根据实例名称（”APARTMENT”）转换为枚举对象实例（ItemType.APARTMENT）。若想实现<code>code</code>属性到枚举对象实例的转换，需要自定义<code>Converter</code>，代码如下，具体内容可参考<a target="_blank" rel="noopener" href="https://docs.spring.io/spring-framework/reference/core/validation/convert.html#core-convert-Converter-API">官方文档</a>。</p>
+<ul>
+<li><p>在<strong>web-admin模块</strong>自定义<code>com.atguigu.lease.web.admin.custom.converter.StringToItemTypeConverter</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">StringToItemTypeConverter</span> <span class="keyword">implements</span> <span class="title class_">Converter</span>&lt;String, ItemType&gt; &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> ItemType <span class="title function_">convert</span><span class="params">(String code)</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (ItemType value : ItemType.values()) &#123;</span><br><span class="line">            <span class="keyword">if</span> (value.getCode().equals(Integer.valueOf(code))) &#123;</span><br><span class="line">                <span class="keyword">return</span> value;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>(<span class="string">&quot;code非法&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>注册上述的<code>StringToItemTypeConverter</code>，在<strong>web-admin模块</strong>创建<code>com.atguigu.lease.web.admin.custom.config.WebMvcConfiguration</code>，内容如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">WebMvcConfiguration</span> <span class="keyword">implements</span> <span class="title class_">WebMvcConfigurer</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> StringToItemTypeConverter stringToItemTypeConverter;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">addFormatters</span><span class="params">(FormatterRegistry registry)</span> &#123;</span><br><span class="line">        registry.addConverter(<span class="built_in">this</span>.stringToItemTypeConverter);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>但是我们有很多的枚举类型都需要考虑类型转换这个问题，按照上述思路，我们需要为每个枚举类型都定义一个Converter，并且每个Converter的转换逻辑都完全相同，针对这种情况，我们使用<a target="_blank" rel="noopener" href="https://docs.spring.io/spring-framework/reference/core/validation/convert.html#core-convert-ConverterFactory-SPI"><code>ConverterFactory</code></a>接口更为合适，这个接口可以将同一个转换逻辑应用到一个接口的所有实现类，因此我们可以定义一个<code>BaseEnum</code>接口，然后另所有的枚举类都实现该接口，然后就可以自定义<code>ConverterFactory</code>，集中编写各枚举类的转换逻辑了。具体实现如下：</p>
+<ul>
+<li><p>在<strong>model模块</strong>定义<code>com.atguigu.lease.model.enums.BaseEnum</code>接口</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">BaseEnum</span> &#123;</span><br><span class="line">    Integer <span class="title function_">getCode</span><span class="params">()</span>;</span><br><span class="line">    String <span class="title function_">getName</span><span class="params">()</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>令所有<code>com.atguigu.lease.model.enums</code>包下的枚举类都实现<code>BaseEnun</code>接口</p>
+</li>
+<li><p>在<strong>web-admin模块</strong>自定义<code>com.atguigu.lease.web.admin.custom.converter.StringToBaseEnumConverterFactory</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">StringToBaseEnumConverterFactory</span> <span class="keyword">implements</span> <span class="title class_">ConverterFactory</span>&lt;String, BaseEnum&gt; &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> &lt;T <span class="keyword">extends</span> <span class="title class_">BaseEnum</span>&gt; Converter&lt;String, T&gt; <span class="title function_">getConverter</span><span class="params">(Class&lt;T&gt; targetType)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Converter</span>&lt;String, T&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="keyword">public</span> T <span class="title function_">convert</span><span class="params">(String source)</span> &#123;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">for</span> (T enumConstant : targetType.getEnumConstants()) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (enumConstant.getCode().equals(Integer.valueOf(source))) &#123;</span><br><span class="line">                        <span class="keyword">return</span> enumConstant;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>(<span class="string">&quot;非法的枚举值:&quot;</span> + source);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>注册上述的<code>ConverterFactory</code>，在<strong>web-admin模块</strong>创建<code>com.atguigu.lease.web.admin.custom.config.WebMvcConfiguration</code>，内容如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">WebMvcConfiguration</span> <span class="keyword">implements</span> <span class="title class_">WebMvcConfigurer</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> StringToBaseEnumConverterFactory stringToBaseEnumConverterFactory;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">addFormatters</span><span class="params">(FormatterRegistry registry)</span> &#123;</span><br><span class="line">        registry.addConverterFactory(<span class="built_in">this</span>.stringToBaseEnumConverterFactory);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>注意：</strong></p>
+<p>最终采用的是<code>ConverterFactory</code>方案，因此<code>StringToItemTypeConverter</code>相关代码可以直接删除。</p>
+</li>
+</ul>
+<h2 id="TypeHandler枚举类型和属性的转换"><a href="#TypeHandler枚举类型和属性的转换" class="headerlink" title="TypeHandler枚举类型和属性的转换"></a>TypeHandler枚举类型和属性的转换</h2><p>Mybatis预置的<code>TypeHandler</code>可以处理常用的数据类型转换，例如<code>String</code>、<code>Integer</code>、<code>Date</code>等等，其中也包含枚举类型，但是枚举类型的默认转换规则是枚举对象实例（ItemType.APARTMENT）和实例名称（”APARTMENT”）相互映射。若想实现<code>code</code>属性到枚举对象实例的相互映射，需要自定义<code>TypeHandler</code>。</p>
+<p>不过MybatisPlus提供了一个<a target="_blank" rel="noopener" href="https://baomidou.com/pages/8390a4/">通用的处理枚举类型的TypeHandler</a>。其使用十分简单，只需在<code>ItemType</code>枚举类的<code>code</code>属性上增加一个注解<code>@EnumValue</code>，Mybatis-Plus便可完成从<code>ItemType</code>对象到<code>code</code>属性之间的相互映射，具体配置如下。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> <span class="title class_">ItemType</span> &#123;</span><br><span class="line"></span><br><span class="line">    APARTMENT(<span class="number">1</span>, <span class="string">&quot;公寓&quot;</span>),</span><br><span class="line">    ROOM(<span class="number">2</span>, <span class="string">&quot;房间&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="meta">@EnumValue</span></span><br><span class="line">    <span class="keyword">private</span> Integer code;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    ItemType(Integer code, String name) &#123;</span><br><span class="line">        <span class="built_in">this</span>.code = code;</span><br><span class="line">        <span class="built_in">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="HTTPMessageConverter实现枚举类型和属性的转换"><a href="#HTTPMessageConverter实现枚举类型和属性的转换" class="headerlink" title="HTTPMessageConverter实现枚举类型和属性的转换"></a>HTTPMessageConverter实现枚举类型和属性的转换</h2><p><code>HttpMessageConverter</code>依赖于Json序列化框架（默认使用Jackson）。其对枚举类型的默认处理规则也是枚举对象实例（ItemType.APARTMENT）和实例名称（”APARTMENT”）相互映射。不过其提供了一个注解<code>@JsonValue</code>，同样只需在<code>ItemType</code>枚举类的<code>code</code>属性上增加一个注解<code>@JsonValue</code>，Jackson便可完成从<code>ItemType</code>对象到<code>code</code>属性之间的互相映射。具体配置如下，详细信息可参考Jackson<a target="_blank" rel="noopener" href="https://fasterxml.github.io/jackson-annotations/javadoc/2.8/com/fasterxml/jackson/annotation/JsonValue.html">官方文档</a>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Getter</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> <span class="title class_">ItemType</span> &#123;</span><br><span class="line"></span><br><span class="line">    APARTMENT(<span class="number">1</span>, <span class="string">&quot;公寓&quot;</span>),</span><br><span class="line">    ROOM(<span class="number">2</span>, <span class="string">&quot;房间&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="meta">@EnumValue</span></span><br><span class="line">   <span class="meta">@JsonValue</span></span><br><span class="line">    <span class="keyword">private</span> Integer code;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    ItemType(Integer code, String name) &#123;</span><br><span class="line">        <span class="built_in">this</span>.code = code;</span><br><span class="line">        <span class="built_in">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag"># 尚庭公寓</a>
+              <a href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag"># 项目实战</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/01/22/Linux%E7%9F%A5%E8%AF%86%E7%82%B91/" rel="prev" title="Linux知识点1">
+      <i class="fa fa-chevron-left"></i> Linux知识点1
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2025/01/22/Spring-Boot%E5%85%A8%E5%B1%80%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="next" title="Spring Boot全局异常处理">
+      Spring Boot全局异常处理 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9E%9A%E4%B8%BE%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2%EF%BC%88WebDataBinder%E3%80%81TypeHandler%E3%80%81HTTPMessageConverter%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">枚举类型转换（WebDataBinder、TypeHandler、HTTPMessageConverter）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%94%A8%E6%9E%9A%E4%B8%BE%E7%B1%BB"><span class="nav-number">1.1.</span> <span class="nav-text">为什么要用枚举类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%AC%E6%8D%A2%E5%9C%BA%E6%99%AF"><span class="nav-number">1.2.</span> <span class="nav-text">转换场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WebDataBinder%E6%9E%9A%E4%B8%BE%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%B1%9E%E6%80%A7%E7%9A%84%E8%BD%AC%E6%8D%A2"><span class="nav-number">1.3.</span> <span class="nav-text">WebDataBinder枚举类型和属性的转换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TypeHandler%E6%9E%9A%E4%B8%BE%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%B1%9E%E6%80%A7%E7%9A%84%E8%BD%AC%E6%8D%A2"><span class="nav-number">1.4.</span> <span class="nav-text">TypeHandler枚举类型和属性的转换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTPMessageConverter%E5%AE%9E%E7%8E%B0%E6%9E%9A%E4%B8%BE%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%B1%9E%E6%80%A7%E7%9A%84%E8%BD%AC%E6%8D%A2"><span class="nav-number">1.5.</span> <span class="nav-text">HTTPMessageConverter实现枚举类型和属性的转换</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zongqing Li"
+      src="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/head.png?raw=true">
+  <p class="site-author-name" itemprop="name">Zongqing Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hqulzq" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hqulzq" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hqulzq@163.com" title="E-Mail → mailto:hqulzq@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+      
+<script type="text/javascript" charset="utf-8" src="/js/tagcloud.js"></script>
+<script type="text/javascript" charset="utf-8" src="/js/tagcanvas.js"></script>
+<div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div id="myCanvasContainer" class="widget tagcloud">
+        <canvas width="250" height="250" id="resCanvas" style="width=100%">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+        </canvas>
+    </div>
+</div>
+
+
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zongqing Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('post.copy_button').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('post.copy_success')
+          else $(this).text('post.copy_failure')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('post.copy_button')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>

@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="第1章 Git概述Git是一个免费的、开源的分布式版本控制系统，可以快速高效地处理从小型到大型的各种项目。 Git易于学习，占地面积小，性能极快。 它具有廉价的本地库，方便的暂存区域和多个工作流分支等特性。其性能优于Subversion(svn)、CVS、Perforce和ClearCase等版本控制工具。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Git与GitLab的企业实战">
+<meta property="og:url" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/index.html">
+<meta property="og:site_name" content="Lzq&#39;s blog">
+<meta property="og:description" content="第1章 Git概述Git是一个免费的、开源的分布式版本控制系统，可以快速高效地处理从小型到大型的各种项目。 Git易于学习，占地面积小，性能极快。 它具有廉价的本地库，方便的暂存区域和多个工作流分支等特性。其性能优于Subversion(svn)、CVS、Perforce和ClearCase等版本控制工具。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps1.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps2.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps3.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps4.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps5.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps6.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps7.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps8.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps9.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps10.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps11.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps12.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps13.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps14.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps15.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps16.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps17.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps18.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps19.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps20.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps21.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps22.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/image-20230627170844640.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/image-20230627131721466.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/image-20230627131804454.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/image-20230627132109306.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/image-20230627132215734.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/image-20230627132317963.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/image-20230627132547573.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/image-20230627132954523.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/image-20230627133040699.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/image-20230627133335748.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/image-20230627133425162.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/image-20230627133644105.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/image-20230627133907417.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/image-20230627133937432.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/image-20230627134046013.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/image-20230627134228811.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/image-20230627134422376.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/image-20230627134533136.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/image-20230627134618381.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/image-20230627134649667.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1704960206158.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1704960312687.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1704960580138.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1704960497554.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1704960800309.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1704961275801.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1704962382919.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705040350413.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705458108708.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705458651469.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705458678557.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705459375393.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705459556035.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705459822148.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705459901802.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705460369930.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705461501846.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705461596842.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705461792030.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705462825829.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705462906032.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705471200362.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705471441919.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705471545505.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705472084800.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps66.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps67.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705472349179.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705554047925.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1706067954154.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps2222.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps223.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps2224.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps2225.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps22122.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps2227.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps8222.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps9222.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps12220.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps12221.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps13332.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps13222.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps12224.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps15222.jpg">
+<meta property="og:image" content="file:///C:/Users/merge/AppData/Local/Temp/ksohtml22268/wps16.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps12227.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps18222.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps19222.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps20222.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps21222.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps22222.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps23222.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps24222.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps25222.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps1111.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps21111.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps13111.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps41111.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps13111.jpg">
+<meta property="og:image" content="e:\%E8%AF%BE%E7%A8%8B\%E7%83%AD%E9%97%A8%E8%A7%86%E9%A2%91_git\04-Git\%E8%AF%BE%E4%BB%B6\C1706084894289.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705473717653.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1706087127924.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1706088019573.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1706088077244.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1706087991195.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1706146898301.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705549702169.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1706146278780.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705550474743.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1706146956838.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1706146975271.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705551269043.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705551516941.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705551702149.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705552452300.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705552598042.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705552665960.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1706151049392.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705557561370.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705557925090.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705896052634.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705896287765.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705557817529.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/C1705898035403.png">
+<meta property="article:published_time" content="2025-02-05T11:50:07.000Z">
+<meta property="article:modified_time" content="2025-02-05T12:05:29.356Z">
+<meta property="article:author" content="Zongqing Li">
+<meta property="article:tag" content="Git">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/wps1.jpg">
+
+<link rel="canonical" href="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Git与GitLab的企业实战 | Lzq's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lzq's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">31</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">43</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book">
+
+    <a href="/book" rel="section"><i class="fas fa-book fa-fw"></i>Book</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/head.png?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Git与GitLab的企业实战
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-02-05 19:50:07 / 修改时间：20:05:29" itemprop="dateCreated datePublished" datetime="2025-02-05T19:50:07+08:00">2025-02-05</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="第1章-Git概述"><a href="#第1章-Git概述" class="headerlink" title="第1章 Git概述"></a>第1章 Git概述</h1><p>Git是一个免费的、开源的分布式版本控制系统，可以快速高效地处理从小型到大型的各种项目。</p>
+<p>Git易于学习，占地面积小，性能极快。 它具有廉价的本地库，方便的暂存区域和多个工作流分支等特性。其性能优于Subversion(svn)、CVS、Perforce和ClearCase等版本控制工具。<br><span id="more"></span></p>
+<h2 id="1-何为版本控制"><a href="#1-何为版本控制" class="headerlink" title="1. 何为版本控制"></a>1. 何为版本控制</h2><p>版本控制是一种记录文件内容变化，以便将来查阅特定版本修订情况的系统。</p>
+<p>版本控制其实最重要的是可以记录文件修改历史记录，从而让用户能够查看历史版本，方便版本切换。</p>
+<p><img src="wps1.jpg" alt="img"></p>
+<h2 id="2-为什么需要版本控制"><a href="#2-为什么需要版本控制" class="headerlink" title="2. 为什么需要版本控制"></a>2. 为什么需要版本控制</h2><p>个人开发过渡到团队协作。</p>
+<p><img src="wps2.jpg" alt="img"></p>
+<h2 id="3-版本控制工具"><a href="#3-版本控制工具" class="headerlink" title="3. 版本控制工具"></a>3. 版本控制工具</h2><ul>
+<li><strong>集中式版本控制工具</strong></li>
+</ul>
+<p>CVS、SVN(Subversion)、VSS……</p>
+<p>集中化的版本控制系统诸如 CVS、SVN等，都有一个单一的集中管理的服务器，保存所有文件的修订版本，而协同工作的人们都通过客户端连到这台服务器，取出最新的文件或者提交更新。多年以来，这已成为版本控制系统的标准做法。</p>
+<p>这种做法带来了许多好处，每个人都可以在一定程度上看到项目中的其他人正在做些什么。而管理员也可以轻松掌控每个开发者的权限，并且管理一个集中化的版本控制系统，要远比在各个客户端上维护本地数据库来得轻松容易。</p>
+<p>事分两面，有好有坏。这么做显而易见的缺点是中央服务器的单点故障。如果服务器宕机一小时，那么在这一小时内，谁都无法提交更新，也就无法协同工作。</p>
+<p><img src="wps3.jpg" alt="img"></p>
+<ul>
+<li><strong>分布式版本控制工具</strong></li>
+</ul>
+<p>Git、Mercurial、Bazaar、Darcs……</p>
+<p>像 Git这种分布式版本控制工具，客户端提取的不是最新版本的文件快照，而是把代码仓库完整地镜像下来（本地库）。这样任何一处协同工作用的文件发生故障，事后都可以用其他客户端的本地仓库进行恢复。因为每个客户端的每一次文件提取操作，实际上都是一次对整个文件仓库的完整备份。</p>
+<p>分布式的版本控制系统出现之后,解决了集中式版本控制系统的缺陷:</p>
+<ol>
+<li><p>服务器断网的情况下也可以进行开发（因为版本控制是在本地进行的）</p>
+</li>
+<li><p>每个客户端保存的也都是整个完整的项目（包含历史记录，更加安全）</p>
+</li>
+</ol>
+<p><img src="wps4.png" alt="img"></p>
+<h2 id="4-Git简史"><a href="#4-Git简史" class="headerlink" title="4. Git简史"></a>4. Git简史</h2><p><img src="wps5.jpg" alt="img"></p>
+<h2 id="5-Git工作机制"><a href="#5-Git工作机制" class="headerlink" title="5 Git工作机制"></a>5 Git工作机制</h2><p><img src="wps6.jpg" alt="img"></p>
+<h2 id="6-Git和代码托管中心"><a href="#6-Git和代码托管中心" class="headerlink" title="6 Git和代码托管中心"></a>6 Git和代码托管中心</h2><p>代码托管中心是基于网络服务器的远程代码仓库，一般我们简单称为远程库。</p>
+<ul>
+<li><strong>局域网</strong></li>
+</ul>
+<p>GitLab</p>
+<ul>
+<li><strong>互联网</strong></li>
+</ul>
+<p>GitHub（外网）</p>
+<p>Gitee码云（国内网站）</p>
+<h1 id="第2章-Git安装"><a href="#第2章-Git安装" class="headerlink" title="第2章 Git安装"></a>第2章 Git安装</h1><p>​  官网地址： <a target="_blank" rel="noopener" href="https://git-scm.com/或https://github.com/git-for-windows/git/releases">https://git-scm.com/或https://github.com/git-for-windows/git/releases</a></p>
+<p>​  查看GNU协议，可以直接点击下一步。</p>
+<p><img src="wps7.jpg" alt="img"></p>
+<p>选择Git安装位置，要求是非中文并且没有空格的目录，然后下一步。</p>
+<p><img src="wps8.jpg" alt="img"></p>
+<p>Git选项配置，推荐默认设置，然后下一步。</p>
+<p><img src="wps9.jpg" alt="img"></p>
+<p>Git安装目录名，不用修改，直接点击下一步。</p>
+<p><img src="wps10.jpg" alt="img"></p>
+<p>Git的默认编辑器，建议使用默认的Vim编辑器，然后点击下一步。</p>
+<p><img src="wps11.jpg" alt="img"></p>
+<p>默认分支名设置，选择让Git决定，分支名默认为master，下一步。</p>
+<p><img src="wps12.jpg" alt="img"></p>
+<p>修改Git的环境变量，选第一个，不修改环境变量，只在Git Bash里使用Git。</p>
+<p><img src="wps13.jpg" alt="img"></p>
+<p>选择后台客户端连接协议，选默认值OpenSSL，然后下一步。</p>
+<p><img src="wps14.jpg" alt="img"></p>
+<p>配置Git文件的行末换行符，Windows使用CRLF，Linux使用LF，选择第一个自动转换，然后继续下一步。</p>
+<p><img src="wps15.jpg" alt="img"></p>
+<p>选择Git终端类型，选择默认的Git Bash终端，然后继续下一步。</p>
+<p><img src="wps16.jpg" alt="img"></p>
+<p>选择Git pull合并的模式，选择默认，然后下一步。</p>
+<p><img src="wps17.jpg" alt="img"></p>
+<p>选择Git的凭据管理器，选择默认的跨平台的凭据管理器，然后下一步。</p>
+<p><img src="wps18.jpg" alt="img"></p>
+<p>其他配置，选择默认设置，然后下一步。</p>
+<p><img src="wps19.jpg" alt="img"></p>
+<p>实验室功能，技术还不成熟，有已知的bug，不要勾选，然后点击右下角的Install按钮，开始安装Git。</p>
+<p><img src="wps20.jpg" alt="img"></p>
+<p>点击Finsh按钮，Git安装成功！</p>
+<p><img src="wps21.jpg" alt="img"></p>
+<p>右键任意位置，在右键菜单里选择Git Bash Here即可打开Git Bash命令行终端。</p>
+<p><img src="wps22.jpg" alt="img"></p>
+<p>在Git Bash终端里输入git —version查看git版本，如图所示，说明Git安装成功。</p>
+<p><img src="image-20230627170844640.png" alt="image-20230627170844640"></p>
+<h1 id="第3章-Git常用命令"><a href="#第3章-Git常用命令" class="headerlink" title="第3章 Git常用命令"></a>第3章 Git常用命令</h1><div class="table-container">
+<table>
+<thead>
+<tr>
+<th><strong>命令名称</strong></th>
+<th><strong>作用</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>git config —global user.name 用户名</td>
+<td>设置用户签名</td>
+</tr>
+<tr>
+<td>git config —global user.email 邮箱</td>
+<td>设置用户邮箱</td>
+</tr>
+<tr>
+<td>git init</td>
+<td>初始化本地库</td>
+</tr>
+<tr>
+<td>git status</td>
+<td>查看本地库状态</td>
+</tr>
+<tr>
+<td>git add 文件名</td>
+<td>添加到暂存区</td>
+</tr>
+<tr>
+<td>git commit -m “日志信息” 文件名</td>
+<td>提交到本地库</td>
+</tr>
+<tr>
+<td>git reflog</td>
+<td>查看历史记录</td>
+</tr>
+<tr>
+<td>git reset —hard 版本号</td>
+<td>版本穿梭</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="1-设置用户签名"><a href="#1-设置用户签名" class="headerlink" title="1 设置用户签名"></a>1 设置用户签名</h2><h3 id="1-1-基本语法"><a href="#1-1-基本语法" class="headerlink" title="1.1 基本语法"></a>1.1 基本语法</h3><p>git config —global user.name 用户名</p>
+<p>git config —global user.email 邮箱</p>
+<h3 id="1-2-案例实操"><a href="#1-2-案例实操" class="headerlink" title="1.2 案例实操"></a>1.2 案例实操</h3><p>全局范围的签名设置：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.name yhm</span><br><span class="line">git config --global user.email yaohm7788@163.com</span><br><span class="line">git config --list # 查看全局配置</span><br><span class="line">cat ~/.gitconfig  # cat linux中查看文本的命令  ~ 家 [你当前用户的家]/ .gitconfig</span><br></pre></td></tr></table></figure>
+<p>说明：</p>
+<p>签名的作用是区分不同操作者身份。用户的签名信息在每一个版本的提交信息中能够看到，以此确认本次提交是谁做的。Git首次安装必须设置一下用户签名，否则无法提交代码。</p>
+<p>※注意：这里设置用户签名和将来登录GitHub（或其他代码托管中心）的账号没有任何关系。</p>
+<h2 id="2-初始化本地库"><a href="#2-初始化本地库" class="headerlink" title="2 初始化本地库"></a><strong>2</strong> <strong>初始化本地库</strong></h2><h3 id="2-1-基本语法"><a href="#2-1-基本语法" class="headerlink" title="2.1 基本语法"></a>2.1 基本语法</h3><p><strong>git init</strong></p>
+<h3 id="2-2-案例实操"><a href="#2-2-案例实操" class="headerlink" title="2.2 案例实操"></a>2.2 案例实操</h3><p><img src="image-20230627131721466.png" alt="image-20230627131721466"></p>
+<p>结果查看</p>
+<p><img src="image-20230627131804454.png" alt="image-20230627131804454"></p>
+<h2 id="3-查看本地库状态"><a href="#3-查看本地库状态" class="headerlink" title="3 查看本地库状态"></a><strong>3</strong> <strong>查看本地库状态</strong></h2><h3 id="3-1-基本语法"><a href="#3-1-基本语法" class="headerlink" title="3.1 基本语法"></a>3.1 基本语法</h3><p><strong>git status</strong></p>
+<h3 id="3-2-案例实操"><a href="#3-2-案例实操" class="headerlink" title="3.2 案例实操"></a>3.2 案例实操</h3><h4 id="（1）首次查看（工作区没有文件）"><a href="#（1）首次查看（工作区没有文件）" class="headerlink" title="（1）首次查看（工作区没有文件）"></a>（1）首次查看（工作区没有文件）</h4><p><img src="image-20230627132109306.png" alt="image-20230627132109306"></p>
+<h4 id="（2）新增文件"><a href="#（2）新增文件" class="headerlink" title="（2）新增文件"></a>（2）新增文件</h4><p><img src="image-20230627132215734.png" alt="image-20230627132215734"></p>
+<p><img src="image-20230627132317963.png" alt="image-20230627132317963"></p>
+<h4 id="（3）再次查看（检测到未追踪文件）"><a href="#（3）再次查看（检测到未追踪文件）" class="headerlink" title="（3）再次查看（检测到未追踪文件）"></a>（3）再次查看（检测到未追踪文件）</h4><p><img src="image-20230627132547573.png" alt="image-20230627132547573"></p>
+<h2 id="4-添加暂存区"><a href="#4-添加暂存区" class="headerlink" title="4 添加暂存区"></a>4 添加暂存区</h2><h3 id="4-1-将工作区的文件添加到暂存区"><a href="#4-1-将工作区的文件添加到暂存区" class="headerlink" title="4.1 将工作区的文件添加到暂存区"></a>4.1 将工作区的文件添加到暂存区</h3><h4 id="（1）基本语法"><a href="#（1）基本语法" class="headerlink" title="（1）基本语法"></a>（1）基本语法</h4><p><strong>git</strong> <strong>add</strong> <strong>文件名</strong></p>
+<h4 id="（2）案例实操"><a href="#（2）案例实操" class="headerlink" title="（2）案例实操"></a>（2）案例实操</h4><p><img src="image-20230627132954523.png" alt="image-20230627132954523"></p>
+<h3 id="4-2-查看状态（检测到暂存区有新文件）"><a href="#4-2-查看状态（检测到暂存区有新文件）" class="headerlink" title="4.2 查看状态（检测到暂存区有新文件）"></a>4.2 查看状态（检测到暂存区有新文件）</h3><p><img src="image-20230627133040699.png" alt="image-20230627133040699"></p>
+<h2 id="5-提交本地库"><a href="#5-提交本地库" class="headerlink" title="5 提交本地库"></a>5 提交本地库</h2><h3 id="5-1-暂存区文件提交到本地库"><a href="#5-1-暂存区文件提交到本地库" class="headerlink" title="5.1 暂存区文件提交到本地库"></a>5.1 暂存区文件提交到本地库</h3><h4 id="（1）基本语法-1"><a href="#（1）基本语法-1" class="headerlink" title="（1）基本语法"></a>（1）基本语法</h4><p><strong>git commit -m “日志信息” 文件名</strong></p>
+<h4 id="（2）案例实操-1"><a href="#（2）案例实操-1" class="headerlink" title="（2）案例实操"></a>（2）案例实操</h4><p><img src="image-20230627133335748.png" alt="image-20230627133335748"></p>
+<h3 id="5-2-查看状态（没有文件需要提交）"><a href="#5-2-查看状态（没有文件需要提交）" class="headerlink" title="5.2 查看状态（没有文件需要提交）"></a>5.2 查看状态（没有文件需要提交）</h3><p><img src="image-20230627133425162.png" alt="image-20230627133425162"></p>
+<h2 id="6-修改文件（hello-txt）"><a href="#6-修改文件（hello-txt）" class="headerlink" title="6 修改文件（hello.txt）"></a>6 修改文件（hello.txt）</h2><h3 id="6-1-查看状态（检测到工作区有文件被修改）"><a href="#6-1-查看状态（检测到工作区有文件被修改）" class="headerlink" title="6.1 查看状态（检测到工作区有文件被修改）"></a>6.1 查看状态（检测到工作区有文件被修改）</h3><p><img src="image-20230627133644105.png" alt="image-20230627133644105"></p>
+<h3 id="6-2-将修改的文件再次添加暂存区"><a href="#6-2-将修改的文件再次添加暂存区" class="headerlink" title="6.2 将修改的文件再次添加暂存区"></a>6.2 将修改的文件再次添加暂存区</h3><p><img src="image-20230627133907417.png" alt="image-20230627133907417"></p>
+<h3 id="6-3-查看状态（工作区的修改添加到了暂存区）"><a href="#6-3-查看状态（工作区的修改添加到了暂存区）" class="headerlink" title="6.3 查看状态（工作区的修改添加到了暂存区）"></a>6.3 查看状态（工作区的修改添加到了暂存区）</h3><p><img src="image-20230627133937432.png" alt="image-20230627133937432"></p>
+<h3 id="6-4-将暂存区文件提交到本地库"><a href="#6-4-将暂存区文件提交到本地库" class="headerlink" title="6.4 将暂存区文件提交到本地库"></a>6.4 将暂存区文件提交到本地库</h3><p><img src="image-20230627134046013.png" alt="image-20230627134046013"></p>
+<h2 id="7-历史版本"><a href="#7-历史版本" class="headerlink" title="7 历史版本"></a>7 历史版本</h2><h3 id="7-1-查看历史版本"><a href="#7-1-查看历史版本" class="headerlink" title="7.1 查看历史版本"></a>7.1 查看历史版本</h3><h4 id="（1）基本语法-2"><a href="#（1）基本语法-2" class="headerlink" title="（1）基本语法"></a>（1）基本语法</h4><p><strong>git reflog</strong>  <strong>查看版本信息</strong></p>
+<p>git reflog -n 数量</p>
+<p><strong>git log</strong>  <strong>查看版本详细信息</strong></p>
+<h4 id="（2）案例实操-2"><a href="#（2）案例实操-2" class="headerlink" title="（2）案例实操"></a>（2）案例实操</h4><p><img src="image-20230627134228811.png" alt="image-20230627134228811"></p>
+<h3 id="7-2-版本穿梭"><a href="#7-2-版本穿梭" class="headerlink" title="7.2 版本穿梭"></a>7.2 版本穿梭</h3><h4 id="（1）基本语法-3"><a href="#（1）基本语法-3" class="headerlink" title="（1）基本语法"></a>（1）基本语法</h4><p><strong>git reset —hard</strong> <strong>版本号</strong></p>
+<h4 id="（2）案例实操-3"><a href="#（2）案例实操-3" class="headerlink" title="（2）案例实操"></a>（2）案例实操</h4><p>—首先查看当前的历史记录，可以看到当前是在48f4e22这个版本</p>
+<p><img src="image-20230627134422376.png" alt="image-20230627134422376"></p>
+<p>—切换到之前版本，8ca80d7版本，也就是我们第一次提交的版本</p>
+<p><img src="image-20230627134533136.png" alt="image-20230627134533136"></p>
+<p>—切换完毕之后再查看历史记录，当前成功切换到了8ca80d7版本</p>
+<p><img src="image-20230627134618381.png" alt="image-20230627134618381"></p>
+<p>—然后查看文件hello.txt，发现文件内容已经变化</p>
+<p><img src="image-20230627134649667.png" alt="image-20230627134649667"></p>
+<p> Git切换版本，底层其实是移动的HEAD指针。</p>
+<h1 id="第4章-Git客户端便捷操作"><a href="#第4章-Git客户端便捷操作" class="headerlink" title="第4章 Git客户端便捷操作"></a>第4章 Git客户端便捷操作</h1><h2 id="1-安装部署"><a href="#1-安装部署" class="headerlink" title="1. 安装部署"></a>1. 安装部署</h2><p>使用命令行操作git相对而言是非常不方便的，查看内容也不是很直观，所有官方推荐使用Git的GUI 客户端来完成页面化操作。</p>
+<p><a target="_blank" rel="noopener" href="https://git-scm.com/downloads/guis">https://git-scm.com/downloads/guis</a></p>
+<p><img src="C1704960206158.png" alt="1704960206158"></p>
+<p>​    推荐下载使用GitHub Desktop。下载安装之后，选择不登录先进入页面。</p>
+<p><img src="C1704960312687.png" alt="1704960312687"></p>
+<h2 id="2-基础操作"><a href="#2-基础操作" class="headerlink" title="2. 基础操作"></a>2. 基础操作</h2><h3 id="2-1-设置个人信息"><a href="#2-1-设置个人信息" class="headerlink" title="2.1 设置个人信息"></a>2.1 设置个人信息</h3><p><img src="C1704960580138.png" alt="1704960580138"></p>
+<h3 id="2-2-创建新的Git仓库"><a href="#2-2-创建新的Git仓库" class="headerlink" title="2.2 创建新的Git仓库"></a>2.2 创建新的Git仓库</h3><p><img src="C1704960497554.png" alt="1704960497554"></p>
+<h3 id="2-3-提交不同版本"><a href="#2-3-提交不同版本" class="headerlink" title="2.3 提交不同版本"></a>2.3 提交不同版本</h3><p><img src="C1704960800309.png" alt="1704960800309"></p>
+<p>新创建文件1.txt，并写入信息。之后可以在GitGui上面进行提交。</p>
+<p><img src="C1704961275801.png" alt="1704961275801"></p>
+<p>多次提交的版本可以直接在History页面查看区别，不需要再使用reset命令。</p>
+<p><img src="C1704962382919.png" alt="1704962382919"></p>
+<h2 id="3-连接GitHub远程仓库"><a href="#3-连接GitHub远程仓库" class="headerlink" title="3. 连接GitHub远程仓库"></a>3. 连接GitHub远程仓库</h2><p>登录自己注册的账号</p>
+<p><img src="C1705040350413.png" alt="1705040350413"></p>
+<p>点击Publish可以将当前项目创建到GitHub上面。</p>
+<p><img src="C1705458108708.png" alt="1705458108708"></p>
+<p>之后修改本地文件，就可以先推送到本地git之后再远程同步到GitHub仓库中。</p>
+<p>（1）选择对应的分支</p>
+<p><img src="C1705458651469.png" alt="1705458651469"></p>
+<p>（2）点击推送</p>
+<p><img src="C1705458678557.png" alt="1705458678557"></p>
+<p>（3）也可以先在GitHub上面创建远程仓库，之后再拉取到本地保持统一。</p>
+<p><img src="C1705459375393.png" alt="1705459375393"></p>
+<p><img src="C1705459556035.png" alt="1705459556035"></p>
+<p>（4）拉取远程仓库到本地</p>
+<p><img src="C1705459822148.png" alt="1705459822148"></p>
+<p>点击克隆即可，连接完成远程仓库和本地Git之后，在本地修改文件提交Git之后再push推送即可完成同步。</p>
+<p><img src="C1705459901802.png" alt="1705459901802"></p>
+<h2 id="3-Gitee替代GitHub"><a href="#3-Gitee替代GitHub" class="headerlink" title="3. Gitee替代GitHub"></a>3. Gitee替代GitHub</h2><p>GitHub的网站有时候会连接不上，无法登录。可以使用阿里提供的Git远程仓库网站Gitee来代替。</p>
+<p><img src="C1705460369930.png" alt="1705460369930"></p>
+<p>登录账号之后创建新的仓库</p>
+<p><img src="C1705461501846.png" alt="1705461501846"></p>
+<p>同步远程Gitee仓库的方式和同步GitHub仓库方法完全一致。</p>
+<p><img src="C1705461596842.png" alt="1705461596842"></p>
+<h2 id="4-idea兼容使用Git（JAVA代码）"><a href="#4-idea兼容使用Git（JAVA代码）" class="headerlink" title="4. idea兼容使用Git（JAVA代码）"></a>4. idea兼容使用Git（JAVA代码）</h2><p>（1）首先在idea中创建一个空的项目</p>
+<p><img src="C1705461792030.png" alt="1705461792030"></p>
+<p>（2）编写基础的JAVA代码Hello world</p>
+<p><img src="C1705462825829.png" alt="1705462825829"></p>
+<p>（3）此时会产生IDEA中的特定文件</p>
+<p><img src="C1705462906032.png" alt="1705462906032"></p>
+<p>（4） 配置Git忽略文件</p>
+<ul>
+<li><p><strong>文件名称：xxxx.ignore</strong>（前缀名随便起，建议是git.ignore）</p>
+</li>
+<li><p>这个文件的存放位置原则上在哪里都可以，为了便于让~/.gitconfig文件引用，建议也放在用户家目录下</p>
+</li>
+<li><p>git.ignore文件模版内容如下</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"># Compiled class file</span><br><span class="line">*.class</span><br><span class="line"></span><br><span class="line"># Log file</span><br><span class="line">*.log</span><br><span class="line"></span><br><span class="line"># BlueJ files</span><br><span class="line">*.ctxt</span><br><span class="line"></span><br><span class="line"># Mobile Tools for Java (J2ME)</span><br><span class="line">.mtj.tmp/</span><br><span class="line"></span><br><span class="line"># Package Files #</span><br><span class="line">*.jar</span><br><span class="line">*.war</span><br><span class="line">*.nar</span><br><span class="line">*.ear</span><br><span class="line">*.zip</span><br><span class="line">*.tar.gz</span><br><span class="line">*.rar</span><br><span class="line"></span><br><span class="line"># virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml</span><br><span class="line">hs_err_pid*</span><br><span class="line"></span><br><span class="line">.classpath</span><br><span class="line">.project</span><br><span class="line">.settings</span><br><span class="line">target</span><br><span class="line">.idea</span><br><span class="line">*.iml</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>（5）在.gitconfig文件中引用</p>
+<p>  （此文件在Windows的家目录中）</p>
+  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[user]</span><br><span class="line"> name = yhm</span><br><span class="line"> email = yaohm7788@163.com</span><br><span class="line">[core]</span><br><span class="line"> excludesfile = C:/Users/merge/git.ignore</span><br></pre></td></tr></table></figure>
+<p>  注意：这里要使用正斜线（/），不要使用反斜线（\）</p>
+<p>（6） 定位Git程序</p>
+<p><img src="C1705471200362.png" alt="1705471200362"></p>
+<p>（7）初始化本地库</p>
+<p><img src="C1705471441919.png" alt="1705471441919"></p>
+<p>（8）提交到本地库</p>
+<p>右键点击项目选择Git -&gt; Add将项目添加到暂存区。</p>
+<p><img src="C1705471545505.png" alt="1705471545505"></p>
+<p><img src="C1705472084800.png" alt="1705472084800"></p>
+<p>（9）切换版本</p>
+<p>查看历史版本</p>
+<p><img src="wps66.jpg" alt="img"></p>
+<p><img src="wps67.jpg" alt="img"></p>
+<p>右键选择要切换的版本，然后在菜单里点击get。</p>
+<p><img src="C1705472349179.png" alt="1705472349179"></p>
+<h1 id="第5章-GitLab的部署与使用"><a href="#第5章-GitLab的部署与使用" class="headerlink" title="第5章 GitLab的部署与使用"></a>第5章 GitLab的部署与使用</h1><h2 id="1-为什么使用GitLab-开发运维一体化"><a href="#1-为什么使用GitLab-开发运维一体化" class="headerlink" title="1.为什么使用GitLab-开发运维一体化"></a>1.为什么使用GitLab-开发运维一体化</h2><p><img src="C1705554047925.png" alt="1705554047925"></p>
+<h2 id="2-部署安装GitLab"><a href="#2-部署安装GitLab" class="headerlink" title="2. 部署安装GitLab"></a>2. 部署安装GitLab</h2><p>使用git，还需要一个远程代码仓库。常见的github、gitee这种远程代码仓库，公司中一般不会使用，因为他们是使用外网的，不够安全。一般企业都会搭建一个仅内网使用的远程代码仓库，最常见就是 GitLab。</p>
+<h3 id="2-1-安装部署"><a href="#2-1-安装部署" class="headerlink" title="2.1 安装部署"></a><strong>2.1</strong> <strong>安装部署</strong></h3><p>GitLab一般由公司的运维人员安装部署，开发人员只需要申请账号和相应权限即可，在这里我们在hadoop104上自己安装GitLab社区版体验一下。</p>
+<h4 id="2-1-1-安装准备"><a href="#2-1-1-安装准备" class="headerlink" title="2.1.1 安装准备"></a><strong>2.1.1</strong> <strong>安装准备</strong></h4><p><strong>1）需要开启ssh：（已开启可跳过）</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl status sshd</span><br><span class="line">sudo systemctl enable sshd</span><br><span class="line">sudo systemctl start sshd</span><br></pre></td></tr></table></figure>
+<p><strong>2）防火墙开放http、https服务：（已关闭防火墙可跳过）</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl status firewalld</span><br><span class="line">sudo firewall-cmd --permanent --add-service=http</span><br><span class="line">sudo firewall-cmd --permanent --add-service=https</span><br><span class="line">sudo systemctl reload firewalld</span><br></pre></td></tr></table></figure>
+<h4 id="2-1-2-rpm-包安装"><a href="#2-1-2-rpm-包安装" class="headerlink" title="2.1.2 rpm 包安装"></a><strong>2.1.2</strong> <strong>rpm</strong> <strong>包安装</strong></h4><p><strong>1）上传安装包</strong></p>
+<p>下载地址：<a target="_blank" rel="noopener" href="https://packages.gitlab.cn/#browse/search/">https://packages.gitlab.cn/#browse/search/</a></p>
+<p>安装包较大，建议下载好手动上传服务器。这里上传到/opt/software</p>
+<p><strong>2）编写安装脚本</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd ~/bin</span><br><span class="line">vim gitlab-install.sh</span><br></pre></td></tr></table></figure>
+<p>脚本内容如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sudo yum install -y curl policycoreutils-python openssh-server perl</span><br><span class="line">curl -fsSL https://packages.gitlab.cn/repository/raw/scripts/setup.sh | /bin/bash</span><br><span class="line">sudo rpm -ivh gitlab-jh-16.6.1-jh.0.el7.x86_64.rpm</span><br><span class="line">sudo yum install -y postfix</span><br><span class="line">sudo systemctl enable postfix</span><br><span class="line">sudo systemctl start postfix</span><br></pre></td></tr></table></figure>
+<p><strong>3）修改脚本执行权限并执行</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">chmod +x gitlab-install.sh</span><br><span class="line">sh gitlab-install.sh</span><br></pre></td></tr></table></figure>
+<p><strong>4）</strong>修改external_url</p>
+<p>编辑gitlab.rb</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[atguigu@hadoop104 ~]$ sudo vim /etc/gitlab/gitlab.rb</span><br></pre></td></tr></table></figure>
+<p>在文件中找到external_url，修改为如下内容</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">external_url &#x27;http://hadoop104&#x27;</span><br></pre></td></tr></table></figure>
+<p>保存退出</p>
+<p><strong>5）</strong>修改host</p>
+<p>编辑gitlab.yml</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[atguigu@hadoop104 ~]$ sudo vim /opt/gitlab/embedded/service/gitlab-rails/config/gitlab.yml.example</span><br></pre></td></tr></table></figure>
+<p>找到gitlab.host修改为如下内容</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">gitlab:</span><br><span class="line"></span><br><span class="line">  \## Web server settings (**note:** host is the FQDN, do not include http://)</span><br><span class="line"></span><br><span class="line">  host: hadoop104</span><br><span class="line"></span><br><span class="line">  port: 80</span><br><span class="line"></span><br><span class="line">  https: false</span><br></pre></td></tr></table></figure>
+<p>保存退出</p>
+<p>修改文件名称</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[atguigu@hadoop104 ~]$ sudo mv /opt/gitlab/embedded/service/gitlab-rails/config/gitlab.yml.example /opt/gitlab/embedded/service/gitlab-rails/config/gitlab.yml</span><br></pre></td></tr></table></figure>
+<p><strong>6</strong>）重装需要彻底卸载</p>
+<p>1 卸载gitlab</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[atguigu@hadoop104 opt]$ sudo rpm -e gitlab-jh-16.6.1</span><br></pre></td></tr></table></figure>
+<p>2 删除gitlab文件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[atguigu@hadoop104 opt]$ sudo rm -rf /etc/gitlab</span><br><span class="line">[atguigu@hadoop104 opt]$ sudo rm -rf /var/opt/gitlab</span><br><span class="line">[atguigu@hadoop104 opt]$ sudo rm -rf /opt/gitlab</span><br></pre></td></tr></table></figure>
+<p>3 重装如果卡在sudo gitlab-ctl reconfigure配置命令上，可以使用另外一个窗口执行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl restart gitlab-runsvdir</span><br></pre></td></tr></table></figure>
+<h4 id="2-1-3-执行初始化"><a href="#2-1-3-执行初始化" class="headerlink" title="2.1.3 执行初始化"></a><strong>2.1.3</strong> <strong>执行初始化</strong></h4><p>执行过程大概需要3分钟：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo gitlab-ctl reconfigure</span><br></pre></td></tr></table></figure>
+<h4 id="2-1-4-启停命令"><a href="#2-1-4-启停命令" class="headerlink" title="2.1.4 启停命令"></a><strong>2.1.4</strong> <strong>启停命令</strong></h4><p><strong>1</strong>）启动命令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo gitlab-ctl start</span><br></pre></td></tr></table></figure>
+<p><strong>2）停止命令</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo gitlab-ctl stop</span><br></pre></td></tr></table></figure>
+<h4 id="2-1-5-修改-root-密码"><a href="#2-1-5-修改-root-密码" class="headerlink" title="2.1.5 修改 root 密码"></a><strong>2.1.5</strong> <strong>修改 root</strong> <strong>密码</strong></h4><p><strong>1</strong>）访问Web页面</p>
+<p>默认使用80端口，直接浏览器输入安装服务器的hostname或ip：hadoop104</p>
+<p><img src="C1706067954154.png" alt="1706067954154"></p>
+<p>2）查看root密码</p>
+<p>账号root，密码将随机生成并在 /etc/gitlab/initial_root_password 中保存24 小时：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo cat /etc/gitlab/initial_root_password</span><br><span class="line"></span><br><span class="line">zOyGe6aBQbkfYf6rOZP2qaWQOAo59K0HMrq9Rs7Yi2w=</span><br></pre></td></tr></table></figure>
+<p>修改密码：</p>
+<p><img src="wps2222.jpg" alt="suimg"></p>
+<h4 id="2-1-6-设置简体中文"><a href="#2-1-6-设置简体中文" class="headerlink" title="2.1.6 设置简体中文"></a><strong>2.1.6</strong> <strong>设置简体中文</strong></h4><p><img src="wps223.jpg" alt="11img"></p>
+<p>回到首页，可以看到变成中文：</p>
+<p><img src="wps2224.jpg" alt="sud122img"></p>
+<h2 id="3-使用GitLab完成团队管理"><a href="#3-使用GitLab完成团队管理" class="headerlink" title="3. 使用GitLab完成团队管理"></a>3. 使用GitLab完成团队管理</h2><p>去到一家公司，应该是已经有了GitLab平台，运维人员拥有root管理员账号。而作为一名普通的开发人员，你的leader和同事都拥有各自的GitLab账号和不同权限。入职后，你只需要申请开通GitLab账号和对应权限，不需要你来操作。</p>
+<h3 id="3-1-创建用户"><a href="#3-1-创建用户" class="headerlink" title="3.1 创建用户"></a><strong>3.1</strong> <strong>创建用户</strong></h3><p>为了更符合公司实际，我们假设数据组的leader账号为tutou，你是atguigu。</p>
+<p><img src="wps2225.jpg" alt="rgimg"></p>
+<p>创建一个leader的账号：</p>
+<p><img src="wps22122.jpg" alt="11img"></p>
+<p>再申请一个atguigu账号</p>
+<p><img src="wps2227.jpg" alt="121img"></p>
+<p>用户会收到重置密码的邮件，也可以由管理员设置：</p>
+<p><img src="wps8222.jpg" alt="31321img"></p>
+<p><img src="wps9222.jpg" alt="32321img"></p>
+<h3 id="3-2-创建群组"><a href="#3-2-创建群组" class="headerlink" title="3.2 创建群组"></a><strong>3.2</strong> <strong>创建群组</strong></h3><p>在gitlab里，可以创建出组、组下的子组。在小公司里可以看见gitlab里边会创建出后端，大数据等等一系列组。尽量不要使用中文创建组名, 可以在组信息中的备注编写中文描述以及中文组名, 组内人员名称也尽量用全拼命名。</p>
+<p>对于人员权限以及角色的控制也比较简单，有如下五种：</p>
+<p>Ø Owner：最高权限，谁去创建组，这个组就被谁拥有，它可以开除管理员，但管理员无法操作owner的角色。</p>
+<p>Ø Maintainer：（管理员-只是具备sudo权限的用户）管理员一般是给小组的组长，或者是给产品线的总监设定。</p>
+<p>Ø Developer：是干活的人，就是写代码的程序员，可以进行代码的上传以及代码的下载，不能下载其他的组内的代码，只能下载它们组的代码。</p>
+<p>Ø Repoter：比如现在有需求，其他组的大牛到我们组过来指导工作，要审视我们的代码，人家就提出需要一个权限，我不能给它developer因为它会改你代码，其他组的人不能改我们组的代码，所以就给一个repoter权限，他只能看，只读权限。</p>
+<p>Ø guest：不用看，匿名，直接去掉。一般出现在从ldap中把离职人员的信息删掉，再去gitlab查这个人的时候，它就是一个guest用户（匿名）需要再到gitlab把它删掉（不删也没事）。</p>
+<p>下面，我们假设研发部群组是rdc，下属后端组、前端组、大数据组等子群组：</p>
+<p><img src="wps12220.jpg" alt="1img"></p>
+<p><strong>1）创建研发中心群组rdc</strong></p>
+<p><img src="wps12221.jpg" alt="2img"></p>
+<p><strong>2</strong>）创建大数据组</p>
+<p>在研发中心组下，再创建一个大数据组（当然，其他还会有后端组、前端组等）：</p>
+<p><img src="wps13332.jpg" alt="2img"></p>
+<p><img src="wps13222.jpg" alt="4img"></p>
+<p>当然，根据公司情况还可以进一步在数据组下面细分子组（比如：离线、实时、湖等），这里我们就不再细分。</p>
+<p>将数据组的leader设为bigdata的负责人：</p>
+<p><img src="wps12224.jpg" alt="4img"></p>
+<p>将atguigu添加为普通的开发人员：</p>
+<p><img src="wps15222.jpg" alt="1img"></p>
+<p>现在我们就有一个顶级群组rdc，其下有一个子群组bigdata，组内有管理员tutou，开发人员atguigu。</p>
+<h2 id="4-使用IDEA兼容GitLab"><a href="#4-使用IDEA兼容GitLab" class="headerlink" title="4.使用IDEA兼容GitLab"></a>4.使用IDEA兼容GitLab</h2><p><strong>1）</strong>安装 GitLab 插件</p>
+<p><img src="file:///C:\Users\merge\AppData\Local\Temp\ksohtml22268\wps16.jpg" alt="img"></p>
+<p><strong>2）</strong> <strong>配置 SSH 免密登录</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -C ergou@atguigu.com</span><br></pre></td></tr></table></figure>
+<p><img src="wps12227.jpg" alt="1img"></p>
+<p>到用户目录下.ssh查看id_rsa.pub文件</p>
+<p><img src="wps18222.jpg" alt="1img"></p>
+<p><img src="wps19222.jpg" alt="1img"></p>
+<p>添加到GitLab中：</p>
+<p><img src="wps20222.jpg" alt="2img"></p>
+<p><strong>3）</strong>获取 GitLab 个人令牌</p>
+<p><img src="wps21222.jpg" alt="2img"></p>
+<p>创建后，可以查看和复制生成的token：</p>
+<p><img src="wps22222.jpg" alt="2img"></p>
+<p><strong>4）</strong>添加 GitLab 服务</p>
+<p><img src="wps23222.jpg" alt="2img"></p>
+<p><img src="wps24222.jpg" alt="2img"></p>
+<p><strong>5）</strong>修改默认分支的保护策略</p>
+<p><img src="wps25222.jpg" alt="2img"></p>
+<h1 id="第6章-企业项目构建与开发分支"><a href="#第6章-企业项目构建与开发分支" class="headerlink" title="第6章 企业项目构建与开发分支"></a>第6章 企业项目构建与开发分支</h1><h2 id="1-GitFlow工作流介绍"><a href="#1-GitFlow工作流介绍" class="headerlink" title="1. GitFlow工作流介绍"></a>1. GitFlow工作流介绍</h2><p>在项目开发过程中使用 Git 的方式常见的有：</p>
+<h3 id="1-1-集中式工作流"><a href="#1-1-集中式工作流" class="headerlink" title="1.1 集中式工作流"></a><strong>1.1 集中式工作流</strong></h3><p>所有修改都提交到 Master 这个分支。比较适合极小团队或单人维护的项目，不建议使用这种方式。</p>
+<p><img src="wps1111.jpg" alt="img"></p>
+<h3 id="1-2-功能开发工作流"><a href="#1-2-功能开发工作流" class="headerlink" title="1.2 功能开发工作流"></a><strong>1.2 功能开发工作流</strong></h3><p>功能开发应该在一个专门的分支，而不是在 master 分支上。适用于小团队开发。</p>
+<p><img src="wps21111.jpg" alt="img"></p>
+<h3 id="1-3-GitFlow工作流"><a href="#1-3-GitFlow工作流" class="headerlink" title="1.3 GitFlow工作流"></a><strong>1.3 GitFlow工作流</strong></h3><p>公司中最常用于管理大型项目。为功能开发、发布准备和维护设立了独立的分支，让发布迭代过程更流畅。</p>
+<p><img src="wps13111.jpg" alt="img"></p>
+<h3 id="1-4-Forking工作流"><a href="#1-4-Forking工作流" class="headerlink" title="1.4 Forking工作流"></a><strong>1.4 Forking工作流</strong></h3><p>在 GitFlow 基础上，充分利用了 Git 的 Fork 和 pull request 的功能以达到代码审核的目的。一般用于跨团队协作、网上开源项目。</p>
+<p><img src="wps41111.jpg" alt="img"></p>
+<h2 id="2-各分支功能介绍"><a href="#2-各分支功能介绍" class="headerlink" title="2. 各分支功能介绍"></a>2. 各分支功能介绍</h2><p><img src="wps13111.jpg" alt="img"></p>
+<h3 id="2-1-主干分支-master"><a href="#2-1-主干分支-master" class="headerlink" title="2.1 主干分支 master"></a>2.1 主干分支 master</h3><p>主要负责管理正在运行的生产环境代码，永远保持与正在运行的生产环境完全一致。为了保持稳定性一般不会直接在这个分支上修改代码，都是通过其他分支合并过来的。</p>
+<h3 id="2-2-开发分支-develop"><a href="#2-2-开发分支-develop" class="headerlink" title="2.2 开发分支 develop"></a>2.2 开发分支 develop</h3><p>主要负责管理正在开发过程中的代码。一般情况下应该是最新的代码。</p>
+<h3 id="2-3-功能分支-feature"><a href="#2-3-功能分支-feature" class="headerlink" title="2.3 功能分支 feature"></a>2.3 功能分支 feature</h3><p>为了不影响较短周期的开发工作，一般把中长期开发模块，会从开发分支中独立出来。 开发完成后会合并到开发分支。</p>
+<h3 id="2-4-准生产分支（预发布分支）-release"><a href="#2-4-准生产分支（预发布分支）-release" class="headerlink" title="2.4 准生产分支（预发布分支） release"></a>2.4 准生产分支（预发布分支） release</h3><p>较大的版本上线前，会从开发分支中分出准生产分支，进行最后阶段的集成测试。该版本上线后，会合并到主干分支。生产环境运行一段阶段较稳定后可以视情况删除。</p>
+<h3 id="2-5-bug-修理分支-hotfix"><a href="#2-5-bug-修理分支-hotfix" class="headerlink" title="2.5 bug 修理分支 hotfix"></a>2.5 bug 修理分支 hotfix</h3><p>主要负责管理生产环境下出现的紧急修复的代码。 从主干分支分出，修复完毕并测试上线后，并回主干分支和开发分支。并回后，视情况可以删除该分支。</p>
+<h2 id="3-创建项目与分支管理"><a href="#3-创建项目与分支管理" class="headerlink" title="3. 创建项目与分支管理"></a>3. 创建项目与分支管理</h2><p>首先在Gitlab上面按照项目规格创建远程仓库。</p>
+<p><img src="E:\课程\热门视频_git\04-Git\课件\C1706084894289.png" alt="1706084894289"></p>
+<h3 id="3-1-idea与远程仓库连接"><a href="#3-1-idea与远程仓库连接" class="headerlink" title="3.1 idea与远程仓库连接"></a>3.1 idea与远程仓库连接</h3><p><img src="C1705473717653.png" alt="1705473717653"></p>
+<h3 id="3-2-不同分支的提交与合并"><a href="#3-2-不同分支的提交与合并" class="headerlink" title="3.2 不同分支的提交与合并"></a>3.2 不同分支的提交与合并</h3><p>（1）新建分支和切换分支</p>
+<p><img src="C1706087127924.png" alt="1706087127924"></p>
+<p>（2）不同分支提交代码与合并</p>
+<p>首先在feature分支编写第一个模块的模拟代码，并提交</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.atguigu;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">module1</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;完成第一个模块的开发&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>（3）合并feature到develop分支</p>
+<p><img src="C1706088019573.png" alt="1706088019573"></p>
+<p><img src="C1706088077244.png" alt="1706088077244"></p>
+<p>审查测试通过之后，完成合并</p>
+<p><img src="C1706087991195.png" alt="1706087991195"></p>
+<h1 id="第7章-冲突提交"><a href="#第7章-冲突提交" class="headerlink" title="第7章 冲突提交"></a>第7章 冲突提交</h1><p>实际单个模块的开发往往不是单独一个人来进行操作，当多个人协同开发相同的一个项目时，就会涉及到提交冲突的问题。</p>
+<h2 id="1-不同人修改不同文件"><a href="#1-不同人修改不同文件" class="headerlink" title="1. 不同人修改不同文件"></a>1. 不同人修改不同文件</h2><p>（1）在远程仓库添加gitLab.txt</p>
+<p><img src="C1706146898301.png" alt="1706146898301"></p>
+<p>（2）在本地IDEA中添加代码，继续进行第二个模块的开发</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Module2</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;开始进行模块2的开发&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>（3）提交代码到远程仓库，此时会有报错信息</p>
+<p><img src="C1705549702169.png" alt="1705549702169"></p>
+<p>Git会智能识别，采用merge合并命令，拉取远端文件到本地进行合并。</p>
+<p>（4）查看Git提交的全部历史记录，可以看到中间有拉取Gitee日志的部分</p>
+<p><img src="C1706146278780.png" alt="1706146278780"></p>
+<h2 id="2-不同人修改同文件的不同区域"><a href="#2-不同人修改同文件的不同区域" class="headerlink" title="2. 不同人修改同文件的不同区域"></a>2. 不同人修改同文件的不同区域</h2><p>（1）远程仓库修改module1代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Module1</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;没完成模块1的开发&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>（2）本地IDEA继续添加代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//添加注释</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Module1</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;完成模块1的开发&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>（3）提交代码，之后push到远程仓库</p>
+<p><img src="C1705550474743.png" alt="1705550474743"></p>
+<p>同样可以采用merge命令，git会自动合并不同的区域代码。</p>
+<p><img src="C1706146956838.png" alt="1706146956838"></p>
+<p><img src="C1706146975271.png" alt="1706146975271"></p>
+<h2 id="3-不同人修改同文件的相同区域"><a href="#3-不同人修改同文件的相同区域" class="headerlink" title="3. 不同人修改同文件的相同区域"></a>3. 不同人修改同文件的相同区域</h2><p>（1）远程仓库添加模块开发顺利</p>
+<p><img src="C1705551269043.png" alt="1705551269043"></p>
+<p>（2）本地IDEA添加模块开发遇到了bug</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">module1</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;完成第一个模块的开发&quot;</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;继续进行第一个模块的二次开发&quot;</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;模块开发继续!!!&quot;</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;模块开发遇到了bug!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="C1705551516941.png" alt="1705551516941"></p>
+<p>无法直接采用merge命令，需要人为判断哪些作为最终的结果来保留</p>
+<p>（3）之后需要重新提交到远程仓库</p>
+<p><img src="C1705551702149.png" alt="1705551702149"></p>
+<h2 id="4-同时变更文件名和文件内容"><a href="#4-同时变更文件名和文件内容" class="headerlink" title="4. 同时变更文件名和文件内容"></a>4. 同时变更文件名和文件内容</h2><p>（1）本地IDEA修改原先的文件名称为Module1plus，之后重新开发实现功能</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//添加注释</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Module1plus</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;没完成模块1的开发&quot;</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;模块1的开发遇到了bug&quot;</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;完成了模块1的开发&quot;</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;进一步完成了模块1的拓展开发&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>（3）提交代码修改到远程仓库</p>
+<p><img src="C1705552452300.png" alt="1705552452300"></p>
+<p>可以直接提交成功。</p>
+<h2 id="5-不同人把同一文件改成不同的文件名"><a href="#5-不同人把同一文件改成不同的文件名" class="headerlink" title="5. 不同人把同一文件改成不同的文件名"></a>5. 不同人把同一文件改成不同的文件名</h2><p>（1）远程仓库把文件名称改为module1</p>
+<p>（2）本地IDEA修改文件名称为module3</p>
+<p>（3）提交到远程仓库</p>
+<p><img src="C1705552598042.png" alt="1705552598042"></p>
+<p>（4）需要手动宣传使用哪一个</p>
+<p><img src="C1705552665960.png" alt="1705552665960"></p>
+<p>push会导致报错，之后需要用户自己解决保留哪些文件。</p>
+<p>（5）使用命令解决最终的冲突</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">C:\mybigdata\project\gitlab_demo&gt;git status</span><br><span class="line">#删除掉报红找不到的文件</span><br><span class="line">C:\mybigdata\project\gitlab_demo&gt;git rm src/main/java/com/atguigu/Module1Plus.java</span><br></pre></td></tr></table></figure>
+<p>（6）最后重新选择正确的代码提交到仓库</p>
+<p><img src="C1706151049392.png" alt="1706151049392"></p>
+<h1 id="第8章-GitLab功能拓展"><a href="#第8章-GitLab功能拓展" class="headerlink" title="第8章 GitLab功能拓展"></a>第8章 GitLab功能拓展</h1><h2 id="1-使用GitLab完成code-review"><a href="#1-使用GitLab完成code-review" class="headerlink" title="1. 使用GitLab完成code review"></a>1. 使用GitLab完成code review</h2><p><img src="C1705557561370.png" alt="11170555705557549518"></p>
+<h2 id="2-CICD部署程序"><a href="#2-CICD部署程序" class="headerlink" title="2. CICD部署程序"></a>2. CICD部署程序</h2><p>使用gitLab的自动部署功能，可以快速实现自动部署，完成运行。</p>
+<p><img src="C1705557925090.png" alt="1705557925090"></p>
+<h2 id="3-安装gitLab-runner"><a href="#3-安装gitLab-runner" class="headerlink" title="3. 安装gitLab-runner"></a>3. 安装gitLab-runner</h2><p>上传安装包之后执行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo rpm -ivh gitlab-runner-16.6.1-1.x86_64.rpm</span><br></pre></td></tr></table></figure>
+<p>之后运行注册命令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">sudo gitlab-runner register</span><br><span class="line">#输入地址</span><br><span class="line">http://hadoop104</span><br><span class="line">#输入token </span><br><span class="line">nqaTgGDeJyFsA5fzg8ck</span><br><span class="line">#输入描述</span><br><span class="line">[hadoop104]: ci</span><br><span class="line">#输入标签</span><br><span class="line">ci</span><br><span class="line">#输入记录标签</span><br><span class="line"></span><br><span class="line">WARNING: Support for registration tokens and runner parameters in the &#x27;register&#x27; command has been deprecated in GitLab Runner 15.6 and will be replaced with support for authentication tokens. For more information, see https://docs.gitlab.com/ee/ci/runners/new_creation_workflow </span><br><span class="line">Registering runner... succeeded                     runner=nqaTgGDe</span><br><span class="line">#选择运行模式 -&gt; 使用最简单的shell</span><br><span class="line">shell</span><br></pre></td></tr></table></figure>
+<p>token的位置</p>
+<p><img src="C1705896052634.png" alt="1705896052634"></p>
+<p>注册完成之后，runner就已经上线了。</p>
+<p><img src="C1705896287765.png" alt="1705896287765"></p>
+<p><img src="C1705557817529.png" alt="1705557817529"></p>
+<p><img src="C1705898035403.png" alt="1705898035403"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Git/" rel="tag"># Git</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/02/05/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95-%E6%95%B0%E7%BB%84/" rel="prev" title="代码随想录-数组">
+      <i class="fa fa-chevron-left"></i> 代码随想录-数组
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2025/02/05/RabbitMQ%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="next" title="RabbitMQ快速入门">
+      RabbitMQ快速入门 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC1%E7%AB%A0-Git%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">第1章 Git概述</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E4%BD%95%E4%B8%BA%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6"><span class="nav-number">1.1.</span> <span class="nav-text">1. 何为版本控制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6"><span class="nav-number">1.2.</span> <span class="nav-text">2. 为什么需要版本控制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6%E5%B7%A5%E5%85%B7"><span class="nav-number">1.3.</span> <span class="nav-text">3. 版本控制工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-Git%E7%AE%80%E5%8F%B2"><span class="nav-number">1.4.</span> <span class="nav-text">4. Git简史</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-Git%E5%B7%A5%E4%BD%9C%E6%9C%BA%E5%88%B6"><span class="nav-number">1.5.</span> <span class="nav-text">5 Git工作机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-Git%E5%92%8C%E4%BB%A3%E7%A0%81%E6%89%98%E7%AE%A1%E4%B8%AD%E5%BF%83"><span class="nav-number">1.6.</span> <span class="nav-text">6 Git和代码托管中心</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC2%E7%AB%A0-Git%E5%AE%89%E8%A3%85"><span class="nav-number">2.</span> <span class="nav-text">第2章 Git安装</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC3%E7%AB%A0-Git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-number">3.</span> <span class="nav-text">第3章 Git常用命令</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E8%AE%BE%E7%BD%AE%E7%94%A8%E6%88%B7%E7%AD%BE%E5%90%8D"><span class="nav-number">3.1.</span> <span class="nav-text">1 设置用户签名</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95"><span class="nav-number">3.1.1.</span> <span class="nav-text">1.1 基本语法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-%E6%A1%88%E4%BE%8B%E5%AE%9E%E6%93%8D"><span class="nav-number">3.1.2.</span> <span class="nav-text">1.2 案例实操</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%88%9D%E5%A7%8B%E5%8C%96%E6%9C%AC%E5%9C%B0%E5%BA%93"><span class="nav-number">3.2.</span> <span class="nav-text">2 初始化本地库</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95"><span class="nav-number">3.2.1.</span> <span class="nav-text">2.1 基本语法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E6%A1%88%E4%BE%8B%E5%AE%9E%E6%93%8D"><span class="nav-number">3.2.2.</span> <span class="nav-text">2.2 案例实操</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E6%9F%A5%E7%9C%8B%E6%9C%AC%E5%9C%B0%E5%BA%93%E7%8A%B6%E6%80%81"><span class="nav-number">3.3.</span> <span class="nav-text">3 查看本地库状态</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95"><span class="nav-number">3.3.1.</span> <span class="nav-text">3.1 基本语法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-%E6%A1%88%E4%BE%8B%E5%AE%9E%E6%93%8D"><span class="nav-number">3.3.2.</span> <span class="nav-text">3.2 案例实操</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%EF%BC%881%EF%BC%89%E9%A6%96%E6%AC%A1%E6%9F%A5%E7%9C%8B%EF%BC%88%E5%B7%A5%E4%BD%9C%E5%8C%BA%E6%B2%A1%E6%9C%89%E6%96%87%E4%BB%B6%EF%BC%89"><span class="nav-number">3.3.2.1.</span> <span class="nav-text">（1）首次查看（工作区没有文件）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%EF%BC%882%EF%BC%89%E6%96%B0%E5%A2%9E%E6%96%87%E4%BB%B6"><span class="nav-number">3.3.2.2.</span> <span class="nav-text">（2）新增文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%EF%BC%883%EF%BC%89%E5%86%8D%E6%AC%A1%E6%9F%A5%E7%9C%8B%EF%BC%88%E6%A3%80%E6%B5%8B%E5%88%B0%E6%9C%AA%E8%BF%BD%E8%B8%AA%E6%96%87%E4%BB%B6%EF%BC%89"><span class="nav-number">3.3.2.3.</span> <span class="nav-text">（3）再次查看（检测到未追踪文件）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E6%B7%BB%E5%8A%A0%E6%9A%82%E5%AD%98%E5%8C%BA"><span class="nav-number">3.4.</span> <span class="nav-text">4 添加暂存区</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-%E5%B0%86%E5%B7%A5%E4%BD%9C%E5%8C%BA%E7%9A%84%E6%96%87%E4%BB%B6%E6%B7%BB%E5%8A%A0%E5%88%B0%E6%9A%82%E5%AD%98%E5%8C%BA"><span class="nav-number">3.4.1.</span> <span class="nav-text">4.1 将工作区的文件添加到暂存区</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%EF%BC%881%EF%BC%89%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95"><span class="nav-number">3.4.1.1.</span> <span class="nav-text">（1）基本语法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%EF%BC%882%EF%BC%89%E6%A1%88%E4%BE%8B%E5%AE%9E%E6%93%8D"><span class="nav-number">3.4.1.2.</span> <span class="nav-text">（2）案例实操</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-%E6%9F%A5%E7%9C%8B%E7%8A%B6%E6%80%81%EF%BC%88%E6%A3%80%E6%B5%8B%E5%88%B0%E6%9A%82%E5%AD%98%E5%8C%BA%E6%9C%89%E6%96%B0%E6%96%87%E4%BB%B6%EF%BC%89"><span class="nav-number">3.4.2.</span> <span class="nav-text">4.2 查看状态（检测到暂存区有新文件）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E6%8F%90%E4%BA%A4%E6%9C%AC%E5%9C%B0%E5%BA%93"><span class="nav-number">3.5.</span> <span class="nav-text">5 提交本地库</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-%E6%9A%82%E5%AD%98%E5%8C%BA%E6%96%87%E4%BB%B6%E6%8F%90%E4%BA%A4%E5%88%B0%E6%9C%AC%E5%9C%B0%E5%BA%93"><span class="nav-number">3.5.1.</span> <span class="nav-text">5.1 暂存区文件提交到本地库</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%EF%BC%881%EF%BC%89%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95-1"><span class="nav-number">3.5.1.1.</span> <span class="nav-text">（1）基本语法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%EF%BC%882%EF%BC%89%E6%A1%88%E4%BE%8B%E5%AE%9E%E6%93%8D-1"><span class="nav-number">3.5.1.2.</span> <span class="nav-text">（2）案例实操</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-%E6%9F%A5%E7%9C%8B%E7%8A%B6%E6%80%81%EF%BC%88%E6%B2%A1%E6%9C%89%E6%96%87%E4%BB%B6%E9%9C%80%E8%A6%81%E6%8F%90%E4%BA%A4%EF%BC%89"><span class="nav-number">3.5.2.</span> <span class="nav-text">5.2 查看状态（没有文件需要提交）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E4%BF%AE%E6%94%B9%E6%96%87%E4%BB%B6%EF%BC%88hello-txt%EF%BC%89"><span class="nav-number">3.6.</span> <span class="nav-text">6 修改文件（hello.txt）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-1-%E6%9F%A5%E7%9C%8B%E7%8A%B6%E6%80%81%EF%BC%88%E6%A3%80%E6%B5%8B%E5%88%B0%E5%B7%A5%E4%BD%9C%E5%8C%BA%E6%9C%89%E6%96%87%E4%BB%B6%E8%A2%AB%E4%BF%AE%E6%94%B9%EF%BC%89"><span class="nav-number">3.6.1.</span> <span class="nav-text">6.1 查看状态（检测到工作区有文件被修改）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-2-%E5%B0%86%E4%BF%AE%E6%94%B9%E7%9A%84%E6%96%87%E4%BB%B6%E5%86%8D%E6%AC%A1%E6%B7%BB%E5%8A%A0%E6%9A%82%E5%AD%98%E5%8C%BA"><span class="nav-number">3.6.2.</span> <span class="nav-text">6.2 将修改的文件再次添加暂存区</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-3-%E6%9F%A5%E7%9C%8B%E7%8A%B6%E6%80%81%EF%BC%88%E5%B7%A5%E4%BD%9C%E5%8C%BA%E7%9A%84%E4%BF%AE%E6%94%B9%E6%B7%BB%E5%8A%A0%E5%88%B0%E4%BA%86%E6%9A%82%E5%AD%98%E5%8C%BA%EF%BC%89"><span class="nav-number">3.6.3.</span> <span class="nav-text">6.3 查看状态（工作区的修改添加到了暂存区）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-4-%E5%B0%86%E6%9A%82%E5%AD%98%E5%8C%BA%E6%96%87%E4%BB%B6%E6%8F%90%E4%BA%A4%E5%88%B0%E6%9C%AC%E5%9C%B0%E5%BA%93"><span class="nav-number">3.6.4.</span> <span class="nav-text">6.4 将暂存区文件提交到本地库</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-%E5%8E%86%E5%8F%B2%E7%89%88%E6%9C%AC"><span class="nav-number">3.7.</span> <span class="nav-text">7 历史版本</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#7-1-%E6%9F%A5%E7%9C%8B%E5%8E%86%E5%8F%B2%E7%89%88%E6%9C%AC"><span class="nav-number">3.7.1.</span> <span class="nav-text">7.1 查看历史版本</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%EF%BC%881%EF%BC%89%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95-2"><span class="nav-number">3.7.1.1.</span> <span class="nav-text">（1）基本语法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%EF%BC%882%EF%BC%89%E6%A1%88%E4%BE%8B%E5%AE%9E%E6%93%8D-2"><span class="nav-number">3.7.1.2.</span> <span class="nav-text">（2）案例实操</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-2-%E7%89%88%E6%9C%AC%E7%A9%BF%E6%A2%AD"><span class="nav-number">3.7.2.</span> <span class="nav-text">7.2 版本穿梭</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%EF%BC%881%EF%BC%89%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95-3"><span class="nav-number">3.7.2.1.</span> <span class="nav-text">（1）基本语法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%EF%BC%882%EF%BC%89%E6%A1%88%E4%BE%8B%E5%AE%9E%E6%93%8D-3"><span class="nav-number">3.7.2.2.</span> <span class="nav-text">（2）案例实操</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC4%E7%AB%A0-Git%E5%AE%A2%E6%88%B7%E7%AB%AF%E4%BE%BF%E6%8D%B7%E6%93%8D%E4%BD%9C"><span class="nav-number">4.</span> <span class="nav-text">第4章 Git客户端便捷操作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2"><span class="nav-number">4.1.</span> <span class="nav-text">1. 安装部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C"><span class="nav-number">4.2.</span> <span class="nav-text">2. 基础操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E8%AE%BE%E7%BD%AE%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF"><span class="nav-number">4.2.1.</span> <span class="nav-text">2.1 设置个人信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E5%88%9B%E5%BB%BA%E6%96%B0%E7%9A%84Git%E4%BB%93%E5%BA%93"><span class="nav-number">4.2.2.</span> <span class="nav-text">2.2 创建新的Git仓库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-%E6%8F%90%E4%BA%A4%E4%B8%8D%E5%90%8C%E7%89%88%E6%9C%AC"><span class="nav-number">4.2.3.</span> <span class="nav-text">2.3 提交不同版本</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E8%BF%9E%E6%8E%A5GitHub%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93"><span class="nav-number">4.3.</span> <span class="nav-text">3. 连接GitHub远程仓库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Gitee%E6%9B%BF%E4%BB%A3GitHub"><span class="nav-number">4.4.</span> <span class="nav-text">3. Gitee替代GitHub</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-idea%E5%85%BC%E5%AE%B9%E4%BD%BF%E7%94%A8Git%EF%BC%88JAVA%E4%BB%A3%E7%A0%81%EF%BC%89"><span class="nav-number">4.5.</span> <span class="nav-text">4. idea兼容使用Git（JAVA代码）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC5%E7%AB%A0-GitLab%E7%9A%84%E9%83%A8%E7%BD%B2%E4%B8%8E%E4%BD%BF%E7%94%A8"><span class="nav-number">5.</span> <span class="nav-text">第5章 GitLab的部署与使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8GitLab-%E5%BC%80%E5%8F%91%E8%BF%90%E7%BB%B4%E4%B8%80%E4%BD%93%E5%8C%96"><span class="nav-number">5.1.</span> <span class="nav-text">1.为什么使用GitLab-开发运维一体化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E9%83%A8%E7%BD%B2%E5%AE%89%E8%A3%85GitLab"><span class="nav-number">5.2.</span> <span class="nav-text">2. 部署安装GitLab</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2"><span class="nav-number">5.2.1.</span> <span class="nav-text">2.1 安装部署</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-1-%E5%AE%89%E8%A3%85%E5%87%86%E5%A4%87"><span class="nav-number">5.2.1.1.</span> <span class="nav-text">2.1.1 安装准备</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-2-rpm-%E5%8C%85%E5%AE%89%E8%A3%85"><span class="nav-number">5.2.1.2.</span> <span class="nav-text">2.1.2 rpm 包安装</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-3-%E6%89%A7%E8%A1%8C%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">5.2.1.3.</span> <span class="nav-text">2.1.3 执行初始化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-4-%E5%90%AF%E5%81%9C%E5%91%BD%E4%BB%A4"><span class="nav-number">5.2.1.4.</span> <span class="nav-text">2.1.4 启停命令</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-5-%E4%BF%AE%E6%94%B9-root-%E5%AF%86%E7%A0%81"><span class="nav-number">5.2.1.5.</span> <span class="nav-text">2.1.5 修改 root 密码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-6-%E8%AE%BE%E7%BD%AE%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87"><span class="nav-number">5.2.1.6.</span> <span class="nav-text">2.1.6 设置简体中文</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E4%BD%BF%E7%94%A8GitLab%E5%AE%8C%E6%88%90%E5%9B%A2%E9%98%9F%E7%AE%A1%E7%90%86"><span class="nav-number">5.3.</span> <span class="nav-text">3. 使用GitLab完成团队管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E5%88%9B%E5%BB%BA%E7%94%A8%E6%88%B7"><span class="nav-number">5.3.1.</span> <span class="nav-text">3.1 创建用户</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-%E5%88%9B%E5%BB%BA%E7%BE%A4%E7%BB%84"><span class="nav-number">5.3.2.</span> <span class="nav-text">3.2 创建群组</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E4%BD%BF%E7%94%A8IDEA%E5%85%BC%E5%AE%B9GitLab"><span class="nav-number">5.4.</span> <span class="nav-text">4.使用IDEA兼容GitLab</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC6%E7%AB%A0-%E4%BC%81%E4%B8%9A%E9%A1%B9%E7%9B%AE%E6%9E%84%E5%BB%BA%E4%B8%8E%E5%BC%80%E5%8F%91%E5%88%86%E6%94%AF"><span class="nav-number">6.</span> <span class="nav-text">第6章 企业项目构建与开发分支</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-GitFlow%E5%B7%A5%E4%BD%9C%E6%B5%81%E4%BB%8B%E7%BB%8D"><span class="nav-number">6.1.</span> <span class="nav-text">1. GitFlow工作流介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-%E9%9B%86%E4%B8%AD%E5%BC%8F%E5%B7%A5%E4%BD%9C%E6%B5%81"><span class="nav-number">6.1.1.</span> <span class="nav-text">1.1 集中式工作流</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-%E5%8A%9F%E8%83%BD%E5%BC%80%E5%8F%91%E5%B7%A5%E4%BD%9C%E6%B5%81"><span class="nav-number">6.1.2.</span> <span class="nav-text">1.2 功能开发工作流</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-GitFlow%E5%B7%A5%E4%BD%9C%E6%B5%81"><span class="nav-number">6.1.3.</span> <span class="nav-text">1.3 GitFlow工作流</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-Forking%E5%B7%A5%E4%BD%9C%E6%B5%81"><span class="nav-number">6.1.4.</span> <span class="nav-text">1.4 Forking工作流</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%90%84%E5%88%86%E6%94%AF%E5%8A%9F%E8%83%BD%E4%BB%8B%E7%BB%8D"><span class="nav-number">6.2.</span> <span class="nav-text">2. 各分支功能介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E4%B8%BB%E5%B9%B2%E5%88%86%E6%94%AF-master"><span class="nav-number">6.2.1.</span> <span class="nav-text">2.1 主干分支 master</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E5%BC%80%E5%8F%91%E5%88%86%E6%94%AF-develop"><span class="nav-number">6.2.2.</span> <span class="nav-text">2.2 开发分支 develop</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-%E5%8A%9F%E8%83%BD%E5%88%86%E6%94%AF-feature"><span class="nav-number">6.2.3.</span> <span class="nav-text">2.3 功能分支 feature</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-%E5%87%86%E7%94%9F%E4%BA%A7%E5%88%86%E6%94%AF%EF%BC%88%E9%A2%84%E5%8F%91%E5%B8%83%E5%88%86%E6%94%AF%EF%BC%89-release"><span class="nav-number">6.2.4.</span> <span class="nav-text">2.4 准生产分支（预发布分支） release</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-bug-%E4%BF%AE%E7%90%86%E5%88%86%E6%94%AF-hotfix"><span class="nav-number">6.2.5.</span> <span class="nav-text">2.5 bug 修理分支 hotfix</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%88%9B%E5%BB%BA%E9%A1%B9%E7%9B%AE%E4%B8%8E%E5%88%86%E6%94%AF%E7%AE%A1%E7%90%86"><span class="nav-number">6.3.</span> <span class="nav-text">3. 创建项目与分支管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-idea%E4%B8%8E%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93%E8%BF%9E%E6%8E%A5"><span class="nav-number">6.3.1.</span> <span class="nav-text">3.1 idea与远程仓库连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-%E4%B8%8D%E5%90%8C%E5%88%86%E6%94%AF%E7%9A%84%E6%8F%90%E4%BA%A4%E4%B8%8E%E5%90%88%E5%B9%B6"><span class="nav-number">6.3.2.</span> <span class="nav-text">3.2 不同分支的提交与合并</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC7%E7%AB%A0-%E5%86%B2%E7%AA%81%E6%8F%90%E4%BA%A4"><span class="nav-number">7.</span> <span class="nav-text">第7章 冲突提交</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E4%B8%8D%E5%90%8C%E4%BA%BA%E4%BF%AE%E6%94%B9%E4%B8%8D%E5%90%8C%E6%96%87%E4%BB%B6"><span class="nav-number">7.1.</span> <span class="nav-text">1. 不同人修改不同文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E4%B8%8D%E5%90%8C%E4%BA%BA%E4%BF%AE%E6%94%B9%E5%90%8C%E6%96%87%E4%BB%B6%E7%9A%84%E4%B8%8D%E5%90%8C%E5%8C%BA%E5%9F%9F"><span class="nav-number">7.2.</span> <span class="nav-text">2. 不同人修改同文件的不同区域</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E4%B8%8D%E5%90%8C%E4%BA%BA%E4%BF%AE%E6%94%B9%E5%90%8C%E6%96%87%E4%BB%B6%E7%9A%84%E7%9B%B8%E5%90%8C%E5%8C%BA%E5%9F%9F"><span class="nav-number">7.3.</span> <span class="nav-text">3. 不同人修改同文件的相同区域</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E5%90%8C%E6%97%B6%E5%8F%98%E6%9B%B4%E6%96%87%E4%BB%B6%E5%90%8D%E5%92%8C%E6%96%87%E4%BB%B6%E5%86%85%E5%AE%B9"><span class="nav-number">7.4.</span> <span class="nav-text">4. 同时变更文件名和文件内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E4%B8%8D%E5%90%8C%E4%BA%BA%E6%8A%8A%E5%90%8C%E4%B8%80%E6%96%87%E4%BB%B6%E6%94%B9%E6%88%90%E4%B8%8D%E5%90%8C%E7%9A%84%E6%96%87%E4%BB%B6%E5%90%8D"><span class="nav-number">7.5.</span> <span class="nav-text">5. 不同人把同一文件改成不同的文件名</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC8%E7%AB%A0-GitLab%E5%8A%9F%E8%83%BD%E6%8B%93%E5%B1%95"><span class="nav-number">8.</span> <span class="nav-text">第8章 GitLab功能拓展</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E4%BD%BF%E7%94%A8GitLab%E5%AE%8C%E6%88%90code-review"><span class="nav-number">8.1.</span> <span class="nav-text">1. 使用GitLab完成code review</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-CICD%E9%83%A8%E7%BD%B2%E7%A8%8B%E5%BA%8F"><span class="nav-number">8.2.</span> <span class="nav-text">2. CICD部署程序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%AE%89%E8%A3%85gitLab-runner"><span class="nav-number">8.3.</span> <span class="nav-text">3. 安装gitLab-runner</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zongqing Li"
+      src="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/head.png?raw=true">
+  <p class="site-author-name" itemprop="name">Zongqing Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hqulzq" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hqulzq" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hqulzq@163.com" title="E-Mail → mailto:hqulzq@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+      
+<script type="text/javascript" charset="utf-8" src="/js/tagcloud.js"></script>
+<script type="text/javascript" charset="utf-8" src="/js/tagcanvas.js"></script>
+<div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div id="myCanvasContainer" class="widget tagcloud">
+        <canvas width="250" height="250" id="resCanvas" style="width=100%">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+        </canvas>
+    </div>
+</div>
+
+
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zongqing Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('post.copy_button').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('post.copy_success')
+          else $(this).text('post.copy_failure')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('post.copy_button')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>

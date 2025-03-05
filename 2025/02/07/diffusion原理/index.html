@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="公式推导如下图所示，给大家一个直观的认识：Diffusion Model分为前向过程和反向过程，前向过程将输入图$x_{0}$变为纯高斯噪声$x_{T}$，反向过程就是将噪声$x_{T}$还原为图片$x_{0}$的过程（就是一个不断去噪的过程） 前向推导前向过程从$x_{t-1}$到$x_{t}$的公式给定真实图片$x_0 \sim q(x)$，前向过程中diffusion model对其添加了$">
+<meta property="og:type" content="article">
+<meta property="og:title" content="diffusion原理">
+<meta property="og:url" content="https://hqulzq.github.io/2025/02/07/diffusion%E5%8E%9F%E7%90%86/index.html">
+<meta property="og:site_name" content="Lzq&#39;s blog">
+<meta property="og:description" content="公式推导如下图所示，给大家一个直观的认识：Diffusion Model分为前向过程和反向过程，前向过程将输入图$x_{0}$变为纯高斯噪声$x_{T}$，反向过程就是将噪声$x_{T}$还原为图片$x_{0}$的过程（就是一个不断去噪的过程） 前向推导前向过程从$x_{t-1}$到$x_{t}$的公式给定真实图片$x_0 \sim q(x)$，前向过程中diffusion model对其添加了$">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/07/diffusion%E5%8E%9F%E7%90%86/struct.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/07/diffusion%E5%8E%9F%E7%90%86/image_0.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/07/diffusion%E5%8E%9F%E7%90%86/image_1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/07/diffusion%E5%8E%9F%E7%90%86/vae.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/07/diffusion%E5%8E%9F%E7%90%86/dm_1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/07/diffusion%E5%8E%9F%E7%90%86/dm_2.png">
+<meta property="article:published_time" content="2025-02-07T12:57:57.000Z">
+<meta property="article:modified_time" content="2025-02-18T12:09:19.242Z">
+<meta property="article:author" content="Zongqing Li">
+<meta property="article:tag" content="diffusion">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hqulzq.github.io/2025/02/07/diffusion%E5%8E%9F%E7%90%86/struct.png">
+
+<link rel="canonical" href="https://hqulzq.github.io/2025/02/07/diffusion%E5%8E%9F%E7%90%86/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>diffusion原理 | Lzq's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lzq's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">31</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">43</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book">
+
+    <a href="/book" rel="section"><i class="fas fa-book fa-fw"></i>Book</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/02/07/diffusion%E5%8E%9F%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/head.png?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          diffusion原理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-02-07 20:57:57" itemprop="dateCreated datePublished" datetime="2025-02-07T20:57:57+08:00">2025-02-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-02-18 20:09:19" itemprop="dateModified" datetime="2025-02-18T20:09:19+08:00">2025-02-18</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="公式推导"><a href="#公式推导" class="headerlink" title="公式推导"></a>公式推导</h2><p>如下图所示，给大家一个直观的认识：Diffusion Model分为前向过程和反向过程，前向过程将输入图$x_{0}$变为纯高斯噪声$x_{T}$，反向过程就是将噪声$x_{T}$还原为图片$x_{0}$的过程（就是一个不断去噪的过程）<br><img src="struct.png" alt="struct"></p>
+<h3 id="前向推导"><a href="#前向推导" class="headerlink" title="前向推导"></a>前向推导</h3><h4 id="前向过程从-x-t-1-到-x-t-的公式"><a href="#前向过程从-x-t-1-到-x-t-的公式" class="headerlink" title="前向过程从$x_{t-1}$到$x_{t}$的公式"></a>前向过程从$x_{t-1}$到$x_{t}$的公式</h4><p>给定真实图片$x_0 \sim q(x)$，前向过程中diffusion model对其添加了$T$次高斯噪声，分别得到图$x_{0},x_{1},…,x_{T}$（随着$t$的增加，$x$包含越来越多的噪声），这个过程如下表示</p>
+<script type="math/tex; mode=display">q(x_{t}|x_{t-1}) = \mathcal{N}(x_{t};\sqrt{1-\beta}x_{t-1},\beta I)</script><p>下图展示了前向加噪的过程中图片的变化，从左到右为$x_{0},x_{1},…,x_{T}$</p>
+<p><img src="image_0.png" alt="image_0"><br><span id="more"></span><br>整个前向加噪过程是马尔科夫过程，即$t$时刻的状态只与$t-1$时刻有关，在不断加噪的过程中，$x_{t}$不断接近纯噪声，$T\rightarrow \infty$，$x_t$变为正态分布的高斯噪声，在论文中$ \beta_{t}$是从0.0001到0.02线性插值的，取$T=1000$，也就是说$\beta_{t}$是不断增加的，$1-\beta_{t}$是不断减小的。</p>
+<p>回过头来再看上述分布$\mathcal{N}(x_{t};\sqrt{1-\beta_{t}}x_{t-1},\beta_{t}I)$，随着$t$增加，$x_{t}$的均值是$x_{t-1}$的$\sqrt{1-\beta_{t}}&lt;1$倍，因此最终$x_t$的均值不断变小，趋近于0，而标准正态分布的均值也为0。</p>
+<p>下面是$\beta_{t}$和$\sqrt{1-\beta_{T}}$随着$t$增加的变化曲线</p>
+<p><img src="image_1.png" alt="image_1"></p>
+<h4 id="从-x-0-到-x-t"><a href="#从-x-0-到-x-t" class="headerlink" title="从$x_0$到$x_t$"></a>从$x_0$到$x_t$</h4><p>前向过程的$T$最多为1000次，如果每次都单独计算过于耗时，这里推导能够一步到位的方式。</p>
+<p>为了推导方便，原论文令$\alpha_t = 1 - \beta_t$，$\overline{\alpha}_t = \prod_{i = 1}^{T} \alpha_i$，并用重参数化的方法来表示前向过程每一步的数据分布（重参数化方法在文未有介绍），这里我们由$q(x_t|x_{t - 1})$得：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+x_t&=\sqrt{1 - \beta_t}x_{t - 1}+\sqrt{\beta_t}z_1,\quad where\ z_1,z_2,...,\sim \mathcal{N}(0,I)\\
+&=\sqrt{\alpha_t}x_{t - 1}+\sqrt{1 - \alpha_t}z_1\\
+&=\sqrt{\alpha_t}(\sqrt{\alpha_{t - 1}}x_{t - 2}+\sqrt{1 - \alpha_{t - 1}}z_2)+\sqrt{1 - \alpha_t}z_1\\
+&=\sqrt{\alpha_t\alpha_{t - 1}}x_{t - 2}+\color{red}\sqrt{\alpha_t}\sqrt{1 - \alpha_{t - 1}}z_2+\sqrt{1 - \alpha_t}z_1\\
+&=\sqrt{\alpha_t\alpha_{t - 1}}x_{t - 2}+\color{red}\sqrt{1 - \alpha_t\alpha_{t - 1}}\widetilde{z}_2 \color{black},\quad \widetilde{z}_2\sim \mathcal{N}(0,I)\\
+&=...\\
+&=\sqrt{\alpha_t\alpha_{t - 1}...\alpha_1}x_0+\sqrt{1 - \alpha_t\alpha_{t - 1}...\alpha_1}\widetilde{z}_t\\
+&=\sqrt{\overline{\alpha}_t}x_0+\sqrt{1 - \overline{\alpha}_t}\widetilde{z}_t
+\end{align*} (2)</script><blockquote>
+<p>其中公式的红色部分用到了高斯分布的独立可加性，即$\mathcal{N}(0, \sigma_1^2 I) + \mathcal {N}(0, \sigma_2^2 I) \sim \mathcal{N}(0, (\sigma_1^2 + \sigma_2^2)I)$。<br>由</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+\sqrt{\alpha_t(1 - \alpha_{t - 1})}z_2 &\sim \mathcal{N}(0, \alpha_t(1 - \alpha_{t - 1}I)  \\
+\sqrt{1 - \alpha_t}z_1 &\sim \mathcal{N}(0, (1 - \alpha_{t - 1})I)
+\end{align*}</script><p>可得</p>
+<script type="math/tex; mode=display">
+\sqrt{\alpha_t(1 - \alpha_{t - 1})}z_2 + \sqrt{1 - \alpha_t}z_1 \sim \mathcal{N}(0, (1-  \alpha_t\alpha_{t - 1})I) \to \sqrt{1 - \alpha_t\alpha_{t - 1}}\widetilde{z}_2</script><p>$x_t$的最终结果为$x_t = \sqrt{\overline{\alpha}_t}x_0 + \sqrt{1 - \overline{\alpha}_t}\widetilde{z}_t$，其中$\overline{\alpha}_t = \prod_{i = 1}^{T} \alpha_i$在$T$次连乘之后接近于0，即$x_t = 0 \times x_0 + \sqrt{1 - 0}\widetilde{z}_t = \widetilde{z}_t$，即$\mathcal{N}(0, I)$的正态分布，这就是整个前向推导了。</p>
+</blockquote>
+<h4 id="关于-x-t-1-到-x-t-的一个疑问"><a href="#关于-x-t-1-到-x-t-的一个疑问" class="headerlink" title="关于$x_{t - 1}$到$x_t$的一个疑问"></a>关于$x_{t - 1}$到$x_t$的一个疑问</h4><p>为什么$x_t$的分布是$q(x_t|x_{t - 1}) = \mathcal{N}(x_t; \sqrt{1 - \beta_t}x_{t - 1}, \beta_t I)$呢？因为这个公式是作者直接给出的，并没有一个推导，公式表明在加噪的过程中均值要乘上$\sqrt{1 - \beta_t}$，如果要保证均值最后为0的话，只需要每次乘的值小于1就可以了（虽然方差可能并不是$I$），通过上述推导我们可以发现$x_t$的最终等于$\sqrt{\overline{\alpha}_t}x_0 + \sqrt{1 - \overline{\alpha}_t}\widetilde{z}_t$，即$T \to \infty$，$x_t \sim \mathcal{N}(0, I)$，也就是说$\mathcal{N}(x_t; \sqrt{1 - \beta_t}x_{t - 1}, \beta_t I)$这个分布能够保证$x_t$最终收敛为标准高斯分布，但是具体前向分布这个式子怎么得到的，我不是很懂。</p>
+<h3 id="反向推导"><a href="#反向推导" class="headerlink" title="反向推导"></a>反向推导</h3><h4 id="已知-x-t-，预测-x-t-1"><a href="#已知-x-t-，预测-x-t-1" class="headerlink" title="已知$x_t$，预测$x_{t-1}$"></a>已知$x_t$，预测$x_{t-1}$</h4><p>在前向加噪过程中，表达式为$q(x_t|x_{t - 1}) = \mathcal{N}(x_t; \sqrt{1 - \beta_t}x_{t - 1}, \beta_t I)$，反向过程就是将上述过程进行逆转，得到$q(x_{t - 1}|x_t)$的分布，通过不断的去噪从$x_T \sim \mathcal{N}(0, I)$中还原出原图$x_0$，文中证明了如果$q(x_t|x_{t - 1})$满足高斯分布并且$\beta_t$足够小，$q(x_{t - 1}|x_t)$仍然是一个高斯分布。但是我们无法简单推断$q(x_{t - 1}|x_t)$，因此我们使用深度学习模型（参数为$\theta$，结构一般为U-net + attention结构）来预测他的真实分布：</p>
+<script type="math/tex; mode=display">
+p_{\theta}(x_{t - 1}|x_t) = \mathcal{N}(x_{t - 1}; \mu_{\theta}(x_t, t), \Sigma_{\theta}(x_t, t)) (3)</script><p>(3)式是我们要通过神经网络预测diffusion model反向过程的式子：已知$x_t$以及加噪次数$t$的情况下，推导$x_{t - 1}$，这个过程十分复杂，因为我们有无数的去噪可能性，即使最终得到了$x_0$，也无法确定$x_0$是否真的属于$q(x)$这个分布中的数据，因此需要对去噪过程加以限制，即让其去噪后的图片收敛到$q(x)$分布中。</p>
+<h4 id="额外已知-x-0-的情况下的反向过程"><a href="#额外已知-x-0-的情况下的反向过程" class="headerlink" title="额外已知$x_0$的情况下的反向过程"></a>额外已知$x_0$的情况下的反向过程</h4><p>对于反向过程的分布$q(x_{t - 1}|x_t)$我们无法预测，但是从前向过程中我们知道$x_0$，所以通过贝叶斯公式得到$q(x_{t - 1}|x_t, x_0)$为：</p>
+<script type="math/tex; mode=display">
+q(x_{t - 1}|x_t, x_0) = (x_{t - 1}; \tilde{\mu}(x_t, x_0), \tilde{\beta}_t I) (4)</script><p>推导过程如下，首先利用贝叶斯公式将反向过程均变为前向过程$x_{t - 1} \to x_t$，$x_0 \to x_{t - 1}$以及$x_0 \to x_t$：</p>
+<script type="math/tex; mode=display">
+q(x_{t - 1}|x_t, x_0) = q(x_t|x_{t - 1}, x_0)\frac{q(x_{t - 1}|x_0)}{q(x_t|x_0)} (5)</script><p>根据高斯分布的概率密度函数的指数部分$(\mu, \sigma^2) \propto \exp(-\frac{(x - \mu)^2}{2\sigma^2})$以及前向推导公式$x_t = \sqrt{\alpha_t}x_{t - 1} + \sqrt{1 - \alpha_t}z_1$和$x_t = \sqrt{\overline{\alpha}_t}x_0 + \sqrt{1 - \overline{\alpha}_t}\widetilde{z}_t$得：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+q(x_{t - 1}|x_t, x_0) &= q(x_t|x_{t - 1}, x_0)q(x_{t - 1}|x_0)\frac{1}{q(x_t|x_0)}\\
+&= [\sqrt{\alpha_t}x_{t - 1} + \sqrt{1 - \alpha_t}z_1] \times [\sqrt{\overline{\alpha}_{t - 1}}x_0 + \sqrt{1 - \overline{\alpha}_{t - 1}}\widetilde{z}_{t - 1}] \times [\frac{1}{\sqrt{\overline{\alpha}_t}x_0 + \sqrt{1 - \overline{\alpha}_t}\widetilde{z}_t}]\\
+&\propto \exp(-\frac{1}{2}(\frac{(x_t - \sqrt{\alpha_t}x_{t - 1})^2}{\beta_t} + \frac{(x_{t - 1} - \sqrt{\overline{\alpha}_{t - 1}}x_0)^2}{1 - \overline{\alpha}_{t - 1}} - \frac{(x_t - \sqrt{\overline{\alpha}_t}x_0)^2}{1 - \overline{\alpha}_t}))\\
+&= \exp(-\frac{1}{2}(\underbrace{(\frac{\alpha_t}{\beta_t} + \frac{1}{1 - \overline{\alpha}_{t - 1}})x_{t - 1}^2 - (\frac{2\sqrt{\alpha_t}}{\beta_t}x_t + \frac{2\sqrt{\overline{\alpha}_{t - 1}}}{1 - \overline{\alpha}_{t - 1}}x_0)x_{t - 1}}_{} + \underbrace{C(x_t, x_0)}))
+\end{align*}
+(6)</script><p>根据$\exp(-\frac{(x - \mu)^2}{2\sigma^2}) = \exp(-\frac{1}{2}(\frac{1}{\sigma^2}x^2 - \frac{2\mu}{\sigma^2}x + \frac{\mu^2}{\sigma^2}))$，对于大括号中的部分进行化简能够得到$q(x_{t - 1}|x_t, x_0)$的均值和方差，如下：</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+\frac{1}{\sigma^2} = \frac{1}{\beta_t} = (\frac{\alpha_t}{\beta_t} + \frac{1}{1 - \overline{\alpha}_{t - 1}})\\
+\frac{2\mu}{\sigma^2} = \frac{2\tilde{\mu}_{t}(x_t, x_0)}{\beta_t} = (\frac{2\sqrt{\alpha_t}}{\beta_t}x_t + \frac{2\sqrt{\overline{\alpha}_{t - 1}}}{1 - \overline{\alpha}_{t - 1}}x_0)
+\end{cases} (7)</script><p>化简得：</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+\tilde{\beta}_t = \frac{1 - \overline{\alpha}_{t - 1}}{1 - \overline{\alpha}_t} \cdot \beta_t\\
+\tilde{\mu}_t(x_t, x_0) = \frac{\sqrt{\alpha_t}(1 - \overline{\alpha}_{t - 1})}{1 - \overline{\alpha}_t}x_t + \frac{\sqrt{\overline{\alpha}_{t - 1}}\beta_t}{1 - \overline{\alpha}_t}x_0
+\end{cases} (8)</script><p>由$x_t = \sqrt{\overline{\alpha}_t}x_0 + \sqrt{1 - \overline{\alpha}_t}\widetilde{z}_t$，得$x_0 = \frac{1}{\sqrt{\overline{\alpha}_t}}(x_t - \sqrt{1 - \overline{\alpha}_t}\widetilde{z}_t)$并替换上面均值中的$x_0$得到：</p>
+<script type="math/tex; mode=display">
+\tilde{\mu}_t = \frac{1}{\sqrt{\alpha_t}}(x_t - \frac{\beta_t}{\sqrt{1 - \overline{\alpha}_t}}\widetilde{z}_t)(9)</script><p>这样我们证明最初已知$x_0$后的反向表达式了，即：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+q(x_{t - 1}|x_t, x_0) &= (x_{t - 1}; \tilde{\mu}(x_t, x_0), \tilde{\beta}_t I)\\
+where \sim \tilde{\mu}_t &= \frac{1}{\sqrt{\alpha_t}}(x_t - \frac{\beta_t}{\sqrt{1 - \overline{\alpha}_t}}\widetilde{z}_t)\\
+\sim \tilde{\beta}_t &= \frac{1 - \overline{\alpha}_{t - 1}}{1 - \overline{\alpha}_t} \cdot \beta_t
+\end{align*} (10)</script><p>观察发现$\alpha_t$，$\beta_t$，$\overline{\alpha}_t$，$\overline{\alpha}_{t - 1}$都是已知的，要想由$x_t$得到$x_{t - 1}$未知的只有$\widetilde{z}_t$，这也是为什么在反向过程中我们要通过神经网络来预测噪声的原因，预测成功之后我们就可以得到$q(x_{t - 1}|x_t, x_0)$的分布了，然后利用重参数技巧来得到$x_{t-1}$。</p>
+<h4 id="回到第一步的理想目标"><a href="#回到第一步的理想目标" class="headerlink" title="回到第一步的理想目标"></a>回到第一步的理想目标</h4><p>通过上述推导发现要得到$x_{t - 1}$，反向过程的目的就是预测前向过程每一次加入的噪声，因此这里的高斯分布$\widetilde{z}_t$是深度学习模型所预测的噪声（即重参数化时从标准高斯分布中采样的噪声），可以看做$z_{\theta}(x_t, t)$，由此得到均值为：</p>
+<script type="math/tex; mode=display">
+\mu_{\theta}(x_t, t) = \frac{1}{\sqrt{\alpha_t}}(x_t - \frac{\beta_t}{\sqrt{1 - \overline{\alpha}_t}}z_{\theta}(x_t, t)) (11)</script><p>网络的最终目的就是预测$z_{\theta}(x_t, t)$，或者说是均值$\mu_{\theta}(x_t, t)$，至于方差$\Sigma_{\theta}(x_t, t)$从推导来看它是一个固定值，论文中也提到当做固定值效果更好。</p>
+<h3 id="最大似然-gt-最小KL散度推导"><a href="#最大似然-gt-最小KL散度推导" class="headerlink" title="最大似然-&gt;最小KL散度推导"></a>最大似然-&gt;最小KL散度推导</h3><ol>
+<li>从数据分布中采样：<ul>
+<li>Sample $\{x^{1},x^{2},\ldots,x^{m}\} from P_{data}(x)$</li>
+</ul>
+</li>
+<li>求最优参数$\theta^{*}$的推导过程：<ul>
+<li>$\theta^{*}=\arg\max_{\theta}\prod_{i = 1}^{m}P_{\theta}(x^{i})=\arg\max_{\theta}\log\prod_{i = 1}^{m}P_{\theta}(x^{i})$</li>
+<li>$=\arg\max_{\theta}\sum_{i = 1}^{m}\log P_{\theta}(x^{i})\approx\arg\max_{\theta}E_{x\sim P_{data}}[\log P_{\theta}(x)]$</li>
+<li>$=\arg\max_{\theta}\int_{x}P_{data}(x)\log P_{\theta}(x)dx-\int_{x}P_{data}(x)\log P_{data}(x)dx$</li>
+<li>$=\arg\max_{\theta}\int_{x}P_{data}(x)\log\frac{P_{\theta}(x)}{P_{data}(x)}dx=\arg\min_{\theta}KL(P_{data}||P_{\theta})$</li>
+</ul>
+</li>
+</ol>
+<p><code>公式推导解释</code></p>
+<ol>
+<li><strong>第一步到第二步</strong>：<ul>
+<li>对$\prod_{i = 1}^{m}P_{\theta}(x^{i})$取对数，这是因为对数函数是单调递增函数，所以$\arg\max_{\theta}\prod_{i = 1}^{m}P_{\theta}(x^{i})$和$\arg\max_{\theta}\log\prod_{i = 1}^{m}P_{\theta}(x^{i})$的解是相同的。同时，根据对数的运算法则$\log(ab)=\log a+\log b$，$\log\prod_{i = 1}^{m}P_{\theta}(x^{i})=\sum_{i = 1}^{m}\log P_{\theta}(x^{i})$ 。</li>
+</ul>
+</li>
+<li><strong>第二步到第三步</strong>：<ul>
+<li>这里使用了大数定律的思想。$\sum_{i = 1}^{m}\log P_{\theta}(x^{i})$是从数据分布$P_{data}(x)$中采样的$m$个样本的$\log P_{\theta}(x)$的和。当$m$足够大时，$\frac{1}{m}\sum_{i = 1}^{m}\log P_{\theta}(x^{i})$近似等于期望$E_{x\sim P_{data}}[\log P_{\theta}(x)]$，所以$\arg\max_{\theta}\sum_{i = 1}^{m}\log P_{\theta}(x^{i})\approx\arg\max_{\theta}E_{x\sim P_{data}}[\log P_{\theta}(x)]$。</li>
+</ul>
+</li>
+<li><strong>第三步到第四步</strong>：<ul>
+<li>根据期望的定义，对于连续型随机变量，$E_{x\sim P_{data}}[\log P_{\theta}(x)]=\int_{x}P_{data}(x)\log P_{\theta}(x)dx$ 。而$\int_{x}P_{data}(x)\log P_{data}(x)dx$与$\theta$无关，在求$\arg\max_{\theta}$时可以减去这一项，不影响$\theta$的最优解。</li>
+</ul>
+</li>
+<li><strong>第四步到第五步</strong>：<ul>
+<li>利用对数运算法则$\log\frac{a}{b}=\log a - \log b$，将$\int_{x}P_{data}(x)\log P_{\theta}(x)dx-\int_{x}P_{data}(x)\log P_{data}(x)dx$变形为$\int_{x}P_{data}(x)\log\frac{P_{\theta}(x)}{P_{data}(x)}dx$。这里$\int_{x}P_{data}(x)\log\frac{P_{\theta}(x)}{P_{data}(x)}dx$ 是$P_{data}(x)$和$P_{\theta}(x)$之间的Kullback - Leibler（KL）散度的相反数，即$KL(P_{data}||P_{\theta})=\int_{x}P_{data}(x)\log\frac{P_{data}(x)}{P_{\theta}(x)}dx=-\int_{x}P_{data}(x)\log\frac{P_{\theta}(x)}{P_{data}(x)}dx$，所以$\arg\max_{\theta}\int_{x}P_{data}(x)\log\frac{P_{\theta}(x)}{P_{data}(x)}dx=\arg\min_{\theta}KL(P_{data}||P_{\theta})$。</li>
+</ul>
+</li>
+</ol>
+<p>整个推导过程的核心是通过数学变换将从数据分布中学习参数$\theta$的问题转化为最小化数据分布$P_{data}(x)$和模型分布$P_{\theta}(x)$之间的KL散度的问题 。 </p>
+<h3 id="VAE-Lower-bound-of-logP-x"><a href="#VAE-Lower-bound-of-logP-x" class="headerlink" title="VAE: Lower bound of logP(x)"></a>VAE: Lower bound of logP(x)</h3><p><img src="vae.png" alt=""></p>
+<h3 id="DDPM-Compute-P-theta-x"><a href="#DDPM-Compute-P-theta-x" class="headerlink" title="DDPM: Compute $P_{\theta}(x)$"></a>DDPM: Compute $P_{\theta}(x)$</h3><p>首先计算$logp(x)$的下界，计算过程与VAE类似。<br><img src="dm_1.png" alt=""><br><img src="dm_2.png" alt=""></p>
+<h2 id="疑问"><a href="#疑问" class="headerlink" title="疑问"></a>疑问</h2><h3 id="为什么如果-q-x-t-x-t-1-满足高斯分布并且-beta-t-足够小，-q-x-t-1-x-t-仍然是一个高斯分布"><a href="#为什么如果-q-x-t-x-t-1-满足高斯分布并且-beta-t-足够小，-q-x-t-1-x-t-仍然是一个高斯分布" class="headerlink" title="为什么如果$q(x_t|x_{t - 1})$满足高斯分布并且$\beta_t$足够小，$q(x_{t - 1}|x_t)$仍然是一个高斯分布"></a>为什么如果$q(x_t|x_{t - 1})$满足高斯分布并且$\beta_t$足够小，$q(x_{t - 1}|x_t)$仍然是一个高斯分布</h3><p>扩散模型的反向过程 $ q(x_{t-1} \mid x_t) $ 在大多数情况下被建模为高斯分布，这一设计基于以下原因：</p>
+<p><strong>正向过程的高斯特性</strong><br>正向过程通过逐步添加高斯噪声将数据破坏为纯噪声，其定义为：</p>
+<script type="math/tex; mode=display">
+q(x_t \mid x_{t-1}) = \mathcal{N}\left(x_t; \sqrt{1-\beta_t} x_{t-1}, \beta_t I\right),</script><p>其中 $\beta_t$ 是噪声调度参数。每一步的噪声均为高斯分布，且当 $\beta_t$ 足够小时，正向过程可视为连续扩散的离散近似</p>
+<hr>
+<p><strong>反向过程的推导与近似</strong><br>反向过程的目标是从噪声中恢复数据。理论上，反向条件分布 $q(x_{t-1} \mid x_t) $ 可通过贝叶斯公式与正向过程关联：</p>
+<script type="math/tex; mode=display">
+q(x_{t-1} \mid x_t) \propto q(x_t \mid x_{t-1}) q(x_{t-1}).</script><p>然而，直接计算需已知数据分布 $ q(x_{t-1}) $，这在实践中不可行。因此，<strong>扩散模型通过两个关键假设简化问题</strong>：</p>
+<p><strong>假设1：马尔可夫性</strong><br>正向和反向过程均为马尔可夫链，使得 $ q(x_{t-1} \mid x_t) $ 仅依赖当前状态 $ x_t $，而非全部历史。</p>
+<p><strong>假设2：小噪声近似</strong><br>当正向过程的噪声步长 $\beta_t$ 足够小时，反向过程的每一步可近似为高斯分布。这一结论源于随机微分方程（SDE）的对应理论：正向扩散的逆过程（反向SDE）在连续极限下同样是扩散过程，其条件分布趋于高斯</p>
+<hr>
+<p><strong>DDPM中的具体实现</strong><br>在去噪扩散概率模型（DDPM）中，反向过程被显式建模为高斯分布：</p>
+<script type="math/tex; mode=display">p_\theta(x_{t-1} \mid x_t) = \mathcal{N}\left(x_{t-1}; \mu_\theta(x_t, t), \Sigma_\theta(x_t, t)\right),</script><p>其中均值 $\mu_\theta$ 由神经网络预测，方差 $\Sigma_\theta$ 通常固定为与 $\beta_t$ 相关的值（如 $\sigma_t^2 I$）。这一选择基于以下观察：</p>
+<ul>
+<li><p><strong>条件分布的闭式解</strong>：若已知初始数据分布 $ q(x_0) $，则反向条件分布 $ q(x_{t-1} \mid x_t, x_0) $ 可解析推导为高斯分布：</p>
+<script type="math/tex; mode=display">
+q(x_{t-1} \mid x_t, x_0) = \mathcal{N}\left(x_{t-1}; \tilde{\mu}(x_t, x_0), \tilde{\beta}_t I\right),</script><p>其中 $\tilde{\mu}$ 和 $\tilde{\beta}_t$ 为与正向噪声参数相关的闭式表达式。</p>
+</li>
+<li><p><strong>去噪目标</strong>：神经网络通过预测噪声（或直接预测均值）来逼近这一闭式解，从而间接拟合反向过程的高斯分布。</p>
+</li>
+</ul>
+<hr>
+<p>反向过程的条件分布 $ q(x_{t-1} \mid x_t) $ <strong>并非严格高斯</strong>，但在以下条件下可被合理近似为高斯分布：</p>
+<ul>
+<li>正向过程为小步长的高斯扩散；</li>
+<li>反向过程通过参数化（如神经网络）显式约束为高斯形式；</li>
+<li>目标是通过逐步去噪生成数据，而非精确建模真实反向分布。<br>因此，<strong>扩散模型通过高斯假设简化了反向过程的建模</strong>，使得训练和采样可通过高效的神经网络实现，同时保持了理论合理性与生成质量。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/diffusion/" rel="tag"># diffusion</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/02/07/diffusion%E5%BF%85%E8%AF%BB%E8%AE%BA%E6%96%87/" rel="prev" title="diffusion必读论文">
+      <i class="fa fa-chevron-left"></i> diffusion必读论文
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2025/02/08/DDPM%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" rel="next" title="DDPM论文精读">
+      DDPM论文精读 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AC%E5%BC%8F%E6%8E%A8%E5%AF%BC"><span class="nav-number">1.</span> <span class="nav-text">公式推导</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%89%8D%E5%90%91%E6%8E%A8%E5%AF%BC"><span class="nav-number">1.1.</span> <span class="nav-text">前向推导</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%89%8D%E5%90%91%E8%BF%87%E7%A8%8B%E4%BB%8E-x-t-1-%E5%88%B0-x-t-%E7%9A%84%E5%85%AC%E5%BC%8F"><span class="nav-number">1.1.1.</span> <span class="nav-text">前向过程从$x_{t-1}$到$x_{t}$的公式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%8E-x-0-%E5%88%B0-x-t"><span class="nav-number">1.1.2.</span> <span class="nav-text">从$x_0$到$x_t$</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E-x-t-1-%E5%88%B0-x-t-%E7%9A%84%E4%B8%80%E4%B8%AA%E7%96%91%E9%97%AE"><span class="nav-number">1.1.3.</span> <span class="nav-text">关于$x_{t - 1}$到$x_t$的一个疑问</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8D%E5%90%91%E6%8E%A8%E5%AF%BC"><span class="nav-number">1.2.</span> <span class="nav-text">反向推导</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B7%B2%E7%9F%A5-x-t-%EF%BC%8C%E9%A2%84%E6%B5%8B-x-t-1"><span class="nav-number">1.2.1.</span> <span class="nav-text">已知$x_t$，预测$x_{t-1}$</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%A2%9D%E5%A4%96%E5%B7%B2%E7%9F%A5-x-0-%E7%9A%84%E6%83%85%E5%86%B5%E4%B8%8B%E7%9A%84%E5%8F%8D%E5%90%91%E8%BF%87%E7%A8%8B"><span class="nav-number">1.2.2.</span> <span class="nav-text">额外已知$x_0$的情况下的反向过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9B%9E%E5%88%B0%E7%AC%AC%E4%B8%80%E6%AD%A5%E7%9A%84%E7%90%86%E6%83%B3%E7%9B%AE%E6%A0%87"><span class="nav-number">1.2.3.</span> <span class="nav-text">回到第一步的理想目标</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E5%A4%A7%E4%BC%BC%E7%84%B6-gt-%E6%9C%80%E5%B0%8FKL%E6%95%A3%E5%BA%A6%E6%8E%A8%E5%AF%BC"><span class="nav-number">1.3.</span> <span class="nav-text">最大似然-&gt;最小KL散度推导</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#VAE-Lower-bound-of-logP-x"><span class="nav-number">1.4.</span> <span class="nav-text">VAE: Lower bound of logP(x)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DDPM-Compute-P-theta-x"><span class="nav-number">1.5.</span> <span class="nav-text">DDPM: Compute $P_{\theta}(x)$</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%96%91%E9%97%AE"><span class="nav-number">2.</span> <span class="nav-text">疑问</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%A6%82%E6%9E%9C-q-x-t-x-t-1-%E6%BB%A1%E8%B6%B3%E9%AB%98%E6%96%AF%E5%88%86%E5%B8%83%E5%B9%B6%E4%B8%94-beta-t-%E8%B6%B3%E5%A4%9F%E5%B0%8F%EF%BC%8C-q-x-t-1-x-t-%E4%BB%8D%E7%84%B6%E6%98%AF%E4%B8%80%E4%B8%AA%E9%AB%98%E6%96%AF%E5%88%86%E5%B8%83"><span class="nav-number">2.1.</span> <span class="nav-text">为什么如果$q(x_t|x_{t - 1})$满足高斯分布并且$\beta_t$足够小，$q(x_{t - 1}|x_t)$仍然是一个高斯分布</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zongqing Li"
+      src="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/head.png?raw=true">
+  <p class="site-author-name" itemprop="name">Zongqing Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hqulzq" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hqulzq" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hqulzq@163.com" title="E-Mail → mailto:hqulzq@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+      
+<script type="text/javascript" charset="utf-8" src="/js/tagcloud.js"></script>
+<script type="text/javascript" charset="utf-8" src="/js/tagcanvas.js"></script>
+<div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div id="myCanvasContainer" class="widget tagcloud">
+        <canvas width="250" height="250" id="resCanvas" style="width=100%">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+        </canvas>
+    </div>
+</div>
+
+
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zongqing Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('post.copy_button').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('post.copy_success')
+          else $(this).text('post.copy_failure')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('post.copy_button')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
