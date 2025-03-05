@@ -1,0 +1,1669 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Lzq&#39;s blog">
+<meta property="og:url" content="https://hqulzq.github.io/index.html">
+<meta property="og:site_name" content="Lzq&#39;s blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="Zongqing Li">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://hqulzq.github.io/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : true,
+    isPost : false,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Lzq's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lzq's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">31</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">41</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book">
+
+    <a href="/book" rel="section"><i class="fas fa-book fa-fw"></i>Book</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content index posts-expand">
+            
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/03/02/NCSN%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2025/03/02/NCSN%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" class="post-title-link" itemprop="url">NCSN论文精读</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-03-02 22:25:20 / 修改时间：23:00:19" itemprop="dateCreated datePublished" datetime="2025-03-02T22:25:20+08:00">2025-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="NCSN论文精读"><a href="#NCSN论文精读" class="headerlink" title="NCSN论文精读"></a>NCSN论文精读</h1><h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>我们提出了一种新的生成模型，该模型通过朗之万动力学（Langevin dynamics）来生成样本，所使用的梯度是通过分数匹配（score matching）估计的数据分布梯度。由于当数据位于低维流形上时，梯度可能定义不明确且难以估计，因此我们用不同程度的高斯噪声对数据进行扰动，并联合估计相应的分数，即所有噪声水平下扰动数据分布的梯度向量场。在采样时，我们提出了一种退火朗之万动力学方法，在采样过程接近数据流形时，使用对应逐渐降低噪声水平的梯度。我们的框架允许灵活的模型架构，在训练过程中无需采样或使用对抗方法，并且提供了一个可用于原则性模型比较的学习目标。我们的模型在MNIST、CelebA和CIFAR - 10数据集上生成的样本可与生成对抗网络（GANs）相媲美，在CIFAR - 10数据集上达到了8.87的新最先进的初始得分（inception score）。此外，我们通过图像修复实验证明了我们的模型能够学习到有效的表示。 </p>
+<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1 引言"></a>1 引言</h3><p>生成模型在机器学习领域应用广泛。例如，它们被用于生成高保真图像[26, 6]、合成逼真的语音和音乐片段[58]、提升半监督学习的性能[28, 10]、检测对抗样本及其他异常数据[54]、进行模仿学习[22]，以及在强化学习中探索有前景的状态[41]。近期该领域的进展主要得益于两种方法：基于似然的方法[17, 29, 11, 60]和生成对抗网络（GAN [15]）。前者以对数似然（或合适的替代物）作为训练目标，而后者则通过对抗训练来最小化模型分布与数据分布之间的f - 散度[40]或积分概率度量[2, 55]。</p>
+<p>尽管基于似然的模型和GAN取得了巨大成功，但它们存在一些固有缺陷。比如，基于似然的模型要么需采用特定架构构建归一化概率模型（如自回归模型、流模型），要么使用替代损失（如变分自编码器[29]中使用的证据下界、基于能量的模型[21]中的对比散度）进行训练。GAN虽避免了基于似然模型的部分局限，但其对抗训练过程可能导致训练不稳定。此外，GAN的目标函数并不适用于评估和比较不同的GAN模型。虽然存在其他生成建模目标，如噪声对比估计[19]和最小概率流[50]，但这些方法通常仅适用于低维数据。</p>
+<p>在本文中，我们探索一种基于估计对数数据密度的（斯坦因）分数[33]并从中采样的新型生成建模原理，分数即对数密度函数在输入数据点处的梯度。这是一个指向对数数据密度增长最快方向的向量场。我们使用通过分数匹配[24]训练的神经网络，从数据中学习这个向量场。然后，我们利用朗之万动力学生成样本，其大致原理是将一个随机初始样本沿着（估计的）分数向量场逐渐移动到高密度区域。然而，这种方法面临两个主要挑战。第一，如果数据分布支撑在低维流形上（许多现实世界的数据集通常如此假设），那么在环境空间中分数将无定义，分数匹配也无法提供一致的分数估计。第二，在数据低密度区域（如远离流形的区域），训练数据稀缺，这不仅妨碍分数估计的准确性，还会减缓朗之万动力学采样的混合速度。由于朗之万动力学通常在数据分布的低密度区域初始化，这些区域中不准确的分数估计会对采样过程产生负面影响。此外，由于需要穿越低密度区域以在分布的不同模态之间转换，混合可能会很困难。</p>
+<p>为应对这两个挑战，我们提议用不同幅度的随机高斯噪声对数据进行扰动。添加随机噪声可确保所得分布不会坍缩到低维流形上。较大的噪声水平会在原始（未扰动）数据分布的低密度区域生成样本，从而改善分数估计。关键在于，我们训练一个基于噪声水平的单一分数网络，并估计所有噪声幅度下的分数。然后，我们提出一种退火版本的朗之万动力学，最初使用对应最高噪声水平的分数，之后逐渐降低噪声水平，直至其小到与原始数据分布难以区分。我们的采样策略受模拟退火[30, 37]启发，模拟退火通过启发式方法改进了多模态环境下的优化过程。</p>
+<p>我们的方法具有诸多优点。其一，几乎对于分数网络的所有参数化，我们的目标函数都是易于处理的，无需特殊约束或架构，且在训练过程中无需对抗训练、蒙特卡罗采样（MCMC sampling）或其他近似方法。该目标函数还可用于在同一数据集上对不同模型进行定量比较。实验中，我们在MNIST、CelebA [34]和CIFAR - 10 [31]数据集上验证了方法的有效性。结果表明，生成的样本与现代基于似然的模型和GAN生成的样本质量相当。在CIFAR - 10数据集上，我们的模型在无条件生成模型中创造了8.87的新最先进初始得分，并取得了25.32的FID分数，极具竞争力。我们通过图像修复实验证明，该模型能够学习到有意义的数据表示。 </p>
+<h3 id="2-基于分数的生成建模"><a href="#2-基于分数的生成建模" class="headerlink" title="2 基于分数的生成建模"></a>2 基于分数的生成建模</h3><p>假设我们的数据集由来自未知数据分布 $p_{data}(x)$ 的独立同分布样本 $\{x_{i} \in \mathbb{R}^{D}\}_{i = 1}^{N}$ 组成。我们将概率密度 $p(x)$ 的分数定义为 $\nabla_{x} \log p(x)$。分数网络 $s_{\theta}: \mathbb{R}^{D} \to \mathbb{R}^{D}$ 是一个由 $\theta$ 参数化的神经网络，其训练目标是逼近 $p_{data}(x)$ 的分数。生成建模的目标是利用数据集学习一个模型，以从 $p_{data}(x)$ 中生成新样本。基于分数的生成建模框架包含两个要素：分数匹配和朗之万动力学。</p>
+<h4 id="2-1-用于分数估计的分数匹配"><a href="#2-1-用于分数估计的分数匹配" class="headerlink" title="2.1 用于分数估计的分数匹配"></a>2.1 用于分数估计的分数匹配</h4><p>分数匹配 [24] 最初是为基于来自未知数据分布的独立同分布样本学习非归一化统计模型而设计的。遵循 [53]，我们将其重新用于分数估计。通过分数匹配，我们可以直接训练分数网络 $s_{\theta}(x)$ 来估计 $\nabla_{x} \log p_{data}(x)$，而无需先训练一个模型来估计 $p_{data}(x)$。与分数匹配的典型用法不同，我们选择不使用基于能量模型的梯度作为分数网络，以避免因高阶梯度带来的额外计算量。其目标是最小化 $\frac{1}{2} \mathbb{E}_{p_{data}}[|s_{\theta}(x) - \nabla_{x} \log p_{data}(x)|_{2}^{2}]$，在一个常数范围内，它等价于下式：</p>
+<script type="math/tex; mode=display">\mathbb{E}_{p_{data}(x)}[tr(\nabla_{x} s_{\theta}(x))+\frac{1}{2}\| s_{\theta}(x)\| _{2}^{2}] \quad (1)</script><p>其中 $\nabla_{x} s_{\theta}(x)$ 表示 $s_{\theta}(x)$ 的雅可比矩阵。如 [53] 所示，在某些正则条件下，公式 (1) 的极小值点（记为 <script type="math/tex">s_{\theta^{*}}(x)</script>）几乎必然满足 <script type="math/tex">s_{\theta^{*}}(x)=\nabla_{x} \log p_{data}(x)</script>。在实践中，公式 (1) 中关于 $p_{data}(x)$ 的期望可以使用数据样本快速估计。然而，由于 $tr(\nabla_{x} s_{\theta}(x))$ 的计算问题，分数匹配在应用于深度网络和高维数据时可扩展性较差 [53]。下面我们讨论两种用于大规模分数匹配的常用方法。</p>
+<ul>
+<li><strong>去噪分数匹配</strong>：去噪分数匹配 [61] 是分数匹配的一种变体，它完全规避了 $tr(\nabla_{x} s_{\theta}(x))$ 的计算。它首先用预先指定的噪声分布 $q_{\sigma}(\overline{x} | x)$ 对数据点 $x$ 进行扰动，然后采用分数匹配来估计扰动后数据分布 $q_{\sigma}(\tilde{x}) \triangleq \int q_{\sigma}(\tilde{x} | x) p_{data}(x) dx$ 的分数。该目标已被证明等价于下式：<script type="math/tex; mode=display">\frac{1}{2} \mathbb{E}_{q_{\sigma}(\overline{x} | x) p_{data}(x)}[\| s_{\theta}(\tilde{x})-\nabla_{\tilde{x}} \log q_{\sigma}(\tilde{x} | x)\| _{2}^{2}] \quad (2)</script>如 [61] 所示，使公式 (2) 最小化的最优分数网络（记为 <script type="math/tex">s_{\theta^{*}}(x)</script>）几乎必然满足 <script type="math/tex">s_{\theta^{*}}(x)=\nabla_{x} \log q_{\sigma}(x)</script>。然而，只有当噪声足够小，使得 <script type="math/tex">q_{\sigma}(x) \approx p_{data}(x)</script> 时，<script type="math/tex">s_{\theta^{*}}(x)=\nabla_{x} \log q_{\sigma}(x) \approx \nabla_{x} \log p_{data}(x)</script> 才成立。</li>
+<li><strong>切片分数匹配</strong>：切片分数匹配 [53] 使用随机投影来近似分数匹配中的 $tr(\nabla_{x} s_{\theta}(x))$。其目标为：<script type="math/tex; mode=display">\mathbb{E}_{p_{v}} \mathbb{E}_{p_{data}}[v^{\top} \nabla_{x} s_{\theta}(x) v+\frac{1}{2}\| s_{\theta}(x)\| _{2}^{2}] \quad (3)</script>其中 $p_{V}$ 是一个简单的随机向量分布，例如多元标准正态分布。如 [53] 所示，$v^{\top} \nabla_{x} s_{\theta}(x) v$ 这一项可以通过前向模式自动微分高效计算。与去噪分数匹配估计扰动数据的分数不同，切片分数匹配为原始未扰动数据分布提供分数估计，但由于前向模式自动微分，其计算量大约是去噪分数匹配的四倍。<h4 id="2-2-用朗之万动力学采样"><a href="#2-2-用朗之万动力学采样" class="headerlink" title="2.2 用朗之万动力学采样"></a>2.2 用朗之万动力学采样</h4>朗之万动力学仅使用分数函数 $\nabla_{x} \log p(x)$ 就能从概率密度 $p(x)$ 中生成样本。给定固定步长 $\epsilon &gt; 0$，以及初始值 $\tilde{x}_{0} \sim \pi(x)$（其中 $\pi$ 是一个先验分布），朗之万方法通过递归计算下式：<script type="math/tex; mode=display">\tilde{x}_{t}=\tilde{x}_{t - 1}+\frac{\epsilon}{2} \nabla_{x} \log p(\tilde{x}_{t - 1})+\sqrt{\epsilon} z_{t} \quad (4)</script>其中 $z_{t} \sim N(0, I)$。在某些正则条件下 [62]，当 $\epsilon \to 0$ 且 $T \to \infty$ 时，$\overline{x}_{T}$ 的分布等于 $p(x)$，此时 $\overline{x}_{T}$ 成为来自 $p(x)$ 的精确样本。当 $\epsilon &gt; 0$ 且 $T &lt; \infty$ 时，需要使用 Metropolis - Hastings 更新来修正公式 (4) 中的误差，但在实践中该误差通常可以忽略 [9, 12, 39]。在本文中，我们假设当 $\epsilon$ 较小且 $T$ 较大时，该误差可忽略不计。注意，从公式 (4) 中采样仅需要分数函数 $\nabla_{x} \log p(x)$。因此，为了从 $p_{data}(x)$ 中获取样本，我们可以先训练分数网络，使得 $s_{\theta}(x) \approx \nabla_{x} \log p_{data}(x)$，然后利用朗之万动力学，借助 $s_{\theta}(x)$ 近似获得样本。这就是我们基于分数的生成建模框架的核心思想。 </li>
+</ul>
+<h3 id="3-基于分数的生成式建模所面临的挑战"><a href="#3-基于分数的生成式建模所面临的挑战" class="headerlink" title="3 基于分数的生成式建模所面临的挑战"></a>3 基于分数的生成式建模所面临的挑战</h3><p>在本节中，我们将更深入地分析基于分数的生成式建模这一思路。我们认为，有两个主要障碍阻碍了这一思路的直接应用。</p>
+<h4 id="3-1-流形假设"><a href="#3-1-流形假设" class="headerlink" title="3.1 流形假设"></a>3.1 流形假设</h4><p>流形假设指出，现实世界中的数据往往集中在嵌入高维空间（也称为环境空间）的低维流形上。这一假设在许多数据集上都得到了实证支持，并已成为流形学习的基础 。在流形假设下，基于分数的生成式模型将面临两个关键难题。首先，由于分数$\nabla_{x} \log p_{data }(x)$是在环境空间中求取的梯度，当$x$被限制在低维流形上时，它是没有定义的。其次，分数匹配目标公式（1）只有在数据分布的支撑集是整个空间时，才能提供一致的分数估计量（参见文献[24]中的定理2），而当数据位于低维流形上时，该估计量将是不一致的。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f1.png" alt="f1"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图1：左图：切片分数匹配（SSM）损失随迭代次数的变化。数据未添加噪声。右图：相同情况，但数据添加了$N(0,0.0001)$的噪声</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>流形假设对分数估计的负面影响可以从图1中清楚地看出，在图1中我们训练了一个ResNet（附录B.1中有详细信息）来估计CIFAR-10上的数据分数。为了快速训练并准确估计数据分数，我们使用了切片分数匹配目标（公式（3））。如图1左图所示，在原始CIFAR-10图像上进行训练时，切片分数匹配损失先是下降，然后不规则地波动。相比之下，如果我们用少量高斯噪声扰动数据（使得扰动后的数据分布在$R^{D}$上具有完全支撑集），损失曲线将会收敛（右图）。请注意，对于像素值在[0, 1]范围内的图像，我们添加的高斯噪声$N(0,0.0001)$非常小，人眼几乎无法分辨。</p>
+<h4 id="3-2-低数据密度区域"><a href="#3-2-低数据密度区域" class="headerlink" title="3.2 低数据密度区域"></a>3.2 低数据密度区域</h4><p>低数据密度区域的数据稀缺性会给基于分数匹配的分数估计和基于朗之万动力学的MCMC采样都带来困难。</p>
+<h4 id="3-2-1-分数匹配中不准确的分数估计"><a href="#3-2-1-分数匹配中不准确的分数估计" class="headerlink" title="3.2.1 分数匹配中不准确的分数估计"></a>3.2.1 分数匹配中不准确的分数估计</h4><p>在低数据密度区域，由于缺乏数据样本，分数匹配可能没有足够的依据来准确估计分数函数。从2.1节可知，分数匹配旨在最小化分数估计的期望平方误差，即$\frac{1}{2} \mathbb{E}_{p_{data }}[\left|s_{\theta}(x)-\nabla_{x} \log p_{data }(x)\right|_{2}^{2}]$ 。在实际操作中，关于数据分布的期望总是使用独立同分布样本$\{x_{i}\}_{i = 1}^{N} \stackrel{ i.i.d. }{\sim} p_{data }(x)$来估计。考虑任何区域$R \subset \mathbb{R}^{D}$ ，使得$p_{data }(R) \approx 0$ 。在大多数情况下，$\{x_{i}\}_{i = 1}^{N} \cap R=\varnothing$ ，分数匹配将没有足够的数据样本，来准确估计$x \in R$时的$\nabla_{x} \log p_{data }(x)$ 。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f2.png" alt="f2"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图2：左图：$\nabla_{x}\log p_{data }(x)$ ；右图：$s_{\theta}(x)$ 。数据密度$p_{data }(x)$使用橙色颜色映射编码：颜色越深表示密度越高。红色矩形突出显示了$\nabla_{x} \log p_{data }(x) \approx s_{\theta}(x)$的区域。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>为了展示这种负面影响，我们在图2中给出了一个简单实验的结果（附录B.1中有详细信息），在该实验中，我们使用切片分数匹配来估计混合高斯分布$p_{data }=\frac{1}{5} N((-5,-5), I)+\frac{4}{5} N((5,5), I)$的分数。如图所示，分数估计仅在$p_{data }$的众数附近可靠，因为那里的数据密度较高。</p>
+<h4 id="3-2-2-朗之万动力学的混合缓慢"><a href="#3-2-2-朗之万动力学的混合缓慢" class="headerlink" title="3.2.2 朗之万动力学的混合缓慢"></a>3.2.2 朗之万动力学的混合缓慢</h4><p>当数据分布的两个众数被低数据密度区域隔开时，朗之万动力学无法在合理时间内正确恢复这两个众数的相对权重，因此可能无法收敛到真实分布。我们对这一现象的分析很大程度上受到了文献[63]的启发，该文献在基于分数匹配的密度估计背景下分析了相同的现象。考虑混合分布$p_{data }(x)=\pi p_{1}(x)+(1-\pi) p_{2}(x)$ ，其中$p_{1}(x)$和$p_{2}(x)$是具有不相交支撑集的归一化分布，且$\pi \in(0,1)$ 。在$p_{1}(x)$的支撑集中，$\nabla_{x} \log p_{data }(x)=\nabla_{x}(\log \pi+\log p_{1}(x))=\nabla_{x} \log p_{1}(x)$ ，在$p_{2}(x)$的支撑集中，$\nabla_{x} \log p_{data }(x)=\nabla_{x}(\log (1-\pi)+\log p_{2}(x))=\nabla_{x} \log p_{2}(x)$ 。在这两种情况下，分数$\nabla_{x}\log p_{data }(x)$都不依赖于$\pi$ 。由于朗之万动力学使用$\nabla_{x} \log p_{data }(x)$从$p_{data }(x)$中采样，因此得到的样本将不依赖于$\pi$ 。在实际中，当不同众数的支撑集近似不相交时（它们可能共享相同的支撑集，但由小数据密度区域连接），这一分析同样成立。在这种情况下，朗之万动力学理论上可以产生正确的样本，但可能需要非常小的步长和大量的步数来实现混合。</p>
+<p>为了验证这一分析，我们对3.2.1节中使用的混合高斯分布进行了朗之万动力学采样测试，并在图3中给出了结果。我们在使用朗之万动力学采样时使用了真实分数。将图3（b）与（a）进行比较，可以明显看出，朗之万动力学采样得到的两个众数之间的相对密度是不正确的，正如我们的分析所预测的那样。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f3.png" alt="f3"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图3：使用不同方法从混合高斯分布中采样的样本。（a）精确采样。（b）使用精确分数的朗之万动力学采样。（c）使用精确分数的退火朗之万动力学采样。显然，朗之万动力学错误地估计了两个众数之间的相对权重，而退火朗之万动力学则准确地恢复了相对权重。 </em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="4-噪声条件分数网络：学习与推理"><a href="#4-噪声条件分数网络：学习与推理" class="headerlink" title="4 噪声条件分数网络：学习与推理"></a>4 噪声条件分数网络：学习与推理</h3><p>我们发现，用随机高斯噪声扰动数据，能让数据分布更适合基于分数的生成式建模。首先，由于我们的高斯噪声分布的支撑集是整个空间，经过扰动的数据不会局限于低维流形，这就避免了流形假设带来的困难，使分数估计有了明确的定义。其次，较大的高斯噪声能填充原始未扰动数据分布中的低密度区域，因此分数匹配可以获得更多训练信号，从而改进分数估计。此外，通过使用多个噪声水平，我们可以得到一系列收敛到真实数据分布的噪声扰动分布。我们可以借鉴模拟退火算法  和退火重要性采样的思想，利用这些中间分布，提高朗之万动力学在多峰分布上的混合速率。</p>
+<p>基于上述想法，我们提出从两个方面改进基于分数的生成式建模：一是用不同程度的噪声扰动数据；二是通过训练一个条件分数网络，同时估计所有噪声水平对应的分数。训练完成后，在使用朗之万动力学生成样本时，我们先使用对应较大噪声的分数，然后逐渐降低噪声水平。这样能将较大噪声水平的优势平稳地转移到较小噪声水平，此时扰动后的数据与原始数据几乎没有区别。接下来，我们将详细阐述我们方法的具体细节，包括分数网络的架构、训练目标，以及朗之万动力学的退火调度。</p>
+<h4 id="4-1-噪声条件分数网络"><a href="#4-1-噪声条件分数网络" class="headerlink" title="4.1 噪声条件分数网络"></a>4.1 噪声条件分数网络</h4><p>设$\{\sigma_{i}\}_{i = 1}^{L}$ 是一个正几何序列，满足$\frac{\sigma_{1}}{\sigma_{2}}=\cdots=\frac{\sigma_{L - 1}}{\sigma_{L}}&gt;1$ 。令$q_{\sigma}(x)=\int p_{data }(t)N(x|t,\sigma^{2}I)dt$ 表示扰动后的数据分布。我们选择噪声水平$\{\sigma_{i}\}_{i = 1}^{L}$ ，使得$\sigma_{1}$足够大，以缓解第3节中讨论的困难，$\sigma_{L}$足够小，以尽量减少对数据的影响。我们旨在训练一个条件分数网络，联合估计所有扰动数据分布的分数，即$\forall \sigma \in \{\sigma_{i}\}_{i = 1}^{L}$ ：$s_{\theta}(x,\sigma)\approx\nabla_{x}\log q_{\sigma}(x)$ 。注意，当$x\in\mathbb{R}^{D}$ 时，$s_{\theta}(x,\sigma)\in\mathbb{R}^{D}$ 。我们将$s_{\theta}(x,\sigma)$称为噪声条件分数网络（NCSN）。</p>
+<p>与基于似然的生成式模型和生成对抗网络类似，模型架构的设计在生成高质量样本方面起着重要作用。在这项工作中，我们主要关注对图像生成有用的架构，将其他领域的架构设计留作未来的工作。由于我们的噪声条件分数网络$s_{\theta}(x,\sigma)$的输出与输入图像$x$具有相同的形状，我们从成功的图像密集预测模型架构（如语义分割模型）中获得灵感。在实验中，我们的模型$s_{\theta}(x,\sigma)$结合了U - Net的架构设计和扩张卷积（空洞卷积）  ，这两种设计在语义分割中都被证明非常成功。此外，受实例归一化在某些图像生成任务中的出色表现启发 ，我们在分数网络中采用了实例归一化，并使用了条件实例归一化的改进版本，以对$\sigma_{i}$进行条件设定。关于我们架构的更多细节可以在附录A中找到。</p>
+<h4 id="4-2-通过分数匹配学习噪声条件分数网络"><a href="#4-2-通过分数匹配学习噪声条件分数网络" class="headerlink" title="4.2 通过分数匹配学习噪声条件分数网络"></a>4.2 通过分数匹配学习噪声条件分数网络</h4><p>切片分数匹配和去噪分数匹配都可以用于训练噪声条件分数网络。我们采用去噪分数匹配，因为它速度稍快，并且自然适用于估计噪声扰动数据分布的分数这一任务。不过，需要强调的是，从经验上看，切片分数匹配在训练噪声条件分数网络方面与去噪分数匹配效果相当。我们选择噪声分布为$q_{\sigma}(\tilde{x}|x)=N(\tilde{x}|x,\sigma^{2}I)$ ，因此$\nabla_{\tilde{x}}\log q_{\sigma}(\tilde{x}|x)= - (\tilde{x}-x)/\sigma^{2}$ 。对于给定的$\sigma$ ，去噪分数匹配的目标（公式（2））为：</p>
+<script type="math/tex; mode=display">\ell(\theta ; \sigma) \triangleq \frac{1}{2} \mathbb{E}_{p_{data}(x)} \mathbb{E}_{\tilde{x} \sim \mathcal{N}\left(x, \sigma^{2}I\right)}\left[\left\| s_{\theta}(\tilde{x}, \sigma)+\frac{\tilde{x}-x}{\sigma^{2}}\right\| _{2}^{2}\right] \tag{5}</script><p>然后，我们将所有$\sigma \in \{\sigma_{i}\}_{i = 1}^{L}$ 的公式（5）结合起来，得到一个统一的目标：</p>
+<script type="math/tex; mode=display">\mathcal{L}\left(\theta ;\left\{\sigma_{i}\right\}_{i = 1}^{L}\right) \triangleq \frac{1}{L} \sum_{i = 1}^{L} \lambda\left(\sigma_{i}\right) \ell\left(\theta ; \sigma_{i}\right) \tag{6}</script><p>其中$\lambda(\sigma_{i})&gt;0$是一个依赖于$\sigma_{i}$的系数函数。假设$s_{\theta}(x,\sigma)$具有足够的容量，<script type="math/tex">s_{\theta^{*}}(x,\sigma)</script>最小化公式（6）当且仅当对于所有<script type="math/tex">i \in \{1,2,\cdots,L\}</script> ，<script type="math/tex">s_{\theta^{*}}(x,\sigma_{i})=\nabla_{x}\log q_{\sigma_{i}}(x)</script>几乎必然成立，因为公式（6）是$L$个去噪分数匹配目标的锥形组合。$\lambda(\cdot)$有很多可能的选择。理想情况下，我们希望对于所有$\{\sigma_{i}\}_{i = 1}^{L}$ ，$\lambda(\sigma_{i})\ell(\theta ; \sigma_{i})$的值大致处于同一数量级。从经验上我们观察到，当分数网络训练到最优时，大致有$\left|s_{\theta}(x,\sigma)\right|_{2} \propto 1 / \sigma$ 。这启发我们选择$\lambda(\sigma)=\sigma^{2}$ 。因为在这种选择下，我们有$\lambda(\sigma)\ell(\theta ; \sigma)=\sigma^{2}\ell(\theta ; \sigma)=\frac{1}{2} \mathbb{E}\left[\left|\sigma s_{\theta}(\tilde{x}, \sigma)+\frac{\tilde{x}-x}{\sigma}\right|_{2}^{2}\right]$ 。由于$\frac{\tilde{x}-x}{\sigma} \sim N(0, I)$且$\left|\sigma s_{\theta}(x, \sigma)\right|_{2} \propto 1$ ，我们可以很容易得出$\lambda(\sigma)\ell(\theta ; \sigma)$的数量级不依赖于$\sigma$ 。</p>
+<p>我们强调，我们的目标公式（6）在训练过程中不需要对抗训练，不需要替代损失，也不需要从分数网络中采样（例如，不像对比散度那样）。而且，它不要求$s_{\theta}(x,\sigma)$具有特殊架构，以保证易于处理。此外，当$\lambda(\cdot)$和$\{\sigma_{i}\}_{i = 1}^{L}$固定时，它可以用于定量比较不同的噪声条件分数网络。</p>
+<h4 id="4-3-通过退火朗之万动力学进行噪声条件分数网络推理"><a href="#4-3-通过退火朗之万动力学进行噪声条件分数网络推理" class="headerlink" title="4.3 通过退火朗之万动力学进行噪声条件分数网络推理"></a>4.3 通过退火朗之万动力学进行噪声条件分数网络推理</h4><p>在噪声条件分数网络$s_{\theta}(x,\sigma)$训练完成后，受模拟退火  和退火重要性采样的启发，我们提出一种采样方法——退火朗之万动力学（算法1）来生成样本。如算法1所示，我们从某个固定的先验分布（例如均匀噪声）初始化样本，开始退火朗之万动力学。然后，我们使用步长$\alpha_{1}$，通过朗之万动力学从$q_{\sigma_{1}}(x)$中采样。接下来，我们以上一次模拟的最终样本为起始点，使用减小的步长$\alpha_{2}$，通过朗之万动力学从$q_{\sigma_{2}}(x)$中采样。我们以这种方式继续，将从$q_{\sigma_{i - 1}}(x)$的朗之万动力学得到的最终样本，作为从$q_{\sigma_{i}}(x)$的朗之万动力学的初始样本，并逐渐减小步长$\alpha_{i}$，其中$\alpha_{i}=\epsilon \cdot \sigma_{i}^{2} / \sigma_{L}^{2}$ 。最后，我们通过朗之万动力学从$q_{\sigma_{L}}(x)$中采样，当$\sigma_{L} \approx 0$时，$q_{\sigma_{L}}(x)$接近$p_{data }(x)$ 。</p>
+<p><img src="a1.png" alt="a1"> </p>
+<p>由于分布$\{q_{\sigma_{i}}\}_{i = 1}^{L}$都受到高斯噪声的扰动，它们的支撑集覆盖整个空间，并且它们的分数是有明确定义的，这就避免了流形假设带来的困难。当$\sigma_{1}$足够大时，$q_{\sigma_{1}}(x)$的低密度区域会变小，众数之间的隔离程度也会降低。如前所述，这可以使分数估计更加准确，并且朗之万动力学的混合速度更快。因此，我们可以假设朗之万动力学能够为$q_{\sigma_{1}}(x)$生成良好的样本。这些样本很可能来自$q_{\sigma_{1}}(x)$的高密度区域，这意味着它们也很可能位于$q_{\sigma_{2}}(x)$的高密度区域，因为$q_{\sigma_{1}}(x)$和$q_{\sigma_{2}}(x)$彼此之间只有轻微的差异。由于分数估计和朗之万动力学在高密度区域表现更好，所以从$q_{\sigma_{1}}(x)$得到的样本将作为从$q_{\sigma_{2}}(x)$进行朗之万动力学的良好初始样本。同样，$q_{\sigma_{i - 1}}(x)$为$q_{\sigma_{i}}(x)$提供了良好的初始样本，最终我们从$q_{\sigma_{L}}(x)$获得高质量的样本。</p>
+<p>在算法1中，根据$\sigma_{i}$调整$\alpha_{i}$的方法有很多种。我们选择$\alpha_{i} \propto \sigma_{i}^{2}$ ，其动机是固定朗之万动力学中“信噪比”$\frac{\alpha_{i} s_{\theta}(x, \sigma_{i})}{2 \sqrt{\alpha_{i}} z}$的大小。注意$\mathbb{E}\left[\left|\frac{\alpha_{i} s_{\theta}(x, \sigma_{i})}{2 \sqrt{\alpha_{i}} z}\right|_{2}^{2}\right] \approx \mathbb{E}\left[\frac{\alpha_{i}\left|s_{\theta}(x, \sigma_{i})\right|_{2}^{2}}{4}\right] \propto \frac{1}{4} \mathbb{E}\left[\left|\sigma_{i} s_{\theta}(x, \sigma_{i})\right|_{2}^{2}\right]$ 。回想一下，当分数网络训练接近最优时，我们从经验上发现$\left|s_{\theta}(x, \sigma)\right|_{2} \propto 1 / \sigma$ ，在这种情况下$\mathbb{E}\left[\left|\sigma_{i} s_{\theta}(x ; \sigma_{i})\right|_{2}^{2}\right] \propto 1$ 。因此$\left|\frac{\alpha_{i} s_{\theta}(x, \sigma_{i})}{2 \sqrt{\alpha_{i}} z}\right|_{2} \propto \frac{1}{4} \mathbb{E}\left[\left|\sigma_{i} s_{\theta}(x, \sigma_{i})\right|_{2}^{2}\right] \propto \frac{1}{4}$ ，不依赖于$\sigma_{i}$ 。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t1.png" alt="t1"></th>
+<th style="text-align:center"><img src="f4.png" alt="f4"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表1：CIFAR-10数据集的Inception分数和FID分数 </em></td>
+<td style="text-align:center"><em>图4：退火朗之万动力学的中间样本。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>为了证明我们退火朗之万动力学的有效性，我们给出一个简单的例子，目标是仅使用分数从具有两个分离良好的众数的混合高斯分布中采样。我们将算法1应用于对3.2节中使用的混合高斯分布进行采样。在实验中，我们选择$\{\sigma_{i}\}_{i = 1}^{L}$为几何级数，其中$L = 10$ ，$\sigma_{1}=10$ ，$\sigma_{10}=0.1$ 。结果如图3所示。将图3（b）与（c）进行比较，可以发现退火朗之万动力学正确地恢复了两个众数之间的相对权重，而标准朗之万动力学则失败了。 </p>
+<h3 id="5-实验"><a href="#5-实验" class="headerlink" title="5 实验"></a>5 实验</h3><p>在本节中，我们展示了噪声条件分数网络（NCSN）能够在几个常用的图像数据集上生成高质量的图像样本。此外，通过图像修复实验，我们表明该模型学习到了合理的图像表示。</p>
+<h4 id="实验设置"><a href="#实验设置" class="headerlink" title="实验设置"></a>实验设置</h4><p>我们在实验中使用了MNIST、CelebA和CIFAR-10数据集。对于CelebA数据集，图像首先被中心裁剪为140×140，然后调整大小为32×32。所有图像都进行了归一化处理，使像素值在[0, 1]范围内。我们选择了$L = 10$个不同的标准差，使得$\{\sigma_{i}\}_{i = 1}^{L}$构成一个几何序列，其中$\sigma_{1}=1$，$\sigma_{10}=0.01$。需要注意的是，对于图像数据来说，标准差$\sigma = 0.01$的高斯噪声几乎无法被人眼察觉。在使用退火朗之万动力学生成图像时，我们选择$T = 100$，$\epsilon = 2×10^{-5}$，并使用均匀噪声作为初始样本。我们发现结果对$T$的选择具有稳健性，$\epsilon$在$5×10^{-6}$到$5×10^{-5}$之间通常都能取得不错的效果。关于模型架构和设置的更多详细信息，请参见附录A和B。</p>
+<h4 id="图像生成"><a href="#图像生成" class="headerlink" title="图像生成"></a>图像生成</h4><p>在图5中，我们展示了通过退火朗之万动力学在MNIST、CelebA和CIFAR-10数据集上生成的未筛选样本。从这些样本可以看出，我们生成的图像质量与现代基于似然的模型和生成对抗网络（GAN）生成的图像相当，甚至更优。为了直观展示退火朗之万动力学的过程，我们在图4中提供了中间样本，其中每一行展示了样本从纯随机噪声演变为高质量图像的过程。更多我们方法生成的样本可在附录C中找到。我们还在附录C.2中展示了生成图像在训练数据集中的最近邻，以证明我们的模型并非简单地记忆训练图像。为了证明联合学习多个噪声水平的条件分数网络并使用退火朗之万动力学的重要性，我们与一种基线方法进行了比较。该基线方法仅考虑一个噪声水平$\sigma_{1}=0.01$，并使用普通的朗之万动力学采样方法。虽然这种少量添加的噪声有助于克服流形假设带来的困难（如图1所示，如果不添加噪声，情况会完全失败），但它不足以在低数据密度区域提供关于分数的信息。结果，这种基线方法无法生成合理的图像，如附录C.1中的样本所示。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f5.png" alt="f5"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图5：MNIST、CelebA和CIFAR-10数据集上的未经筛选的样本。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f5.png" alt="f5"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图6：CelebA数据集（左）和CIFAR-10数据集（右）上的图像修复结果。每个图最左边一列展示的是有遮挡的图像，最右边一列展示的是原始图像。 </em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>为了进行定量评估，我们在表1中报告了CIFAR-10数据集上的Inception分数和FID分数。作为一个无条件模型，我们的模型达到了8.87的Inception分数，这一成绩优于大多数已报道的类别条件生成模型。我们在CIFAR-10数据集上的FID分数为25.32，也与现有的顶尖模型（如SNGAN）相当。由于MNIST和CelebA数据集上的分数没有被广泛报道，并且不同的预处理方式（如CelebA的中心裁剪大小）会导致数据无法直接比较，因此我们省略了这两个数据集上的分数。</p>
+<h4 id="图像修复"><a href="#图像修复" class="headerlink" title="图像修复"></a>图像修复</h4><p>在图6中，我们展示了我们的分数网络学习到了可泛化且语义有意义的图像表示，这使得它能够生成多样化的图像修复结果。需要注意的是，一些先前的模型（如PixelCNN）只能按光栅扫描顺序进行图像修复。相比之下，我们的方法通过对退火朗之万动力学过程进行简单修改（详细信息见附录B.3），可以自然地处理任意形状遮挡的图像。我们在附录C.5中提供了更多的图像修复结果。 </p>
+<h3 id="6-相关工作"><a href="#6-相关工作" class="headerlink" title="6 相关工作"></a>6 相关工作</h3><p>我们的方法与一些通过学习马尔可夫链的转移算子来生成样本的方法有相似之处。例如，生成随机网络（GSN）利用去噪自编码器训练一个马尔可夫链，使其平衡分布与数据分布相匹配。类似地，我们的方法训练用于朗之万动力学的分数函数，以从数据分布中采样。然而，GSN通常从非常接近训练数据点的位置启动链，因此要求链在不同模式之间快速转移。相比之下，我们的退火朗之万动力学是从无结构噪声开始初始化的。非平衡热力学（NET）使用规定的扩散过程将数据缓慢转换为随机噪声，然后通过训练逆扩散来学习反向这个过程。但是，NET的扩展性不是很好，因为它要求扩散过程的步长非常小，并且在训练时需要模拟数千步的链。</p>
+<p>以前的方法，如注入训练（IT）和变分回溯（VW），也在训练马尔可夫链的转移算子时采用了不同的噪声水平或温度。IT和VW（以及NET）都是通过最大化合适的边际似然的证据下界来训练模型的。在实践中，它们往往会生成模糊的图像样本，与变分自编码器类似。相比之下，我们的目标是基于分数匹配而非似然，并且我们可以生成与GAN相媲美的图像。</p>
+<p>我们的方法与上述先前方法还有一些结构上的差异。首先，我们在训练过程中不需要从马尔可夫链中采样。相比之下，GSN的回溯过程需要多次运行链来生成 “负样本”。包括NET、IT和VW在内的其他方法，也需要为每个输入模拟一个马尔可夫链来计算训练损失。这种差异使我们的方法在训练深度模型时更高效、更具扩展性。其次，我们的训练和采样方法相互解耦。对于分数估计，切片分数匹配和去噪分数匹配都可以使用。对于采样，任何基于分数的方法都适用，包括朗之万动力学和（可能的）哈密顿蒙特卡罗方法。我们的框架允许分数估计器和（基于梯度的）采样方法进行任意组合，而大多数先前的方法将模型与特定的马尔可夫链绑定。最后，我们的方法可以通过将基于能量模型的梯度用作分数模型来训练基于能量的模型（EBM）。相比之下，目前还不清楚以前学习马尔可夫链转移算子的方法，如何直接用于训练EBM。</p>
+<p>分数匹配最初是为学习EBM而提出的。然而，许多现有的基于分数匹配的方法，要么不具备扩展性，要么无法生成与VAE或GAN质量相当的样本。为了在训练深度能量模型时获得更好的性能，一些近期的工作采用了对比散度，并提议在训练和测试中都使用朗之万动力学进行采样。但是，与我们的方法不同，对比散度在训练过程中，将计算成本高昂的朗之万动力学过程作为内循环。在不同的背景下，以前的工作也研究了将退火与去噪分数匹配相结合的想法。在一些研究中，提出了用于训练去噪自编码器的不同噪声退火调度。然而，他们的工作是关于学习表示以提高分类性能，而非生成式建模。去噪分数匹配方法也可以从贝叶斯最小二乘法的角度推导出来，使用斯坦因无偏风险估计的技术。</p>
+<h3 id="7-结论"><a href="#7-结论" class="headerlink" title="7 结论"></a>7 结论</h3><p>我们提出了基于分数的生成式建模框架，该框架首先通过分数匹配估计数据密度的梯度，然后通过朗之万动力学生成样本。我们分析了这种方法直接应用时面临的几个挑战，并提出通过训练噪声条件分数网络（NCSN）和使用退火朗之万动力学进行采样来解决这些问题。我们的方法不需要对抗训练，训练过程中不需要MCMC采样，也不需要特殊的模型架构。实验表明，我们的方法可以生成高质量的图像，这些图像以前只有最好的基于似然的模型和GAN才能生成。我们在CIFAR-10数据集上实现了新的最先进的Inception分数，并获得了与SNGAN相当的FID分数。</p>
+<h3 id="致谢"><a href="#致谢" class="headerlink" title="致谢"></a>致谢</h3><p>丰田研究所（“TRI”）提供资金支持作者进行研究，但本文仅反映作者的观点和结论，不代表TRI或任何其他丰田实体的观点。本研究还得到了美国国家科学基金会（NSF，项目编号：#1651565、#1522054、#1733686）、美国海军研究办公室（ONR，项目编号：N0001419 - 1 - 2145）和美国空军科学研究办公室（AFOSR，项目编号：FA9550 - 19 - 1 - 0024）的支持。 </p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/02/28/Classifier-Free-Diffusion-Guidance%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2025/02/28/Classifier-Free-Diffusion-Guidance%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" class="post-title-link" itemprop="url">Classifier-Free Diffusion Guidance论文精读</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-02-28 16:36:13 / 修改时间：16:52:39" itemprop="dateCreated datePublished" datetime="2025-02-28T16:36:13+08:00">2025-02-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Classifier-Free-Diffusion-Guidance论文精读"><a href="#Classifier-Free-Diffusion-Guidance论文精读" class="headerlink" title="Classifier-Free Diffusion Guidance论文精读"></a>Classifier-Free Diffusion Guidance论文精读</h1><h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>分类器引导（Classifier guidance）是最近提出的一种方法，用于在条件扩散模型训练后，在模式覆盖和样本保真度之间进行权衡，这与其他类型生成模型中的低温采样或截断操作思路相似。分类器引导将扩散模型的得分估计与图像分类器的梯度相结合，因此需要训练一个与扩散模型分离的图像分类器。这也引发了一个问题：能否在不使用分类器的情况下进行引导。我们证明，确实可以通过一个纯生成模型在不使用分类器的情况下进行引导：在我们称为无分类器引导（classifier-free guidance）的方法中，我们联合训练一个条件扩散模型和一个无条件扩散模型，并结合得到的条件和无条件得分估计，在样本质量和多样性之间实现类似于使用分类器引导时的权衡。<br>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/02/28/Classifier-Free-Diffusion-Guidance%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/02/27/PFDDIFF%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2025/02/27/PFDDIFF%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" class="post-title-link" itemprop="url">PFDDIFF论文精读</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-02-27 21:38:29" itemprop="dateCreated datePublished" datetime="2025-02-27T21:38:29+08:00">2025-02-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-02-28 16:39:08" itemprop="dateModified" datetime="2025-02-28T16:39:08+08:00">2025-02-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="PFDDIFF论文精读"><a href="#PFDDIFF论文精读" class="headerlink" title="PFDDIFF论文精读"></a>PFDDIFF论文精读</h1><h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散概率模型（Diffusion Probabilistic Models, DPMs）在图像生成领域展现出巨大潜力，但其采样效率受限于大量的去噪步骤。现有的解决方案大多通过提出快速常微分方程（ODE）求解器来加速采样过程。然而，当函数评估次数（NFE）较少时，ODE 求解器不可避免的离散化误差会被显著放大。在本研究中，我们提出了 PFDiff，这是一种全新的无需训练的正交跳步策略，它能使现有的快速 ODE 求解器在较少的 NFE 下运行。具体而言，PFDiff 首先利用过去时间步的分数替换来预测一个 “跳板” 状态。随后，它结合受 Nesterov 动量启发的前瞻更新机制，利用这个 “跳板” 状态快速更新当前的中间状态。这种方法在减少不必要的 NFE 的同时，还能校正一阶 ODE 求解器固有的离散化误差。实验结果表明，PFDiff 在各种预训练的 DPM 模型上都具有灵活的适用性，在条件 DPM 模型中表现尤为出色，超越了以往最先进的无需训练的方法。例如，以 DDIM 为基线，在 ImageNet 64x64 数据集上使用分类器引导时，我们的方法达到了 16.46 的 FID（4 次 NFE），而 DDIM 的 FID 为 138.81；在引导尺度为 7.5 的 Stable Diffusion 模型上，我们的方法以 10 次 NFE 达到了 13.06 的 FID。代码可在<a target="_blank" rel="noopener" href="https://github.com/onefly123/PFDiff获取。">https://github.com/onefly123/PFDiff获取。</a><br>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/02/27/PFDDIFF%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/02/27/%E5%8A%A0%E9%80%9F%E9%87%87%E6%A0%B7%E7%BB%BC%E8%BF%B0-wgy/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2025/02/27/%E5%8A%A0%E9%80%9F%E9%87%87%E6%A0%B7%E7%BB%BC%E8%BF%B0-wgy/" class="post-title-link" itemprop="url">加速采样综述-wgy</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-02-27 20:38:44" itemprop="dateCreated datePublished" datetime="2025-02-27T20:38:44+08:00">2025-02-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-02-28 16:39:32" itemprop="dateModified" datetime="2025-02-28T16:39:32+08:00">2025-02-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Accelerated-Sampling-for-Diffusion-Models-A-Survey"><a href="#Accelerated-Sampling-for-Diffusion-Models-A-Survey" class="headerlink" title="Accelerated Sampling for Diffusion Models: A Survey"></a>Accelerated Sampling for Diffusion Models: A Survey</h1><h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>自2020年以来，扩散概率模型（DPMs）因其简单直接的优化过程，在图像生成领域取得了革命性进展。这些模型已广泛应用于图像、文本、语音等多个领域的各种任务中。然而，与生成对抗网络（GANs）等一步生成方法相比，扩散模型的多步迭代采样过程显著降低了其采样效率。为解决扩散模型采样过程中迭代次数多、速度慢的问题，研究人员开展了大量工作，并针对这些模型的特点取得了许多突破。本文首先概述了扩散模型的基本原理和框架，随后将扩散模型的加速采样技术分为三类：采样器设计、知识蒸馏和其他加速方法。接着，我们详细讨论了每类加速方法的主要特点、适用场景，以及它们的优缺点。最后，本文总结了扩散模型加速采样的研究进展，并探讨了该领域面临的关键挑战和未来潜在的研究方向。<br>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/02/27/%E5%8A%A0%E9%80%9F%E9%87%87%E6%A0%B7%E7%BB%BC%E8%BF%B0-wgy/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/02/26/ScoreSDE%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2025/02/26/ScoreSDE%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" class="post-title-link" itemprop="url">ScoreSDE论文精读</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-02-26 11:20:27" itemprop="dateCreated datePublished" datetime="2025-02-26T11:20:27+08:00">2025-02-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-03-04 15:26:28" itemprop="dateModified" datetime="2025-03-04T15:26:28+08:00">2025-03-04</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="SCORE-BASED-GENERATIVE-MODELING-THROUGH-STOCHASTIC-DIFFERENTIAL-EQUATIONS论文精读"><a href="#SCORE-BASED-GENERATIVE-MODELING-THROUGH-STOCHASTIC-DIFFERENTIAL-EQUATIONS论文精读" class="headerlink" title="SCORE-BASED GENERATIVE MODELING THROUGH STOCHASTIC DIFFERENTIAL EQUATIONS论文精读"></a>SCORE-BASED GENERATIVE MODELING THROUGH STOCHASTIC DIFFERENTIAL EQUATIONS论文精读</h1><h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>从数据中生成噪声很容易；而从噪声中生成数据则是生成式建模。我们提出一种随机微分方程（SDE），通过缓慢注入噪声，将复杂的数据分布平滑地转换为已知的先验分布；同时提出一种相应的逆向时间SDE，通过逐渐去除噪声，将先验分布转换回数据分布。关键在于，逆向时间SDE仅依赖于受扰动数据分布的时变梯度场（即分数）。利用基于分数的生成式建模的进展，我们可以用神经网络精确估计这些分数，并使用数值SDE求解器生成样本。我们表明，这个框架涵盖了先前基于分数的生成式建模和扩散概率建模方法，为新的采样过程和建模能力提供了可能。具体而言，我们引入了一个预测 - 校正框架，以纠正离散化逆向时间SDE演化过程中的误差。我们还推导了一个等效的神经常微分方程（ODE），它与SDE从相同分布中采样，但还能实现精确的似然计算，并提高采样效率。此外，我们提供了一种使用基于分数的模型解决逆问题的新方法，并通过类条件生成、图像修复和上色实验进行了验证。结合多种架构改进，我们在CIFAR - 10上的无条件图像生成任务中取得了突破性的成果，Inception分数达到9.89，FID为2.20，以2.99比特/维度的似然性创造了新纪录，并且首次从基于分数的生成模型中生成了高保真的1024×1024图像。<br>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/02/26/ScoreSDE%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/02/21/Diffusion-Models-Beat-GANs-on-Image-Synthesis%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2025/02/21/Diffusion-Models-Beat-GANs-on-Image-Synthesis%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" class="post-title-link" itemprop="url">Diffusion Models Beat GANs on Image Synthesis论文精读</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-02-21 20:46:42" itemprop="dateCreated datePublished" datetime="2025-02-21T20:46:42+08:00">2025-02-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-02-28 16:38:56" itemprop="dateModified" datetime="2025-02-28T16:38:56+08:00">2025-02-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Diffusion-Models-Beat-GANs-on-Image-Synthesis论文精读"><a href="#Diffusion-Models-Beat-GANs-on-Image-Synthesis论文精读" class="headerlink" title="Diffusion Models Beat GANs on Image Synthesis论文精读"></a>Diffusion Models Beat GANs on Image Synthesis论文精读</h1><h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>我们表明，扩散模型可以实现优于当前最先进的生成模型的图像样本质量。我们通过一系列消融找到更好的架构，在无条件图像合成中实现这一点。对于条件图像合成，我们通过分类器指导进一步提高样本质量：一种简单、计算高效的方法，使用分类器的梯度来权衡多样性以获得保真度。我们在 ImageNet 128×128 上实现了 2.97 的 FID，在 ImageNet 256×256 上实现了 4.59，在 ImageNet 512×512 上实现了 7.72，即使每个样本只有 25 次前向传递，我们也可以匹配 BigGAN-deep，同时保持更好的分布覆盖率。最后，我们发现分类器指导与上采样扩散模型很好地结合，进一步将 ImageNet 256×256 的 FID 提高到 3.94，在 ImageNet 512×512 上提高到 3.85。我们在 <a target="_blank" rel="noopener" href="https://github.com/openai/guided-diffusion">https://github.com/openai/guided-diffusion</a> 发布我们的代码。<br>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/02/21/Diffusion-Models-Beat-GANs-on-Image-Synthesis%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/02/19/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95-%E9%93%BE%E8%A1%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2025/02/19/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95-%E9%93%BE%E8%A1%A8/" class="post-title-link" itemprop="url">代码随想录-链表</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-02-19 22:01:22" itemprop="dateCreated datePublished" datetime="2025-02-19T22:01:22+08:00">2025-02-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-02-27 10:37:03" itemprop="dateModified" datetime="2025-02-27T10:37:03+08:00">2025-02-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/" itemprop="url" rel="index"><span itemprop="name">程序设计</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="203-移除链表元素-easy"><a href="#203-移除链表元素-easy" class="headerlink" title="203. 移除链表元素 easy"></a>203. 移除链表元素 easy</h2><p>简单题，看看CPP的指针的写法就好</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Definition for singly-linked list.</span></span><br><span class="line"><span class="comment"> * struct ListNode &#123;</span></span><br><span class="line"><span class="comment"> *     int val;</span></span><br><span class="line"><span class="comment"> *     ListNode *next;</span></span><br><span class="line"><span class="comment"> *     ListNode() : val(0), next(nullptr) &#123;&#125;</span></span><br><span class="line"><span class="comment"> *     ListNode(int x) : val(x), next(nullptr) &#123;&#125;</span></span><br><span class="line"><span class="comment"> *     ListNode(int x, ListNode *next) : val(x), next(next) &#123;&#125;</span></span><br><span class="line"><span class="comment"> * &#125;;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 迭代法</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">ListNode* <span class="title">removeElements</span><span class="params">(ListNode* head, <span class="type">int</span> val)</span> </span>&#123;</span><br><span class="line">        ListNode * h=<span class="keyword">new</span> <span class="built_in">ListNode</span>();</span><br><span class="line">        h-&gt;next = head;</span><br><span class="line">        ListNode *t = h;</span><br><span class="line">        <span class="keyword">while</span>(t-&gt;next != <span class="literal">nullptr</span>)&#123;</span><br><span class="line">            <span class="keyword">if</span>(t-&gt;next-&gt;val == val)&#123;</span><br><span class="line">                ListNode * temp = t-&gt;next;</span><br><span class="line">                t-&gt;next = t-&gt;next-&gt;next;</span><br><span class="line">                <span class="keyword">delete</span> temp;</span><br><span class="line">            &#125;<span class="keyword">else</span></span><br><span class="line">                t = t-&gt;next;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> h-&gt;next;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 递归法</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">ListNode* <span class="title">removeElements</span><span class="params">(ListNode* head, <span class="type">int</span> val)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (head == <span class="literal">nullptr</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> head;</span><br><span class="line">        &#125;</span><br><span class="line">        head-&gt;next = <span class="built_in">removeElements</span>(head-&gt;next, val);</span><br><span class="line">        <span class="keyword">return</span> head-&gt;val == val ? head-&gt;next : head;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/02/19/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95-%E9%93%BE%E8%A1%A8/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/02/18/c_cpp%E5%B8%B8%E7%94%A8%E5%A4%B4%E5%87%BD%E6%95%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2025/02/18/c_cpp%E5%B8%B8%E7%94%A8%E5%A4%B4%E5%87%BD%E6%95%B0/" class="post-title-link" itemprop="url">c/c++常用头函数</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-02-18 23:15:24" itemprop="dateCreated datePublished" datetime="2025-02-18T23:15:24+08:00">2025-02-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-02-27 10:37:03" itemprop="dateModified" datetime="2025-02-27T10:37:03+08:00">2025-02-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C-CPP/" itemprop="url" rel="index"><span itemprop="name">C_CPP</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="C"><a href="#C" class="headerlink" title="C"></a>C</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;assert.h&gt;</span>　　　　<span class="comment">//设定插入点</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ctype.h&gt;</span>　　　　 <span class="comment">//字符处理</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;errno.h&gt;</span>　　　　 <span class="comment">//定义错误码</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;float.h&gt;</span>　　　　 <span class="comment">//浮点数处理</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iso646.h&gt;</span>        <span class="comment">//对应各种运算符的宏</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;limits.h&gt;</span>　　　　<span class="comment">//定义各种数据类型最值的常量</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;locale.h&gt;</span>　　　　<span class="comment">//定义本地化C函数</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;math.h&gt;</span>　　　　　<span class="comment">//定义数学函数</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;setjmp.h&gt;</span>        <span class="comment">//异常处理支持</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;signal.h&gt;</span>        <span class="comment">//信号机制支持</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdarg.h&gt;</span>        <span class="comment">//不定参数列表支持</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stddef.h&gt;</span>        <span class="comment">//常用常量</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span>　　　　 <span class="comment">//定义输入／输出函数</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span>　　　　<span class="comment">//定义杂项函数及内存分配函数</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span>　　　　<span class="comment">//字符串处理</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;time.h&gt;</span>　　　　　<span class="comment">//定义关于时间的函数</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;wchar.h&gt;</span>　　　　 <span class="comment">//宽字符处理及输入／输出</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;wctype.h&gt;</span>　　　　<span class="comment">//宽字符分类</span></span></span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/02/18/c_cpp%E5%B8%B8%E7%94%A8%E5%A4%B4%E5%87%BD%E6%95%B0/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/02/18/DDIM%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2025/02/18/DDIM%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" class="post-title-link" itemprop="url">DDIM论文精读</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-02-18 21:14:08" itemprop="dateCreated datePublished" datetime="2025-02-18T21:14:08+08:00">2025-02-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-03-02 22:25:34" itemprop="dateModified" datetime="2025-03-02T22:25:34+08:00">2025-03-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <style>
+table {
+  border-collapse: collapse;
+  border: none;
+}
+
+th,
+td {
+  border: none;
+}
+</style>
+
+<h1 id="DDIM论文精读"><a href="#DDIM论文精读" class="headerlink" title="DDIM论文精读"></a>DDIM论文精读</h1><h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h3><p>去噪扩散概率模型（DDPMs）在无需对抗训练的情况下实现了高质量的图像生成，但为了生成一个样本，它们需要模拟马尔可夫链的多个步骤。为了加速采样过程，我们提出了去噪扩散隐式模型（DDIMs），这是一类更高效的迭代隐式概率模型，其训练过程与DDPMs相同。在DDPMs中，生成过程被定义为特定马尔可夫扩散过程的逆过程。我们通过一类非马尔可夫扩散过程对DDPMs进行了扩展，这些非马尔可夫扩散过程能够产生与DDPMs相同的训练目标。这些非马尔可夫过程可以对应于确定性的生成过程，从而产生能够更快生成高质量样本的隐式模型。实验证明，与DDPMs相比，DDIMs生成高质量样本的速度在实际时间上快10到50倍，并且可以在计算量和样本质量之间进行权衡，能够直接在潜在空间中进行语义上有意义的图像插值，还能以极低的误差重建观测数据。<br>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/02/18/DDIM%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/02/08/latex%E5%85%AC%E5%BC%8F%E5%A4%A7%E5%85%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2025/02/08/latex%E5%85%AC%E5%BC%8F%E5%A4%A7%E5%85%A8/" class="post-title-link" itemprop="url">latex公式大全</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-02-08 13:55:05" itemprop="dateCreated datePublished" datetime="2025-02-08T13:55:05+08:00">2025-02-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-02-27 10:37:03" itemprop="dateModified" datetime="2025-02-27T10:37:03+08:00">2025-02-27</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="LaTeX-常用符号整理"><a href="#LaTeX-常用符号整理" class="headerlink" title="LaTeX 常用符号整理"></a>LaTeX 常用符号整理</h1><h2 id="希腊字母"><a href="#希腊字母" class="headerlink" title="希腊字母"></a>希腊字母</h2><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Name</th>
+<th style="text-align:center">Display</th>
+<th style="text-align:center">Capital Case</th>
+<th style="text-align:center">Display</th>
+<th style="text-align:center">Var Case</th>
+<th style="text-align:center">Display</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><code>\alpha</code></td>
+<td style="text-align:center">$\alpha$</td>
+<td style="text-align:center"><code>A</code></td>
+<td style="text-align:center">$A$</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"><code>\beta</code></td>
+<td style="text-align:center">$\beta$</td>
+<td style="text-align:center"><code>B</code></td>
+<td style="text-align:center">$B$</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"><code>\gamma</code></td>
+<td style="text-align:center">$\gamma$</td>
+<td style="text-align:center"><code>\Gamma</code></td>
+<td style="text-align:center">$\Gamma$</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"><code>\theta</code></td>
+<td style="text-align:center">$\theta$</td>
+<td style="text-align:center"><code>\Theta</code></td>
+<td style="text-align:center">$\Theta$</td>
+<td style="text-align:center"><code>\vartheta</code></td>
+<td style="text-align:center">$\vartheta$</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>\mu</code></td>
+<td style="text-align:center">$\mu$</td>
+<td style="text-align:center"><code>M</code></td>
+<td style="text-align:center">$M$</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"><code>\delta</code></td>
+<td style="text-align:center">$\delta$</td>
+<td style="text-align:center"><code>\Delta</code></td>
+<td style="text-align:center">$\Delta$</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"><code>\epsilon</code></td>
+<td style="text-align:center">$\epsilon$</td>
+<td style="text-align:center"><code>E</code></td>
+<td style="text-align:center">$E$</td>
+<td style="text-align:center"><code>\varepsilon</code></td>
+<td style="text-align:center">$\varepsilon$</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>\sigma</code></td>
+<td style="text-align:center">$\sigma$</td>
+<td style="text-align:center"><code>\Sigma</code></td>
+<td style="text-align:center">$\Sigma$</td>
+<td style="text-align:center"><code>\varsigma</code></td>
+<td style="text-align:center">$\varsigma$</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>\pi</code></td>
+<td style="text-align:center">$\pi$</td>
+<td style="text-align:center"><code>\Pi</code></td>
+<td style="text-align:center">$\Pi$</td>
+<td style="text-align:center"><code>\varpi</code></td>
+<td style="text-align:center">$\varpi$</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>\omega</code></td>
+<td style="text-align:center">$\omega$</td>
+<td style="text-align:center"><code>\Omega</code></td>
+<td style="text-align:center">$\Omega$</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"><code>\xi</code></td>
+<td style="text-align:center">$\xi$</td>
+<td style="text-align:center"><code>\Xi</code></td>
+<td style="text-align:center">$\Xi$</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"><code>\zeta</code></td>
+<td style="text-align:center">$\zeta$</td>
+<td style="text-align:center"><code>Z</code></td>
+<td style="text-align:center">$Z$</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"><code>\chi</code></td>
+<td style="text-align:center">$\chi$</td>
+<td style="text-align:center"><code>X</code></td>
+<td style="text-align:center">$X$</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"><code>\rho</code></td>
+<td style="text-align:center">$\rho$</td>
+<td style="text-align:center"><code>P</code></td>
+<td style="text-align:center">$P$</td>
+<td style="text-align:center"><code>\varrho</code></td>
+<td style="text-align:center">$\varrho$</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>\phi</code></td>
+<td style="text-align:center">$\phi$</td>
+<td style="text-align:center"><code>\Phi</code></td>
+<td style="text-align:center">$\Phi$</td>
+<td style="text-align:center"><code>\varphi</code></td>
+<td style="text-align:center">$\varphi$</td>
+</tr>
+<tr>
+<td style="text-align:center"><code>\eta</code></td>
+<td style="text-align:center">$\eta$</td>
+<td style="text-align:center"><code>H</code></td>
+<td style="text-align:center">$H$</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"><code>\lambda</code></td>
+<td style="text-align:center">$\lambda$</td>
+<td style="text-align:center"><code>\Lambda</code></td>
+<td style="text-align:center">$\Lambda$</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"><code>\kappa</code></td>
+<td style="text-align:center">$\kappa$</td>
+<td style="text-align:center"><code>K</code></td>
+<td style="text-align:center">$K$</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"><code>\nu</code></td>
+<td style="text-align:center">$\nu$</td>
+<td style="text-align:center"><code>N</code></td>
+<td style="text-align:center">$N$</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"><code>\upsilon</code></td>
+<td style="text-align:center">$\upsilon$</td>
+<td style="text-align:center"><code>\Upsilon</code></td>
+<td style="text-align:center">$\Upsilon$</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"><code>\psi</code></td>
+<td style="text-align:center">$\psi$</td>
+<td style="text-align:center"><code>\Psi</code></td>
+<td style="text-align:center">$\Psi$</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"><code>\tau</code></td>
+<td style="text-align:center">$\tau$</td>
+<td style="text-align:center"><code>T</code></td>
+<td style="text-align:center">$T$</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"><code>\iota</code></td>
+<td style="text-align:center">$\iota$</td>
+<td style="text-align:center"><code>I</code></td>
+<td style="text-align:center">$I$</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"><code>\omicron</code></td>
+<td style="text-align:center">$\omicron$</td>
+<td style="text-align:center"><code>O</code></td>
+<td style="text-align:center">$O$</td>
+<td style="text-align:center"></td>
+</tr>
+</tbody>
+</table>
+</div>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/02/08/latex%E5%85%AC%E5%BC%8F%E5%A4%A7%E5%85%A8/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+
+  
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+  </nav>
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zongqing Li"
+      src="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+  <p class="site-author-name" itemprop="name">Zongqing Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hqulzq" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hqulzq" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hqulzq@163.com" title="E-Mail → mailto:hqulzq@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+      
+<script type="text/javascript" charset="utf-8" src="/js/tagcloud.js"></script>
+<script type="text/javascript" charset="utf-8" src="/js/tagcanvas.js"></script>
+<div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div id="myCanvasContainer" class="widget tagcloud">
+        <canvas width="250" height="250" id="resCanvas" style="width=100%">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+        </canvas>
+    </div>
+</div>
+
+
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zongqing Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('post.copy_button').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('post.copy_success')
+          else $(this).text('post.copy_failure')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('post.copy_button')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
