@@ -31,6 +31,6 @@
     "hexo-theme-landscape": "^1.0.0",
     "install": "^0.13.0",
     "live2d-widget-model-koharu": "^1.0.5",
-    "npm": "^11.0.0"
+    "npm": "^11.1.0"
   }
 }
