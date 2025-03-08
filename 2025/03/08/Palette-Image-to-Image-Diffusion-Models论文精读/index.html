@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="全文翻译摘要本文基于条件扩散模型开发了一个统一的图像到图像转换框架，并在四项具有挑战性的图像到图像转换任务上对该框架进行了评估，这些任务分别是彩色化、图像修复、图像扩展和JPEG图像恢复。我们对图像到图像扩散模型的简单实现，在所有任务上均优于强大的生成对抗网络（GAN）和回归基线方法，且无需针对特定任务进行超参数调整、架构定制，也无需使用任何辅助损失函数或复杂的新技术。我们揭示了去噪扩散目标中L2">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Palette Image-to-Image Diffusion Models论文精读">
+<meta property="og:url" content="https://hqulzq.github.io/2025/03/08/Palette-Image-to-Image-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/index.html">
+<meta property="og:site_name" content="Lzq&#39;s blog">
+<meta property="og:description" content="全文翻译摘要本文基于条件扩散模型开发了一个统一的图像到图像转换框架，并在四项具有挑战性的图像到图像转换任务上对该框架进行了评估，这些任务分别是彩色化、图像修复、图像扩展和JPEG图像恢复。我们对图像到图像扩散模型的简单实现，在所有任务上均优于强大的生成对抗网络（GAN）和回归基线方法，且无需针对特定任务进行超参数调整、架构定制，也无需使用任何辅助损失函数或复杂的新技术。我们揭示了去噪扩散目标中L2">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/08/Palette-Image-to-Image-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/08/Palette-Image-to-Image-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f2.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/08/Palette-Image-to-Image-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f3.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/08/Palette-Image-to-Image-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/08/Palette-Image-to-Image-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t2.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/08/Palette-Image-to-Image-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t3.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/08/Palette-Image-to-Image-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f4.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/08/Palette-Image-to-Image-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t4.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/08/Palette-Image-to-Image-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t5.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/08/Palette-Image-to-Image-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f5.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/08/Palette-Image-to-Image-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f6.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/08/Palette-Image-to-Image-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t6.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/08/Palette-Image-to-Image-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f7.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/08/Palette-Image-to-Image-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t7.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/08/Palette-Image-to-Image-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f8.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/08/Palette-Image-to-Image-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f9.png">
+<meta property="article:published_time" content="2025-03-08T01:58:48.000Z">
+<meta property="article:modified_time" content="2025-03-08T03:08:13.423Z">
+<meta property="article:author" content="Zongqing Li">
+<meta property="article:tag" content="diffusion">
+<meta property="article:tag" content="2021">
+<meta property="article:tag" content="CVPR">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hqulzq.github.io/2025/03/08/Palette-Image-to-Image-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f1.png">
+
+<link rel="canonical" href="https://hqulzq.github.io/2025/03/08/Palette-Image-to-Image-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Palette Image-to-Image Diffusion Models论文精读 | Lzq's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lzq's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">40</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">45</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book">
+
+    <a href="/book" rel="section"><i class="fas fa-book fa-fw"></i>Book</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/03/08/Palette-Image-to-Image-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Palette Image-to-Image Diffusion Models论文精读
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-03-08 09:58:48 / 修改时间：11:08:13" itemprop="dateCreated datePublished" datetime="2025-03-08T09:58:48+08:00">2025-03-08</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>本文基于条件扩散模型开发了一个统一的图像到图像转换框架，并在四项具有挑战性的图像到图像转换任务上对该框架进行了评估，这些任务分别是彩色化、图像修复、图像扩展和JPEG图像恢复。我们对图像到图像扩散模型的简单实现，在所有任务上均优于强大的生成对抗网络（GAN）和回归基线方法，且无需针对特定任务进行超参数调整、架构定制，也无需使用任何辅助损失函数或复杂的新技术。我们揭示了去噪扩散目标中L2和L1损失对样本多样性的影响，并通过实证研究证明了自注意力机制在神经架构中的重要性。重要的是，我们倡导基于ImageNet建立统一的评估协议，采用人工评估和样本质量评分（如FID、Inception Score、预训练ResNet50的分类准确率，以及与原始图像的感知距离）。我们期望这个标准化的评估协议能够推动图像到图像转换研究的发展。最后，我们展示了一个通用的多任务扩散模型，其性能与特定任务的专业模型相当，甚至更优。有关结果和代码的概述，请查看<a target="_blank" rel="noopener" href="https://diffusionpalette.github.io/。">https://diffusionpalette.github.io/。</a><br><span id="more"></span></p>
+<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1 引言"></a>1 引言</h3><p>视觉和图像处理领域的许多问题都可以表述为图像到图像的转换。例如，超分辨率、彩色化和图像修复等图像恢复任务，以及实例分割和深度估计等像素级图像理解任务。如图1所示，许多这类任务都是复杂的逆问题，即单个输入可能对应多个符合条件的输出图像。对于图像到图像的转换，一种自然的方法是利用深度生成模型来学习给定输入时输出图像的条件分布，因为深度生成模型能够捕捉图像高维空间中的多模态分布。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f1.png" width="30%" height="30%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图1：图像到图像的扩散模型能够在各个任务中生成高保真的输出，而无需针对特定任务进行定制或使用辅助损失</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>生成对抗网络（GANs）[Goodfellow等人，2014；Radford等人，2015]已成为许多图像到图像任务的首选模型[Isola等人，2017a]。GANs能够生成高保真的输出，应用广泛，并且支持高效采样。然而，GANs的训练可能具有挑战性[Arjovsky等人，2017；Gulrajani等人，2017]，并且在输出分布中常常出现模式丢失的情况[Metz等人，2016；Ravuri和Vinyals，2019]。自回归模型[Parmar等人，2018；van den Oord等人，2016]、变分自编码器[Kingma和Welling，2013；Vahdat和Kautz，2020]以及归一化流[Dinh等人，2016；Kingma和Dhariwal，2018]在特定应用中取得了成功，但可以说，它们在质量和通用性方面尚未达到GANs的水平。</p>
+<p>扩散模型和基于分数的模型[Ho等人，2020；Sohl-Dickstein等人，2015；Song和Ermon，2020]最近受到了广泛关注[Austin等人，2021；Cai等人，2020；Hoogeboom等人，2021；Kingma等人，2021；Song等人，2021；Vahdat等人，2021]，在连续数据建模方面取得了一些关键进展。在语音合成领域，扩散模型在人工评估中的得分与最先进的自回归模型相当[Chen等人，2021a，2021b；Kong等人，2021]。在基于类别条件的ImageNet生成挑战中，它们在FID分数上优于强大的GAN基线[Dhariwal和Nichol，2021；Ho等人，2021]。在图像超分辨率方面，它们实现了令人瞩目的人脸增强效果，性能优于GANs [Saharia等人，2021]。尽管取得了这些成果，但扩散模型在提供一个通用且灵活的图像操作框架方面是否能与GANs相媲美仍不明确。</p>
+<p>本文研究了Palette（我们对图像到图像扩散模型的实现）在一系列不同且具有挑战性的任务中的普遍适用性，这些任务包括彩色化、图像修复、图像扩展和JPEG图像恢复（见图1、图2）。我们发现，Palette在不进行特定任务的架构定制、超参数调整或损失函数修改的情况下，能够在所有四个任务中生成高保真的输出。它优于特定任务的基线方法，以及具有相同神经网络架构的强大回归基线。重要的是，我们展示了一个单一的通用Palette模型，在彩色化、图像修复和JPEG图像恢复任务上进行训练后，其性能优于专门的JPEG模型，并且在其他任务上也能达到具有竞争力的表现。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f2.png" alt="f2"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图2：给定中心256×256像素，我们以128像素为步长向左和向右进行外推（2×8次应用50%的Palette图像扩展），以生成最终的256×2304全景图。附录中的图D.3展示了更多示例</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>我们研究了Palette的关键组件，包括去噪损失函数和神经网络架构。我们发现，虽然去噪目标中的L2 [Ho等人，2020]和L1 [Chen等人，2021a]损失在样本质量评分上相似，但L2会使模型样本具有更高的多样性，而L1则会产生更保守的输出。我们还发现，从Palette的U-Net架构中移除自注意力层以构建全卷积模型会损害性能。最后，我们倡导基于ImageNet [Deng等人，2009]为图像修复、图像扩展和JPEG图像恢复建立标准化的评估协议，并报告了几个基线方法的样本质量评分。我们希望这个基准测试能够推动图像到图像转换研究的发展。</p>
+<h3 id="2-相关工作"><a href="#2-相关工作" class="headerlink" title="2 相关工作"></a>2 相关工作</h3><p>我们的工作受到Pix2Pix [Isola等人，2017a]的启发，该研究利用生成对抗网络（GANs）探索了众多图像到图像的转换任务。基于GAN的技术也被应用于诸如非配对图像转换[Zhu等人，2017a]、无监督跨域生成[Taigman等人，2016]、多域转换[Choi等人，2018]以及少样本转换[Liu等人，2019]等图像到图像的问题。然而，现有的GAN模型在整体转换具有一致结构和纹理规律的图像时，有时并不成功。</p>
+<p>扩散模型[Sohl - Dickstein等人，2015]最近在图像生成[Dhariwal和Nichol，2021；Ho等人，2020，2021]、音频合成[Chen等人，2021a；Kong等人，2020]、图像超分辨率[Kadkhodaie和Simoncelli，2021；Saharia等人，2021]，以及非配对图像到图像转换[Sasaki等人，2021]和图像编辑[Meng等人，2021；Sinha等人，2021]等方面取得了令人瞩目的成果。我们的条件扩散模型基于这些最新进展，在一系列图像到图像转换任务中展现出了通用性。</p>
+<p>大多数用于图像修复和其他线性逆问题的扩散模型，都是将无条件模型改编用于条件任务[Meng等人，2021；Sohl - Dickstein等人，2015；Song等人，2021]。这样做的优点是只需训练一个模型。然而，无条件任务通常比条件任务更具挑战性。我们将Palette设定为条件模型，如果希望用一个模型处理多个任务，则选择多任务训练。</p>
+<p>早期的图像修复方法[Barnes等人，2009；Bertalmio等人，2000；Hays和Efros，2007；He和Sun，2012]在纹理区域效果良好，但在生成语义一致的结构方面往往存在不足。GANs被广泛应用，但通常需要在结构、上下文、边缘、轮廓和手工设计的特征上设置辅助目标[Iizuka等人，2017；Kim等人，2021a；Liu等人，2020；Nazeri等人，2019；Yi等人，2020；Yu等人，2018b，2019]，并且其输出缺乏多样性[Zhao等人，2021；Zheng等人，2019]。</p>
+<p>图像扩展（也称为外部绘制）被认为比图像修复更具挑战性，因为它需要在上下文较少的情况下生成开放式内容。早期的方法依赖于检索[Kopf等人，2012；Shan等人，2014；Wang等人，2014]。如今，基于GAN的方法占据主导地位[Teterwak等人，2019]，但往往是特定领域的[Bowen等人，2021；Cheng等人，2021；Lin等人，2021；Wang等人，2019a；Yang等人，2019a]。我们证明，在大型数据集上训练的条件扩散模型能够可靠地处理跨图像领域的图像修复和图像扩展任务。</p>
+<p>彩色化是一个研究较为深入的任务[Ardizzone等人，2019；Guadarrama等人，2017；Kumar等人，2021；Royer等人，2017]，它需要一定程度的场景理解，这使得它成为自监督学习的自然选择[Larsson等人，2016]。彩色化面临的挑战包括多样化的色彩选择[Deshpande等人，2017]、尊重语义类别[Zhang等人，2016]以及生成高保真的色彩[Guadarrama等人，2017]。虽然一些先前的工作使用专门的辅助分类损失，但我们发现通用的图像到图像扩散模型在无需特定任务专门化的情况下也能表现良好。JPEG图像恢复（也称为JPEG伪影去除）是去除压缩伪影的非线性逆问题。Dong等人[2015]将深度卷积神经网络架构应用于JPEG图像恢复，Galteri等人[2017，2019]成功地将GANs应用于伪影去除，但这些方法通常局限于质量因子高于10的情况。我们展示了Palette在去除低至5的质量因子的压缩伪影方面的有效性。</p>
+<p>多任务训练在图像到图像转换中是一个相对未被充分探索的领域。Qian等人[2019]和Yu等人[2018a]同时在多个任务上进行训练，但他们主要关注去模糊、去噪和超分辨率等增强任务，并且使用较小的模块化网络。也有一些工作处理在单个任务上同时对多种退化进行训练，例如多尺度超分辨率[Kim等人，2016]以及针对多个质量因子的JPEG图像恢复[Galteri等人，2019；Liu等人，2018b]。借助Palette，我们朝着为广泛的任务构建多任务图像到图像扩散模型迈出了第一步。</p>
+<h3 id="3-Palette"><a href="#3-Palette" class="headerlink" title="3 Palette"></a>3 Palette</h3><p>扩散模型[Ho等人，2020；Sohl-Dickstein等人，2015]通过迭代去噪过程，将标准高斯分布的样本转换为经验数据分布的样本。条件扩散模型[Chen等人，2021a；Saharia等人，2021]使去噪过程依赖于输入信号。图像到图像的扩散模型是形式为$p(y|x)$的条件扩散模型，其中$x$和$y$均为图像，例如，$x$是灰度图像，$y$是彩色图像。这些模型已被应用于图像超分辨率[Nichol和Dhariwal，2021；Saharia等人，2021]。我们研究图像到图像扩散模型在广泛任务中的普遍适用性。</p>
+<p>关于扩散模型的详细论述，请参阅附录A。在此，我们简要讨论去噪损失函数。给定训练输出图像$y$，我们生成一个带噪版本$\tilde{y}$，并训练神经网络$f_{\theta}$，在给定$x$和噪声水平指示符$\gamma$的情况下对$\tilde{y}$进行去噪，其损失函数为：</p>
+<script type="math/tex; mode=display">\mathbb{E}_{(x, y)} \mathbb{E}_{\epsilon \sim \mathcal{N}(0, I)} \mathbb{E}_{\gamma} \| f_{\theta}(x, \underbrace{\sqrt{\gamma} y+\sqrt{1-\gamma} \epsilon, \gamma)}_{\tilde{y}}-\epsilon\| _{p}^{p}, (1)</script><p>[Chen等人，2021a]和[Saharia等人，2021]建议使用$L_{1}$范数，即$p = 1$，而标准公式是基于通常的$L_{2}$范数[Ho等人，2020]。我们在下面进行了仔细的消融实验，并分析了范数选择的影响。我们发现，与$L_{2}$相比，$L_{1}$产生的样本多样性明显更低。虽然$L_{1}$在某些应用中可能有助于减少潜在的幻觉，但在这里我们采用$L_{2}$以更忠实地捕捉输出分布。</p>
+<p><strong>架构</strong>：Palette采用了U-Net架构[Ho等人，2020]，并根据近期的研究成果[Dhariwal和Nichol，2021；Saharia等人，2021；Song等人，2021]进行了一些修改。该网络架构基于[Dhariwal和Nichol，2021]中256×256的类别条件U-Net模型。我们的架构与他们的主要区别在于：（i）不使用类别条件；（ii）按照[Saharia等人，2021]的方法，通过拼接对源图像进行额外的条件设定。</p>
+<h3 id="4-评估协议"><a href="#4-评估协议" class="headerlink" title="4 评估协议"></a>4 评估协议</h3><p>评估图像到图像转换模型颇具挑战性。先前在彩色化方面的工作[Guadarrama等人，2017；Kumar等人，2021；Zhang等人，2016]依靠FID分数和人工评估来比较模型。像图像修复[Yu等人，2018b，2019]和图像扩展[Teterwak等人，2019；Wang等人，2019b]这类任务，往往严重依赖定性评估。对于其他任务，如JPEG图像恢复[Dong等人，2015；Galteri等人，2019；Liu等人，2018b]，使用基于参考的像素级相似性分数（如PSNR和SSIM）很常见。值得注意的是，许多任务缺乏标准化的评估数据集，例如，在评估时使用的是针对不同方法特定划分的不同测试集。</p>
+<p>鉴于ImageNet数据集[Deng等人，2009]的规模、多样性和公开可用性，我们提出了一个针对图像修复、图像扩展和JPEG图像恢复的统一评估协议。对于图像修复和图像扩展，现有工作依赖Places2数据集[Zhou等人，2017]进行评估。因此，我们也对这些任务在Places2上采用标准评估设置。具体来说，我们提倡使用[Larsson等人，2016]提出的ImageNet ctest10k分割作为ImageNet上所有图像到图像转换任务基准测试的标准子集。我们还引入了Places2验证集的一个类似的类别平衡的10,950张图像子集，称为places10k。除了有控制的人工评估外，我们还提倡使用能够同时捕捉图像质量和多样性的自动化指标。我们避免使用像PSNR和SSIM这样的像素级指标，因为对于需要生成虚拟内容的困难任务来说，它们不是衡量样本质量的可靠指标。就像最近的超分辨率研究中，[Dahl等人，2017；Ledig等人，2017；Menon等人，2020]观察到PSNR和SSIM往往倾向于模糊的回归输出，这与人类感知不同。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f3.png" alt="f3"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图3：ImageNet验证集图像的彩色化结果。基线模型：†[瓜达拉马等人，2017年]，‡[库马尔等人，2021年]，以及我们自己的强回归基线模型。图C.3展示了更多示例。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>我们使用四个用于图像到图像转换样本质量的自动化定量指标：Inception Score（IS）[Salimans等人，2017]；Fréchet Inception Distance（FID）；预训练的ResNet-50分类器的分类准确率（CA）（前1）；以及一个简单的感知距离（PD）度量，即在Inception-v1特征空间中的欧几里得距离（参考[Dosovitskiy和Brox，2016]）。为了便于在我们提议的子集上进行基准测试，我们发布了我们的模型输出以及其他数据，如图像修复掩码（见<a target="_blank" rel="noopener" href="https://bit.ly/eval-pix2pix）。有关我们评估的更多详细信息，请参阅附录C.5。对于某些任务，我们还通过多个模型输出之间的成对SSIM和LPIPS分数来评估样本多样性。样本多样性是一个具有挑战性的问题，也是许多现有基于GAN的方法的关键限制[Yang等人，2019b；Zhu等人，2017b]。">https://bit.ly/eval-pix2pix）。有关我们评估的更多详细信息，请参阅附录C.5。对于某些任务，我们还通过多个模型输出之间的成对SSIM和LPIPS分数来评估样本多样性。样本多样性是一个具有挑战性的问题，也是许多现有基于GAN的方法的关键限制[Yang等人，2019b；Zhu等人，2017b]。</a></p>
+<p>对图像到图像转换模型的最终评估是人工评估，即人类是否能够区分模型输出和自然图像。为此，我们使用二选一迫选（2AFC）试验来评估模型输出与用于获取测试输入的自然图像的感知质量（参考彩色化图灵测试[Zhang等人，2016]）。我们用误判率来总结结果，误判率是指当被问到“你猜哪张图像是相机拍摄的？”时，选择模型输出而非自然图像的人类评分者的百分比（详细信息见附录C）。</p>
+<h3 id="5-实验"><a href="#5-实验" class="headerlink" title="5 实验"></a>5 实验</h3><p>我们将Palette应用于一系列具有挑战性的图像到图像任务：</p>
+<ol>
+<li><strong>彩色化</strong>：将输入的灰度图像转换为合理的彩色图像。</li>
+<li><strong>图像修复</strong>：用逼真的内容填充图像中用户指定的掩码区域。</li>
+<li><strong>图像扩展</strong>：沿一个或多个方向扩展输入图像以放大图像。</li>
+<li><strong>JPEG图像恢复</strong>：纠正JPEG压缩伪影，恢复合理的图像细节。</li>
+</ol>
+<p>我们在进行这些任务时，没有进行特定任务的超参数调整、架构定制，也没有使用任何辅助损失函数。所有任务的输入和输出均表示为256×256的RGB图像。每个任务都有其独特的挑战。彩色化需要对物体进行表示、分割和布局，涉及图像的长距离依赖关系。图像修复在处理大掩码、图像多样性和杂乱场景时具有挑战性。图像扩展被普遍认为比图像修复更具挑战性，因为用于约束语义有意义生成的周围上下文更少。虽然其他任务本质上是线性的，但JPEG图像恢复是一个非线性逆问题，它需要一个良好的自然图像统计局部模型来检测和纠正压缩伪影。尽管先前的工作对这些问题进行了广泛研究，但很少有模型能在没有特定任务工程设计的情况下，在所有任务中都取得优异性能，超越特定任务的强大GAN和回归基线模型。除非另有说明，Palette在去噪目标中使用$L_2$损失。（实现细节见附录B）。</p>
+<h4 id="5-1-彩色化"><a href="#5-1-彩色化" class="headerlink" title="5.1 彩色化"></a>5.1 彩色化</h4><p>虽然先前的工作[Kumar等人，2021；Zhang等人，2016]在彩色化任务中采用LAB或YCbCr颜色空间来表示输出图像，但我们使用RGB颜色空间以保持跨任务的通用性。初步实验表明，Palette在YCbCr和RGB空间中同样有效。我们将Palette与Pix2Pix[Isola等人，2017b]、PixColor[Guadarrama等人，2017]和ColTran[Kumar等人，2021]进行比较。定性结果见图3，定量分数见表1。Palette建立了新的最先进水平，大幅超越现有方法。此外，性能指标（FID、IS和CA）表明，Palette的输出与用于创建测试灰度输入的原始图像几乎无法区分。令人惊讶的是，我们的$L_2$回归基线模型也超越了先前的特定任务技术，这凸显了现代架构和大规模训练的重要性，即使对于基本的回归模型也是如此。在人工评估中，Palette将ColTran的人类评分者误判率提高了10%以上，接近理想的50%误判率。</p>
+<h4 id="5-2-图像修复"><a href="#5-2-图像修复" class="headerlink" title="5.2 图像修复"></a>5.2 图像修复</h4><p>我们遵循[Yu等人，2019]的方法，在自由形式生成的掩码上训练图像修复模型，并增加简单的矩形掩码。与先前的工作不同，为了保持Palette在不同任务中的通用性，我们没有将二进制图像修复掩码输入模型。相反，我们用标准高斯噪声填充掩码区域，这与去噪扩散模型兼容。训练损失仅考虑掩码区域的像素，而不是整个图像，以加快训练速度。我们将Palette与DeepFillv2[Yu等人，2019]、HiFill[Yi等人，2020]、Photoshop的内容识别填充以及Co-ModGAN[Zhao等人，2021]进行比较。虽然图像修复领域还有其他重要的先前工作，如[Liu等人，2018a，2020；Zheng等人，2019]，但我们无法与所有这些方法进行比较。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t1.png" width="70%" height="70%"></th>
+<th style="text-align:center"><img src="t2.png" alt="t2"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表1：ImageNet验证集上的彩色化定量分数和误判率表明，Palette的输出正在缩小与创建灰度输入的原始图像之间的差距，几乎难以区分。基线模型：†[伊索拉等人，2017b]，‡[瓜达拉马等人，2017]和††[库马尔等人，2021]。附录C.1提供了更多结果。</em></td>
+<td style="text-align:center"><em>表2：ImageNet和Places2验证图像上自由形式和中心区域图像修复的定量评估。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>定性和定量结果分别见图4和表2。Palette在不同的图像修复数据集和掩码配置下都表现出色，大幅超越DeepFillv2、HiFill和Co-ModGAN。重要的是，与上述彩色化任务类似，在20 - 30%自由形式掩码的情况下，Palette输出的FID分数与我们创建掩码测试输入的原始图像的FID分数极其接近。更多结果见附录C.2。</p>
+<h4 id="5-3-图像扩展"><a href="#5-3-图像扩展" class="headerlink" title="5.3 图像扩展"></a>5.3 图像扩展</h4><p>最近的工作[Lin等人，2021；Teterwak等人，2019]通过沿图像右边界扩展（外推）输入图像，展示了令人印象深刻的视觉效果。我们在图像的四个方向中的任意一个方向，或围绕图像的整个边界四个方向进行图像扩展任务训练Palette。在所有情况下，我们将掩码区域的面积设置为图像的50%。与图像修复类似，我们用高斯噪声填充掩码区域，并在推理过程中保持未掩码区域不变。我们将Palette与Boundless[Teterwak等人，2019]和InfinityGAN[Lin等人，2021]进行比较。虽然存在其他图像扩展方法（例如[Guo等人，2020；Wang等人，2019b]），但我们仅与两种代表性方法进行比较。从图5和表3的结果可以看出，Palette在ImageNet和Places2上大幅超越基线模型。在人工评估中，Palette的误判率为40%，而Boundless和InfinityGAN分别为25%和15%（详细信息见附录图C.2）。</p>
+<p>我们通过重复应用左右图像扩展生成全景图，进一步评估Palette的稳健性（见图2）。我们观察到Palette的稳健性令人惊讶，即使经过8次重复的图像扩展应用，仍能生成逼真且连贯的输出。我们还通过围绕图像整个边界重复进行图像扩展生成缩放序列，也得到了同样吸引人的结果（<a target="_blank" rel="noopener" href="https://diffusion">https://diffusion</a> - palette.github.io/）。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t3.png" alt="t3"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表3：图像扩展任务的定量分数和人类评估者的误判率。附录C.3提供了更多结果。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="5-4-JPEG图像恢复"><a href="#5-4-JPEG图像恢复" class="headerlink" title="5.4 JPEG图像恢复"></a>5.4 JPEG图像恢复</h4><p>最后，我们在去除JPEG压缩伪影的任务上评估Palette，这是一个长期存在的图像恢复问题[Dong等人，2015；Galteri等人，2019；Liu等人，2018b]。与先前的工作[Ehrlich等人，2020；Liu等人，2018b]一样，我们在使用各种质量因子（QF）压缩的输入上训练Palette。虽然先前的工作通常将质量因子限制在≥10，但我们增加了任务的难度，在低至5的质量因子下进行训练，这会产生严重的压缩伪影。表4总结了ImageNet上的结果，Palette在所有质量因子下都表现出色，超越了回归基线模型。正如预期的那样，随着质量因子的降低，Palette与回归基线模型之间的性能差距会扩大。图6展示了在质量因子为5时，Palette与我们的回归基线模型的定性比较。很容易看出，回归模型产生的输出模糊，而Palette生成的图像更清晰。</p>
+<h4 id="5-5-扩散模型架构中的自注意力机制"><a href="#5-5-扩散模型架构中的自注意力机制" class="headerlink" title="5.5 扩散模型架构中的自注意力机制"></a>5.5 扩散模型架构中的自注意力机制</h4><p>自注意力层[Vaswani等人，2017]已成为近期用于扩散模型的U-Net架构的重要组成部分[Dhariwal和Nichol，2021；Ho等人，2020]。虽然自注意力层提供了一种直接的全局依赖形式，但它们会妨碍模型对未见图像分辨率的泛化能力。在测试时对新分辨率的泛化能力对于许多图像到图像任务很方便，因此先前的工作主要依赖全卷积架构[Galteri等人，2019；Yu等人，2019]。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f4.png" alt="f4"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图4：去除物体的图像修复方法对比。基线方法：‡基于PatchMatch[Barnes等人，2009年]构建的Photoshop内容识别填充、[Yu等人，2019年]、[Yi等人，2020年]以及[Zhao等人，2021年]。更多示例见附录中的图C.5。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>我们分析了这些自注意力层对图像修复（较困难的图像到图像转换任务之一）样本质量的影响。为了使Palette能够对输入分辨率进行泛化，我们探索用不同的替代方案替换全局自注意力层，每个替代方案都代表了在大上下文依赖和分辨率稳健性之间的权衡。具体来说，我们对以下四种配置进行了实验：</p>
+<ol>
+<li><strong>全局自注意力</strong>：基线配置，在32×32、16×16和8×8分辨率下使用全局自注意力层。</li>
+<li><strong>局部自注意力</strong>：在32×32、16×16和8×8分辨率下使用局部自注意力层[Vaswani等人，2021]，在这些分辨率下，特征图被划分为4个不重叠的查询块。</li>
+<li><strong>更多无自注意力的ResNet块</strong>：在32×32、16×16和8×8分辨率下使用2个残差块，允许更深的卷积以增加感受野大小。</li>
+<li><strong>无自注意力的扩张卷积</strong>：与配置3类似，在32×32、16×16和8×8分辨率下使用ResNet块，并增加扩张率[Chen等人，2017]，以实现指数级增加的感受野。</li>
+</ol>
+<p>我们使用批量大小为512，训练模型500,000步。表5报告了不同配置在图像修复任务中的性能。全局自注意力比全卷积替代方案表现更好（即使参数多15%），再次证实了自注意力层在此类任务中的重要性。令人惊讶的是，局部自注意力的性能比全卷积替代方案差。采样速度比GAN模型慢。加载模型和初始JIT编译的开销较大，但对于1000张测试图像，在TPUv4上Palette每张图像需要0.8秒。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t4.png" alt="t4"></th>
+<th style="text-align:center"><img src="t5.png" alt="t5"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表4：不同质量因子（QF）下JPEG图像恢复的定量评估。</em></td>
+<td style="text-align:center"><em>表5：图像修复的架构消融实验结果。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="5-6-样本多样性"><a href="#5-6-样本多样性" class="headerlink" title="5.6 样本多样性"></a>5.6 样本多样性</h4><p>接下来，我们在彩色化和图像修复两个任务上分析Palette的样本多样性。具体来说，我们分析改变扩散损失函数$L_{simple}$[Ho等人，2020]的影响，并比较$L_1$和$L_2$对样本多样性的影响。虽然现有的条件扩散模型，如SR3[Saharia等人，2021]和WaveGrad[Chen等人，2021a]，发现$L_1$范数比传统的$L_2$损失表现更好，但尚未对两者进行详细比较。为了定量比较样本多样性，我们使用多尺度SSIM[Guadarrama等人，2017]和LPIPS多样性分数[Zhu等人，2017b]。对于每个输入图像的多个生成输出，我们计算第一个输出样本与其余样本之间的成对多尺度SSIM。我们对多个输入图像进行此操作，然后绘制SSIM值的直方图（见图8）。根据[Zhu等人，2017b]，我们还计算给定输入图像的模型输出连续对之间的LPIPS分数，然后对所有输出和输入图像求平均值。较低的SSIM和较高的LPIPS分数意味着更多的样本多样性。因此，表6中的结果清楚地表明，使用$L_2$损失训练的模型比使用$L_1$损失训练的模型具有更大的样本多样性。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f5.png" alt="f5"></th>
+<th style="text-align:center"><img src="f6.png" alt="f6"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图5：Places2验证图像的图像扩展结果。基线模型：Boundless† [Teterwak等人，2019]和Infinity GAN†† [Lin等人，2021]，后者在Places2的风景子集上进行训练。附录中的图C.8展示了更多示例。</em></td>
+<td style="text-align:center"><em>图6：JPEG图像恢复结果示例。附录中的图D.1展示了更多示例。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t6.png" alt="t6"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表6：去噪目标中$L_{p}$范数的比较。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>有趣的是，表6还表明，$L_1$和$L_2$模型产生的FID分数相似（即可比的感知质量），但$L_1$的感知距离分数略低于$L_2$。可以推测，$L_1$模型可能比$L_2$模型丢失更多的模式，从而增加了$L_1$模型的单个样本来自包含相应原始图像的模式的可能性，因此感知距离更小。</p>
+<p>一些现有的基于GAN的模型明确鼓励多样性；[Yang等人，2019b；Zhu等人，2017b]提出了提高条件GAN多样性的方法，[Han等人，2019；Zhao等人，2020]探索了用于图像修复的多样化样本生成。我们将Palette与其他此类基于GAN的技术在样本多样性方面的比较留作未来工作。</p>
+<h4 id="5-7-多任务学习"><a href="#5-7-多任务学习" class="headerlink" title="5.7 多任务学习"></a>5.7 多任务学习</h4><p>多任务训练是为多个图像到图像任务学习单个模型（即盲图像增强）的自然方法。另一种方法是通过插补将无条件模型适配到条件任务。例如，[Song等人，2021]在图像修复中采用这种方法；在迭代细化的每一步中，他们对前一步的噪声图像进行去噪，然后简单地用观察到的图像区域的像素替换估计图像$y$中的任何像素，再添加噪声并进行下一次去噪迭代。图9将这种方法与在所有四个任务上训练的多任务Palette模型以及仅在图像修复上训练的Palette模型进行比较。所有模型使用相同的架构、训练数据和训练步数。图9中的结果很典型；重新用于图像修复任务的无条件模型表现不佳，部分原因是在像ImageNet这样的多样化数据集上很难学习到一个好的无条件模型，还因为在迭代细化过程中，噪声被添加到所有像素，包括观察到的像素。相比之下，Palette在所有步骤中都直接基于无噪声观察进行条件设定。</p>
+<p>为了更深入地探索多任务模型的潜力，表7对同时在JPEG图像恢复、图像修复和彩色化任务上训练的单一通用Palette模型进行了定量比较。结果表明，多任务通用Palette模型优于特定任务的JPEG图像恢复专家模型，但在图像修复和彩色化任务上略落后于特定任务的Palette模型。多任务和特定任务的Palette模型具有相同的训练步数；我们预计随着更多的训练，多任务性能会有所提高。</p>
+<h3 id="6-结论"><a href="#6-结论" class="headerlink" title="6 结论"></a>6 结论</h3><p>我们提出了Palette，这是一个简单通用的图像到图像转换框架。Palette在四项具有挑战性的图像到图像转换任务（彩色化、图像修复、图像扩展和JPEG图像恢复）中取得了优异的成果，超越了强大的GAN和回归基线模型。与许多GAN模型不同，Palette能够生成多样且高保真的输出，并且无需进行特定任务的定制，也不存在优化不稳定的问题。我们还展示了多任务Palette模型，其性能与特定任务的对应模型相当，甚至更优。对多任务扩散模型的进一步探索和研究是一个令人期待的未来工作方向。本文展示了图像到图像扩散模型的一些潜力，我们期待看到它们的新应用。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f7.png" alt="f7"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图7：Palette在图像修复、彩色化和图像扩展任务中的多样性展示。附录中的图C.4、C.6、C.9和C.10展示了更多示例。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t7.png" alt="t7"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表7：多任务Palette在各项任务中的性能表现。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f8.png" alt="f8"></th>
+<th style="text-align:center"><img src="f9.png" alt="f9"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图8：彩色化（左）和图像修复（右）的成对多尺度结构相似性指数（SSIM）。</em></td>
+<td style="text-align:center"><em>图9：用于图像修复的条件和无条件扩散模型的比较。附录中的图C.7展示了更多结果。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/diffusion/" rel="tag"># diffusion</a>
+              <a href="/tags/2021/" rel="tag"># 2021</a>
+              <a href="/tags/CVPR/" rel="tag"># CVPR</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/03/08/%E5%B8%B8%E7%94%A8%E7%A7%91%E7%A0%94%E7%BD%91%E7%AB%99%E5%90%88%E9%9B%86/" rel="prev" title="常用科研网站合集">
+      <i class="fa fa-chevron-left"></i> 常用科研网站合集
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2025/03/08/GLIDE-Towards-Photorealistic-Image-Generation-and-Editing-with-Text-Guided-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" rel="next" title="GLIDE Towards Photorealistic Image Generation and Editing with Text-Guided Diffusion Models论文精读">
+      GLIDE Towards Photorealistic Image Generation and Editing with Text-Guided Diffusion Models论文精读 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.3.</span> <span class="nav-text">2 相关工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Palette"><span class="nav-number">1.4.</span> <span class="nav-text">3 Palette</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E8%AF%84%E4%BC%B0%E5%8D%8F%E8%AE%AE"><span class="nav-number">1.5.</span> <span class="nav-text">4 评估协议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.6.</span> <span class="nav-text">5 实验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#5-1-%E5%BD%A9%E8%89%B2%E5%8C%96"><span class="nav-number">1.6.1.</span> <span class="nav-text">5.1 彩色化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-2-%E5%9B%BE%E5%83%8F%E4%BF%AE%E5%A4%8D"><span class="nav-number">1.6.2.</span> <span class="nav-text">5.2 图像修复</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-3-%E5%9B%BE%E5%83%8F%E6%89%A9%E5%B1%95"><span class="nav-number">1.6.3.</span> <span class="nav-text">5.3 图像扩展</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-4-JPEG%E5%9B%BE%E5%83%8F%E6%81%A2%E5%A4%8D"><span class="nav-number">1.6.4.</span> <span class="nav-text">5.4 JPEG图像恢复</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-5-%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B%E6%9E%B6%E6%9E%84%E4%B8%AD%E7%9A%84%E8%87%AA%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6"><span class="nav-number">1.6.5.</span> <span class="nav-text">5.5 扩散模型架构中的自注意力机制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-6-%E6%A0%B7%E6%9C%AC%E5%A4%9A%E6%A0%B7%E6%80%A7"><span class="nav-number">1.6.6.</span> <span class="nav-text">5.6 样本多样性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-7-%E5%A4%9A%E4%BB%BB%E5%8A%A1%E5%AD%A6%E4%B9%A0"><span class="nav-number">1.6.7.</span> <span class="nav-text">5.7 多任务学习</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E7%BB%93%E8%AE%BA"><span class="nav-number">1.7.</span> <span class="nav-text">6 结论</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zongqing Li"
+      src="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+  <p class="site-author-name" itemprop="name">Zongqing Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">40</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hqulzq" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hqulzq" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hqulzq@163.com" title="E-Mail → mailto:hqulzq@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+      
+<script type="text/javascript" charset="utf-8" src="/js/tagcloud.js"></script>
+<script type="text/javascript" charset="utf-8" src="/js/tagcanvas.js"></script>
+<div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div id="myCanvasContainer" class="widget tagcloud">
+        <canvas width="250" height="250" id="resCanvas" style="width=100%">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+        </canvas>
+    </div>
+</div>
+
+
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zongqing Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('post.copy_button').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('post.copy_success')
+          else $(this).text('post.copy_failure')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('post.copy_button')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
