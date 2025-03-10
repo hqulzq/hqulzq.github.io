@@ -20,20 +20,28 @@
     var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="全文翻译">
+  <meta name="description" content="全文翻译摘要去噪扩散概率模型（DDPM）是一类生成模型，最近研究表明，这类模型能够生成高质量样本。研究发现，通过一些简单的修改，DDPM在保持高样本质量的同时，还能获得具有竞争力的对数似然值。此外，研究人员还发现，对反向扩散过程的方差进行学习，可以在样本质量差异可忽略不计的情况下，将前向传递次数减少一个数量级，这对这些模型的实际应用至关重要。此外，研究人员使用精度和召回率来比较DDPM和生成对抗网">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Improved Denoising Diffusion Probabilistic Models论文精读">
 <meta property="og:url" content="https://hqulzq.github.io/2025/03/09/Improved-Denoising-Diffusion-Probabilistic-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/index.html">
 <meta property="og:site_name" content="Lzq&#39;s blog">
-<meta property="og:description" content="全文翻译">
+<meta property="og:description" content="全文翻译摘要去噪扩散概率模型（DDPM）是一类生成模型，最近研究表明，这类模型能够生成高质量样本。研究发现，通过一些简单的修改，DDPM在保持高样本质量的同时，还能获得具有竞争力的对数似然值。此外，研究人员还发现，对反向扩散过程的方差进行学习，可以在样本质量差异可忽略不计的情况下，将前向传递次数减少一个数量级，这对这些模型的实际应用至关重要。此外，研究人员使用精度和召回率来比较DDPM和生成对抗网">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/09/Improved-Denoising-Diffusion-Probabilistic-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/09/Improved-Denoising-Diffusion-Probabilistic-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f2.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/09/Improved-Denoising-Diffusion-Probabilistic-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f3.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/09/Improved-Denoising-Diffusion-Probabilistic-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f4.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/09/Improved-Denoising-Diffusion-Probabilistic-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f5.png">
+<meta property="og:image" content="https://pic2.zhimg.com/v2-9999999999999999999999999999999_b.jpg">
+<meta property="og:image" content="https://pic4.zhimg.com/v2-9999999999999999999999999999999_b.jpg">
 <meta property="article:published_time" content="2025-03-09T02:51:35.000Z">
-<meta property="article:modified_time" content="2025-03-09T02:52:08.645Z">
+<meta property="article:modified_time" content="2025-03-10T10:59:21.410Z">
 <meta property="article:author" content="Zongqing Li">
 <meta property="article:tag" content="diffusion">
 <meta property="article:tag" content="2021">
 <meta property="article:tag" content="ICML">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hqulzq.github.io/2025/03/09/Improved-Denoising-Diffusion-Probabilistic-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f1.png">
 
 <link rel="canonical" href="https://hqulzq.github.io/2025/03/09/Improved-Denoising-Diffusion-Probabilistic-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
 
@@ -220,10 +228,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2025-03-09 10:51:35 / 修改时间：10:52:08" itemprop="dateCreated datePublished" datetime="2025-03-09T10:51:35+08:00">2025-03-09</time>
+              <time title="创建时间：2025-03-09 10:51:35" itemprop="dateCreated datePublished" datetime="2025-03-09T10:51:35+08:00">2025-03-09</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-03-10 18:59:21" itemprop="dateModified" datetime="2025-03-10T18:59:21+08:00">2025-03-10</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -245,7 +259,96 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2>
+        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>去噪扩散概率模型（DDPM）是一类生成模型，最近研究表明，这类模型能够生成高质量样本。研究发现，通过一些简单的修改，DDPM在保持高样本质量的同时，还能获得具有竞争力的对数似然值。此外，研究人员还发现，对反向扩散过程的方差进行学习，可以在样本质量差异可忽略不计的情况下，将前向传递次数减少一个数量级，这对这些模型的实际应用至关重要。此外，研究人员使用精度和召回率来比较DDPM和生成对抗网络（GAN）对目标分布的覆盖程度。最后，研究表明，这些模型的样本质量和对数似然值会随着模型容量和训练计算量的增加而平稳提升，这使得它们易于扩展。研究人员已将代码发布在<a target="_blank" rel="noopener" href="https://github.com/openai/improved-diffusion">https://github.com/openai/improved-diffusion</a> 。</p>
+<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1. 引言"></a>1. 引言</h3><p>Sohl - Dickstein等人（2015年）提出了扩散概率模型，这是一类生成模型，通过学习逆转一个渐进的、多步的加噪过程来匹配数据分布。最近，Ho等人（2020年）揭示了去噪扩散概率模型（DDPM）和基于分数的生成模型（Song &amp; Ermon，2019年；2020年）之间的等价性，后者使用去噪分数匹配（Hyvärinen，2005年）来学习数据分布的对数密度梯度。最近的研究表明，这类模型能够生成高质量的图像（Ho等人，2020年；Song &amp; Ermon，2020年；Jolicoeur - Martineau等人，2020年）和音频（Chen等人，2020b；Kong等人，2020年），但DDPM能否在对数似然值上与其他基于似然的模型（如自回归模型（van den Oord等人，2016c）和变分自编码器（Kingma &amp; Welling，2013年））相媲美，尚未得到验证。这就引发了诸多问题，比如DDPM是否能够捕捉到分布的所有模式。此外，尽管Ho等人（2020年）在CIFAR - 10（Krizhevsky，2009年）和LSUN（Yu等人，2015年）数据集上取得了极为出色的成果，但DDPM在像ImageNet这样多样性更高的数据集上的扩展性如何，仍不明确。最后，虽然Chen等人（2020b）发现DDPM可以通过少量采样步骤高效地生成音频，但在图像生成方面是否同样如此，还有待证明。</p>
+<p>在本文中，研究人员证明了DDPM在对数似然值上能够与其他基于似然的模型竞争，即使在像ImageNet这样多样性高的数据集上也是如此。为了更严格地优化变分下界（VLB），研究人员使用了一种简单的重参数化方法和一个混合学习目标（将VLB与Ho等人（2020年）提出的简化目标相结合）来学习反向过程的方差。</p>
+<p>研究人员惊讶地发现，使用混合目标时，模型获得的对数似然值比直接优化对数似然得到的结果更好，并且发现直接优化对数似然的目标在训练过程中存在更多的梯度噪声。研究表明，一种简单的重要性采样技术可以减少这种噪声，使模型获得比使用混合目标时更好的对数似然值。</p>
+<p>在将学习到的方差纳入模型后，研究人员意外地发现，可以用更少的步骤进行采样，且样本质量几乎没有变化。虽然Ho等人（2020年）的DDPM需要数百次前向传递才能生成高质量样本，但研究人员只需50次前向传递就能达到类似效果，从而加快了实际应用中的采样速度。在研究人员开展工作的同时，Song等人（2020a）开发了一种不同的快速采样方法，研究人员在实验中将其与该方法（DDIM）进行了比较。</p>
+<p>虽然对数似然是与其他基于似然的模型进行比较的良好指标，但研究人员也希望将这些模型与GAN的分布覆盖范围进行对比。研究人员使用改进的精度和召回率指标（Kynkäänniemi等人，2019年），发现扩散模型在相似的FID下具有更高的召回率，这表明它们确实覆盖了目标分布的更大比例。最后，由于预计未来机器学习模型将消耗更多的计算资源，研究人员评估了随着模型规模和训练计算量增加，这些模型的性能变化。与（Henighan等人，2020年）类似，研究人员观察到，随着训练计算量的增加，模型性能呈现出可预测的提升趋势。</p>
+<h3 id="2-去噪扩散概率模型"><a href="#2-去噪扩散概率模型" class="headerlink" title="2. 去噪扩散概率模型"></a>2. 去噪扩散概率模型</h3><p>研究人员简要回顾Ho等人（2020）提出的去噪扩散概率模型（DDPM）的公式。该公式做了各种简化假设，例如固定的加噪过程 $q$，它在每个时间步添加对角高斯噪声。更一般的推导过程，可参见Sohl - Dickstein等人（2015）的研究。</p>
+<h4 id="2-1-定义"><a href="#2-1-定义" class="headerlink" title="2.1 定义"></a>2.1 定义</h4><p>给定数据分布 $x_{0} \sim q(x_{0})$，研究人员定义前向加噪过程 $q$，该过程通过在时间 $t$ 添加方差为 $\beta_{t} \in(0,1)$ 的高斯噪声，生成潜在变量 $x_{1}$ 到 $x_{T}$，具体如下：</p>
+<script type="math/tex; mode=display">q\left(x_{1}, \ldots, x_{T} | x_{0}\right):=\prod_{t = 1}^{T} q\left(x_{t} | x_{t - 1}\right) \tag{1}</script><script type="math/tex; mode=display">q\left(x_{t} | x_{t - 1}\right):=\mathcal{N}\left(x_{t} ; \sqrt{1 - \beta_{t}} x_{t - 1}, \beta_{t} I\right) \tag{2}</script><p>在 $T$ 足够大且 $\beta_{t}$ 满足特定条件的情况下，潜在变量 $x_{T}$ 近似为各向同性高斯分布。因此，如果知道精确的反向分布 $q(x_{t - 1} | x_{t})$，就可以从 $x_{T} \sim N(0, I)$ 中采样，并反向运行该过程，从而从 $q(x_{0})$ 中获得样本。然而，由于 $q(x_{t - 1} | x_{t})$ 依赖于整个数据分布，因此研究人员使用神经网络对其进行近似：</p>
+<script type="math/tex; mode=display">p_{\theta}\left(x_{t - 1} | x_{t}\right):=\mathcal{N}\left(x_{t - 1} ; \mu_{\theta}\left(x_{t}, t\right), \sum_{\theta}\left(x_{t}, t\right)\right) \tag{3}</script><p>$q$ 和 $p$ 的组合是一个变分自编码器（Kingma &amp; Welling，2013），变分下界（VLB）可以写为：</p>
+<script type="math/tex; mode=display">L_{vlb}:=L_{0}+L_{1}+\cdots+L_{T - 1}+L_{T} \tag{4}</script><script type="math/tex; mode=display">L_{0}:=-\log p_{\theta}\left(x_{0} | x_{1}\right) \tag{5}</script><script type="math/tex; mode=display">L_{t - 1}:=D_{KL}\left(q\left(x_{t - 1} | x_{t}, x_{0}\right) \| p_{\theta}\left(x_{t - 1} | x_{t}\right)\right) \tag{6}</script><script type="math/tex; mode=display">L_{T}:=D_{KL}\left(q\left(x_{T} | x_{0}\right) \| p\left(x_{T}\right)\right) \tag{7}</script><p>除了 $L_{0}$ 之外，公式（4）中的每一项都是两个高斯分布之间的KL散度，因此可以通过解析形式进行计算。在评估图像的 $L_{0}$ 时，研究人员假设每个颜色分量被划分为256个区间，并计算 $p_{\theta}(x_{0} | x_{1})$ 落在正确区间的概率（利用高斯分布的累积分布函数可以计算该概率）。还需注意的是，虽然 $L_{T}$ 不依赖于 $\theta$，但如果前向加噪过程充分破坏了数据分布，使得 $q(x_{T} | x_{0}) \approx N(0, I)$，那么 $L_{T}$ 将接近0。</p>
+<p>正如Ho等人（2020）所指出的，公式（2）中定义的加噪过程使得研究人员可以直接在输入 $x_{0}$ 的条件下，对加噪后的潜在变量的任意步骤进行采样。令 $\alpha_{t}:=1 - \beta_{t}$ 且 $\bar{\alpha}_{t}:=\prod_{s = 0}^{t} \alpha_{s}$，可以写出边缘分布：</p>
+<script type="math/tex; mode=display">q\left(x_{t} | x_{0}\right)=\mathcal{N}\left(x_{t} ; \sqrt{\overline{\alpha}_{t}} x_{0},\left(1 - \overline{\alpha}_{t}\right) I\right) \tag{8}</script><script type="math/tex; mode=display">x_{t}=\sqrt{\overline{\alpha}_{t}} x_{0}+\sqrt{1 - \overline{\alpha}_{t}} \epsilon \tag{9}</script><p>其中 $\epsilon \sim N(0, I)$。这里，$1 - \bar{\alpha}_{t}$ 表示任意时间步的噪声方差，也可以用它来定义噪声调度，而不使用 $\beta_{t}$。</p>
+<p>利用贝叶斯定理，可以根据 $\tilde{\beta}_{t}$ 和 $\tilde{\mu}_{t}(x_{t}, x_{0})$ 计算后验概率 $q(x_{t - 1} | x_{t}, x_{0})$，其定义如下：</p>
+<script type="math/tex; mode=display">\tilde{\beta}_{t}:=\frac{1 - \overline{\alpha}_{t - 1}}{1 - \overline{\alpha}_{t}} \beta_{t} \tag{10}</script><script type="math/tex; mode=display">\tilde{\mu}_{t}\left(x_{t}, x_{0}\right):=\frac{\sqrt{\overline{\alpha}_{t - 1}} \beta_{t}}{1 - \overline{\alpha}_{t}} x_{0}+\frac{\sqrt{\alpha_{t}}\left(1 - \overline{\alpha}_{t - 1}\right)}{1 - \overline{\alpha}_{t}} x_{t} \tag{11}</script><script type="math/tex; mode=display">q\left(x_{t - 1} | x_{t}, x_{0}\right)=\mathcal{N}\left(x_{t - 1} ; \tilde{\mu}\left(x_{t}, x_{0}\right), \tilde{\beta}_{t} I\right) \tag{12}</script><h4 id="2-2-实际训练"><a href="#2-2-实际训练" class="headerlink" title="2.2 实际训练"></a>2.2 实际训练</h4><p>公式（4）中的目标函数是独立项 $L_{t - 1}$ 的和，公式（9）提供了一种有效的方法，可从正向加噪过程的任意步骤进行采样，并利用后验概率（公式（12））和先验概率（公式（3））来估计 $L_{t - 1}$。因此，可以随机采样 $t$，并使用期望 $E_{t, x_{0}, \epsilon}[L_{t - 1}]$ 来估计 $L_{vlb}$。Ho等人（2020）在每个小批量中为每个图像均匀采样 $t$。</p>
+<p>在定义先验概率时，有多种方法对 $\mu_{\theta}(x_{t}, t)$ 进行参数化。最直接的方法是用神经网络直接预测 $\mu_{\theta}(x_{t}, t)$ 。另外，网络也可以预测 $x_{0}$，并将该输出用于公式（11）以生成 $\mu_{\theta}(x_{t}, t)$ 。网络还可以预测噪声 $\epsilon$，并利用公式（9）和（11）推导出：</p>
+<script type="math/tex; mode=display">\mu_{\theta}\left(x_{t}, t\right)=\frac{1}{\sqrt{\alpha_{t}}}\left(x_{t}-\frac{\beta_{t}}{\sqrt{1 - \overline{\alpha}_{t}}} \epsilon_{\theta}\left(x_{t}, t\right)\right) \tag{13}</script><p>Ho等人（2020）发现，预测 $\epsilon$ 的效果最佳，特别是在与加权损失函数结合使用时：</p>
+<script type="math/tex; mode=display">L_{simple }=E_{t, x_{0}, \epsilon}\left[\left\| \epsilon-\epsilon_{\theta}\left(x_{t}, t\right)\right\| ^{2}\right] \tag{14}</script><p>这个目标函数可以看作是 $L_{vib }$ 的加权形式（不包含影响 $\sum _{\theta}$ 的项）。作者发现，优化这个加权目标函数比直接优化 $L_{vlb}$ 能得到更好的样本质量，并通过与生成分数匹配（Song &amp; Ermon，2019；2020）建立联系来解释这一现象。</p>
+<p>需要注意的是，$L_{simple }$ 没有为 $\sum _{\theta}(x_{t}, t)$ 提供学习信号。不过，这并不重要，因为Ho等人（2020）通过将方差固定为 $\sigma_{t}^{2} I$ 而非学习它，取得了最佳效果。他们发现，使用 $\sigma_{t}^{2}=\beta_{t}$ 或 $\sigma_{t}^{2}=\tilde{\beta}_{t}$（分别是 $q(x_{0})$ 为各向同性高斯噪声或狄拉克函数时方差的上下界），都能获得相似的样本质量。</p>
+<h3 id="3-提高对数似然"><a href="#3-提高对数似然" class="headerlink" title="3. 提高对数似然"></a>3. 提高对数似然</h3><p>虽然Ho等人（2020年）发现，去噪扩散概率模型（DDPM）根据弗雷歇 inception 距离（FID, Frechet Inception Distance，Heusel等人，2017年）和inception分数（Salimans等人，2016年）能够生成高保真样本，但他们无法在这些模型上实现具有竞争力的对数似然。对数似然是生成式建模中广泛使用的指标，人们普遍认为，优化对数似然能促使生成式模型捕捉数据分布的所有模式（Razavi等人，2019年）。此外，最近的研究（Henighan等人，2020年）表明，对数似然的微小改进就能对样本质量和学习到的特征表示产生巨大影响。因此，探究为什么DDPM在这个指标上表现不佳很重要，因为这可能暗示了一个根本性的缺陷，比如模式覆盖不足。本节将探讨对第2节中描述的算法进行的几处修改，这些修改结合起来，能使DDPM在图像数据集上实现更好的对数似然，这表明这些模型与其他基于似然的生成式模型一样具有优势。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f1.png" alt="f1"></th>
+<th style="text-align:center"><img src="f2.png" alt="f2"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图1. 不同长度扩散过程中每个扩散步骤的$\tilde{\beta}</em>{t}/\beta<em>{t}$比值</em></td>
+<td style="text-align:center"><em>图2. 变分下界（VLB）的各项与扩散步骤的关系。前几项对负对数似然（NLL）的贡献最大。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>为了研究不同修改的效果，我们在ImageNet 64×64（van den Oord等人，2016b）和CIFAR-10（Krizhevsky，2009）数据集上，使用固定的超参数训练固定的模型架构。虽然CIFAR-10在这类模型中应用更为广泛，但我们也选择研究ImageNet 64×64，因为它在多样性和分辨率之间提供了良好的平衡，使我们能够快速训练模型而无需担心过拟合。此外，ImageNet 64×64在生成式建模领域已有广泛研究（van den Oord等人，2016c；Menick和Kalchbrenner，2018；Child等人，2019；Roy等人，2020），这使我们能够将DDPM直接与许多其他生成式模型进行比较。</p>
+<p>在Ho等人（2020年）的研究中，作者将$\sum_{\theta}(x_{t}, t) = \sigma_{t}^{2}I$ ，其中$\sigma_{t}$ 是固定值而非学习得到的。奇怪的是，他们发现将$\sigma_{t}^{2}$固定为$\beta_{t}$与固定为$\tilde{\beta}<em>{t}$时，得到的样本质量大致相同。考虑到$\beta</em>{t}$和$\tilde{\beta}<em>{t}$代表了两个极端情况，人们有理由质疑为什么这种选择不会影响样本。图1给出了线索，该图显示，除了在$t = 0$附近，$\beta</em>{t}$和$\tilde{\beta}<em>{t}$几乎相等，即在模型处理难以察觉的细节时二者存在差异。此外，随着扩散步骤的增加，$\beta</em>{t}$和$\tilde{\beta}<em>{t}$在更多的扩散过程中似乎保持接近。这表明，在扩散步骤无限多的极限情况下，$\sigma</em>{t}$的选择对样本质量可能根本没有影响。换句话说，随着扩散步骤的增加，模型均值$\mu_{\theta}(x_{t}, t)$对分布的影响比$\sum_{\theta}(x_{t}, t)$大得多。</p>
+<p>Ho等人（2020年）的设置（在将$\sigma_{t}^{2}=\beta_{t}$且$T = 1000$的情况下优化$L_{simple}$ ）在ImageNet 64×64上经过20万次训练迭代后，对数似然达到3.99（比特/维度）。我们在早期实验中发现，将$T$从1000增加到4000可以提高对数似然；经过这一调整，对数似然提高到3.77。在本节的其余部分，我们使用$T = 4000$，但我们将在第4节中探讨这一选择。</p>
+<p>虽然上述观点表明，为了保证样本质量，固定$\sigma_{t}$是一个合理的选择，但这与对数似然无关。事实上，图2显示，扩散过程的前几个步骤对变分下界的贡献最大。因此，通过更好地选择$\sum_{\theta}(x_{t}, t)$，似乎有可能提高对数似然。为了实现这一点，我们必须在学习$\sum_{\theta}(x_{t}, t)$的过程中避免出现Ho等人（2020年）遇到的不稳定性问题。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f3.png" alt="f3"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图3. 分别从线性（上）和余弦（下）调度在从0到T的线性间隔t值处的潜在样本。线性调度最后四分之一的潜在样本几乎全是噪声，而余弦调度添加噪声的速度更慢。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f4.png" alt="f4"></th>
+<th style="text-align:center"><img src="f5.png" alt="f5"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图4. 在ImageNet 64×64上跳过反向扩散过程的前缀时的FID。</em></td>
+<td style="text-align:center"><em>图5. 线性调度和我们提出的余弦调度在整个扩散过程中的$\bar{\alpha}_{t}$</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="3-1-学习-sum-theta-x-t-t"><a href="#3-1-学习-sum-theta-x-t-t" class="headerlink" title="3.1 学习$\sum_{\theta}(x_{t}, t)$"></a>3.1 学习$\sum_{\theta}(x_{t}, t)$</h4><p>如图1所示，$\sum_{\theta}(x_{t}, t)$的合理取值范围非常小，正如Ho等人（2020年）所观察到的，即使在对数域中，神经网络也很难直接预测$\sum_{\theta}(x_{t}, t)$。相反，我们发现在对数域中将方差参数化为$\beta_{t}$和$\tilde{\beta}*{t}$之间的插值会更好。具体来说，我们的模型输出一个向量$v$，每个维度都有一个分量，我们将这个输出转换为方差，如下所示：</p>
+<script type="math/tex; mode=display">\sum*{\theta}(x_{t}, t) = \exp(v \log\beta_{t} + (1 - v)\log\tilde{\beta}_{t})</script><p>我们没有对$v$施加任何约束，理论上允许模型预测超出插值范围的方差。然而，在实践中我们并未观察到网络这样做，这表明$\sum_{\theta}(x_{t}, t)$的取值范围确实具有足够的表达能力。</p>
+<p>由于$L_{simple}$不依赖于$\sum_{\theta}(x_{t}, t)$，我们定义一个新的混合目标：</p>
+<script type="math/tex; mode=display">L_{hybrid} = L_{simple} + \lambda L_{vlb}</script><p>在我们的实验中，我们将$\lambda$设置为0.001，以防止$L_{vlb}$主导$L_{simple}$。基于同样的思路，我们还对$L_{vlb}$项中的$\mu_{\theta}(x_{t}, t)$输出应用了停止梯度操作。这样，$L_{vlb}$可以指导$\sum_{\theta}(x_{t}, t)$的学习，而$L_{simple}$仍然是影响$\mu_{\theta}(x_{t}, t)$的主要因素。</p>
+<h4 id="3-2-改进噪声调度"><a href="#3-2-改进噪声调度" class="headerlink" title="3.2 改进噪声调度"></a>3.2 改进噪声调度</h4><p>我们发现，虽然Ho等人（2020年）使用的线性噪声调度在高分辨率图像上效果良好，但对于分辨率为64×64和32×32的图像来说并非最优。特别是，前向加噪过程的后期噪声过多，对样本质量的提升贡献不大。从图3中可以直观地看出这一点。图4研究了这种影响的结果，我们可以看到，使用线性调度训练的模型在跳过高达20%的反向扩散过程时，（根据FID衡量）并没有变得更差。</p>
+<p>为了解决这个问题，我们根据$\bar{\alpha}*{t}$构建了一种不同的噪声调度：</p>
+<script type="math/tex; mode=display">\bar{\alpha}*{t} = \frac{f(t)}{f(0)}, \quad f(t) = \cos\left(\frac{t/T + s}{1 + s} \cdot \frac{\pi}{2}\right)^{2}</script><p>为了从这个定义得到方差$\beta_{t}$，我们注意到$\beta_{t} = 1 - \frac{\bar{\alpha}<em>{t}}{\bar{\alpha}</em>{t - 1}}$。在实践中，我们将$\beta_{t}$裁剪为不大于0.999，以防止在扩散过程接近$t = T$时出现奇点。</p>
+<p>我们的余弦调度旨在使$\bar{\alpha}<em>{t}$在过程中间呈线性下降，同时在$t = 0$和$t = T$的极端情况下变化很小，以防止噪声水平突然变化。图5展示了两种调度下$\bar{\alpha}</em>{t}$的变化情况。我们可以看到，Ho等人（2020年）的线性调度使$\bar{\alpha}_{t}$更快地趋近于零，比必要的情况更快地破坏了信息。</p>
+<p>我们使用一个小的偏移量$s$来防止$\beta_{t}$在$t = 0$附近过小，因为我们发现，在过程开始时存在少量噪声会使网络难以准确预测$\epsilon$。具体来说，我们选择$s$使得$\sqrt{\beta_{0}}$略小于像素量化区间大小1/127.5，由此得到$s = 0.008$。我们特别选择使用$\cos^{2}$函数，是因为它是一种常见的数学函数，具有我们所需的形状。这个选择具有一定的任意性，我们预计许多其他形状相似的函数也会有类似的效果。<br><img src="https://pic2.zhimg.com/v2-9999999999999999999999999999999_b.jpg" alt="图6"><br>图6. 在ImageNet 64×64上比较不同目标函数实现的对数似然的学习曲线<br><img src="https://pic4.zhimg.com/v2-9999999999999999999999999999999_b.jpg" alt="图7"><br>图7. 在ImageNet 64×64上$L_{vlb}$和$L_{hybrid}$目标函数的梯度噪声尺度</p>
+<h4 id="3-3-减少梯度噪声"><a href="#3-3-减少梯度噪声" class="headerlink" title="3.3 减少梯度噪声"></a>3.3 减少梯度噪声</h4><p>我们原本期望通过直接优化$L_{vlb}$而不是$L_{hybrid}$来实现最佳的对数似然。然而，我们惊讶地发现，在实践中$L_{vlb}$实际上很难优化，至少在多样的ImageNet 64×64数据集上是如此。图6展示了$L_{vlb}$和$L_{hybrid}$的学习曲线。两条曲线都存在波动，但在相同的训练时间内，混合目标函数在训练集上显然实现了更好的对数似然。</p>
+<p>我们假设$L_{vlb}$的梯度比$L_{hybrid}$的梯度噪声大得多。通过评估使用这两种目标函数训练的模型的梯度噪声尺度（McCandlish等人，2018年），我们证实了这一假设，如图7所示。因此，我们寻求一种减少$L_{vlb}$方差的方法，以便直接优化对数似然。</p>
+<p>注意到$L_{vlb}$的不同项的量级差异很大（图2），我们假设均匀采样$t$会在$L_{vlb}$目标函数中引入不必要的噪声。为了解决这个问题，我们采用重要性采样：</p>
+<script type="math/tex; mode=display">L_{vlb} = E_{t \sim p_{t}}\left[\frac{L_{t}}{p_{t}}\right], \quad \text{其中} \quad p_{t} \propto \sqrt{E[L_{t}^{2}]} \quad \text{且} \quad \sum p_{t} = 1</script><p>由于$E[L_{t}^{2}]$在训练前是未知的，并且可能在训练过程中发生变化，我们为每个损失项保留之前10个值的历史记录，并在训练过程中动态更新。在训练开始时，我们均匀采样$t$，直到为每个$t \in [0, T - 1]$都抽取到10个样本。<br>| 迭代次数 | $T$ | 调度 | 目标函数 | 负对数似然（NLL） | FID |<br>| —- | —- | —- | —- | —- |<br>| 200K | 1K | 线性 | $L_{simple}$ | 3.99 | 32.5 |<br>| 200K | 4K | 线性 | $L_{simple}$ | 3.77 | 31.3 |<br>| 200K | 4K | 线性 | $L_{hybrid}$ | 3.66 | 32.2 |<br>| 200K | 4K | 余弦 | $L_{simple}$ | 3.68 | 27.0 |<br>| 200K | 4K | 余弦 | $L_{hybrid}$ | 3.62 | 28.0 |<br>| 200K | 4K | 余弦 | $L_{vlb}$ | 3.57 | 56.7 |<br>| 1500K | 4K | 余弦 | $L_{hybrid}$ | 3.57 | 19.2 |<br>| 1500K | 4K | 余弦 | $L_{vlb}$ | 3.53 | 40.1 |</p>
+<p>表1. 在ImageNet 64×64上对调度和目标函数的消融实验结果<br>| 迭代次数 | $T$ | 调度 | 目标函数 | 负对数似然（NLL） | FID |<br>| —- | —- | —- | —- | —- |<br>| 500K | 1K | 线性 | $L_{simple}$ | 3.73 | 3.29 |<br>| 500K | 4K | 线性 | $L_{simple}$ | 3.37 | 2.90 |<br>| 500K | 4K | 线性 | $L_{hybrid}$ | 3.26 | 3.07 |<br>| 500K | 4K | 余弦 | $L_{simple}$ | 3.26 | 3.05 |<br>| 500K | 4K | 余弦 | $L_{hybrid}$ | 3.17 | 3.19 |<br>| 500K | 4K | 余弦 | $L_{vlb}$ | 2.94 | 11.47 |</p>
+<p>表2. 在CIFAR-10上对调度和目标函数的消融实验结果</p>
+<p>通过这种重要性采样目标函数，我们能够通过优化$L_{vlb}$实现最佳的对数似然。在图6中，$L_{vlb}$（重采样）曲线展示了这一点。该图还显示，重要性采样目标函数的噪声明显低于原始的均匀采样目标函数。我们发现，在直接优化噪声较小的$L_{hybrid}$目标函数时，重要性采样技术并无帮助。</p>
+<h4 id="3-4-结果与消融实验"><a href="#3-4-结果与消融实验" class="headerlink" title="3.4 结果与消融实验"></a>3.4 结果与消融实验</h4><p>在本节中，我们对为提高对数似然而进行的更改进行消融实验。表1总结了我们在ImageNet 64×64上的消融实验结果，表2展示了在CIFAR-10上的结果。我们还对最佳的ImageNet 64×64模型进行了150万次迭代训练，并报告了这些结果。$L_{vlb}$和$L_{hybrid}$使用3.1节中的参数化方法学习$\sigma$进行训练。对于$L_{vlb}$，我们使用了3.3节中的重采样方案。</p>
+<p>基于我们的消融实验，使用$L_{hybrid}$和我们的余弦调度在提高对数似然的同时，保持与Ho等人（2020年）的基线相似的FID。优化$L_{vlb}$进一步提高了对数似然，但代价是FID更高。我们通常更倾向于使用$L_{hybrid}$而不是$L_{vlb}$，因为它在不牺牲样本质量的情况下提高了似然。</p>
+<p>在表3中，我们将我们最佳似然模型与先前的工作</p>
+
     </div>
 
     
@@ -327,7 +430,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1. 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%8E%BB%E5%99%AA%E6%89%A9%E6%95%A3%E6%A6%82%E7%8E%87%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.3.</span> <span class="nav-text">2. 去噪扩散概率模型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E5%AE%9A%E4%B9%89"><span class="nav-number">1.3.1.</span> <span class="nav-text">2.1 定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E5%AE%9E%E9%99%85%E8%AE%AD%E7%BB%83"><span class="nav-number">1.3.2.</span> <span class="nav-text">2.2 实际训练</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%8F%90%E9%AB%98%E5%AF%B9%E6%95%B0%E4%BC%BC%E7%84%B6"><span class="nav-number">1.4.</span> <span class="nav-text">3. 提高对数似然</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E5%AD%A6%E4%B9%A0-sum-theta-x-t-t"><span class="nav-number">1.4.1.</span> <span class="nav-text">3.1 学习$\sum_{\theta}(x_{t}, t)$</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E6%94%B9%E8%BF%9B%E5%99%AA%E5%A3%B0%E8%B0%83%E5%BA%A6"><span class="nav-number">1.4.2.</span> <span class="nav-text">3.2 改进噪声调度</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-%E5%87%8F%E5%B0%91%E6%A2%AF%E5%BA%A6%E5%99%AA%E5%A3%B0"><span class="nav-number">1.4.3.</span> <span class="nav-text">3.3 减少梯度噪声</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-%E7%BB%93%E6%9E%9C%E4%B8%8E%E6%B6%88%E8%9E%8D%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.4.4.</span> <span class="nav-text">3.4 结果与消融实验</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -490,6 +593,61 @@ document.querySelectorAll('.pdfobject-container').forEach(element => {
   
 
   
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
 
   
 
