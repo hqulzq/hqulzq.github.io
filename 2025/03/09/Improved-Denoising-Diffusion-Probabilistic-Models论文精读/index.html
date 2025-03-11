@@ -32,10 +32,12 @@
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/09/Improved-Denoising-Diffusion-Probabilistic-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f3.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/09/Improved-Denoising-Diffusion-Probabilistic-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f4.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/09/Improved-Denoising-Diffusion-Probabilistic-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f5.png">
-<meta property="og:image" content="https://pic2.zhimg.com/v2-9999999999999999999999999999999_b.jpg">
-<meta property="og:image" content="https://pic4.zhimg.com/v2-9999999999999999999999999999999_b.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/09/Improved-Denoising-Diffusion-Probabilistic-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f6.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/09/Improved-Denoising-Diffusion-Probabilistic-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f7.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/09/Improved-Denoising-Diffusion-Probabilistic-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/09/Improved-Denoising-Diffusion-Probabilistic-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t2.png">
 <meta property="article:published_time" content="2025-03-09T02:51:35.000Z">
-<meta property="article:modified_time" content="2025-03-10T10:59:21.410Z">
+<meta property="article:modified_time" content="2025-03-11T08:13:09.807Z">
 <meta property="article:author" content="Zongqing Li">
 <meta property="article:tag" content="diffusion">
 <meta property="article:tag" content="2021">
@@ -236,7 +238,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-03-10 18:59:21" itemprop="dateModified" datetime="2025-03-10T18:59:21+08:00">2025-03-10</time>
+                <time title="修改时间：2025-03-11 16:13:09" itemprop="dateModified" datetime="2025-03-11T16:13:09+08:00">2025-03-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -279,6 +281,10 @@
 <script type="math/tex; mode=display">L_{simple }=E_{t, x_{0}, \epsilon}\left[\left\| \epsilon-\epsilon_{\theta}\left(x_{t}, t\right)\right\| ^{2}\right] \tag{14}</script><p>这个目标函数可以看作是 $L_{vib }$ 的加权形式（不包含影响 $\sum _{\theta}$ 的项）。作者发现，优化这个加权目标函数比直接优化 $L_{vlb}$ 能得到更好的样本质量，并通过与生成分数匹配（Song &amp; Ermon，2019；2020）建立联系来解释这一现象。</p>
 <p>需要注意的是，$L_{simple }$ 没有为 $\sum _{\theta}(x_{t}, t)$ 提供学习信号。不过，这并不重要，因为Ho等人（2020）通过将方差固定为 $\sigma_{t}^{2} I$ 而非学习它，取得了最佳效果。他们发现，使用 $\sigma_{t}^{2}=\beta_{t}$ 或 $\sigma_{t}^{2}=\tilde{\beta}_{t}$（分别是 $q(x_{0})$ 为各向同性高斯噪声或狄拉克函数时方差的上下界），都能获得相似的样本质量。</p>
 <h3 id="3-提高对数似然"><a href="#3-提高对数似然" class="headerlink" title="3. 提高对数似然"></a>3. 提高对数似然</h3><p>虽然Ho等人（2020年）发现，去噪扩散概率模型（DDPM）根据弗雷歇 inception 距离（FID, Frechet Inception Distance，Heusel等人，2017年）和inception分数（Salimans等人，2016年）能够生成高保真样本，但他们无法在这些模型上实现具有竞争力的对数似然。对数似然是生成式建模中广泛使用的指标，人们普遍认为，优化对数似然能促使生成式模型捕捉数据分布的所有模式（Razavi等人，2019年）。此外，最近的研究（Henighan等人，2020年）表明，对数似然的微小改进就能对样本质量和学习到的特征表示产生巨大影响。因此，探究为什么DDPM在这个指标上表现不佳很重要，因为这可能暗示了一个根本性的缺陷，比如模式覆盖不足。本节将探讨对第2节中描述的算法进行的几处修改，这些修改结合起来，能使DDPM在图像数据集上实现更好的对数似然，这表明这些模型与其他基于似然的生成式模型一样具有优势。</p>
+<p>为了研究不同修改的效果，我们在ImageNet 64×64（van den Oord等人，2016b）和CIFAR-10（Krizhevsky，2009）数据集上，使用固定的超参数训练固定的模型架构。虽然CIFAR-10在这类模型中应用更为广泛，但我们也选择研究ImageNet 64×64，因为它在多样性和分辨率之间提供了良好的平衡，使我们能够快速训练模型而无需担心过拟合。此外，ImageNet 64×64在生成式建模领域已有广泛研究（van den Oord等人，2016c；Menick和Kalchbrenner，2018；Child等人，2019；Roy等人，2020），这使我们能够将DDPM直接与许多其他生成式模型进行比较。+</p>
+<p>Ho等人（2020年）的设置（在将$\sigma_{t}^{2}=\beta_{t}$且$T = 1000$的情况下优化$L_{simple}$ ）在ImageNet 64×64上经过20万次训练迭代后，对数似然达到3.99（比特/维度）。我们在早期实验中发现，将$T$从1000增加到4000可以提高对数似然；经过这一调整，对数似然提高到3.77。在本节的其余部分，我们使用$T = 4000$，但我们将在第4节中探讨这一选择。</p>
+<h4 id="3-1-学习-sum-theta-x-t-t"><a href="#3-1-学习-sum-theta-x-t-t" class="headerlink" title="3.1 学习$\sum_{\theta}(x_{t}, t)$"></a>3.1 学习$\sum_{\theta}(x_{t}, t)$</h4><p>在Ho等人（2020年）的研究中，作者将$\sum_{\theta}(x_{t}, t) = \sigma_{t}^{2}I$ ，其中$\sigma_{t}$ 是固定值而非学习得到的。奇怪的是，他们发现将$\sigma_{t}^{2}$固定为$\beta_{t}$与固定为<script type="math/tex">\tilde{\beta}_{t}</script>时，得到的样本质量大致相同。考虑到<script type="math/tex">\beta_{t}</script>和<script type="math/tex">\tilde{\beta}_{t}</script>代表了两个极端情况，人们有理由质疑为什么这种选择不会影响样本。图1给出了线索，该图显示，除了在$t = 0$附近，<script type="math/tex">\beta_{t}</script>和<script type="math/tex">\tilde{\beta}_{t}</script>几乎相等，即在模型处理难以察觉的细节时二者存在差异。此外，随着扩散步骤的增加，<script type="math/tex">\beta_{t}</script>和<script type="math/tex">\tilde{\beta}_{t}</script>在更多的扩散过程中似乎保持接近。这表明，在扩散步骤无限多的极限情况下，<script type="math/tex">\sigma_{t}</script>的选择对样本质量可能根本没有影响。换句话说，随着扩散步骤的增加，模型均值$\mu_{\theta}(x_{t}, t)$对分布的影响比$\sum_{\theta}(x_{t}, t)$大得多。</p>
+<p>虽然上述观点表明，为了保证样本质量，固定$\sigma_{t}$是一个合理的选择，但这与对数似然无关。事实上，图2显示，扩散过程的前几个步骤对变分下界的贡献最大。因此，通过更好地选择$\sum_{\theta}(x_{t}, t)$，似乎有可能提高对数似然。为了实现这一点，我们必须在学习$\sum_{\theta}(x_{t}, t)$的过程中避免出现Ho等人（2020年）遇到的不稳定性问题。</p>
 <div class="table-container">
 <table>
 <thead>
@@ -295,10 +301,11 @@
 </tbody>
 </table>
 </div>
-<p>为了研究不同修改的效果，我们在ImageNet 64×64（van den Oord等人，2016b）和CIFAR-10（Krizhevsky，2009）数据集上，使用固定的超参数训练固定的模型架构。虽然CIFAR-10在这类模型中应用更为广泛，但我们也选择研究ImageNet 64×64，因为它在多样性和分辨率之间提供了良好的平衡，使我们能够快速训练模型而无需担心过拟合。此外，ImageNet 64×64在生成式建模领域已有广泛研究（van den Oord等人，2016c；Menick和Kalchbrenner，2018；Child等人，2019；Roy等人，2020），这使我们能够将DDPM直接与许多其他生成式模型进行比较。</p>
-<p>在Ho等人（2020年）的研究中，作者将$\sum_{\theta}(x_{t}, t) = \sigma_{t}^{2}I$ ，其中$\sigma_{t}$ 是固定值而非学习得到的。奇怪的是，他们发现将$\sigma_{t}^{2}$固定为$\beta_{t}$与固定为$\tilde{\beta}<em>{t}$时，得到的样本质量大致相同。考虑到$\beta</em>{t}$和$\tilde{\beta}<em>{t}$代表了两个极端情况，人们有理由质疑为什么这种选择不会影响样本。图1给出了线索，该图显示，除了在$t = 0$附近，$\beta</em>{t}$和$\tilde{\beta}<em>{t}$几乎相等，即在模型处理难以察觉的细节时二者存在差异。此外，随着扩散步骤的增加，$\beta</em>{t}$和$\tilde{\beta}<em>{t}$在更多的扩散过程中似乎保持接近。这表明，在扩散步骤无限多的极限情况下，$\sigma</em>{t}$的选择对样本质量可能根本没有影响。换句话说，随着扩散步骤的增加，模型均值$\mu_{\theta}(x_{t}, t)$对分布的影响比$\sum_{\theta}(x_{t}, t)$大得多。</p>
-<p>Ho等人（2020年）的设置（在将$\sigma_{t}^{2}=\beta_{t}$且$T = 1000$的情况下优化$L_{simple}$ ）在ImageNet 64×64上经过20万次训练迭代后，对数似然达到3.99（比特/维度）。我们在早期实验中发现，将$T$从1000增加到4000可以提高对数似然；经过这一调整，对数似然提高到3.77。在本节的其余部分，我们使用$T = 4000$，但我们将在第4节中探讨这一选择。</p>
-<p>虽然上述观点表明，为了保证样本质量，固定$\sigma_{t}$是一个合理的选择，但这与对数似然无关。事实上，图2显示，扩散过程的前几个步骤对变分下界的贡献最大。因此，通过更好地选择$\sum_{\theta}(x_{t}, t)$，似乎有可能提高对数似然。为了实现这一点，我们必须在学习$\sum_{\theta}(x_{t}, t)$的过程中避免出现Ho等人（2020年）遇到的不稳定性问题。</p>
+<p>如图1所示，$\sum_{\theta}(x_{t}, t)$的合理取值范围非常小，正如Ho等人（2020年）所观察到的，即使在对数域中，神经网络也很难直接预测$\sum_{\theta}(x_{t}, t)$。相反，我们发现在对数域中将方差参数化为$\beta_{t}$和<script type="math/tex">\tilde{\beta}_{t}</script>之间的插值会更好。具体来说，我们的模型输出一个向量$v$，每个维度都有一个分量，我们将这个输出转换为方差，如下所示：</p>
+<script type="math/tex; mode=display">\sum_{\theta}(x_{t}, t) = \exp(v \log\beta_{t} + (1 - v)\log\tilde{\beta}_{t}) \tag{15}</script><p>我们没有对$v$施加任何约束，理论上允许模型预测超出插值范围的方差。然而，在实践中我们并未观察到网络这样做，这表明$\sum_{\theta}(x_{t}, t)$的取值范围确实具有足够的表达能力。</p>
+<p>由于$L_{simple}$不依赖于$\sum_{\theta}(x_{t}, t)$，我们定义一个新的混合目标：</p>
+<script type="math/tex; mode=display">L_{hybrid} = L_{simple} + \lambda L_{vlb} \tag{16}</script><p>在我们的实验中，我们将$\lambda$设置为0.001，以防止$L_{vlb}$主导$L_{simple}$。基于同样的思路，我们还对$L_{vlb}$项中的$\mu_{\theta}(x_{t}, t)$输出应用了停止梯度操作。这样，$L_{vlb}$可以指导$\sum_{\theta}(x_{t}, t)$的学习，而$L_{simple}$仍然是影响$\mu_{\theta}(x_{t}, t)$的主要因素。</p>
+<h4 id="3-2-改进噪声调度"><a href="#3-2-改进噪声调度" class="headerlink" title="3.2 改进噪声调度"></a>3.2 改进噪声调度</h4><p>我们发现，虽然Ho等人（2020年）使用的线性噪声调度在高分辨率图像上效果良好，但对于分辨率为64×64和32×32的图像来说并非最优。特别是，前向加噪过程的后期噪声过多，对样本质量的提升贡献不大。从图3中可以直观地看出这一点。图4研究了这种影响的结果，我们可以看到，使用线性调度训练的模型在跳过高达20%的反向扩散过程时，（根据FID衡量）并没有变得更差。</p>
 <div class="table-container">
 <table>
 <thead>
@@ -329,25 +336,138 @@
 </tbody>
 </table>
 </div>
-<h4 id="3-1-学习-sum-theta-x-t-t"><a href="#3-1-学习-sum-theta-x-t-t" class="headerlink" title="3.1 学习$\sum_{\theta}(x_{t}, t)$"></a>3.1 学习$\sum_{\theta}(x_{t}, t)$</h4><p>如图1所示，$\sum_{\theta}(x_{t}, t)$的合理取值范围非常小，正如Ho等人（2020年）所观察到的，即使在对数域中，神经网络也很难直接预测$\sum_{\theta}(x_{t}, t)$。相反，我们发现在对数域中将方差参数化为$\beta_{t}$和$\tilde{\beta}*{t}$之间的插值会更好。具体来说，我们的模型输出一个向量$v$，每个维度都有一个分量，我们将这个输出转换为方差，如下所示：</p>
-<script type="math/tex; mode=display">\sum*{\theta}(x_{t}, t) = \exp(v \log\beta_{t} + (1 - v)\log\tilde{\beta}_{t})</script><p>我们没有对$v$施加任何约束，理论上允许模型预测超出插值范围的方差。然而，在实践中我们并未观察到网络这样做，这表明$\sum_{\theta}(x_{t}, t)$的取值范围确实具有足够的表达能力。</p>
-<p>由于$L_{simple}$不依赖于$\sum_{\theta}(x_{t}, t)$，我们定义一个新的混合目标：</p>
-<script type="math/tex; mode=display">L_{hybrid} = L_{simple} + \lambda L_{vlb}</script><p>在我们的实验中，我们将$\lambda$设置为0.001，以防止$L_{vlb}$主导$L_{simple}$。基于同样的思路，我们还对$L_{vlb}$项中的$\mu_{\theta}(x_{t}, t)$输出应用了停止梯度操作。这样，$L_{vlb}$可以指导$\sum_{\theta}(x_{t}, t)$的学习，而$L_{simple}$仍然是影响$\mu_{\theta}(x_{t}, t)$的主要因素。</p>
-<h4 id="3-2-改进噪声调度"><a href="#3-2-改进噪声调度" class="headerlink" title="3.2 改进噪声调度"></a>3.2 改进噪声调度</h4><p>我们发现，虽然Ho等人（2020年）使用的线性噪声调度在高分辨率图像上效果良好，但对于分辨率为64×64和32×32的图像来说并非最优。特别是，前向加噪过程的后期噪声过多，对样本质量的提升贡献不大。从图3中可以直观地看出这一点。图4研究了这种影响的结果，我们可以看到，使用线性调度训练的模型在跳过高达20%的反向扩散过程时，（根据FID衡量）并没有变得更差。</p>
-<p>为了解决这个问题，我们根据$\bar{\alpha}*{t}$构建了一种不同的噪声调度：</p>
-<script type="math/tex; mode=display">\bar{\alpha}*{t} = \frac{f(t)}{f(0)}, \quad f(t) = \cos\left(\frac{t/T + s}{1 + s} \cdot \frac{\pi}{2}\right)^{2}</script><p>为了从这个定义得到方差$\beta_{t}$，我们注意到$\beta_{t} = 1 - \frac{\bar{\alpha}<em>{t}}{\bar{\alpha}</em>{t - 1}}$。在实践中，我们将$\beta_{t}$裁剪为不大于0.999，以防止在扩散过程接近$t = T$时出现奇点。</p>
-<p>我们的余弦调度旨在使$\bar{\alpha}<em>{t}$在过程中间呈线性下降，同时在$t = 0$和$t = T$的极端情况下变化很小，以防止噪声水平突然变化。图5展示了两种调度下$\bar{\alpha}</em>{t}$的变化情况。我们可以看到，Ho等人（2020年）的线性调度使$\bar{\alpha}_{t}$更快地趋近于零，比必要的情况更快地破坏了信息。</p>
-<p>我们使用一个小的偏移量$s$来防止$\beta_{t}$在$t = 0$附近过小，因为我们发现，在过程开始时存在少量噪声会使网络难以准确预测$\epsilon$。具体来说，我们选择$s$使得$\sqrt{\beta_{0}}$略小于像素量化区间大小1/127.5，由此得到$s = 0.008$。我们特别选择使用$\cos^{2}$函数，是因为它是一种常见的数学函数，具有我们所需的形状。这个选择具有一定的任意性，我们预计许多其他形状相似的函数也会有类似的效果。<br><img src="https://pic2.zhimg.com/v2-9999999999999999999999999999999_b.jpg" alt="图6"><br>图6. 在ImageNet 64×64上比较不同目标函数实现的对数似然的学习曲线<br><img src="https://pic4.zhimg.com/v2-9999999999999999999999999999999_b.jpg" alt="图7"><br>图7. 在ImageNet 64×64上$L_{vlb}$和$L_{hybrid}$目标函数的梯度噪声尺度</p>
+<p>为了解决这个问题，我们根据$\bar{\alpha}_{t}$构建了一种不同的噪声调度：</p>
+<script type="math/tex; mode=display">\bar{\alpha}_{t} = \frac{f(t)}{f(0)}, \quad f(t) = \cos\left(\frac{t/T + s}{1 + s} \cdot \frac{\pi}{2}\right)^{2} \tag{17}</script><p>为了从这个定义得到方差$\beta_{t}$，我们注意到$\beta_{t} = 1 - \frac{\bar{\alpha}_{t}}{\bar{\alpha}_{t - 1}}$。在实践中，我们将$\beta_{t}$裁剪为不大于0.999，以防止在扩散过程接近$t = T$时出现奇点。</p>
+<p>我们的余弦调度旨在使$\bar{\alpha}_{t}$在过程中间呈线性下降，同时在$t = 0$和$t = T$的极端情况下变化很小，以防止噪声水平突然变化。图5展示了两种调度下$\bar{\alpha}_{t}$的变化情况。我们可以看到，Ho等人（2020年）的线性调度使$\bar{\alpha}_{t}$更快地趋近于零，比必要的情况更快地破坏了信息。</p>
+<p>我们使用一个小的偏移量$s$来防止$\beta_{t}$在$t = 0$附近过小，因为我们发现，在过程开始时存在少量噪声会使网络难以准确预测$\epsilon$。具体来说，我们选择$s$使得$\sqrt{\beta_{0}}$略小于像素量化区间大小1/127.5，由此得到$s = 0.008$。我们特别选择使用$\cos^{2}$函数，是因为它是一种常见的数学函数，具有我们所需的形状。这个选择具有一定的任意性，我们预计许多其他形状相似的函数也会有类似的效果。</p>
 <h4 id="3-3-减少梯度噪声"><a href="#3-3-减少梯度噪声" class="headerlink" title="3.3 减少梯度噪声"></a>3.3 减少梯度噪声</h4><p>我们原本期望通过直接优化$L_{vlb}$而不是$L_{hybrid}$来实现最佳的对数似然。然而，我们惊讶地发现，在实践中$L_{vlb}$实际上很难优化，至少在多样的ImageNet 64×64数据集上是如此。图6展示了$L_{vlb}$和$L_{hybrid}$的学习曲线。两条曲线都存在波动，但在相同的训练时间内，混合目标函数在训练集上显然实现了更好的对数似然。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f6.png" alt="f6"></th>
+<th style="text-align:center"><img src="f7.png" alt="f7"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图6. 在ImageNet 64×64上比较不同目标函数实现的对数似然的学习曲线</em></td>
+<td style="text-align:center"><em>图7. 在ImageNet 64×64上$L_{vlb}$和$L_{hybrid}$目标函数的梯度噪声尺度</em></td>
+</tr>
+</tbody>
+</table>
+</div>
 <p>我们假设$L_{vlb}$的梯度比$L_{hybrid}$的梯度噪声大得多。通过评估使用这两种目标函数训练的模型的梯度噪声尺度（McCandlish等人，2018年），我们证实了这一假设，如图7所示。因此，我们寻求一种减少$L_{vlb}$方差的方法，以便直接优化对数似然。</p>
 <p>注意到$L_{vlb}$的不同项的量级差异很大（图2），我们假设均匀采样$t$会在$L_{vlb}$目标函数中引入不必要的噪声。为了解决这个问题，我们采用重要性采样：</p>
-<script type="math/tex; mode=display">L_{vlb} = E_{t \sim p_{t}}\left[\frac{L_{t}}{p_{t}}\right], \quad \text{其中} \quad p_{t} \propto \sqrt{E[L_{t}^{2}]} \quad \text{且} \quad \sum p_{t} = 1</script><p>由于$E[L_{t}^{2}]$在训练前是未知的，并且可能在训练过程中发生变化，我们为每个损失项保留之前10个值的历史记录，并在训练过程中动态更新。在训练开始时，我们均匀采样$t$，直到为每个$t \in [0, T - 1]$都抽取到10个样本。<br>| 迭代次数 | $T$ | 调度 | 目标函数 | 负对数似然（NLL） | FID |<br>| —- | —- | —- | —- | —- |<br>| 200K | 1K | 线性 | $L_{simple}$ | 3.99 | 32.5 |<br>| 200K | 4K | 线性 | $L_{simple}$ | 3.77 | 31.3 |<br>| 200K | 4K | 线性 | $L_{hybrid}$ | 3.66 | 32.2 |<br>| 200K | 4K | 余弦 | $L_{simple}$ | 3.68 | 27.0 |<br>| 200K | 4K | 余弦 | $L_{hybrid}$ | 3.62 | 28.0 |<br>| 200K | 4K | 余弦 | $L_{vlb}$ | 3.57 | 56.7 |<br>| 1500K | 4K | 余弦 | $L_{hybrid}$ | 3.57 | 19.2 |<br>| 1500K | 4K | 余弦 | $L_{vlb}$ | 3.53 | 40.1 |</p>
-<p>表1. 在ImageNet 64×64上对调度和目标函数的消融实验结果<br>| 迭代次数 | $T$ | 调度 | 目标函数 | 负对数似然（NLL） | FID |<br>| —- | —- | —- | —- | —- |<br>| 500K | 1K | 线性 | $L_{simple}$ | 3.73 | 3.29 |<br>| 500K | 4K | 线性 | $L_{simple}$ | 3.37 | 2.90 |<br>| 500K | 4K | 线性 | $L_{hybrid}$ | 3.26 | 3.07 |<br>| 500K | 4K | 余弦 | $L_{simple}$ | 3.26 | 3.05 |<br>| 500K | 4K | 余弦 | $L_{hybrid}$ | 3.17 | 3.19 |<br>| 500K | 4K | 余弦 | $L_{vlb}$ | 2.94 | 11.47 |</p>
-<p>表2. 在CIFAR-10上对调度和目标函数的消融实验结果</p>
+<script type="math/tex; mode=display">L_{vlb} = E_{t \sim p_{t}}\left[\frac{L_{t}}{p_{t}}\right], \quad \text{其中} \quad p_{t} \propto \sqrt{E[L_{t}^{2}]} \quad \text{且} \quad \sum p_{t} = 1 \tag{18}</script><p>由于$E[L_{t}^{2}]$在训练前是未知的，并且可能在训练过程中发生变化，我们为每个损失项保留之前10个值的历史记录，并在训练过程中动态更新。在训练开始时，我们均匀采样$t$，直到为每个$t \in [0, T - 1]$都抽取到10个样本。</p>
 <p>通过这种重要性采样目标函数，我们能够通过优化$L_{vlb}$实现最佳的对数似然。在图6中，$L_{vlb}$（重采样）曲线展示了这一点。该图还显示，重要性采样目标函数的噪声明显低于原始的均匀采样目标函数。我们发现，在直接优化噪声较小的$L_{hybrid}$目标函数时，重要性采样技术并无帮助。</p>
 <h4 id="3-4-结果与消融实验"><a href="#3-4-结果与消融实验" class="headerlink" title="3.4 结果与消融实验"></a>3.4 结果与消融实验</h4><p>在本节中，我们对为提高对数似然而进行的更改进行消融实验。表1总结了我们在ImageNet 64×64上的消融实验结果，表2展示了在CIFAR-10上的结果。我们还对最佳的ImageNet 64×64模型进行了150万次迭代训练，并报告了这些结果。$L_{vlb}$和$L_{hybrid}$使用3.1节中的参数化方法学习$\sigma$进行训练。对于$L_{vlb}$，我们使用了3.3节中的重采样方案。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t1.png" alt="t1"></th>
+<th style="text-align:center"><img src="t2.png" alt="t2"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表1. 在ImageNet 64×64上对调度和目标函数的消融实验。</em></td>
+<td style="text-align:center"><em>表2. 在CIFAR-10数据集上对噪声调度和目标函数的消融实验。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
 <p>基于我们的消融实验，使用$L_{hybrid}$和我们的余弦调度在提高对数似然的同时，保持与Ho等人（2020年）的基线相似的FID。优化$L_{vlb}$进一步提高了对数似然，但代价是FID更高。我们通常更倾向于使用$L_{hybrid}$而不是$L_{vlb}$，因为它在不牺牲样本质量的情况下提高了似然。</p>
-<p>在表3中，我们将我们最佳似然模型与先前的工作</p>
+<p>在表3中，我们将表现最佳的似然模型与先前研究成果进行对比，结果显示，在对数似然方面，这些模型与传统的最优方法相比颇具竞争力。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "t3.png" width="50%" height="50%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表3. 在CIFAR-10和无条件的ImageNet 64×64数据集上，去噪扩散概率模型（DDPMs）与其他基于似然的模型的比较。负对数似然（NLL）以比特/维度为单位报告。在ImageNet 64×64数据集上，我们的模型与最好的卷积模型相比具有竞争力，但比完全基于Transformer的架构要差。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="4-提高采样速度"><a href="#4-提高采样速度" class="headerlink" title="4. 提高采样速度"></a>4. 提高采样速度</h3><p>我们所有的模型都经过4000步扩散训练，因此在现代GPU上生成单个样本需要花费几分钟时间。在本节中，我们探究如果减少采样时使用的步数，模型性能会如何变化，并且发现我们预训练的$L_{hybrid}$模型能够在比训练时少得多的扩散步数下生成高质量样本（无需任何微调）。以这种方式减少步数后，我们的模型能够在几秒内而非几分钟内完成采样，大大提高了图像DDPM在实际应用中的可行性。</p>
+<p>对于一个经过$T$步扩散训练的模型，我们通常会使用与训练时相同的$t$值序列$(1, 2, \ldots, T)$进行采样。然而，也可以使用$t$值的任意子序列$S$进行采样。给定训练噪声调度$\bar{\alpha}_{t}$ ，对于给定的序列$S$，我们可以得到采样噪声调度$\bar{\alpha}_{S_{t}}$ ，进而得到相应的采样方差：</p>
+<script type="math/tex; mode=display">\beta_{S_{t}} = 1 - \frac{\bar{\alpha}_{S_{t}}}{\bar{\alpha}_{S_{t - 1}}}, \quad \tilde{\beta}_{S_{t}} = \frac{1 - \bar{\alpha}_{S_{t - 1}}}{1 - \bar{\alpha}_{S_{t}}} \beta_{S_{t}} \tag{19}</script><p>由于$\sum_{\theta}(x_{S_{t}}, S_{t})$被参数化为$\beta_{S_{t}}$和$\tilde{\beta}_{S_{t}}$之间的一个范围，它会自动针对更短的扩散过程进行重新缩放。因此，我们可以将$p(x_{S_{t - 1}} | x_{S_{t}})$计算为$\mathcal{N}(\mu_{\theta}(x_{S_{t}}, S_{t}), \sum_{\theta}(x_{S_{t}}, S_{t}))$ 。</p>
+<p>为了将采样步数从$T$减少到$K$，我们在$1$到$T$（包含两端）之间取$K$个均匀分布的实数，然后将每个结果四舍五入到最接近的整数。在图8中，我们评估了一个$L_{hybrid}$模型和一个$L_{simple}$模型的FID，这两个模型都经过4000步扩散训练，使用25、50、100、200、400、1000和4000步采样。我们对完全训练好的模型和训练过程中的中间模型进行了这样的评估。对于CIFAR-10，我们使用20万次和50万次训练迭代，对于ImageNet 64，我们使用50万次和150万次训练迭代。我们发现，固定标准差的$L_{simple}$模型（无论是较大的$\sigma_{t}^{2} = \beta_{t}$还是较小的$\sigma_{t}^{2} = \tilde{\beta}_{t}$ ）在减少采样步数时，样本质量下降得更明显，而我们学习标准差的$L_{hybrid}$模型则能保持较高的样本质量。对于这个模型，100步采样就足以使完全训练好的模型达到接近最优的FID。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "f8.png" width="50%" height="50%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图8. 在ImageNet 64×64（上）和CIFAR-10（下）上训练的模型的FID与采样步数的关系。所有模型都经过4000步扩散训练。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>在我们进行研究的同时，Song等人（2020a）提出了一种用于DDPM的快速采样算法，通过生成一个新的隐式模型，该模型具有与原模型相同的边际噪声分布，但能将噪声确定性地映射为图像。我们将他们的算法DDIM也纳入图8中进行比较，发现DDIM在采样步数少于50步时能生成更好的样本，但在使用50步或更多步数时样本质量较差。有趣的是，DDIM在训练开始时表现较差，但随着训练的进行，它与其他采样器的差距逐渐缩小。我们发现，我们的跨步技术会显著降低DDIM的性能，因此我们的DDIM结果使用了Song等人（2020a）提出的常数跨步，即最后一步是$T - T/K + 1$而不是$T$ 。其他采样器在使用我们的跨步技术时表现略有提升。</p>
+<h3 id="5-与生成对抗网络（GANs）的比较"><a href="#5-与生成对抗网络（GANs）的比较" class="headerlink" title="5. 与生成对抗网络（GANs）的比较"></a>5. 与生成对抗网络（GANs）的比较</h3><p>虽然对数似然是衡量模式覆盖程度的一个良好指标，但用这个指标来与GANs进行比较却很困难。因此，我们转而使用精度和召回率（Kynkänniemi等人，2019）进行对比。由于在GAN的研究文献中，训练类条件模型是很常见的做法，所以在本次实验中我们也采用了同样的方式。为了使我们的模型成为类条件模型，我们通过与时间步t相同的路径注入类别信息。具体来说，我们将类别嵌入向量$v_{i}$添加到时间步嵌入向量$e_{t}$中，并将这个嵌入向量传递给模型中的各个残差块。我们使用$L_{hybrid}$目标函数进行训练，并采用250步采样。我们训练了两个模型：一个是参数为1亿的“小”模型，训练了170万步；另一个是参数为2.7亿的较大模型，训练了25万步。我们还训练了一个BigGAN-deep模型，其生成器和判别器的参数总量为1亿。</p>
+<p>在计算这个任务的指标时，我们生成了50,000个样本（而不是通常的10,000个），以便能直接与其他研究成果进行比较。这是我们在报告ImageNet 64×64的FID时，唯一一次使用50,000个样本进行计算的情况。对于FID，参考分布的特征是在整个训练集上计算得到的，这遵循了（Brock等人，2018）的方法。</p>
+<p>图9展示了我们较大模型生成的样本，表4总结了实验结果。我们发现，BigGAN-deep在FID方面优于我们的小模型，但在召回率方面表现不佳。这表明，扩散模型在覆盖分布模式方面比类似的GANs表现更优。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "t4.png" width="80%" height="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表4. 在类条件ImageNet 64×64上的样本质量比较。精度和召回率（Kynkänniemi等人，2019年）使用Inception-V3特征和$K = 5$进行测量。我们对BigGAN-deep模型进行了12.5万次迭代训练，并且在采样时不使用截断以最大化GAN的召回率。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "f9.png" width="60%" height="60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图9. 使用$L_{hybrid}$模型（FID为2.92）经过250步采样生成的类条件ImageNet 64×64样本。这些类分别是9：鸵鸟、11：金翅雀、130：火烈鸟、141：红脚鹬、154：哈巴狗、157：蝴蝶犬、97：公鸭和28：斑点蝾螈。我们可以看到每个类别的样本都具有很高的多样性，这表明模型对目标分布有很好的覆盖。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="6-扩展模型规模"><a href="#6-扩展模型规模" class="headerlink" title="6. 扩展模型规模"></a>6. 扩展模型规模</h3><p>在前面的章节中，我们展示了在不改变训练计算量的情况下，通过算法改进提升对数似然和FID的方法。然而，现代机器学习的一个趋势是，更大的模型和更长的训练时间往往能提升模型性能（Kaplan等人，2020；Chen等人，2020a；Brown等人，2020）。基于这一观察，我们研究FID和负对数似然（NLL）如何随着训练计算量的变化而变化。我们的结果虽然是初步的，但表明随着训练计算量的增加，DDPMs的性能有可预测的提升。</p>
+<p>为了衡量性能如何随训练计算量变化，我们使用第3.1节中描述的$L_{hybrid}$目标函数，在ImageNet 64×64上训练了四个不同的模型。为了改变模型容量，我们在所有层应用深度乘数，使得第一层分别有64、96、128或192个通道。注意，我们之前的实验中第一层使用128个通道。由于每层的深度会影响初始权重的尺度，我们针对每个模型将Adam（Kingma和Ba，2014）学习率除以通道乘数的平方根进行调整，使得128通道的模型学习率为0.0001（与我们其他实验一致）。</p>
+<p>图10展示了FID和NLL相对于理论训练计算量的提升情况。FID曲线在对数坐标图上大致呈线性，这表明FID遵循幂律变化（用黑色虚线表示）。NLL曲线与幂律的拟合度没有那么高，这表明验证集上的NLL变化方式不如FID理想。这可能是由多种因素导致的，比如1）这类扩散模型存在出乎意料的高不可约损失（Henighan等人，2020）；2）模型对训练分布过拟合。我们还注意到，这些模型一般无法达到最优的对数似然，因为它们是使用$L_{hybrid}$目标函数训练的，而不是直接使用$L_{vlb}$，目的是同时兼顾良好的对数似然和样本质量。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "f10.png" width="60%" height="60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图10. 在ImageNet 64×64上不同模型规模在训练过程中的FID和验证集NLL。FID趋势线的常数是通过分布内数据的FID近似得到的。对于NLL趋势线，常数是通过向下取整该数据集当前最先进的NLL（Roy等人，2020）近似得到的。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="7-相关工作"><a href="#7-相关工作" class="headerlink" title="7. 相关工作"></a>7. 相关工作</h3><p>Chen等人（2020b）和Kong等人（2020）是近期两项利用去噪扩散概率模型（DDPMs）在基于梅尔频谱图的条件下生成高保真音频的研究。与我们的工作同期，Chen等人（2020b）结合改进的调度和$L_{1}$损失，使得在采样步数减少的情况下，样本质量仅有轻微下降。然而，与我们的无条件图像生成任务相比，他们的生成任务有梅尔频谱图提供的强输入条件信号，我们推测这使得在较少的扩散步数下进行采样变得更容易。</p>
+<p>Jolicoeur-Martineau等人（2020）探索了图像领域的分数匹配，并构建了一个对抗训练目标，以产生更好的$x_{0}$预测。然而，他们发现选择更好的网络架构消除了对这种对抗目标的需求，这表明对抗目标对于强大的生成式建模并非必要。</p>
+<p>与我们的工作并行，Song等人（2020a）和Song等人（2020b）通过利用不同的采样过程，为使用DDPM目标训练的模型提出了快速采样算法。Song等人（2020a）通过推导一个隐式生成模型来实现这一点，该模型与DDPMs具有相同的边际噪声分布，同时能将噪声确定性地映射到图像。Song等人（2020b）将扩散过程建模为连续随机微分方程（SDE）的离散化，并观察到存在一个与反向SDE采样相对应的常微分方程（ODE）。通过改变ODE求解器的数值精度，他们可以在较少的函数评估次数下进行采样。然而，他们指出，这种技术在直接使用时，生成的样本比祖传采样更差，只有在结合朗之万校正步骤时才能实现更好的FID。这反过来又需要手动调整朗之万步骤的信噪比。我们的方法允许直接从祖传过程中快速采样，从而无需额外的超参数。</p>
+<p>同样与我们的工作同期，Gao等人（2020）开发了一种扩散模型，其中反向扩散步骤由基于能量的模型建模。这种方法的一个潜在意义是，可能需要更少的扩散步骤就能获得高质量的样本。</p>
+<h3 id="8-结论"><a href="#8-结论" class="headerlink" title="8. 结论"></a>8. 结论</h3><p>我们已经证明，通过一些修改，去噪扩散概率模型（DDPMs）可以在对样本质量影响极小的情况下，实现更快的采样速度和更高的对数似然。通过我们的参数化方法和$L_{hybrid}$目标函数来学习$\sum_{\theta}$，提高了模型的对数似然，使得这些模型的对数似然更接近其他基于似然的模型。我们还意外地发现，这一改变还使得从这些模型采样所需的步数大幅减少。</p>
+<p>我们还发现，DDPMs在样本质量上可以与生成对抗网络（GANs）相媲美，同时在通过召回率衡量的模式覆盖方面表现更优。此外，我们研究了DDPMs的性能如何随着可用训练计算量的变化而变化，发现更多的训练计算量能显著提升样本质量和对数似然。</p>
+<p>这些结果综合起来，使得DDPMs成为生成式建模中一个极具吸引力的选择。因为它们结合了良好的对数似然、高质量的样本、相当快的采样速度，以及一个坚实可靠、稳定的训练目标，并且该目标能随着训练计算量的增加而轻松扩展。这些结果表明，DDPMs是未来研究的一个很有前景的方向。</p>
 
     </div>
 
@@ -430,7 +550,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1. 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%8E%BB%E5%99%AA%E6%89%A9%E6%95%A3%E6%A6%82%E7%8E%87%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.3.</span> <span class="nav-text">2. 去噪扩散概率模型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E5%AE%9A%E4%B9%89"><span class="nav-number">1.3.1.</span> <span class="nav-text">2.1 定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E5%AE%9E%E9%99%85%E8%AE%AD%E7%BB%83"><span class="nav-number">1.3.2.</span> <span class="nav-text">2.2 实际训练</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%8F%90%E9%AB%98%E5%AF%B9%E6%95%B0%E4%BC%BC%E7%84%B6"><span class="nav-number">1.4.</span> <span class="nav-text">3. 提高对数似然</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E5%AD%A6%E4%B9%A0-sum-theta-x-t-t"><span class="nav-number">1.4.1.</span> <span class="nav-text">3.1 学习$\sum_{\theta}(x_{t}, t)$</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E6%94%B9%E8%BF%9B%E5%99%AA%E5%A3%B0%E8%B0%83%E5%BA%A6"><span class="nav-number">1.4.2.</span> <span class="nav-text">3.2 改进噪声调度</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-%E5%87%8F%E5%B0%91%E6%A2%AF%E5%BA%A6%E5%99%AA%E5%A3%B0"><span class="nav-number">1.4.3.</span> <span class="nav-text">3.3 减少梯度噪声</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-%E7%BB%93%E6%9E%9C%E4%B8%8E%E6%B6%88%E8%9E%8D%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.4.4.</span> <span class="nav-text">3.4 结果与消融实验</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1. 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%8E%BB%E5%99%AA%E6%89%A9%E6%95%A3%E6%A6%82%E7%8E%87%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.3.</span> <span class="nav-text">2. 去噪扩散概率模型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E5%AE%9A%E4%B9%89"><span class="nav-number">1.3.1.</span> <span class="nav-text">2.1 定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E5%AE%9E%E9%99%85%E8%AE%AD%E7%BB%83"><span class="nav-number">1.3.2.</span> <span class="nav-text">2.2 实际训练</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%8F%90%E9%AB%98%E5%AF%B9%E6%95%B0%E4%BC%BC%E7%84%B6"><span class="nav-number">1.4.</span> <span class="nav-text">3. 提高对数似然</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E5%AD%A6%E4%B9%A0-sum-theta-x-t-t"><span class="nav-number">1.4.1.</span> <span class="nav-text">3.1 学习$\sum_{\theta}(x_{t}, t)$</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E6%94%B9%E8%BF%9B%E5%99%AA%E5%A3%B0%E8%B0%83%E5%BA%A6"><span class="nav-number">1.4.2.</span> <span class="nav-text">3.2 改进噪声调度</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-%E5%87%8F%E5%B0%91%E6%A2%AF%E5%BA%A6%E5%99%AA%E5%A3%B0"><span class="nav-number">1.4.3.</span> <span class="nav-text">3.3 减少梯度噪声</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-%E7%BB%93%E6%9E%9C%E4%B8%8E%E6%B6%88%E8%9E%8D%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.4.4.</span> <span class="nav-text">3.4 结果与消融实验</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%8F%90%E9%AB%98%E9%87%87%E6%A0%B7%E9%80%9F%E5%BA%A6"><span class="nav-number">1.5.</span> <span class="nav-text">4. 提高采样速度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E4%B8%8E%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E7%BD%91%E7%BB%9C%EF%BC%88GANs%EF%BC%89%E7%9A%84%E6%AF%94%E8%BE%83"><span class="nav-number">1.6.</span> <span class="nav-text">5. 与生成对抗网络（GANs）的比较</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E6%89%A9%E5%B1%95%E6%A8%A1%E5%9E%8B%E8%A7%84%E6%A8%A1"><span class="nav-number">1.7.</span> <span class="nav-text">6. 扩展模型规模</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.8.</span> <span class="nav-text">7. 相关工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-%E7%BB%93%E8%AE%BA"><span class="nav-number">1.9.</span> <span class="nav-text">8. 结论</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
