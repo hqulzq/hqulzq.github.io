@@ -221,7 +221,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-03-13 10:41:15" itemprop="dateModified" datetime="2025-03-13T10:41:15+08:00">2025-03-13</time>
+                <time title="修改时间：2025-03-14 17:35:21" itemprop="dateModified" datetime="2025-03-14T17:35:21+08:00">2025-03-14</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -313,7 +313,15 @@
 </div>
 <h3 id="6-结论"><a href="#6-结论" class="headerlink" title="6 结论"></a>6 结论</h3><p>我们解决了从扩散概率模型（DPMs）进行快速且无需训练的采样问题。我们提出了DPM-Solver，这是一种快速、专门用于求解扩散常微分方程（ODE）的无需训练的求解器，可在约10次函数评估步骤内实现对DPMs的快速采样。DPM-Solver利用了扩散ODE的半线性结构，直接逼近扩散ODE精确解的简化公式，该公式由噪声预测模型的指数加权积分构成。受指数积分器数值方法的启发，我们提出了一阶、二阶和三阶的DPM-Solver，以在理论上保证收敛的情况下逼近噪声预测模型的指数加权积分。我们提出了手动设定和自适应的步长调度，并将DPM-Solver应用于连续时间和离散时间的DPMs。我们的实验结果表明，DPM-Solver可以在各种数据集上，通过约10次函数评估生成高质量样本，与之前最先进的无需训练的采样器相比，实现了4 - 16倍的加速。</p>
 <h4 id="局限性和更广泛的影响"><a href="#局限性和更广泛的影响" class="headerlink" title="局限性和更广泛的影响"></a>局限性和更广泛的影响</h4><p>尽管DPM-Solver在加速性能方面前景良好，但它是为快速采样而设计的，可能不适用于加速DPMs的似然评估。此外，与常用的生成对抗网络（GANs）相比，使用DPM-Solver的扩散模型在实时应用中仍然不够快。另外，与其他深度生成模型一样，DPMs可能被用于生成有害的虚假内容，而本文提出的求解器可能会进一步放大深度生成模型在恶意应用中的潜在不良影响。</p>
-<h2 id="疑问"><a href="#疑问" class="headerlink" title="疑问"></a>疑问</h2>
+<h2 id="疑问"><a href="#疑问" class="headerlink" title="疑问"></a>疑问</h2><h3 id="3-扩散常微分方程的定制快速求解器-1"><a href="#3-扩散常微分方程的定制快速求解器-1" class="headerlink" title="3 扩散常微分方程的定制快速求解器"></a>3 扩散常微分方程的定制快速求解器</h3><h4 id="公式3-4的推导"><a href="#公式3-4的推导" class="headerlink" title="公式3.4的推导"></a>公式3.4的推导</h4><script type="math/tex; mode=display">
+\begin{align*}
+\mathbf{x}_t &= \frac{\alpha_t}{\alpha_s}\mathbf{x}_s - \alpha_t \int_{s}^{t} \left( \frac{\mathrm{d}\lambda_{\tau}}{\mathrm{d}\tau} \right) \frac{\sigma_{\tau}}{\alpha_{\tau}} \epsilon_{\theta}(\mathbf{x}_{\tau}, \tau) \mathrm{d}\tau \\
+&= \frac{\alpha_t}{\alpha_s}\mathbf{x}_s - \alpha_t \int_{\lambda_s}^{\lambda_t} \left( \frac{\mathrm{d}\lambda_{\tau}}{\mathrm{d}\tau} \right) \frac{\sigma_{t_{\lambda}(\lambda)}}{\alpha_{t_{\lambda}(\lambda)}} \epsilon_{\theta}(\mathbf{x}_{t_{\lambda}(\lambda)}, t_{\lambda}(\lambda)) \frac{\mathrm{d}\tau}{\mathrm{d}\lambda} \mathrm{d}\lambda \\
+
+&= \frac{\alpha_t}{\alpha_s}\mathbf{x}_s - \alpha_t \int_{\lambda_s}^{\lambda_t} \frac{\sigma_{t_{\lambda}(\lambda)}}{\alpha_{t_{\lambda}(\lambda)}} \epsilon_{\theta}(\mathbf{x}_{t_{\lambda}(\lambda)}, t_{\lambda}(\lambda)) \mathrm{d}\lambda \\
+&又 {\lambda_t} = \log{\frac{\alpha_t}{\sigma_t}}，得：\\
+&= \frac{\alpha_t}{\alpha_s}\mathbf{x}_s - \alpha_t \int_{\lambda_s}^{\lambda_t} e^{-\lambda} \hat{\epsilon}_{\theta}(\hat{\mathbf{x}}_{\lambda}, \lambda) \mathrm{d}\lambda
+\end{align*}</script>
       
     </div>
 
