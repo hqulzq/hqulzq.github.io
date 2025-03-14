@@ -20,17 +20,21 @@
     var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta property="og:type" content="article">
+  <meta name="description" content="全文翻译引言：生成模型给定来自目标分布的观测样本x，生成模型的目标是学习对其真实数据分布$p(x)$进行建模。一旦完成学习，我们就可以根据需要从近似模型中生成新样本。此外，在某些公式中，我们还可以使用所学模型来评估观测数据或生成数据的似然性。 当前文献中有几个著名的研究方向，我们将仅在较高层次上简要介绍。生成对抗网络（GANs）对复杂分布的采样过程进行建模，这种建模是通过对抗方式学习的。另一类生成">
+<meta property="og:type" content="article">
 <meta property="og:title" content="Understanding Diffusion Models: A Unified Perspective论文精读">
 <meta property="og:url" content="https://hqulzq.github.io/2025/03/12/Understanding-Diffusion-Models-A-Unified-Perspective%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/index.html">
 <meta property="og:site_name" content="Lzq&#39;s blog">
+<meta property="og:description" content="全文翻译引言：生成模型给定来自目标分布的观测样本x，生成模型的目标是学习对其真实数据分布$p(x)$进行建模。一旦完成学习，我们就可以根据需要从近似模型中生成新样本。此外，在某些公式中，我们还可以使用所学模型来评估观测数据或生成数据的似然性。 当前文献中有几个著名的研究方向，我们将仅在较高层次上简要介绍。生成对抗网络（GANs）对复杂分布的采样过程进行建模，这种建模是通过对抗方式学习的。另一类生成">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic1.zhimg.com/v2-8757675769575957959_b.jpg">
 <meta property="article:published_time" content="2025-03-12T08:44:25.000Z">
-<meta property="article:modified_time" content="2025-03-12T11:30:02.120Z">
+<meta property="article:modified_time" content="2025-03-14T02:42:26.192Z">
 <meta property="article:author" content="Zongqing Li">
 <meta property="article:tag" content="diffusion">
 <meta property="article:tag" content="2022">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic1.zhimg.com/v2-8757675769575957959_b.jpg">
 
 <link rel="canonical" href="https://hqulzq.github.io/2025/03/12/Understanding-Diffusion-Models-A-Unified-Perspective%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
 
@@ -132,7 +136,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">49</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">50</span></a>
 
   </li>
         <li class="menu-item menu-item-book">
@@ -217,10 +221,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2025-03-12 16:44:25 / 修改时间：19:30:02" itemprop="dateCreated datePublished" datetime="2025-03-12T16:44:25+08:00">2025-03-12</time>
+              <time title="创建时间：2025-03-12 16:44:25" itemprop="dateCreated datePublished" datetime="2025-03-12T16:44:25+08:00">2025-03-12</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-03-14 10:42:26" itemprop="dateModified" datetime="2025-03-14T10:42:26+08:00">2025-03-14</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -242,7 +252,64 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        
+        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="引言：生成模型"><a href="#引言：生成模型" class="headerlink" title="引言：生成模型"></a>引言：生成模型</h3><p>给定来自目标分布的观测样本x，生成模型的目标是学习对其真实数据分布$p(x)$进行建模。一旦完成学习，我们就可以根据需要从近似模型中生成新样本。此外，在某些公式中，我们还可以使用所学模型来评估观测数据或生成数据的似然性。</p>
+<p>当前文献中有几个著名的研究方向，我们将仅在较高层次上简要介绍。生成对抗网络（GANs）对复杂分布的采样过程进行建模，这种建模是通过对抗方式学习的。另一类生成模型被称为“基于似然的”，旨在学习一个为观测数据样本分配高似然的模型。这包括自回归模型、归一化流和变分自编码器（VAEs）。另一种类似的方法是基于能量的建模，其中分布被学习为一个任意灵活的能量函数，然后进行归一化。</p>
+<p>分数生成模型与之高度相关；它们不是直接学习对能量函数本身进行建模，而是通过神经网络学习基于能量模型的分数。在本文中，我们将探讨并回顾扩散模型，正如我们将展示的那样，扩散模型同时具有基于似然和基于分数的解释。我们将极其详细地展示这些模型背后的数学原理，旨在让任何人都能理解扩散模型是什么以及它们的工作原理。</p>
+<h3 id="背景：证据下界、变分自编码器和分层变分自编码器"><a href="#背景：证据下界、变分自编码器和分层变分自编码器" class="headerlink" title="背景：证据下界、变分自编码器和分层变分自编码器"></a>背景：证据下界、变分自编码器和分层变分自编码器</h3><p>对于许多模态，我们可以认为所观察到的数据是由一个相关的不可见潜在变量表示或生成的，我们用随机变量$z$来表示这个潜在变量。表达这一概念的最佳直观方式是通过柏拉图的洞穴寓言。在这个寓言中，一群人一生都被锁在洞穴里，只能看到投射在他们面前墙壁上的二维影子，这些影子是由在火前经过的不可见三维物体产生的。对于这些人来说，他们所观察到的一切实际上是由他们永远无法看到的更高维抽象概念所决定的。</p>
+<p>类似地，我们在现实世界中遇到的物体也可能是由一些更高级的表示生成的；例如，这些表示可以封装颜色、大小、形状等抽象属性。那么，我们所观察到的可以被解释为这些抽象概念的三维投影或实例化，就像洞穴里的人所观察到的实际上是三维物体的二维投影一样。虽然洞穴里的人永远无法看到（甚至完全理解）隐藏的物体，但他们仍然可以对其进行推理和推断；同样，我们可以近似描述所观察数据的潜在表示。</p>
+<p>柏拉图的洞穴寓言说明了潜在变量作为决定观察结果的潜在不可观察表示的概念，但这个类比的一个局限性是，在生成建模中，我们通常寻求学习低维潜在表示，而不是高维表示。这是因为在没有强先验的情况下，尝试学习比观察结果维度更高的表示是徒劳的。另一方面，学习低维潜在表示也可以被视为一种压缩形式，并且有可能揭示描述观察结果的语义有意义的结构。</p>
+<h4 id="证据下界"><a href="#证据下界" class="headerlink" title="证据下界"></a>证据下界</h4><p>从数学角度来看，我们可以将潜在变量和观察到的数据想象为由联合分布$p(x,z)$建模。回想一下，生成建模的一种方法，即 “基于似然” 的方法，是学习一个模型来最大化所有观察到的x的似然$p(x)$。我们有两种方法可以处理这个联合分布，以得到纯粹观察数据的似然$p(x)$：我们可以明确地对潜在变量$z$进行边缘化：</p>
+<script type="math/tex; mode=display">p(x)=\int p(x,z)dz \tag{1}</script><p>或者，我们也可以利用概率的链式法则：</p>
+<script type="math/tex; mode=display">p(x)=\frac{p(x,z)}{p(z|x)} \tag{2}</script><p>直接计算并最大化似然$p(x)$是困难的，因为这要么涉及在公式（1）中对所有潜在变量$z$进行积分，对于复杂模型来说这是难以处理的；要么在公式（2）中需要访问真实的潜在编码器$p(z|x)$。然而，利用这两个公式，我们可以推导出一个称为证据下界（ELBO）的项，正如其名称所示，它是证据的下界。在这种情况下，证据被量化为观察数据的对数似然。因此，最大化ELBO成为优化潜在变量模型的替代目标；在理想情况下，当ELBO被强大地参数化并完美优化时，它与证据完全等价。正式地，ELBO的公式为：</p>
+<script type="math/tex; mode=display">\mathbb{E}_{q_{\phi}(z|x)}\left[\log \frac{p(x,z)}{q_{\phi}(z|x)}\right] \tag{3}</script><p>为了明确与证据的关系，我们可以用数学公式表示为：</p>
+<script type="math/tex; mode=display">\log p(x) \geq \mathbb{E}_{q_{\phi}(z|x)}\left[\log \frac{p(x,z)}{q_{\phi}(z|x)}\right]\tag{4}</script><p>这里，$q_{\phi}(z|x)$是一个灵活的近似变分分布，其参数为$\phi$，我们试图对其进行优化。直观地说，它可以被认为是一个可参数化的模型，用于估计给定观察值x时潜在变量的真实分布；换句话说，它试图逼近真实后验分布$p(z|x)$。正如我们在探索变分自编码器时将会看到的，通过调整参数$\phi$来最大化ELBO，从而提高下界，我们能够获得可用于对真实数据分布进行建模并从中采样的组件，进而学习一个生成模型。现在，让我们更深入地探究为什么ELBO是我们想要最大化的目标。</p>
+<p>让我们从推导ELBO开始，使用公式（1）：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+\log p(x) &= \log \int p(x,z) dz & & (应用公式1) \tag{5}\\
+&= \log \int \frac{p(x,z)q_{\phi}(z|x)}{q_{\phi}(z|x)} dz & & (乘以1=\frac{q_{\phi}(z|x)}{q_{\phi}(z|x)}) \tag{6}\\
+&= \log \mathbb{E}_{q_{\phi}(z|x)}\left[\frac{p(x,z)}{q_{\phi}(z|x)}\right] & & (期望的定义) \tag{7}\\
+&\geq \mathbb{E}_{q_{\phi}(z|x)}\left[\log \frac{p(x,z)}{q_{\phi}(z|x)}\right] & & (应用詹森不等式) \tag{8}
+\end{align*}</script><p>在这个推导中，我们通过应用詹森不等式直接得到了下界。然而，这并没有为我们提供太多关于底层实际情况的有用信息；关键的是，这个证明没有直观地解释为什么ELBO实际上是证据的下界，因为詹森不等式只是一笔带过。此外，仅仅知道ELBO确实是数据的下界，并不能真正告诉我们为什么要将其作为目标进行最大化。为了更好地理解证据和ELBO之间的关系，让我们进行另一种推导，这次使用公式（2）：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+\log p(x) &= \log p(x)\int q_{\phi}(z|x)dz & (乘以1=\int q_{\phi}(z|x)dz)\\
+&= \int q_{\phi}(z|x)(\log p(x))dz & & (将证据放入积分中)\\
+&= E_{q_{\phi}(x|x)}[\log p(x)] & (期望的定义)\\
+&= \mathbb{E}_{q_{\phi}(x|x)}\left[\log \frac{p(z,z)}{p(z|x)}\right] & (应用公式2)\\
+&= \mathbb{E}_{q_{\phi}(x|x)}\left[\log \frac{p(x,z)q_{\phi}(z|x)}{p(z|x)}\right] & (乘以1=\frac{q_{\phi}(z|x)}{q_{\phi}(z|x)})\\
+&= \mathbb{E}_{q_{\phi}(z|x)}\left[\log \frac{p(x,z)}{q_{\phi}(z|x)}\frac{p(z|x)}{p(z|x)}\right] + D_{KL}(q_{\phi}(z|x)||p(z|x)) & (拆分期望)\\
+&= \mathbb{E}_{q_{\phi}(x|x)}\left[\log \frac{p(z,z)}{q_{\phi}(z|x)}\right] + D_{KL}(q_{\phi}(z|x)||p(z|x)) & (化简)
+\end{align*}</script><p>从这个推导中，我们从公式（15）清楚地观察到，证据等于ELBO加上近似后验分布$q_{\phi}(z|x)$和真实后验分布$p(z|x)$之间的KL散度。事实上，在第一次推导的公式（8）中，正是这个KL散度项被詹森不等式神奇地消除了。理解这个项不仅是理解ELBO和证据之间关系的关键，也是理解为什么优化ELBO是一个合适目标的关键。</p>
+<p>首先，我们现在知道为什么ELBO确实是一个下界：证据和ELBO之间的差异是一个严格非负的KL项，因此ELBO的值永远不会超过证据。<br><img src="https://pic1.zhimg.com/v2-8757675769575957959_b.jpg" alt="图1：变分自编码器的图形表示"><br><em>图1：变分自编码器的图形表示。这里，编码器$q(z|x)$为观察值x定义了潜在变量z的分布，$p(x|z)$将潜在变量解码为观察值</em></p>
+<p>其次，我们探究为什么要最大化ELBO。在引入了我们想要建模的潜在变量z之后，我们的目标是学习描述观察数据的潜在结构。换句话说，我们希望优化变分后验分布$q_{\phi}(z|x)$的参数，使其与真实后验分布$p(z|x)$完全匹配，这可以通过最小化它们的KL散度（理想情况下为零）来实现。不幸的是，直接最小化这个KL散度项是难以处理的，因为我们无法访问真实的$p(z|x)$分布。然而，请注意，在公式（15）的左侧，数据的似然（因此我们的证据项$\log p(x)$）相对于$\phi$始终是一个常数，因为它是通过对联合分布$p(x,z)$中的所有潜在变量z进行边缘化计算得到的，与$\phi$无关。由于ELBO和KL散度项的和是一个常数，任何相对于$\phi$对ELBO项的最大化必然会导致对KL散度项的等量最小化。因此，最大化ELBO可以作为学习如何完美建模真实潜在后验分布的替代方法；我们对ELBO的优化越多，我们的近似后验分布就越接近真实后验分布。此外，一旦训练完成，ELBO也可以用于估计观察到的数据或生成数据的似然，因为它是为了逼近模型证据$\log p(x)$而学习的。</p>
+<h4 id="变分自编码器"><a href="#变分自编码器" class="headerlink" title="变分自编码器"></a>变分自编码器</h4><p>在变分自编码器（VAE）的默认公式中，我们直接最大化ELBO。这种方法是变分的，因为我们在由$\phi$参数化的一系列潜在后验分布中优化出最佳的$q_{\phi}(z|x)$。它被称为自编码器，是因为它让人联想到传统的自编码器模型，在该模型中，输入数据经过中间瓶颈表示步骤后被训练来预测自身。为了更清楚地说明这种联系，让我们进一步剖析ELBO项：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+\mathbb{E}_{q_{\phi}(z|x)}\left[\log \frac{p(x,z)}{q_{\phi}(z|x)}\right] &= \mathbb{E}_{q_{\phi}(z|x)}\left[\log \frac{p_{\theta}(x|z)p(z)}{q_{\phi}(z|x)}\right] & & (概率链式法则)\\
+&= \mathbb{E}_{q_{\phi}(z|x)}\left[\log p_{\theta}(x|z)\right] + \mathbb{E}_{q_{\phi}(z|x)}\left[\log \frac{p(z)}{q_{\phi}(z|x)}\right] & (拆分期望)\\
+&= \underbrace{\mathbb{E}_{q_{\phi}(z|x)}\left[\log p_{\theta}(x|z)\right]}_{重构项} - \underbrace{D_{KL}(q_{\phi}(z|x)||p(z))}_{先验匹配项} & (KL散度的定义)
+\end{align*}</script><p>在这种情况下，我们学习一个中间瓶颈分布$q_{\phi}(z|x)$，它可以被视为一个编码器；它将输入转换为潜在变量的分布。同时，我们学习一个确定性函数$p_{\theta}(x|z)$，将给定的潜在向量z转换为观察值x，这可以被解释为一个解码器。</p>
+<p>公式（19）中的两项都有直观的解释：第一项衡量解码器从我们的变分分布中重构的似然性；这确保了学习到的分布正在对有效的潜在变量进行建模，以便可以从这些潜在变量中再生原始数据。第二项衡量学习到的变分分布与对潜在变量的先验信念的相似程度。最小化这项鼓励编码器实际学习一个分布，而不是坍缩为狄拉克δ函数。因此，最大化ELBO相当于最大化其第一项并最小化其第二项。</p>
+<p>VAE的一个显著特点是如何联合优化参数$\phi$和$\theta$来最大化ELBO。VAE的编码器通常被选择为对具有对角协方差的多元高斯分布进行建模，而先验通常被选择为标准多元高斯分布：</p>
+<script type="math/tex; mode=display">q_{\phi}(z|x)=\mathcal{N}(z;\mu_{\phi}(x),\sigma_{\phi}^{2}(x)I) \tag{20}</script><script type="math/tex; mode=display">p(z)=\mathcal{N}(z;0,I) \tag{21}</script><p>然后，ELBO的KL散度项可以通过解析计算，重构项可以使用蒙特卡罗估计进行近似。我们的目标可以重写为：</p>
+<script type="math/tex; mode=display">\underset{\phi,\theta}{arg \max} \mathbb{E}_{q_{\phi}(z|x)}\left[\log p_{\theta}(x|z)\right] - D_{KL}(q_{\phi}(z|x)||p(z)) \approx \underset{\phi,\theta}{arg \max} \sum_{l=1}^{L} \log p_{\theta}(x|z^{(l)}) - D_{KL}(q_{\phi}(z|x)||p(z))</script><p>其中，潜在变量$\{z^{(l)}\}_{l = 1}^{L}$是从$q_{\phi}(z|x)$中采样得到的，对于数据集中的每个观察值x都是如此。然而，在这个默认设置中出现了一个问题：我们计算损失所依据的每个$z^{(l)}$都是通过随机采样过程生成的，而这个过程通常是不可微的。幸运的是，当$q_{\phi}(z|x)$被设计为对某些分布进行建模时，包括多元高斯分布，可以通过重参数化技巧来解决这个问题。</p>
+<p>重参数化技巧将一个随机变量重写为一个噪声变量的确定性函数；这允许通过梯度下降来优化非随机项。例如，从均值为$\mu$、方差为$\sigma^{2}$的正态分布$x \sim N(x;\mu,\sigma^{2})$中采样可以重写为：</p>
+<script type="math/tex; mode=display">x = \mu + \sigma\epsilon \text{ ，其中 } \epsilon \sim \mathcal{N}(\epsilon;0,I)</script><p>换句话说，任意高斯分布可以被解释为标准高斯分布（$\epsilon$是其样本），其均值通过加法从0移动到目标均值$\mu$，方差通过目标方差$\sigma^{2}$进行拉伸。因此，通过重参数化技巧，从任意高斯分布中采样可以通过从标准高斯分布中采样、将结果按目标标准差缩放并按目标均值移动来实现。</p>
+<p>在VAE中，每个$z$因此被计算为输入x和辅助噪声变量$\epsilon$的确定性函数：</p>
+<script type="math/tex; mode=display">z = \mu_{\phi}(x) + \sigma_{\phi}(x) \odot \epsilon \text{ ，其中 } \epsilon \sim \mathcal{N}(\epsilon;0,I)</script><p>其中$\odot$表示逐元素相乘。在这种重参数化的$z$版本下，可以根据需要计算关于$\phi$的梯度，以优化$\mu_{\phi}$和$\sigma_{\phi}$。因此，VAE利用重参数化技巧和蒙特卡罗估计来联合优化$\phi$和$\theta$以最大化ELBO。</p>
+<p>训练完VAE后，可以通过直接从潜在空间$p(z)$中采样，然后将其通过解码器来生成新数据。当$z$的维度小于输入$x$的维度时，变分自编码器特别有趣，因为我们可能正在学习紧凑、有用的表示。此外，当学习到一个语义有意义的潜在空间时，可以在将潜在向量传递给解码器之前对其进行编辑，以更精确地控制生成的数据。</p>
+<h4 id="分层变分自编码器"><a href="#分层变分自编码器" class="headerlink" title="分层变分自编码器"></a>分层变分自编码器</h4><p>分层变分自编码器（HVAE）是VAE的一种推广，它扩展到潜在变量的多个层次。在这种公式下，潜在变量本身被解释为由其他更高级、更抽象的潜在变量生成。直观地说，就像我们将观察到的三维物体视为由更高级的抽象潜在变量生成一样，柏拉图洞穴中的人将三维物体视为生成他们二维观察结果的潜在变量。因此，从柏拉图洞穴居民的角度来看，他们的观察结果可以被视为由深度为二（或更多）的潜在层次结构建模。</p>
+<p>在具有T个层次的一般HVAE中，每个潜在变量都可以依赖于所有先前的潜在变量，在本文中，我们关注一个特殊情况，称为马尔可夫HVAE（MHVAE）。在MHVAE中，生成过程是一个马尔可夫链；也就是说，层次结构中的每次转换都是马尔可夫的，解码每个潜在变量$z_{t}$仅依赖于前一个潜在变量$z_{t + 1}$。直观地说，从视觉上看，这可以看作是简单地将VAE堆叠在一起，如图2所示；描述这个模型的另一个合适术语是递归VAE。在数学上，我们将马尔可夫HVAE的联合分布和后验表示为：</p>
+<script type="math/tex; mode=display">p(x,z_{1:T}) = p(z_{T})p_{\theta}(x|z_{1})\prod_{t = 2}^{T}p_{\theta}(z_{t - 1}|z_{t})</script><script type="math/tex; mode=display">q_{\phi}(z_{1:T}|x) = q_{\phi}(z_{1}|x)\prod_{t = 2}^{T}q_{\phi}(z_{t}|z_{t - 1}) \tag{24}</script><p>然后，我们可以很容易地将ELBO扩展为：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+\log p(x) &= \log \int p(x,z_{1:T})dz_{1:T} & & (应用公式1)\\
+&= \log \int \frac{p(x,z_{1:T})q_{\phi}(z_{1:T}|x)}{q_{\phi}(z_{1:T}|x)}dz_{1:T} & & (乘以1=\frac{q_{\phi}(z_{1:T}|x)}{q_{\phi}(z_{1:T}|x)})\\
+&= \log \mathbb{E}_{q_{\phi}(z_{1:T}|x)}\left[\frac{p(x,z_{1:T})}{q_{\phi}(z_{1:T}|x)}\right] & & (期望的定义)\\
+&\geq \mathbb{E}_{q_{\phi}(z_{1:T}|x)}\left[\log \frac{p(x,z_{1:T})}{q_{\phi}(z_{1:T}|x)}\right] & & (应用詹森不等式)
+\end{align*}</script><p>然后，我们可以将联合分布（公式23）和后验（公式24）代入公式28，得到另一种</p>
+
     </div>
 
     
@@ -326,6 +393,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E8%A8%80%EF%BC%9A%E7%94%9F%E6%88%90%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.1.</span> <span class="nav-text">引言：生成模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%83%8C%E6%99%AF%EF%BC%9A%E8%AF%81%E6%8D%AE%E4%B8%8B%E7%95%8C%E3%80%81%E5%8F%98%E5%88%86%E8%87%AA%E7%BC%96%E7%A0%81%E5%99%A8%E5%92%8C%E5%88%86%E5%B1%82%E5%8F%98%E5%88%86%E8%87%AA%E7%BC%96%E7%A0%81%E5%99%A8"><span class="nav-number">1.2.</span> <span class="nav-text">背景：证据下界、变分自编码器和分层变分自编码器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%81%E6%8D%AE%E4%B8%8B%E7%95%8C"><span class="nav-number">1.2.1.</span> <span class="nav-text">证据下界</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%98%E5%88%86%E8%87%AA%E7%BC%96%E7%A0%81%E5%99%A8"><span class="nav-number">1.2.2.</span> <span class="nav-text">变分自编码器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E5%B1%82%E5%8F%98%E5%88%86%E8%87%AA%E7%BC%96%E7%A0%81%E5%99%A8"><span class="nav-number">1.2.3.</span> <span class="nav-text">分层变分自编码器</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -341,7 +409,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">49</span>
+          <span class="site-state-item-count">50</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -379,7 +447,7 @@
     <h3 class="widget-title">Tag Cloud</h3>
     <div id="myCanvasContainer" class="widget tagcloud">
         <canvas width="250" height="250" id="resCanvas" style="width=100%">
-            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2023/" rel="tag">2023</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2025/" rel="tag">2025</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICML/" rel="tag">ICML</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">17</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2023/" rel="tag">2023</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2025/" rel="tag">2025</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICML/" rel="tag">ICML</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">18</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
         </canvas>
     </div>
 </div>

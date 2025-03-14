@@ -128,7 +128,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">49</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">50</span></a>
 
   </li>
         <li class="menu-item menu-item-book">
@@ -190,6 +190,148 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/03/12/DPM-Solver-A-Fast-ODE-Solver-for-Diffusion-Probabilistic-Model-Sampling-in-Around-10-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2025/03/12/DPM-Solver-A-Fast-ODE-Solver-for-Diffusion-Probabilistic-Model-Sampling-in-Around-10-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" class="post-title-link" itemprop="url">DPM-Solver-A Fast ODE Solver for Diffusion Probabilistic Model Sampling in Around 10 Steps论文精读</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-03-12 20:59:26" itemprop="dateCreated datePublished" datetime="2025-03-12T20:59:26+08:00">2025-03-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-03-13 10:41:15" itemprop="dateModified" datetime="2025-03-13T10:41:15+08:00">2025-03-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散概率模型（DPMs）是新兴的强大生成模型。尽管DPMs具有高质量的生成性能，但它们的采样速度仍然较慢，因为通常需要对大型神经网络进行数百或数千次的顺序函数评估（步骤）才能生成一个样本。从DPMs中采样可以看作是求解相应的扩散常微分方程（ODEs）。在这项工作中，我们提出了扩散ODEs解的精确公式。该公式通过解析计算解的线性部分，而不是像以往工作那样将所有项都留给黑箱ODE求解器处理。通过变量变换，解可以等效简化为神经网络的指数加权积分。基于我们的公式，我们提出了DPM-Solver，这是一种快速的、具有收敛阶保证的专用高阶扩散ODE求解器。DPM-Solver适用于离散时间和连续时间的DPMs，且无需任何额外训练。实验结果表明，DPM-Solver在各种数据集上仅需10 - 20次函数评估就能生成高质量样本。在CIFAR10数据集上，我们在10次函数评估中达到了4.70的FID（Frechet Inception Distance），在20次函数评估中达到了2.87的FID，并且与之前最先进的无训练采样器相比，在各种数据集上实现了4 - 16倍的加速。</p>
+<h3 id="2-扩散概率模型"><a href="#2-扩散概率模型" class="headerlink" title="2 扩散概率模型"></a>2 扩散概率模型</h3><p>在本节中，我们将回顾扩散概率模型及其相关的微分方程。</p>
+<h4 id="2-1-正向过程和扩散随机微分方程"><a href="#2-1-正向过程和扩散随机微分方程" class="headerlink" title="2.1 正向过程和扩散随机微分方程"></a>2.1 正向过程和扩散随机微分方程</h4><p>假设我们有一个$D$维随机变量$x_{0} \in \mathbb{R}^{D}$，其分布$q_{0}(x_{0})$未知。扩散概率模型（DPMs）[1-3,10]定义了一个从$x_{0}$开始的正向过程$\{x_{t}\}_{t \in[0, T]}$（$T&gt;0$），使得对于任意$t \in[0, T]$，在给定$x_{0}$的条件下，$x_{t}$的分布满足：</p>
+<script type="math/tex; mode=display">q_{0 t}\left(x_{t} | x_{0}\right)=\mathcal{N}\left(x_{t} | \alpha(t) x_{0}, \sigma^{2}(t) I\right), \tag{2.1}</script><p>其中$\alpha(t)$、$\sigma(t) \in \mathbb{R}^{+}$是关于$t$的可微函数，且导数有界，为简化表示，我们将它们记为$\alpha_{t}$、$\sigma_{t}$。$\alpha_{t}$和$\sigma_{t}$的选择被称为DPM的噪声调度。令$q_{t}(x_{t})$表示$x_{t}$的边际分布，DPMs通过选择噪声调度，确保对于某个$\bar{\sigma}&gt;0$，有$q_{T}(x_{T}) \approx \mathcal{N}(x_{T} | 0, \tilde{\sigma}^{2} I)$，并且信噪比（SNR）$\alpha_{t}^{2} / \sigma_{t}^{2}$随$t$严格递减[10]。此外，Kingma等人[10]证明，对于任意$t \in[0, T]$，以下随机微分方程（SDE）与公式（2.1）具有相同的转移分布$q_{0 t}(x_{t} | x_{0})$：</p>
+<script type="math/tex; mode=display">d x_{t}=f(t) x_{t} d t+g(t) d w_{t}, x_{0} \sim q_{0}\left(x_{0}\right), \tag{2.2}</script><p>其中$w_{t} \in \mathbb{R}^{D}$是标准维纳过程，并且</p>
+<script type="math/tex; mode=display">f(t)=\frac{d \log \alpha_{t}}{d t}, g^{2}(t)=\frac{d \sigma_{t}^{2}}{d t}-2 \frac{d \log \alpha_{t}}{d t} \sigma_{t}^{2} \tag{2.3}</script><p>在一些正则条件下，Song等人[3]表明，公式（2.2）中的正向过程存在一个从时间$T$到$0$的等效反向过程，从边际分布$q_{T}(x_{T})$开始：</p>
+<script type="math/tex; mode=display">d x_{t}=\left[f(t) x_{t}-g^{2}(t) \nabla_{x} \log q_{t}\left(x_{t}\right)\right] d t+g(t) d \overline{w}_{t}, x_{T} \sim q_{T}\left(x_{T}\right), \tag{2.4}</script><p>其中$\overline{w}_{t}$是反向时间的标准维纳过程。公式（2.4）中唯一未知的项是每个时间$t$的得分函数$\nabla_{x} \log q_{t}(x_{t})$。在实践中，DPMs使用由$\theta$参数化的神经网络$\epsilon_{\theta}(x_{t}, t)$来估计缩放后的得分函数：$-\sigma_{t} \nabla_{x} \log q_{t}(x_{t})$ 。通过最小化以下目标来优化参数$\theta$[2,3]：</p>
+<script type="math/tex; mode=display">\begin{aligned} \mathcal{L}(\theta ; \omega(t)) & :=\frac{1}{2} \int_{0}^{T} \omega(t) \mathbb{E}_{q_{t}\left(x_{t}\right)}\left[\left\| \epsilon_{\theta}\left(x_{t}, t\right)+\sigma_{t} \nabla_{x} \log q_{t}\left(x_{t}\right)\right\| _{2}^{2}\right] d t \\ & =\frac{1}{2} \int_{0}^{T} \omega(t) \mathbb{E}_{q_{0}\left(x_{0}\right)} \mathbb{E}_{q(\epsilon)}\left[\left\| \epsilon_{\theta}\left(x_{t}, t\right)-\epsilon\right\| _{2}^{2}\right] d t+C, \end{aligned}</script><p>其中$\omega(t)$是一个加权函数，$\epsilon \sim q(\epsilon)=\mathcal{N}(\epsilon | 0, I)$，$x_{t}=\alpha_{t} x_{0}+\sigma_{t} \epsilon$，$C$是一个与$\theta$无关的常数。由于$\epsilon_{\theta}(x_{t}, t)$也可以被视为预测添加到$x_{t}$的高斯噪声，所以它通常被称为噪声预测模型。由于$\epsilon_{\theta}(x_{t}, t)$的真实值是$-\sigma_{t} \nabla_{x} \log q_{t}(x_{t})$，DPMs用$-\epsilon_{\theta}(x_{t}, t)/\sigma_{t}$替换公式（2.4）中的得分函数，并定义了一个从时间$T$到$0$的参数化反向过程（扩散SDE），从$x_{T} \sim \mathcal{N}(0, \tilde{\sigma}^{2} I)$开始：</p>
+<script type="math/tex; mode=display">d x_{t}=\left[f(t) x_{t}+\frac{g^{2}(t)}{\sigma_{t}} \epsilon_{\theta}\left(x_{t}, t\right)\right] d t+g(t) d \overline{w}_{t}, x_{T} \sim \mathcal{N}\left(0, \tilde{\sigma}^{2} I\right) .  \tag{2.5}</script><p>可以使用数值求解器求解公式（2.5）中的扩散SDE来从DPMs生成样本，该数值求解器将SDE从$T$离散到$0$ 。Song等人[3]证明，DPMs传统的祖传采样方法[2]可以看作是公式（2.5）的一阶SDE求解器。然而，这些一阶方法通常需要数百或数千次函数评估才能收敛[3]，导致采样速度极慢。</p>
+<h4 id="2-2-扩散（概率流）常微分方程"><a href="#2-2-扩散（概率流）常微分方程" class="headerlink" title="2.2 扩散（概率流）常微分方程"></a>2.2 扩散（概率流）常微分方程</h4><p>在离散化SDE时，步长受到维纳过程随机性的限制[27，第11章]。较大的步长（较少的步数）通常会导致不收敛，尤其是在高维空间中。为了实现更快的采样，可以考虑相关的概率流ODE[3]，它在每个时间$t$的边际分布与SDE相同。具体来说，对于DPMs，Song等人[3]证明了公式（2.4）的概率流ODE为：</p>
+<script type="math/tex; mode=display">\frac{d x_{t}}{d t}=f(t) x_{t}-\frac{1}{2} g^{2}(t) \nabla_{x} \log q_{t}\left(x_{t}\right), x_{T} \sim q_{T}\left(x_{T}\right),  \tag{2.6}</script><p>其中$x_{t}$的边际分布也是$q_{t}(x_{t})$ 。通过用噪声预测模型替换得分函数，Song等人[3]定义了以下参数化ODE（扩散ODE）：</p>
+<script type="math/tex; mode=display">\frac{d x_{t}}{d t}=h_{\theta}\left(x_{t}, t\right):=f(t) x_{t}+\frac{g^{2}(t)}{2 \sigma_{t}} \epsilon_{\theta}\left(x_{t}, t\right), x_{T} \sim \mathcal{N}\left(0, \tilde{\sigma}^{2} I\right). \tag{2.7}</script><p>可以通过从$T$到$0$求解该ODE来生成样本。与SDE相比，ODE可以使用更大的步长求解，因为它们没有随机性。此外，我们可以利用高效的数值ODE求解器来加速采样。Song等人[3]使用RK45 ODE求解器[28]求解扩散ODE，在CIFAR-10数据集[29]上，该方法通过约60次函数评估生成的样本质量，可与公式（2.5）的1000步SDE求解器相媲美。然而，现有的通用ODE求解器仍然无法在少步（约10步）采样中生成令人满意的样本。据我们所知，目前仍然缺乏适用于少步采样的无训练DPM采样器，DPM的采样速度仍然是一个关键问题。</p>
+<h3 id="3-扩散常微分方程的定制快速求解器"><a href="#3-扩散常微分方程的定制快速求解器" class="headerlink" title="3 扩散常微分方程的定制快速求解器"></a>3 扩散常微分方程的定制快速求解器</h3><p>如2.2节所述，在高维情况下离散化随机微分方程（SDEs）通常很困难[27，第11章]，且很难在几步内收敛。相比之下，常微分方程（ODEs）更容易求解，这为快速采样器提供了潜力。然而，正如2.2节提到的，先前工作[3]中使用的通用黑箱ODE求解器在经验上无法在几步内收敛。这促使我们设计一种专门用于扩散ODEs的求解器，以实现快速且高质量的少步采样。我们从详细研究扩散ODEs的具体结构开始。</p>
+<h4 id="3-1-扩散常微分方程精确解的简化公式"><a href="#3-1-扩散常微分方程精确解的简化公式" class="headerlink" title="3.1 扩散常微分方程精确解的简化公式"></a>3.1 扩散常微分方程精确解的简化公式</h4><p>这项工作的关键见解是，给定时间$s&gt;0$时的初始值$x_{s}$，式（2.7）中扩散ODEs在每个时间$t&lt;s$的解$x_{t}$可以简化为一个非常特殊的精确公式，并且可以有效地进行近似。</p>
+<p>我们的第一个关键观察结果是，考虑到扩散ODEs的特殊结构，解$x_{t}$的一部分可以精确计算。式（2.7）中扩散ODEs的右侧由两部分组成：$f(t)x_{t}$这部分是$x_{t}$的线性函数，而另一部分$\frac{g^{2}(t)}{2\sigma_{t}}\epsilon_{\theta}(x_{t},t)$由于神经网络$\epsilon_{\theta}(x_{t},t)$的存在，通常是$x_{t}$的非线性函数。这种类型的ODE被称为半线性ODE。先前工作[3]采用的黑箱ODE求解器忽略了这种半线性结构，因为它们将式（2.7）中的整个$h_{\theta}(x_{t},t)$作为输入，这导致了线性项和非线性项的离散化误差。我们注意到，对于半线性ODEs，时间$t$的解可以通过 “常数变易” 公式[30]精确表示为：</p>
+<script type="math/tex; mode=display">x_{t}=e^{\int_{s}^{t} f(\tau) d \tau} x_{s}+\int_{s}^{t}\left(e^{\int_{\tau}^{t} f(r) d r} \frac{g^{2}(\tau)}{2 \sigma_{\tau}} \epsilon_{\theta}\left(x_{\tau}, \tau\right)\right) d \tau . \tag{3.1}</script><p>这个公式将线性部分和非线性部分解耦。与黑箱ODE求解器不同，现在线性部分被精确计算，消除了线性项的近似误差。然而，非线性部分的积分仍然很复杂，因为它将与噪声调度相关的系数（即$f(\tau)$、$g(\tau)$等）和复杂的神经网络$\epsilon_{\theta}$耦合在一起，仍然难以近似。</p>
+<p>我们的第二个关键观察结果是，通过引入一个特殊变量，非线性部分的积分可以大大简化。令$\lambda_{t}:=\log (\alpha_{t} / \sigma_{t})$（即对数信噪比的一半），那么$\lambda_{t}$是$t$的严格递减函数（根据2.1节中对DPMs的定义）。我们可以将式（2.3）中的$g(t)$重写为：</p>
+<script type="math/tex; mode=display">g^{2}(t)=\frac{d \sigma_{t}^{2}}{d t}-2 \frac{d \log \alpha_{t}}{d t} \sigma_{t}^{2}=2 \sigma_{t}^{2}\left(\frac{d \log \sigma_{t}}{d t}-\frac{d \log \alpha_{t}}{d t}\right)=-2 \sigma_{t}^{2} \frac{d \lambda_{t}}{d t} .\tag{3.2}</script><p>结合式（2.3）中的$f(t)=d \log \alpha_{t} / d t$，我们可以将式（3.1）重写为：</p>
+<script type="math/tex; mode=display">x_{t}=\frac{\alpha_{t}}{\alpha_{s}} x_{s}-\alpha_{t} \int_{s}^{t}\left(\frac{d \lambda_{\tau}}{d \tau}\right) \frac{\sigma_{\tau}}{\alpha_{\tau}} \epsilon_{\theta}\left(x_{\tau}, \tau\right) d \tau .\tag{3.3}</script><p>由于$\lambda(t)=\lambda_{t}$是$t$的严格递减函数，它有一个反函数$t_{\lambda}(\cdot)$，满足$t=t_{\lambda}(\lambda(t))$。我们进一步将$x$和$\epsilon_{\theta}$的下标从$t$改为$\lambda$，并表示$\hat{x}_{\lambda}:=x_{t_{\lambda}(\lambda)}$，$\hat{\epsilon}_{\theta}(\hat{x}_{\lambda}, \lambda):=\epsilon_{\theta}(x_{t_{\lambda}(\lambda)}, t_{\lambda}(\lambda))$。通过对$\lambda$进行 “变量变换” 重写式（3.3），我们得到：</p>
+<p><strong>命题3.1（扩散ODEs的精确解）</strong>：给定时间$s&gt;0$时的初始值$x_{s}$，式（2.7）中扩散ODEs在时间$t \in[0, s]$的解$x_{t}$为：</p>
+<script type="math/tex; mode=display">x_{t}=\frac{\alpha_{t}}{\alpha_{s}} x_{s}-\alpha_{t} \int_{\lambda_{s}}^{\lambda_{t}} e^{-\lambda} \hat{\epsilon}_{\theta}\left(\hat{x}_{\lambda}, \lambda\right) d \lambda . \tag{3.4}</script><p>我们将积分$\int e^{-\lambda} \hat{\epsilon}_{\theta}(\hat{x}_{\lambda}, \lambda) d \lambda$称为$\hat{\epsilon}_{\theta}$的指数加权积分，它非常特殊，并且与ODE求解器文献中的指数积分器[25]密切相关。据我们所知，在扩散模型的先前工作中尚未揭示这种公式。</p>
+<p>式（3.4）为近似扩散ODEs的解提供了新的视角。具体来说，给定时间$s$的$x_{s}$，根据式（3.4），近似时间$t$的解等同于直接近似从$\lambda_{s}$到$\lambda_{t}$的$\hat{\epsilon}_{\theta}$的指数加权积分，这避免了线性项的误差，并且在指数积分器的文献[25, 31]中已有深入研究。基于这一见解，我们提出了用于扩散ODEs的快速求解器，详见以下章节。</p>
+<h4 id="3-2-扩散常微分方程的高阶求解器"><a href="#3-2-扩散常微分方程的高阶求解器" class="headerlink" title="3.2 扩散常微分方程的高阶求解器"></a>3.2 扩散常微分方程的高阶求解器</h4><p>在本节中，我们利用所提出的解公式（3.4），提出了具有收敛阶保证的扩散ODEs高阶求解器。所提出的求解器和分析受到ODE文献中指数积分器方法[25, 31]的启发。</p>
+<p>具体来说，给定时间$T$的初始值$x_{T}$和从$t_{0}=T$到$t_{M}=0$递减的$M + 1$个时间步$\{t_{i}\}_{i = 0}^{M}$。令$\tilde{x}_{t_{0}} = x_{T}$为初始值。所提出的求解器使用$M$步迭代计算序列$\{\tilde{x}_{t_{i}}\}_{i = 0}^{M}$，以近似时间步$\{t_{i}\}_{i = 0}^{M}$的真实解。特别地，最后一次迭代$\tilde{x}_{t_{M}}$近似时间$0$的真实解。</p>
+<p>为了减少$\tilde{x}_{t_{M}}$与时间$0$真实解之间的近似误差，我们需要在每一步减少$\tilde{x}_{t_{i}}$的近似误差[30]。从时间$t_{i - 1}$的先前值$\tilde{x}_{t_{i - 1}}$开始，根据式（3.4），时间$t_{i}$的精确解$x_{t_{i - 1} \to t_{i}}$为：</p>
+<script type="math/tex; mode=display">x_{t_{i - 1} \to t_{i}}=\frac{\alpha_{t_{i}}}{\alpha_{t_{i - 1}}} \overline{x}_{t_{i - 1}}-\alpha_{t_{i}} \int_{\lambda_{t_{i - 1}}}^{\lambda_{t_{i}}} e^{-\lambda} \hat{\epsilon}_{\theta}\left(\hat{x}_{\lambda}, \lambda\right) d \lambda .\tag{3.5}</script><p>因此，为了计算用于近似$x_{t_{i - 1} \to t_{i}}$的$\tilde{x}_{t_{i}}$值，我们需要近似从$\lambda_{t_{i - 1}}$到$\lambda_{t_{i}}$的$\hat{\epsilon}_{\theta}$的指数加权积分。记$h_{i}:=\lambda_{t_{i}}-\lambda_{t_{i - 1}}$，$\hat{\epsilon}_{\theta}^{(n)}(\hat{x}_{\lambda}, \lambda):=\frac{d^{n} \hat{\epsilon}_{\theta}(\hat{x}_{\lambda}, \lambda)}{d \lambda^{n}}$为$\hat{\epsilon}_{\theta}(\hat{x}_{\lambda}, \lambda)$关于$\lambda$的$n$阶全导数。对于$k \geq 1$，$\hat{\epsilon}_{\theta}(\hat{x}_{\lambda}, \lambda)$在$\lambda_{t_{i - 1}}$处关于$\lambda$的$(k - 1)$阶泰勒展开式为：</p>
+<script type="math/tex; mode=display">\hat{\epsilon}_{\theta}\left(\hat{x}_{\lambda}, \lambda\right)=\sum_{n = 0}^{k - 1} \frac{\left(\lambda-\lambda_{t_{i - 1}}\right)^{n}}{n!} \hat{\epsilon}_{\theta}^{(n)}\left(\hat{x}_{\lambda_{t_{i - 1}}}, \lambda_{t_{i - 1}}\right)+\mathcal{O}\left(\left(\lambda-\lambda_{t_{i - 1}}\right)^{k}\right) .</script><p>将上述泰勒展开式代入式（3.5），得到：</p>
+<script type="math/tex; mode=display">x_{t_{i - 1} \to t_{i}}=\frac{\alpha_{t_{i}}}{\alpha_{t_{i - 1}}} \tilde{x}_{t_{i - 1}}-\alpha_{t_{i}} \sum_{n = 0}^{k - 1} \hat{\epsilon}_{\theta}^{(n)}\left(\hat{x}_{\lambda_{t_{i - 1}}}, \lambda_{t_{i - 1}}\right) \int_{\lambda_{t_{i - 1}}}^{\lambda_{t_{i}}} e^{-\lambda} \frac{\left(\lambda-\lambda_{t_{i - 1}}\right)^{n}}{n!} d \lambda+\mathcal{O}\left(h_{i}^{k + 1}\right) .\tag{3.6}</script><p>其中积分$\int e^{-\lambda} \frac{(\lambda-\lambda_{t_{i - 1}})^{n}}{n!} d \lambda$可以通过反复应用$n$次分部积分法进行解析计算（见附录B.2）。因此，为了近似$x_{t_{i - 1} \to t_{i}}$，我们只需要近似$n \leq k - 1$时的$n$阶全导数$\hat{\epsilon}_{\theta}^{(n)}(\hat{x}_{\lambda}, \lambda)$，这在ODE文献[31, 32]中是一个研究得较为充分的问题。通过舍弃$O(h_{i}^{k + 1})$误差项，并使用 “刚性阶条件” [31, 32]近似前$(k - 1)$阶全导数，我们可以推导出用于扩散ODEs的$k$阶ODE求解器。我们将这类求解器统称为DPM-Solver，对于特定的阶数$k$，则称为DPM-Solver-$k$。这里我们以$k = 1$为例进行说明。在这种情况下，式（3.6）变为：</p>
+<script type="math/tex; mode=display">\begin{aligned} x_{t_{i - 1} \to t_{i}} & =\frac{\alpha_{t_{i}}}{\alpha_{t_{i - 1}}} \overline{x}_{t_{i - 1}}-\alpha_{t_{i}} \epsilon_{\theta}\left(\tilde{x}_{t_{i - 1}}, t_{i - 1}\right) \int_{\lambda_{t_{i - 1}}}^{\lambda_{t_{i}}} e^{-\lambda} d \lambda+\mathcal{O}\left(h_{i}^{2}\right) \\ & =\frac{\alpha_{t_{i}}}{\alpha_{t_{i - 1}}} \tilde{x}_{t_{i - 1}}-\sigma_{t_{i}}\left(e^{h_{i}} - 1\right) \epsilon_{\theta}\left(\tilde{x}_{t_{i - 1}}, t_{i - 1}\right)+\mathcal{O}\left(h_{i}^{2}\right) 。 \end{aligned}</script><p>通过舍弃高阶误差项$O(h_{i}^{2})$，我们可以得到$x_{t_{i - 1} \to t_{i}}$的近似值。由于这里$k = 1$，我们将这个求解器称为DPM-Solver-1，详细算法如下：</p>
+<p><strong>DPM-Solver-1</strong>：给定初始值$x_{T}$和从$t_{0}=T$到$t_{M}=0$递减的$M + 1$个时间步$\{t_{i}\}_{i = 0}^{M}$。从$\tilde{x}_{t_{0}} = x_{T}$开始，序列$\{\tilde{x}_{t_{i}}\}_{i = 1}^{M}$通过以下方式迭代计算：</p>
+<script type="math/tex; mode=display">\tilde{x}_{t_{i}}=\frac{\alpha_{t_{i}}}{\alpha_{t_{i - 1}}} \tilde{x}_{t_{i - 1}}-\sigma_{t_{i}}\left(e^{h_{i}} - 1\right) \epsilon_{\theta}\left(\tilde{x}_{t_{i - 1}}, t_{i - 1}\right), \text{其中} h_{i}=\lambda_{t_{i}}-\lambda_{t_{i - 1}} . \tag{3.7}</script><p>对于$k \geq 2$，近似泰勒展开式的前$k$项需要在$t$和$s$之间设置额外的中间点[31]。推导过程更具技术性，因此我们将其推迟到附录B。下面我们提出$k = 2, 3$的算法，并分别将它们命名为DPM-Solver-2和DPM-Solver-3。</p>
+<p><img src="a1.png" alt=""><br><img src="a2.png" alt=""></p>
+<p>在这里，$t_{\lambda}(\cdot)$ 是 $\lambda(t)$ 的反函数，对于文献[2, 16]中使用的实际噪声调度，它有一个解析表达式，如附录D所示。对于二阶龙格 - 库塔扩散概率模型求解器（DPM - Solver - 2），选择的中间点是 $(s_{i}, u_{i})$ ，对于三阶龙格 - 库塔扩散概率模型求解器（DPM - Solver - 3），选择的中间点是 $(s_{2i - 1}, u_{2i - 1})$ 和 $(s_{2i}, u_{2i})$ 。如算法中所示，对于 $k = 1, 2, 3$，DPM - Solver - $k$ 每一步需要 $k$ 次函数求值。尽管高阶求解器（$k = 2, 3$）的每一步计算成本更高，但由于它们的收敛阶更高，达到收敛所需的步数要少得多，所以通常效率更高。我们证明了 DPM - Solver - $k$ 是 $k$ 阶求解器，如以下定理所述。证明见附录B。</p>
+<p><strong>定理3.2（DPM - Solver - $k$ 作为 $k$ 阶求解器）</strong> 假设 $\epsilon_{\theta}(x_{t}, t)$ 满足附录B.1中详细说明的正则条件，那么对于 $k = 1, 2, 3$ ，DPM - Solver - $k$ 是扩散常微分方程（ODE）的 $k$ 阶求解器，也就是说，对于由DPM - Solver - $k$ 计算得到的序列 $\{\tilde{x}_{t_{i}}\}_{i = 1}^{M}$ ，在时间 $t = 0$ 处的近似误差满足 $\tilde{x}_{t_{M}} - x_{0} = \mathcal{O}(h_{max}^{k})$ ，其中 $h_{max} = \max_{1\leq i\leq M}(\lambda_{t_{i}} - \lambda_{t_{i - 1}})$ 。</p>
+<p>最后，如先前关于指数积分器的文献[31, 32]所示，$k\geq4$ 的求解器需要更多的中间点。因此，在这项工作中我们仅考虑 $k$ 从1到3 的情况，而将更高 $k$ 值的求解器留待未来研究。</p>
+<h3 id="3-3-步长调度"><a href="#3-3-步长调度" class="headerlink" title="3.3 步长调度"></a>3.3 步长调度</h3><p>3.2节中提出的求解器需要预先指定时间步${t_{i}}_{i = 0}^{M}$。我们提出了两种步长调度的选择。一种是手动设定的，即均匀划分区间$[\lambda_{T}, \lambda_{0}]$，也就是$\lambda_{t_{i}} = \lambda_{T} + \frac{i}{M}(\lambda_{0} - \lambda_{T})$，其中$i = 0, \ldots, M$。需要注意的是，这与之前的工作[2, 3]不同，之前的工作是对$t_{i}$选择均匀的时间步。从经验上看，采用均匀时间步长$\lambda_{t_{i}}$的DPM-Solver已经能够在几步内生成相当不错的样本，附录E中列出了相关结果。作为另一种选择，我们提出了一种自适应步长算法，通过结合不同阶数的DPM-Solver来动态调整步长。这种自适应算法的灵感来自于[20]，我们将其实现细节放在附录C中。</p>
+<p>对于少步采样，我们需要充分利用所有的函数评估次数（NFE）。当NFE不能被3整除时，我们首先尽可能多地应用DPM-Solver-3，然后根据NFE除以3的余数，添加单步的DPM-Solver-1或DPM-Solver-2（具体取决于余数），附录D中有详细说明。在后续实验中，对于NFE ≤ 20的情况，我们使用这种结合均匀步长调度的求解器组合；对于其他情况，则使用自适应步长调度。</p>
+<h3 id="3-4-从离散时间扩散概率模型采样"><a href="#3-4-从离散时间扩散概率模型采样" class="headerlink" title="3.4 从离散时间扩散概率模型采样"></a>3.4 从离散时间扩散概率模型采样</h3><p>离散时间扩散概率模型（DPMs）[2]在$N$个固定时间步${t_{n}}_{n = 1}^{N}$训练噪声预测模型，噪声预测模型由$\tilde{\epsilon}_{\theta}(x_{n}, n)$参数化，其中$n = 0, \ldots, N - 1$，每个$x_{n}$对应于时间$t_{n + 1}$的值。我们可以通过令$\epsilon_{\theta}(x, t):=\tilde{\epsilon}_{\theta}(x, \frac{(N - 1)t}{T})$，将离散时间噪声预测模型转换为连续版本，其中$x \in \mathbb{R}^{d}$，$t \in [0, T]$。注意，$\tilde{\epsilon}_{\theta}$的输入时间可能不是整数，但我们发现噪声预测模型仍然能够很好地工作，我们推测这是因为平滑的时间嵌入（例如位置嵌入[2]）。通过这种重新参数化，噪声预测模型可以采用连续时间步作为输入，因此我们也可以使用DPM-Solver进行快速采样。</p>
+<h3 id="4-与现有快速采样方法的比较"><a href="#4-与现有快速采样方法的比较" class="headerlink" title="4 与现有快速采样方法的比较"></a>4 与现有快速采样方法的比较</h3><p>在此，我们探讨DPM-Solver与现有的基于ODE的DPM快速采样方法之间的关系，并突出它们的差异。我们还将简要讨论无训练采样器相较于有训练采样器的优势。</p>
+<h4 id="4-1-作为DPM-Solver-1的DDIM"><a href="#4-1-作为DPM-Solver-1的DDIM" class="headerlink" title="4.1 作为DPM-Solver-1的DDIM"></a>4.1 作为DPM-Solver-1的DDIM</h4><p>去噪扩散隐式模型（DDIM）[19]设计了一种用于从DPM快速采样的确定性方法。对于两个相邻的时间步$t_{i - 1}$和$t_{i}$，假设在时间$t_{i - 1}$我们有一个解$\tilde{x}_{t_{i - 1}}$，那么从时间$t_{i - 1}$到$t_{i}$的DDIM单步更新为：</p>
+<script type="math/tex; mode=display">\overline{x}_{t_{i}}=\frac{\alpha_{t_{i}}}{\alpha_{t_{i - 1}}} \overline{x}_{t_{i - 1}}-\alpha_{t_{i}}\left(\frac{\sigma_{t_{i - 1}}}{\alpha_{t_{i - 1}}}-\frac{\sigma_{t_{i}}}{\alpha_{t_{i}}}\right) \epsilon_{\theta}\left(\overline{x}_{t_{i - 1}}, t_{i - 1}\right) 。</script><p>尽管动机完全不同，但我们发现DPM-Solver-1和去噪扩散隐式模型（DDIM）[19]的更新是相同的。根据$\lambda$的定义，我们有$\frac{\sigma_{t_{i - 1}}}{\alpha_{t_{i - 1}}}=e^{-\lambda_{t_{i - 1}}}$和$\frac{\sigma_{t_{i}}}{\alpha_{t_{i}}}=e^{-\lambda_{t_{i}}}$。将这些以及$h_{i}=\lambda_{t_{i}}-\lambda_{t_{i - 1}}$代入公式（4.1），得到的结果与公式（3.7）中DPM-Solver-1的一步更新完全一致。然而，DPM-Solver的半线性ODE公式允许有原则地推广到高阶求解器，并进行收敛阶分析。</p>
+<p>最近的工作[13]也表明，通过对公式（4.1）两边求导，DDIM是扩散ODE的一阶离散化。然而，他们无法解释DDIM与扩散ODE的一阶欧拉离散化之间的差异。相比之下，通过证明DDIM是DPM-Solver的一个特殊情况，我们揭示了DDIM充分利用了扩散ODE的半线性，这解释了它相较于传统欧拉方法的优越性。</p>
+<h4 id="4-2-与传统龙格-库塔方法的比较"><a href="#4-2-与传统龙格-库塔方法的比较" class="headerlink" title="4.2 与传统龙格 - 库塔方法的比较"></a>4.2 与传统龙格 - 库塔方法的比较</h4><p>通过将传统的显式龙格 - 库塔（RK）方法直接应用于公式（2.7）中的扩散ODE，可以得到一个高阶求解器。具体来说，RK方法将公式（2.7）的解写成以下积分形式：</p>
+<script type="math/tex; mode=display">x_{t}=x_{s}+\int_{s}^{t} h_{\theta}\left(x_{\tau}, \tau\right) d \tau=x_{s}+\int_{s}^{t}\left(f(\tau) x_{\tau}+\frac{g^{2}(\tau)}{2 \sigma_{\tau}} \epsilon_{\theta}\left(x_{\tau}, \tau\right)\right) d \tau,</script><p>并在$[t, s]$之间使用一些中间时间步，结合$h_{\theta}$在这些时间步的评估值来近似整个积分。显式RK方法的近似误差取决于$h_{\theta}$，它包含了与线性项$f(\tau) x_{\tau}$和非线性噪声预测模型$\epsilon_{\theta}$相对应的误差。然而，由于线性项的精确解具有指数系数（如公式（3.1）所示），线性项的误差可能会呈指数增长。有许多经验证据[25, 31]表明，对于半线性ODEs，直接使用显式RK方法在大步长情况下可能会遇到数值不稳定问题。我们在5.1节中也展示了所提出的DPM-Solver与传统显式RK方法在经验上的差异，结果表明在相同阶数下，DPM-Solver的离散化误差比RK方法更小。</p>
+<h4 id="4-3-基于训练的DPM快速采样方法"><a href="#4-3-基于训练的DPM快速采样方法" class="headerlink" title="4.3 基于训练的DPM快速采样方法"></a>4.3 基于训练的DPM快速采样方法</h4><p>需要额外训练或优化的采样器包括知识蒸馏[13, 14]、学习噪声水平或方差[15, 16, 33]以及学习噪声调度或样本轨迹[17, 18]。尽管渐进蒸馏方法[13]可以在4步内获得快速采样器，但它需要额外的训练成本，并且会丢失原始DPM中的部分信息（例如，蒸馏后，噪声预测模型无法预测$[0, T]$之间每个时间步的噪声（得分函数））。相比之下，无训练采样器可以保留原始模型的所有信息，从而可以通过将原始模型与外部分类器结合直接扩展到条件采样（例如，见附录D中带分类器引导的条件采样）。</p>
+<p>除了直接为DPM设计快速采样器外，一些工作还提出了新型的DPM，以支持更快的采样。例如，为DPM定义低维潜在变量[34]；设计具有有界得分函数的特殊扩散过程[35]；将GAN与DPM的反向过程相结合[36]。所提出的DPM-Solver也可能适用于加速这些DPM的采样，我们将其留作未来的工作。</p>
+<h3 id="5-实验"><a href="#5-实验" class="headerlink" title="5 实验"></a>5 实验</h3><p>在本节中，我们展示了作为一种无需训练的采样器，DPM - Solver（扩散概率模型求解器）能够显著加快现有预训练扩散概率模型（DPMs）的采样速度，这些模型既包括连续时间的，也包括离散时间的，并且涵盖了线性噪声调度[2, 19]和余弦噪声调度[16]。我们改变函数评估次数（NFE，即对噪声预测模型$\epsilon_{\theta}(x_{t}, t)$ 的调用次数），并比较DPM - Solver与其他方法生成样本的质量。在每个实验中，我们生成50000个样本，并使用广泛采用的弗雷歇初始距离（FID）分数[37]来评估样本质量，通常FID分数越低意味着样本质量越好。</p>
+<p>除非另有明确说明，若函数评估次数（NFE）预算小于20，我们始终采用3.3节中结合均匀步长调度的求解器组合；否则，采用3.3节中结合自适应步长调度的三阶龙格 - 库塔扩散概率模型求解器（DPM - Solver - 3）。关于DPM - Solver的其他实现细节，请参见附录D，详细设置请参见附录E。</p>
+<h4 id="5-1-与连续时间采样方法的比较"><a href="#5-1-与连续时间采样方法的比较" class="headerlink" title="5.1 与连续时间采样方法的比较"></a>5.1 与连续时间采样方法的比较</h4><p>我们首先将DPM-Solver与其他用于扩散概率模型（DPMs）的连续时间采样方法进行比较。对比的方法包括扩散随机微分方程（SDE）的欧拉-丸山离散化方法[3]、扩散SDE的自适应步长求解器[20]以及用于扩散常微分方程（ODE）的龙格-库塔（RK）方法[3, 28]（见公式(2.7)）。我们从在CIFAR-10数据集[29]上预训练的连续时间 “VP deep” 模型中进行采样，该模型采用线性噪声调度，以此来对比这些方法。</p>
+<p>图2a展示了对比求解器的效率。对于使用欧拉离散化的扩散SDE，我们采用均匀时间步长，分别设置50、200、1000次函数评估（NFE）；对于自适应步长的SDE求解器[20]和RK45 ODE求解器[28]，我们通过调整容差超参数来控制NFE。DPM-Solver能够在约10次NFE内生成高质量样本，而其他求解器即使在50次NFE时仍有较大的离散化误差，这表明DPM-Solver相比之前最优的求解器实现了约5倍的加速。具体而言，我们在10次NFE时达到4.70的FID，12次NFE时为3.75，15次NFE时为3.24，20次NFE时为2.87，在CIFAR-10数据集上，这是最快的采样器。</p>
+<p>作为一项消融研究，我们还对比了二阶和三阶的DPM-Solver与RK方法，结果见表1。我们对扩散ODE的RK方法分别基于时间t（公式(2.7)）和半对数信噪比λ（通过变量变换，详见附录E.1中的具体公式）进行比较。结果表明，在相同NFE的情况下，DPM-Solver生成的样本质量始终优于相同阶数的RK方法。DPM-Solver在15次NFE以下的少步采样场景中的卓越效率尤为明显，此时RK方法存在较大的离散化误差。这主要是因为DPM-Solver通过解析计算线性项，避免了相应的离散化误差。此外，更高阶的DPM-Solver-3比DPM-Solver-2收敛更快，这与定理3.2中的阶数分析相符。</p>
+<h4 id="5-2-与离散时间采样方法的比较"><a href="#5-2-与离散时间采样方法的比较" class="headerlink" title="5.2 与离散时间采样方法的比较"></a>5.2 与离散时间采样方法的比较</h4><p>我们采用3.4节中的方法，将DPM-Solver应用于离散时间扩散概率模型（DPMs），随后将其与其他无需训练的离散时间采样器进行比较，这些采样器包括去噪扩散概率模型（DDPM）[2]、去噪扩散隐式模型（DDIM）[19]、解析去噪扩散概率模型（Analytic-DDPM）[21]、解析去噪扩散隐式模型（Analytic-DDIM）[21]、伪数值方法（PNDM）[22]、快速扩散概率模型采样（FastDPM）[38]以及伊藤 - 泰勒（Itô-Taylor）方法[24]。我们还与生成引导扩散模型（GGDM）[18]进行了对比，GGDM使用相同的预训练模型，但需要对采样轨迹进行进一步训练。我们通过将函数评估次数（NFE）从10变化到1000，来比较样本质量。</p>
+<p>具体来说，我们使用文献[2]中通过$L_{simple }$训练的具有线性噪声调度的CIFAR-10数据集上的离散时间模型；文献[19]中具有线性噪声调度的CelebA 64x64数据集[39]上的离散时间模型；文献[16]中通过$L_{hybrid }$训练的具有余弦噪声调度的ImageNet 64x64数据集[26]上的离散时间模型；文献[4]中具有线性噪声调度和分类器引导的ImageNet 128x128数据集[26]上的离散时间模型；文献[4]中具有线性噪声调度的LSUN卧室256x256数据集[40]上的离散时间模型。对于在ImageNet上训练的模型，我们仅使用其 “均值” 模型，忽略 “方差” 模型。如图2所示，在所有数据集上，DPM-Solver能够在12步内获得质量合理的样本（CIFAR-10数据集上FID为4.65，CelebA 64x64数据集上为3.71，ImageNet 64x64数据集上为19.97，ImageNet 128x128数据集上为4.08），比之前最快的无需训练的采样器快4 - 16倍。DPM-Solver甚至优于需要额外训练的GGDM。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f2.png" alt=""></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图2：使用不同采样方法从扩散概率模型（DPMs）中采样的样本质量，通过弗雷歇初始距离（FID）衡量。这些方法应用于CIFAR-10数据集上的连续时间和离散时间模型、CelebA 64x64数据集、ImageNet 64x64数据集、ImageNet 128x128数据集以及LSUN卧室256x256数据集的离散时间模型，并改变函数评估次数（NFE）。方法†GGDM [18] 需要额外训练以优化采样轨迹，而其他方法无需训练。为获得最强的基线结果，在CelebA数据集上对去噪扩散隐式模型（DDIM）使用二次步长，其FID比原始论文[19]中均匀步长的FID更优。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="6-结论"><a href="#6-结论" class="headerlink" title="6 结论"></a>6 结论</h3><p>我们解决了从扩散概率模型（DPMs）进行快速且无需训练的采样问题。我们提出了DPM-Solver，这是一种快速、专门用于求解扩散常微分方程（ODE）的无需训练的求解器，可在约10次函数评估步骤内实现对DPMs的快速采样。DPM-Solver利用了扩散ODE的半线性结构，直接逼近扩散ODE精确解的简化公式，该公式由噪声预测模型的指数加权积分构成。受指数积分器数值方法的启发，我们提出了一阶、二阶和三阶的DPM-Solver，以在理论上保证收敛的情况下逼近噪声预测模型的指数加权积分。我们提出了手动设定和自适应的步长调度，并将DPM-Solver应用于连续时间和离散时间的DPMs。我们的实验结果表明，DPM-Solver可以在各种数据集上，通过约10次函数评估生成高质量样本，与之前最先进的无需训练的采样器相比，实现了4 - 16倍的加速。</p>
+<h4 id="局限性和更广泛的影响"><a href="#局限性和更广泛的影响" class="headerlink" title="局限性和更广泛的影响"></a>局限性和更广泛的影响</h4><p>尽管DPM-Solver在加速性能方面前景良好，但它是为快速采样而设计的，可能不适用于加速DPMs的似然评估。此外，与常用的生成对抗网络（GANs）相比，使用DPM-Solver的扩散模型在实时应用中仍然不够快。另外，与其他深度生成模型一样，DPMs可能被用于生成有害的虚假内容，而本文提出的求解器可能会进一步放大深度生成模型在恶意应用中的潜在不良影响。</p>
+<h2 id="疑问"><a href="#疑问" class="headerlink" title="疑问"></a>疑问</h2>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/03/12/Analytic-DPM-an-Analytic-Estimate-of-the-Optimal-Reverse-Variance-in-Diffusion-Probabilistic-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -215,7 +357,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2025-03-12 19:33:01 / 修改时间：19:35:30" itemprop="dateCreated datePublished" datetime="2025-03-12T19:33:01+08:00">2025-03-12</time>
+              <time title="创建时间：2025-03-12 19:33:01 / 修改时间：20:53:14" itemprop="dateCreated datePublished" datetime="2025-03-12T19:33:01+08:00">2025-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -238,7 +380,119 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          
+          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散概率模型（Diffusion Probabilistic Models, DPMs）是一类强大的生成模型。尽管它们取得了成功，但DPMs的推理成本很高，因为通常需要迭代数千个时间步。推理中的一个关键问题是估计反向过程中每个时间步的方差。在这项工作中，我们给出了一个令人惊讶的结果：DPM的最优反向方差和相应的最优KL散度都可以用其得分函数的解析形式表示。在此基础上，我们提出了Analytic-DPM，这是一个无需训练的推理框架，它使用蒙特卡罗方法和预训练的基于得分的模型来估计方差和KL散度的解析形式。此外，为了纠正基于得分的模型可能带来的偏差，我们推导了最优方差的上下界，并对估计值进行裁剪以获得更好的结果。在实验中，我们的Analytic-DPM提高了各种DPM的对数似然性，生成了高质量的样本，同时实现了20到80倍的加速。</p>
+<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1. 引言"></a>1. 引言</h3><p>扩散过程会在一系列时间步中逐渐向数据分布添加噪声。通过学习逆向操作，扩散概率模型（DPMs）（Sohl-Dickstein等人，2015；Ho等人，2020；Song等人，2020b）定义了一种数据生成过程。最近研究表明，DPMs能够生成高质量样本（Ho等人，2020；Nichol和Dhariwal，2021；Song等人，2020b；Dhariwal和Nichol，2021），这些样本与当前最先进的生成对抗网络（GAN）模型（Goodfellow等人，2014；Brock等人，2018；Wu等人，2019；Karras等人，2020b）相当，甚至更优。</p>
+<p>尽管取得了成功，但DPMs的推理（如采样和密度评估）通常需要迭代数千个时间步，这比其他生成模型（如GANs）慢两到三个数量级（Song等人，2020a）。推理中的一个关键问题是估计反向过程中每个时间步的方差。大多数先前的工作在所有时间步都使用手工设定的值，这通常需要运行很长的链才能获得合理的样本和密度值（Nichol和Dhariwal，2021）。Nichol和Dhariwal（2021）试图通过在反向过程中学习方差网络来提高采样效率。然而，它仍然需要相对较长的轨迹才能获得合理的对数似然（见Nichol和Dhariwal（2021）的附录E）。</p>
+<p>在这项工作中，我们给出了一个令人惊讶的结果：DPM的最优反向方差和相应的最优KL散度都可以用其得分函数（即对数密度的梯度）的解析形式表示。在此基础上，我们提出了Analytic-DPM，这是一个无需训练的推理框架，用于在实现可比甚至更优性能的同时提高预训练DPM的效率。Analytic-DPM使用蒙特卡罗方法和预训练DPM中的基于得分的模型来估计方差和KL散度的解析形式。相应的轨迹通过动态规划算法（Watson等人，2021）计算。此外，为了纠正基于得分的模型可能导致的潜在偏差，我们推导出最优方差的上下界，并对估计值进行裁剪以获得更好的结果。最后，我们揭示了得分函数与数据协方差矩阵之间的有趣关系。</p>
+<p>Analytic-DPM以即插即用的方式适用于多种DPM（Ho等人，2020；Song等人，2020a；Nichol和Dhariwal，2021）。在实验中，Analytic-DPM持续提高这些DPM的对数似然，同时实现20到40倍的加速。此外，Analytic-DPM还持续提高去噪扩散隐式模型（DDIMs）（Song等人，2020a）的样本质量，并且最多需要50个时间步（与完整时间步相比，加速20到80倍）就能达到与相应基线相当的弗雷歇 inception距离（FID） 。</p>
+<h3 id="2-背景"><a href="#2-背景" class="headerlink" title="2. 背景"></a>2. 背景</h3><p>扩散概率模型（DPMs）首先构建一个正向过程$q(x_{1:N}|x_{0})$，向数据分布$q(x_{0})$中注入噪声，然后逆向这个正向过程来恢复数据。给定正向噪声调度$\beta_{n} \in (0,1)$（$n = 1,\cdots,N$），去噪扩散概率模型（DDPMs）（Ho等人，2020）考虑一个马尔可夫正向过程：</p>
+<script type="math/tex; mode=display">q_{M}(x_{1:N}|x_{0})=\prod_{n = 1}^{N}q_{M}(x_{n}|x_{n - 1}),q_{M}(x_{n}|x_{n - 1})=\mathcal{N}(x_{n}|\sqrt{\alpha_{n}}x_{n - 1},\beta_{n}I), \tag{1}</script><p>其中$I$是单位矩阵，$\alpha_{n}$和$\beta_{n}$是标量，且$\alpha_{n}:=1 - \beta_{n}$。Song等人（2020a）引入了一种更一般的非马尔可夫过程，由非负向量$\lambda = (\lambda_{1},\cdots,\lambda_{N}) \in \mathbb{R}_{\geq0}^{N}$索引：</p>
+<script type="math/tex; mode=display">q_{\lambda}(x_{1:N}|x_{0})=q_{\lambda}(x_{N}|x_{0})\prod_{n = 2}^{N}q_{\lambda}(x_{n - 1}|x_{n},x_{0}), \tag{2}</script><script type="math/tex; mode=display">q_{\lambda}(x_{N}|x_{0})=\mathcal{N}(x_{N}|\sqrt{\overline{\alpha}_{N}}x_{0},\overline{\beta}_{N}I),</script><script type="math/tex; mode=display">\tilde{\mu}_{n}(x_{n},x_{0})=\sqrt{\overline{\alpha}_{n - 1}}x_{0}+\sqrt{\overline{\beta}_{n - 1}-\lambda_{n}^{2}}\cdot\frac{x_{n}-\sqrt{\overline{\alpha}_{n}}x_{0}}{\sqrt{\overline{\beta}}_{n}},</script><script type="math/tex; mode=display">q_{\lambda}(x_{n - 1}|x_{n},x_{0})=\mathcal{N}(x_{n - 1}|\tilde{\mu}_{n}(x_{n},x_{0}),\lambda_{n}^{2}I),</script><p>这里$\overline{\alpha}_{n}:=\prod_{i = 1}^{n}\alpha_{i}$，$\overline{\beta}_{n}:=1-\overline{\alpha}_{n}$。实际上，当$\lambda_{n}^{2}=\tilde{\beta}_{n}$时，公式（2）包含了DDPM的正向过程作为一个特殊情况，其中$\tilde{\beta}_{n}:=\frac{\overline{\beta}_{n - 1}}{\overline{\beta}_{n}}\beta_{n}$。公式（2）的另一个特殊情况是去噪扩散隐式模型（DDIM）的正向过程，其中$\lambda_{n}^{2}=0$。此外，我们还可以进一步推导出$q_{\lambda}(x_{n}|x_{0})=\mathcal{N}(x_{n}|\sqrt{\overline{\alpha}_{n}}x_{0},\overline{\beta}_{n}I)$，它与$\lambda$无关。在本文的其余部分，我们将重点关注公式（2）中的正向过程，因为它更具一般性，为了简单起见，我们将省略索引$\lambda$，并将其表示为$q(x_{1:N}|x_{0})$。</p>
+<p>公式（2）的反向过程被定义为一个马尔可夫过程，旨在通过从标准高斯分布$p(x_{N})=\mathcal{N}(x_{N}|\overline{0},I)$逐渐去噪来逼近$q(x_{0})$：</p>
+<script type="math/tex; mode=display">p(x_{0:N})=p(x_{N})\prod_{n = 1}^{N}p(x_{n - 1}|x_{n}),p(x_{n - 1}|x_{n})=\mathcal{N}(x_{n - 1}|\mu_{n}(x_{n}),\sigma_{n}^{2}I),</script><p>其中$\mu_{n}(x_{n})$通常由一个与时间相关的基于得分的模型$s_{n}(x_{n})$（Song和Ermon，2019；Song等人，2020b）参数化：</p>
+<script type="math/tex; mode=display">\mu_{n}(x_{n})=\overline{\mu}_{n}(x_{n},\frac{1}{\sqrt{\overline{\alpha}_{n}}}(x_{n}+\overline{\beta}_{n}s_{n}(x_{n}))). \tag{3}</script><script type="math/tex; mode=display">L_{vb}=\mathbb{E}_{q}[- \log p(x_{0}|x_{1})+\sum_{n = 2}^{N}D_{KL}(q(x_{n - 1}|x_{0},x_{n})||p(x_{n - 1}|x_{n}))+D_{KL}(q(x_{N}|x_{0})||p(x_{N}))],</script><p>反向过程可以通过优化负对数似然的变分下界$L_{vb}$来学习：<br>1 Ho等人（2020）；Song等人（2020a）用$\tilde{\mu}_{n}(x_{n},\frac{1}{\sqrt{\alpha_{n}}}(x_{n}-\sqrt{\overline{\beta}_{n}}\epsilon_{n}(x_{n})))$对$\mu_{n}(x_{n})$进行参数化，通过令$s_{n}(x_{n})=-\frac{1}{\sqrt{\overline{\beta}_{n}}}\epsilon_{n}(x_{n})$，这与公式（3）等价。<br>这等价于优化正向过程和反向过程之间的KL散度：</p>
+<script type="math/tex; mode=display">\min_{\{\mu_{n},\sigma_{n}^{2}\}_{n = 1}^{N}}L_{vb}\Leftrightarrow\min_{\{\mu_{n},\sigma_{n}^{2}\}_{n = 1}^{N}}D_{KL}(q(x_{0:N})||p(x_{0:N})). \tag{4}</script><p>在实际应用中，为了提高样本质量，Ho等人（2020）没有直接优化$L_{vb}$，而是考虑了$L_{vb}$的一个重新加权变体来学习$s_{n}(x_{n})$：</p>
+<script type="math/tex; mode=display">\min_{\{s_{n}\}_{n = 1}^{N}}\mathbb{E}_{n}\overline{\beta}_{n}\mathbb{E}_{q_{n}(x_{n})}||s_{n}(x_{n})-\nabla_{x_{n}}\log q_{n}(x_{n})||^{2}=\mathbb{E}_{n,x_{0},\epsilon}||\epsilon+\sqrt{\beta_{n}}s_{n}(x_{n})||^{2}+c, \tag{5}</script><p>其中$n$在$1$到$N$之间均匀分布，$q_{n}(x_{n})$是正向过程在时间步$n$的边际分布，$\epsilon$是标准高斯噪声，等式右边的$x_{n}$通过$x_{n}=\sqrt{\overline{\alpha}_{n}}x_{0}+\sqrt{\overline{\beta}_{n}}\epsilon$进行重参数化，$c$是一个仅与$q$相关的常数。实际上，公式（5）正是得分匹配目标（Song和Ermon，2019）的加权和，它对于所有$n \in \{1,2,\cdots,N\}$都有一个最优解$s_{n}^{*}(x_{n})=\nabla_{x_{n}}\log q_{n}(x_{n})$。<br>注意，公式（5）没有为方差$\sigma_{n}^{2}$提供学习信号。实际上，在大多数先前的工作中，$\sigma_{n}^{2}$通常是手工设定的。在DDPMs（Ho等人，2020）中，两种常用的设置是$\sigma_{n}^{2}=\beta_{n}$和$\sigma_{n}^{2}=\tilde{\beta}_{n}$。在DDIMs中，Song等人（2020a）始终使用$\sigma_{n}^{2}=\lambda_{n}^{2}$。我们认为，这些手工设定的值通常不是公式（4）的真正最优解，会导致次优的性能。</p>
+<h3 id="3-最优反向方差的解析估计"><a href="#3-最优反向方差的解析估计" class="headerlink" title="3. 最优反向方差的解析估计"></a>3. 最优反向方差的解析估计</h3><p>对于一个DPM，我们首先证明，式（4）的最优均值<script type="math/tex">\mu_{n}^{*}(x_{n})</script>和最优方差<script type="math/tex">\sigma_{n}^{*2}</script>都可以用得分函数的解析形式表示，这在定理1中进行了总结。</p>
+<p><strong>定理1</strong>（式（4）最优解的得分表示，证明见附录A.2）。式（4）的最优解<script type="math/tex">\mu_{n}^{*}(x_{n})</script>和<script type="math/tex">\sigma_{n}^{*2}</script>为：</p>
+<script type="math/tex; mode=display">\mu_{n}^{*}\left(x_{n}\right)=\tilde{\mu}_{n}\left(x_{n}, \frac{1}{\sqrt{\overline{\alpha}_{n}}}\left(x_{n}+\overline{\beta}_{n} \nabla_{x_{n}} log q_{n}\left(x_{n}\right)\right)\right), \tag{6}</script><script type="math/tex; mode=display">\sigma_{n}^{*2}=\lambda_{n}^{2}+\left(\sqrt{\frac{\overline{\beta}_{n}}{\alpha_{n}}}-\sqrt{\overline{\beta}_{n-1}-\lambda_{n}^{2}}\right)^{2}\left(1-\overline{\beta}_{n} \mathbb{E}_{q_{n}\left(x_{n}\right)} \frac{\left\| \nabla_{x_{n}} log q_{n}\left(x_{n}\right)\right\| ^{2}}{d}\right), \tag{7}</script><p>其中$q_{n}(x_{n})$是正向过程在时间步$n$的边际分布，$d$是数据的维度。</p>
+<p>定理1的证明包含三个关键步骤：</p>
+<ul>
+<li>第一步（见引理9）称为矩匹配（Minka，2013），它表明在KL散度下用高斯密度逼近任意密度，等同于将两个密度的前两阶矩设置为相同。据我们所知，矩匹配与DPM之间的联系此前尚未被揭示。</li>
+<li>第二步（见引理13），我们仔细利用以$x_{0}$为条件的总方差定律，将$q(x_{n - 1}|x_{n})$的二阶矩转换为$q(x_{0}|x_{n})$的二阶矩。</li>
+<li>第三步（见引理11），我们意外地发现$q(x_{0}|x_{n})$的二阶矩可以用得分函数表示，然后将得分表示代入$q(x_{n - 1}|x_{n})$的二阶矩中，从而得到定理1中的最终结果。</li>
+</ul>
+<p>定理1中的结果（以及后面出现的其他结果）对于DDPM正向过程（即$\lambda_{n}^{2}=\tilde{\beta}_{n}$）可以进一步简化，详细内容见附录D。此外，我们还可以将定理1扩展到具有连续时间步的DPM（Song等人，2020b；Kingma等人，2021），在这种情况下，它们相应的最优均值和方差也可以由得分函数以解析形式确定（扩展内容见附录E.1）。</p>
+<p>注意，我们在式（6）中最优均值$\mu_{n}^{*}(x_{n})$的解析形式，与之前（Ho等人，2020）在式（3）中对$\mu_{n}(x_{n})$的参数化形式是一致的。唯一的区别在于，式（3）用基于得分的模型$s_{n}(x_{n})$，替代了式（6）中的得分函数$\nabla_{x_{n}} log q_{n}(x_{n})$ 。这一结果明确表明，式（5）在本质上与$L_{vb}$目标具有相同的最优均值解，为先前的研究提供了一种简单且不同的视角。</p>
+<p>与（Ho等人，2020；Song等人，2020a）中使用的手工设定策略不同，定理1表明，在给定预训练的基于得分的模型$s_{n}(x_{n})$的情况下，最优反向方差$\sigma_{n}^{*2}$也可以在无需任何额外训练的情况下进行估计。实际上，我们首先通过$\Gamma = (\Gamma_{1}, \cdots, \Gamma_{N})$来估计$\nabla_{x_{n}} log q_{n}(x_{n})$的期望均方范数，其中：</p>
+<script type="math/tex; mode=display">\Gamma_{n}=\frac{1}{M} \sum_{m=1}^{M} \frac{\left\| s_{n}\left(x_{n, m}\right)\right\| ^{2}}{d}, x_{n, m} \stackrel{i i d}{\sim} q_{n}\left(x_{n}\right). \tag{8}</script><p>$M$是蒙特卡罗样本的数量。对于一个预训练模型，我们只需要计算一次$\Gamma$，并在下游计算中重复使用它（关于$\Gamma$计算成本的详细讨论见附录H.1）。然后，根据式（7），我们按如下方式估计$\sigma_{n}^{*2}$：</p>
+<script type="math/tex; mode=display">\hat{\sigma}_{n}^{2}=\lambda_{n}^{2}+\left(\sqrt{\frac{\overline{\beta}_{n}}{\alpha_{n}}}-\sqrt{\overline{\beta}_{n-1}-\lambda_{n}^{2}}\right)^{2}\left(1-\overline{\beta}_{n} \Gamma_{n}\right). \tag{9}</script><p>我们通过实验验证了定理1。在图1（a）中，我们绘制了在CIFAR10上训练的DDPM的解析估计值$\hat{\sigma}_{n}^{2}$，以及Ho等人（2020）使用的基线$\beta_{n}$和$\tilde{\beta}_{n}$。在较小的时间步长下，这些策略的表现有所不同。图1（b）表明，对于$L_{vb}$的每一项，我们的$\hat{\sigma}_{n}^{2}$都优于基线，尤其是在较小的时间步长下。我们在其他数据集上也得到了类似的结果（见附录G.1）。此外，我们发现，只需少量的蒙特卡罗（MC）样本（例如，$M = 10, 100$），就足以使蒙特卡罗方法带来的方差足够小，并且能够获得与大量样本（大$M$）相似的性能（见附录G.2）。我们还在附录H.2中讨论了插入$\hat{\sigma}_{n}^{2}$后$L_{vb}$的随机性。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f1.png" alt="f1"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图1：比较我们的解析估计值$\hat{\sigma}_{n}^{2}$与先前工作中手工设定的方差$\beta_{n}$和$\tilde{\beta}_{n}$ 。(a)比较了不同时间步长下的方差值。(b)比较了$L_{vb}$中每个时间步长对应的项。$L_{vb}$的值是相应曲线下的面积。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="3-1-界定最优反向方差以减少偏差"><a href="#3-1-界定最优反向方差以减少偏差" class="headerlink" title="3.1 界定最优反向方差以减少偏差"></a>3.1 界定最优反向方差以减少偏差</h4><p>根据式（7）和式（9），解析估计值$\hat{\sigma}_{n}^{2}$的偏差为：</p>
+<script type="math/tex; mode=display">\left|\sigma_{n}^{* 2}-\hat{\sigma}_{n}^{2}\right|=\underbrace{\left(\sqrt{\frac{\overline{\beta}_{n}}{\alpha_{n}}}-\sqrt{\overline{\beta}_{n-1}-\lambda_{n}^{2}}\right)^{2} \overline{\beta}_{n}}_{系数} \underbrace{\left|\Gamma_{n}-\mathbb{E}_{q_{n}\left(x_{n}\right)} \frac{\left|\nabla_{x_{n}} log q_{n}\left(x_{n}\right)\right|^{2}}{d}\right|}_{近似误差}. \tag{10}</script><p>我们对方差的估计使用了基于得分的模型$s_{n}(x_{n})$来近似真实的得分函数$\nabla_{x_{n}} log q_{n}(x_{n})$。因此，对于一个预训练模型，式（10）中的近似误差是不可避免的。同时，如果我们使用更短的轨迹进行采样（详见第4节），式（10）中的系数可能会很大，这可能会导致较大的偏差。</p>
+<p>为了减少偏差，我们推导了最优反向方差<script type="math/tex">\sigma_{n}^{*2}</script>的上下界，并根据这些界限对估计值进行裁剪。重要的是，这些界限与数据分布$q(x_{0})$无关，因此可以高效地计算。我们首先在不做任何数据假设的情况下，推导出<script type="math/tex">\sigma_{n}^{*2}</script>的上下界。然后，如果数据分布有界，我们展示了<script type="math/tex">\sigma_{n}^{*2}</script>的另一个上界。我们在定理2中正式给出这些界限。</p>
+<p><strong>定理2</strong>（最优反向方差的界限，证明见附录A.3）。$\sigma_{n}^{*2}$具有以下上下界：</p>
+<script type="math/tex; mode=display">\lambda_{n}^{2} \leq \sigma_{n}^{*2} \leq \lambda_{n}^{2}+\left(\sqrt{\frac{\overline{\beta}_{n}}{\alpha_{n}}}-\sqrt{\overline{\beta}_{n-1}-\lambda_{n}^{2}}\right)^{2}. \tag{11}</script><p>如果我们进一步假设$q(x_{0})$是在$[a, b]^{d}$上的有界分布，其中$d$是数据的维度，那么$\sigma_{n}^{_2}$可以进一步被上界约束为：</p>
+<script type="math/tex; mode=display">\sigma_{n}^{*2} \leq \lambda_{n}^{2}+\left(\sqrt{\overline{\alpha}_{n-1}}-\sqrt{\overline{\beta}_{n-1}-\lambda_{n}^{2}} \cdot \sqrt{\frac{\overline{\alpha}_{n}}{\overline{\beta}_{n}}}\right)^{2}\left(\frac{b - a}{2}\right)^{2}. \tag{12}</script><p>定理2表明，先前工作（Ho等人，2020；Song等人，2020a）中手工设定的反向方差$\lambda_{n}^{2}$低估了$\sigma_{n}^{*2}$。例如，在DDPM中$\lambda_{n}^{2}=\tilde{\beta}_{n}$。我们在图1（a）中将其与我们的估计值进行比较，结果与定理2一致。此外，$q(x_{0})$的有界性假设在包括图像生成建模在内的许多场景中都成立，式（11）和式（12）中的哪个上界更紧取决于$n$。因此，我们根据最小的上界对估计值进行裁剪。此外，我们在附录G.3中通过数值方法展示了这些界限是紧密的。</p>
+<h3 id="4-最优轨迹的解析估计"><a href="#4-最优轨迹的解析估计" class="headerlink" title="4. 最优轨迹的解析估计"></a>4. 最优轨迹的解析估计</h3><p>完整时间步长$N$的数量可能很大，这使得实际推理过程较为缓慢。因此，我们可以构建一个更短的正向过程$q(x_{\tau_{1}},\cdots,x_{\tau_{K}}|x_{0})$，该过程受限于由$K$个时间步组成的轨迹$1 = \tau_{1}&lt;\cdots&lt;\tau_{K}=N$（Song等人，2020a；Nichol和Dhariwal，2021；Watson等人，2021），$K$可以远小于$N$，从而加快推理速度。正式地，较短的过程定义为$q(x_{\tau_{1}},\cdots,x_{\tau_{K}}|x_{0}) = q(x_{\tau_{K}}|x_{0})\prod_{k = 2}^{K}q(x_{\tau_{k - 1}}|x_{\tau_{k}},x_{0})$，其中：</p>
+<script type="math/tex; mode=display">q(x_{\tau_{k - 1}}|x_{\tau_{k}},x_{0})=\mathcal{N}(x_{\tau_{k - 1}}|\tilde{\mu}_{\tau_{k - 1}|\tau_{k}}(x_{\tau_{k}},x_{0}),\lambda_{\tau_{k - 1}|\tau_{k}}^{2}I), \tag{13}</script><script type="math/tex; mode=display">\tilde{\mu}_{\tau_{k - 1}|\tau_{k}}(x_{\tau_{k}},x_{0})=\sqrt{\overline{\alpha}_{\tau_{k - 1}}}x_{0}+\sqrt{\overline{\beta}_{\tau_{k - 1}}-\lambda_{\tau_{k - 1}|\tau_{k}}^{2}}\cdot\frac{x_{\tau_{k}}-\sqrt{\overline{\alpha}_{\tau_{k}}}x_{0}}{\sqrt{\overline{\beta}_{\tau_{k}}}}.</script><p>相应的反向过程为$p(x_{0},x_{\tau_{1}},\cdots,x_{\tau_{K}})=p(x_{\tau_{K}})\prod_{k = 1}^{K}p(x_{\tau_{k - 1}}|x_{\tau_{k}})$，其中：</p>
+<script type="math/tex; mode=display">p(x_{\tau_{k - 1}}|x_{\tau_{k}})=\mathcal{N}(x_{\tau_{k - 1}}|\mu_{\tau_{k - 1}|\tau_{k}}(x_{\tau_{k}}),\sigma_{\tau_{k - 1}|\tau_{k}}^{2}I).</script><p>根据定理1，在KL散度最小化的意义下，最优<script type="math/tex">p^{*}(x_{\tau_{k - 1}}|x_{\tau_{k}})</script>的均值和方差为：</p>
+<script type="math/tex; mode=display">\mu_{\tau_{k - 1}|\tau_{k}}^{*}(x_{\tau_{k}})=\tilde{\mu}_{\tau_{k - 1}|\tau_{k}}(x_{\tau_{k}},\frac{1}{\sqrt{\overline{\alpha}_{\tau_{k}}}}(x_{\tau_{k}}+\overline{\beta}_{\tau_{k}}\nabla_{x_{\tau_{k}}}\log q(x_{\tau_{k}}))),</script><script type="math/tex; mode=display">\sigma_{\tau_{k - 1}|\tau_{k}}^{*2}=\lambda_{\tau_{k - 1}|\tau_{k}}^{2}+(\sqrt{\frac{\overline{\beta}_{\tau_{k}}}{\alpha_{\tau_{k}|\tau_{k - 1}}}}-\sqrt{\overline{\beta}_{\tau_{k - 1}}-\lambda_{\tau_{k - 1}|\tau_{k}}^{2}})^{2}(1-\overline{\beta}_{\tau_{k}}\mathbb{E}_{q(x_{\tau_{k}})}\frac{\|\nabla_{x_{\tau_{k}}}\log q(x_{\tau_{k}})\|^{2}}{d}),</script><p>其中$\alpha_{\tau_{k}|\tau_{k - 1}}:=\overline{\alpha}_{\tau_{k}}/\overline{\alpha}_{\tau_{k - 1}}$。根据定理2，我们可以推导出<script type="math/tex">\sigma_{\tau_{k - 1}|\tau_{k}}^{*2}</script>的类似界限（详见附录C）。与式（9）类似，<script type="math/tex">\sigma_{\tau_{k - 1}|\tau_{k}}^{*2}</script>的估计值为：</p>
+<script type="math/tex; mode=display">\hat{\sigma}_{\tau_{k - 1}|\tau_{k}}^{2}=\lambda_{\tau_{k - 1}|\tau_{k}}^{2}+(\sqrt{\frac{\overline{\beta}_{\tau_{k}}}{\alpha_{\tau_{k}|\tau_{k - 1}}}}-\sqrt{\overline{\beta}_{\tau_{k - 1}}-\lambda_{\tau_{k - 1}|\tau_{k}}^{2}})^{2}(1-\overline{\beta}_{\tau_{k}}\Gamma_{\tau_{k}}),</script><p>其中$\Gamma$在式（8）中定义，并且可以在不同的轨迹选择中共享。基于上述最优反向过程$p^{*}$，我们进一步优化轨迹：</p>
+<script type="math/tex; mode=display">\min_{\tau_{1},\cdots,\tau_{K}}D_{KL}(q(x_{0},x_{\tau_{1}},\cdots,x_{\tau_{K}})\|p^{*}(x_{0},x_{\tau_{1}},\cdots,x_{\tau_{K}}))=\frac{d}{2}\sum_{k = 2}^{K}J(\tau_{k - 1},\tau_{k})+c, \tag{14}</script><p>其中$J(\tau_{k - 1},\tau_{k})=\log(\sigma_{\tau_{k - 1}|\tau_{k}}^{*2}/\lambda_{\tau_{k - 1}|\tau_{k}}^{2})$，$c$是与轨迹$\tau$无关的常数（证明见附录A.4）。式（14）中的KL散度可以分解为$K - 1$项，并且每一项都可以用得分函数的解析形式表示。我们将每一项视为在$(\tau_{k - 1},\tau_{k})$处评估的成本函数$J$，并且在给定$\Gamma$的情况下，它可以通过$J(\tau_{k - 1},\tau_{k})\approx\log(\hat{\sigma}_{\tau_{k - 1}|\tau_{k}}^{2}/\lambda_{\tau_{k - 1}|\tau_{k}}^{2})$有效地估计，这不需要任何神经网络计算。虽然对数函数即使在已知正确得分函数的情况下也会引入偏差，但可以通过增加$M$来减小偏差。</p>
+<p>结果，式（14）简化为一个有向图上的经典最小成本路径问题（Watson等人，2021），其中节点为$\{1,2,\cdots,N\}$，从$s$到$t$的边的成本为$J(s,t)$。我们想要找到一条从1开始并终止于$N$的$K$个节点的最小成本路径。这个问题可以通过Watson等人（2021）引入的动态规划（DP）算法来解决。我们在附录B中给出了该算法。此外，我们还可以将式（14）扩展到具有连续时间步的DPM（Song等人，2020b；Kingma等人，2021），在这种情况下，它们相应的最优KL散度也可以分解为由得分函数确定的项。因此，DP算法同样适用。扩展内容见附录E.2。</p>
+<h3 id="5-得分函数与数据协方差矩阵之间的关系"><a href="#5-得分函数与数据协方差矩阵之间的关系" class="headerlink" title="5. 得分函数与数据协方差矩阵之间的关系"></a>5. 得分函数与数据协方差矩阵之间的关系</h3><p>在这部分内容中，我们进一步揭示得分函数与数据协方差矩阵之间的关系。实际上，数据协方差矩阵可以分解为$\mathbb{E}_{q(x_{n})}Cov_{q(x_{0}|x_{n})}[x_{0}]$与$Cov_{q(x_{n})}\mathbb{E}_{q(x_{0}|x_{n})}[x_{0}]$之和，其中第一项可以用得分函数表示。此外，当$n$足够大时，由于$x_{0}$和$x_{n}$几乎相互独立，第二项可以忽略不计。在这种情况下，数据协方差矩阵几乎由得分函数决定。目前，这种关系仅停留在理论层面，其实际意义尚不清楚。详细内容见附录A.5。</p>
+<h3 id="6-实验"><a href="#6-实验" class="headerlink" title="6. 实验"></a>6. 实验</h3><p>我们考虑DDPM正向过程（$\lambda_{n}^{2}=\tilde{\beta}_{n}$）和DDIM正向过程（$\lambda_{n}^{2}=0$），这是公式（2）最常用的两个特殊情况。我们将使用解析估计$\sigma_{n}^{2}=\hat{\sigma}_{n}^{2}$的方法称为Analytic-DPM，并根据所使用的正向过程明确地将其称为Analytic-DDPM或Analytic-DDIM。我们将我们的Analytic-DPM与原始DDPM（Ho等人，2020）进行比较，原始DDPM的反向方差为$\sigma_{n}^{2}=\tilde{\beta}_{n}$或$\sigma_{n}^{2}=\beta_{n}$，同时也与原始DDIM（Song等人，2020a）进行比较，原始DDIM的反向方差为$\sigma_{n}^{2}=\lambda_{n}^{2}=0$。</p>
+<p>我们为Analytic-DPM和基线模型采用两种方法来获取轨迹。第一种是均匀轨迹（Even Trajectory，ET）（Nichol和Dhariwal，2021），其中时间步根据固定步长确定（详见附录F.4）。第二种是最优轨迹（Optimal Trajectory，OT）（Watson等人，2021），其中时间步通过动态规划计算（见第4节）。注意，基线模型基于带有手工设定方差的$L_{vb}$来计算OT（Watson等人，2021）。</p>
+<p>我们将Analytic-DPM应用于先前工作提供的三个预训练基于得分的模型（Ho等人，2020；Song等人，2020a；Nichol和Dhariwal，2021），以及我们自己训练的两个基于得分的模型。预训练的基于得分的模型分别在CelebA 64x64（Liu等人，2015）、ImageNet 64x64（Deng等人，2009）和LSUN Bedroom（Yu等人，2015）上进行训练。我们的基于得分的模型在CIFAR10（Krizhevsky等人，2009）上使用两种不同的正向噪声调度进行训练：线性调度（Linear Schedule，LS）（Ho等人，2020）和余弦调度（Cosine Schedule，CS）（Nichol和Dhariwal，2021）。我们分别将它们表示为CIFAR10（LS）和CIFAR10（CS）。对于ImageNet 64x64，完整时间步的数量$N$为4000，对于其他数据集为1000。在采样过程中，我们按照Ho等人（2020）的方法，仅显示$p(x_{0}|x_{1})$的均值并丢弃噪声，并且我们对表2中比较的所有方法额外裁剪$p(x_{1}|x_{2})$的噪声尺度$\sigma_{2}$（详见附录F.2及其在附录G.4中的消融研究）。更多实验细节见附录F。</p>
+<p>我们进行了广泛的实验，以证明Analytic-DPM可以在提高预训练DPM推理效率的同时，实现可比甚至更优的性能。具体来说，6.1节和6.2节分别展示了似然性和样本质量的结果。附录G中提供了消融研究等其他实验。</p>
+<h4 id="6-1-似然性结果"><a href="#6-1-似然性结果" class="headerlink" title="6.1 似然性结果"></a>6.1 似然性结果</h4><p>由于在DDIM正向过程中$\lambda_{n}^{2}=0$，其变分下界$L_{vb}$是无穷大的。因此，我们仅考虑DDPM正向过程下的似然性结果。如表1所示，在所有三个数据集上，我们的Analytic-DPM使用ET和OT都一致地提高了原始DDPM的似然性结果。值得注意的是，使用更短的轨迹（即更少的推理时间），带有OT的Analytic-DPM仍然可以超越基线模型。在表1中，我们选择使Analytic-DPM能够超越具有完整时间步的基线模型的最小$K$，并对相应结果加下划线。具体而言，Analytic-DPM在CIFAR10（LS）和ImageNet 64x64上实现了40倍的加速，在CIFAR10（CS）和CelebA 64x64上实现了20倍的加速。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t1.png" alt="t1"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表1：DDPM正向过程下的负对数似然（比特/维度）。我们展示了不同时间步数量K的轨迹下的结果。我们选择使得Analytic-DPM能够超越具有完整时间步的基线模型的最小K值，并对相应结果加下划线。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>虽然我们主要关注选择反向方差的无学习策略，但我们也与另一个强大的基线模型进行了比较，该基线模型通过神经网络预测方差（Nichol和Dhariwal，2021）。在使用完整时间步的情况下，Analytic-DPM在ImageNet 64x64上实现了3.61的负对数似然（NLL），与Nichol和Dhariwal（2021）中报告的3.57非常接近。此外，虽然Nichol和Dhariwal（2021）报告说ET会大幅降低他们的神经网络参数化方差的对数似然性能，但Analytic-DPM在使用ET时表现良好。详见附录G.6。</p>
+<h4 id="6-2-样本质量"><a href="#6-2-样本质量" class="headerlink" title="6.2 样本质量"></a>6.2 样本质量</h4><p>至于样本质量，我们考虑常用的弗雷歇初始距离（Frechet Inception Distance，FID）分数（Heusel等人，2017），分数越低表示样本质量越好。如表2所示，在不同$K$的轨迹下，我们的Analytic-DDIM一致地提高了原始DDIM的样本质量。这使我们能够在少于50个时间步内生成高质量样本，与完整时间步相比，实现了20到80倍的加速。实际上，在大多数情况下，Analytic-DDIM最多只需要50个时间步就能获得与基线相似的性能。此外，Analytic-DDPM在大多数情况下也提高了原始DDPM的样本质量。为了公平起见，我们对表2中的所有结果都使用了Nichol和Dhariwal（2021）中的ET实现。我们还在附录G.7中报告了使用Song等人（2020a）中略微不同的ET实现对CelebA 64x64的结果，我们的Analytic-DPM仍然有效。我们在附录G.9中展示了生成的样本。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t2.png" alt="t2"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表2：DDPM和DDIM正向过程下的弗雷歇初始距离（FID）。所有结果均在均匀轨迹（ET）下进行评估。带有†的结果略优于Ho等人（2020）报告的3.17，这是因为我们采用了Nichol和Dhariwal（2021）改进后的模型架构。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>我们观察到，在FID指标下，Analytic-DDPM并不总是优于基线模型，这与表1中的似然性结果不一致。这种现象本质上源于这两个指标的不同性质，并且在许多先前的工作中已有研究（Theis等人，2015；Ho等人，2020；Nichol和Dhariwal，2021；Song等人，2021；Vahdat等人，2021；Watson等人，2021；Kingma等人，2021）。同样，使用更多的时间步并不一定能获得更好的FID。例如，见表2中CIFAR10（LS）上的Analytic-DDPM结果和ImageNet 64x64上的DDIM结果。在Nichol和Dhariwal（2021）的图8中也观察到了类似的现象。此外，带有OT的DPM（包括Analytic-DPM）并不一定能获得更好的FID分数（Watson等人，2021）（见附录G.5中Analytic-DPM中ET和OT的比较）。</p>
+<p>我们在表3中总结了不同方法的效率，其中我们将达到FID约为6所需的最少时间步作为指标，以便进行更直接的比较。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t3.png" alt="t3"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表3：效率对比，基于达到FID约为6所需的最少时间步数（以及相应的FID）。为获得最强的基线结果，带有†的结果是通过使用Song等人（2020a）的二次轨迹而非默认的均匀轨迹得到的。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="7-相关工作"><a href="#7-相关工作" class="headerlink" title="7. 相关工作"></a>7. 相关工作</h3><ul>
+<li><strong>DPMs及其应用</strong>：扩散概率模型（DPM）最初由Sohl-Dickstein等人（2015）提出，通过优化变分下界$L_{vb}$进行训练。Ho等人（2020）提出了DPMs的新参数化形式（公式3），并使用$L_{vb}$的重新加权变体（公式5）来学习DPMs。Song等人（2020b）将添加噪声的正向过程建模为随机微分方程（SDE），并引入了具有连续时间步的DPMs。随着这些重要改进，DPMs在各种应用中展现出巨大潜力，包括语音合成（Chen等人，2020；Kong等人，2020；Popov等人，2021；Lam等人，2021）、可控生成（Choi等人，2021；Sinha等人，2021）、图像超分辨率（Saharia等人，2021；Li等人，2021）、图像到图像转换（Sasaki等人，2021）、形状生成（Zhou等人，2021）和时间序列预测（Rasul等人，2021）。</li>
+<li><strong>更快的DPMs</strong>：一些研究试图在保持DPM性能的同时找到短轨迹。Chen等人（2020）通过网格搜索找到了仅六个时间步的有效轨迹。然而，由于网格搜索的时间复杂度呈指数增长，它仅适用于非常短的轨迹。Watson等人（2021）将轨迹搜索建模为最小成本路径问题，并引入动态规划（DP）算法来解决该问题。我们的工作使用了这种DP算法，其中成本被定义为最优KL散度的一项。除了这些轨迹搜索技术，Luhman和Luhman（2021）将反向去噪过程压缩为单步模型；San-Roman等人（2021）在推理过程中动态调整轨迹。这两种方法在获得预训练的DPM后都需要额外的训练。对于具有连续时间步的DPMs（Song等人，2020b），Song等人（2020b）引入了常微分方程（ODE），提高了采样效率并实现了精确的似然计算。然而，似然计算涉及随机迹估计器，需要多次运行才能准确计算。Jolicoeur-Martineau等人（2021）引入了一种先进的SDE求解器，以更高效的方式模拟反向过程。然而，基于该求解器的对数似然计算并未明确说明。</li>
+<li><strong>DPMs中的方差学习</strong>：除了反向方差，也有研究致力于学习正向噪声调度（即正向方差）。Kingma等人（2021）提出了连续时间步上的变分扩散模型（VDMs），它使用信噪比函数对正向方差进行参数化，并直接优化变分下界目标以获得更好的对数似然。虽然我们主要将方法应用于DDPMs和DDIMs，但估计最优反向方差也可应用于VDMs（见附录E）。</li>
+</ul>
+<h3 id="8-结论"><a href="#8-结论" class="headerlink" title="8. 结论"></a>8. 结论</h3><p>我们证明了扩散概率模型的最优反向方差和相应的最优KL散度都可以用其得分函数的解析形式表示。在此基础上，我们提出了Analytic-DPM，这是一个无需训练的推理框架，它利用蒙特卡罗方法和预训练的基于得分的模型来估计方差和KL散度的解析形式。我们推导了最优方差的边界以纠正潜在偏差，并揭示了得分函数与数据协方差矩阵之间的关系。在实验中，我们的Analytic-DPM提高了多种扩散概率模型在似然结果方面的效率和性能，并且能高效生成高质量样本。</p>
+
       
     </div>
 
@@ -280,10 +534,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2025-03-12 16:44:25 / 修改时间：19:30:02" itemprop="dateCreated datePublished" datetime="2025-03-12T16:44:25+08:00">2025-03-12</time>
+              <time title="创建时间：2025-03-12 16:44:25" itemprop="dateCreated datePublished" datetime="2025-03-12T16:44:25+08:00">2025-03-12</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-03-14 10:42:26" itemprop="dateModified" datetime="2025-03-14T10:42:26+08:00">2025-03-14</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -305,7 +565,64 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          
+          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="引言：生成模型"><a href="#引言：生成模型" class="headerlink" title="引言：生成模型"></a>引言：生成模型</h3><p>给定来自目标分布的观测样本x，生成模型的目标是学习对其真实数据分布$p(x)$进行建模。一旦完成学习，我们就可以根据需要从近似模型中生成新样本。此外，在某些公式中，我们还可以使用所学模型来评估观测数据或生成数据的似然性。</p>
+<p>当前文献中有几个著名的研究方向，我们将仅在较高层次上简要介绍。生成对抗网络（GANs）对复杂分布的采样过程进行建模，这种建模是通过对抗方式学习的。另一类生成模型被称为“基于似然的”，旨在学习一个为观测数据样本分配高似然的模型。这包括自回归模型、归一化流和变分自编码器（VAEs）。另一种类似的方法是基于能量的建模，其中分布被学习为一个任意灵活的能量函数，然后进行归一化。</p>
+<p>分数生成模型与之高度相关；它们不是直接学习对能量函数本身进行建模，而是通过神经网络学习基于能量模型的分数。在本文中，我们将探讨并回顾扩散模型，正如我们将展示的那样，扩散模型同时具有基于似然和基于分数的解释。我们将极其详细地展示这些模型背后的数学原理，旨在让任何人都能理解扩散模型是什么以及它们的工作原理。</p>
+<h3 id="背景：证据下界、变分自编码器和分层变分自编码器"><a href="#背景：证据下界、变分自编码器和分层变分自编码器" class="headerlink" title="背景：证据下界、变分自编码器和分层变分自编码器"></a>背景：证据下界、变分自编码器和分层变分自编码器</h3><p>对于许多模态，我们可以认为所观察到的数据是由一个相关的不可见潜在变量表示或生成的，我们用随机变量$z$来表示这个潜在变量。表达这一概念的最佳直观方式是通过柏拉图的洞穴寓言。在这个寓言中，一群人一生都被锁在洞穴里，只能看到投射在他们面前墙壁上的二维影子，这些影子是由在火前经过的不可见三维物体产生的。对于这些人来说，他们所观察到的一切实际上是由他们永远无法看到的更高维抽象概念所决定的。</p>
+<p>类似地，我们在现实世界中遇到的物体也可能是由一些更高级的表示生成的；例如，这些表示可以封装颜色、大小、形状等抽象属性。那么，我们所观察到的可以被解释为这些抽象概念的三维投影或实例化，就像洞穴里的人所观察到的实际上是三维物体的二维投影一样。虽然洞穴里的人永远无法看到（甚至完全理解）隐藏的物体，但他们仍然可以对其进行推理和推断；同样，我们可以近似描述所观察数据的潜在表示。</p>
+<p>柏拉图的洞穴寓言说明了潜在变量作为决定观察结果的潜在不可观察表示的概念，但这个类比的一个局限性是，在生成建模中，我们通常寻求学习低维潜在表示，而不是高维表示。这是因为在没有强先验的情况下，尝试学习比观察结果维度更高的表示是徒劳的。另一方面，学习低维潜在表示也可以被视为一种压缩形式，并且有可能揭示描述观察结果的语义有意义的结构。</p>
+<h4 id="证据下界"><a href="#证据下界" class="headerlink" title="证据下界"></a>证据下界</h4><p>从数学角度来看，我们可以将潜在变量和观察到的数据想象为由联合分布$p(x,z)$建模。回想一下，生成建模的一种方法，即 “基于似然” 的方法，是学习一个模型来最大化所有观察到的x的似然$p(x)$。我们有两种方法可以处理这个联合分布，以得到纯粹观察数据的似然$p(x)$：我们可以明确地对潜在变量$z$进行边缘化：</p>
+<script type="math/tex; mode=display">p(x)=\int p(x,z)dz \tag{1}</script><p>或者，我们也可以利用概率的链式法则：</p>
+<script type="math/tex; mode=display">p(x)=\frac{p(x,z)}{p(z|x)} \tag{2}</script><p>直接计算并最大化似然$p(x)$是困难的，因为这要么涉及在公式（1）中对所有潜在变量$z$进行积分，对于复杂模型来说这是难以处理的；要么在公式（2）中需要访问真实的潜在编码器$p(z|x)$。然而，利用这两个公式，我们可以推导出一个称为证据下界（ELBO）的项，正如其名称所示，它是证据的下界。在这种情况下，证据被量化为观察数据的对数似然。因此，最大化ELBO成为优化潜在变量模型的替代目标；在理想情况下，当ELBO被强大地参数化并完美优化时，它与证据完全等价。正式地，ELBO的公式为：</p>
+<script type="math/tex; mode=display">\mathbb{E}_{q_{\phi}(z|x)}\left[\log \frac{p(x,z)}{q_{\phi}(z|x)}\right] \tag{3}</script><p>为了明确与证据的关系，我们可以用数学公式表示为：</p>
+<script type="math/tex; mode=display">\log p(x) \geq \mathbb{E}_{q_{\phi}(z|x)}\left[\log \frac{p(x,z)}{q_{\phi}(z|x)}\right]\tag{4}</script><p>这里，$q_{\phi}(z|x)$是一个灵活的近似变分分布，其参数为$\phi$，我们试图对其进行优化。直观地说，它可以被认为是一个可参数化的模型，用于估计给定观察值x时潜在变量的真实分布；换句话说，它试图逼近真实后验分布$p(z|x)$。正如我们在探索变分自编码器时将会看到的，通过调整参数$\phi$来最大化ELBO，从而提高下界，我们能够获得可用于对真实数据分布进行建模并从中采样的组件，进而学习一个生成模型。现在，让我们更深入地探究为什么ELBO是我们想要最大化的目标。</p>
+<p>让我们从推导ELBO开始，使用公式（1）：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+\log p(x) &= \log \int p(x,z) dz & & (应用公式1) \tag{5}\\
+&= \log \int \frac{p(x,z)q_{\phi}(z|x)}{q_{\phi}(z|x)} dz & & (乘以1=\frac{q_{\phi}(z|x)}{q_{\phi}(z|x)}) \tag{6}\\
+&= \log \mathbb{E}_{q_{\phi}(z|x)}\left[\frac{p(x,z)}{q_{\phi}(z|x)}\right] & & (期望的定义) \tag{7}\\
+&\geq \mathbb{E}_{q_{\phi}(z|x)}\left[\log \frac{p(x,z)}{q_{\phi}(z|x)}\right] & & (应用詹森不等式) \tag{8}
+\end{align*}</script><p>在这个推导中，我们通过应用詹森不等式直接得到了下界。然而，这并没有为我们提供太多关于底层实际情况的有用信息；关键的是，这个证明没有直观地解释为什么ELBO实际上是证据的下界，因为詹森不等式只是一笔带过。此外，仅仅知道ELBO确实是数据的下界，并不能真正告诉我们为什么要将其作为目标进行最大化。为了更好地理解证据和ELBO之间的关系，让我们进行另一种推导，这次使用公式（2）：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+\log p(x) &= \log p(x)\int q_{\phi}(z|x)dz & (乘以1=\int q_{\phi}(z|x)dz)\\
+&= \int q_{\phi}(z|x)(\log p(x))dz & & (将证据放入积分中)\\
+&= E_{q_{\phi}(x|x)}[\log p(x)] & (期望的定义)\\
+&= \mathbb{E}_{q_{\phi}(x|x)}\left[\log \frac{p(z,z)}{p(z|x)}\right] & (应用公式2)\\
+&= \mathbb{E}_{q_{\phi}(x|x)}\left[\log \frac{p(x,z)q_{\phi}(z|x)}{p(z|x)}\right] & (乘以1=\frac{q_{\phi}(z|x)}{q_{\phi}(z|x)})\\
+&= \mathbb{E}_{q_{\phi}(z|x)}\left[\log \frac{p(x,z)}{q_{\phi}(z|x)}\frac{p(z|x)}{p(z|x)}\right] + D_{KL}(q_{\phi}(z|x)||p(z|x)) & (拆分期望)\\
+&= \mathbb{E}_{q_{\phi}(x|x)}\left[\log \frac{p(z,z)}{q_{\phi}(z|x)}\right] + D_{KL}(q_{\phi}(z|x)||p(z|x)) & (化简)
+\end{align*}</script><p>从这个推导中，我们从公式（15）清楚地观察到，证据等于ELBO加上近似后验分布$q_{\phi}(z|x)$和真实后验分布$p(z|x)$之间的KL散度。事实上，在第一次推导的公式（8）中，正是这个KL散度项被詹森不等式神奇地消除了。理解这个项不仅是理解ELBO和证据之间关系的关键，也是理解为什么优化ELBO是一个合适目标的关键。</p>
+<p>首先，我们现在知道为什么ELBO确实是一个下界：证据和ELBO之间的差异是一个严格非负的KL项，因此ELBO的值永远不会超过证据。<br><img src="https://pic1.zhimg.com/v2-8757675769575957959_b.jpg" alt="图1：变分自编码器的图形表示"><br><em>图1：变分自编码器的图形表示。这里，编码器$q(z|x)$为观察值x定义了潜在变量z的分布，$p(x|z)$将潜在变量解码为观察值</em></p>
+<p>其次，我们探究为什么要最大化ELBO。在引入了我们想要建模的潜在变量z之后，我们的目标是学习描述观察数据的潜在结构。换句话说，我们希望优化变分后验分布$q_{\phi}(z|x)$的参数，使其与真实后验分布$p(z|x)$完全匹配，这可以通过最小化它们的KL散度（理想情况下为零）来实现。不幸的是，直接最小化这个KL散度项是难以处理的，因为我们无法访问真实的$p(z|x)$分布。然而，请注意，在公式（15）的左侧，数据的似然（因此我们的证据项$\log p(x)$）相对于$\phi$始终是一个常数，因为它是通过对联合分布$p(x,z)$中的所有潜在变量z进行边缘化计算得到的，与$\phi$无关。由于ELBO和KL散度项的和是一个常数，任何相对于$\phi$对ELBO项的最大化必然会导致对KL散度项的等量最小化。因此，最大化ELBO可以作为学习如何完美建模真实潜在后验分布的替代方法；我们对ELBO的优化越多，我们的近似后验分布就越接近真实后验分布。此外，一旦训练完成，ELBO也可以用于估计观察到的数据或生成数据的似然，因为它是为了逼近模型证据$\log p(x)$而学习的。</p>
+<h4 id="变分自编码器"><a href="#变分自编码器" class="headerlink" title="变分自编码器"></a>变分自编码器</h4><p>在变分自编码器（VAE）的默认公式中，我们直接最大化ELBO。这种方法是变分的，因为我们在由$\phi$参数化的一系列潜在后验分布中优化出最佳的$q_{\phi}(z|x)$。它被称为自编码器，是因为它让人联想到传统的自编码器模型，在该模型中，输入数据经过中间瓶颈表示步骤后被训练来预测自身。为了更清楚地说明这种联系，让我们进一步剖析ELBO项：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+\mathbb{E}_{q_{\phi}(z|x)}\left[\log \frac{p(x,z)}{q_{\phi}(z|x)}\right] &= \mathbb{E}_{q_{\phi}(z|x)}\left[\log \frac{p_{\theta}(x|z)p(z)}{q_{\phi}(z|x)}\right] & & (概率链式法则)\\
+&= \mathbb{E}_{q_{\phi}(z|x)}\left[\log p_{\theta}(x|z)\right] + \mathbb{E}_{q_{\phi}(z|x)}\left[\log \frac{p(z)}{q_{\phi}(z|x)}\right] & (拆分期望)\\
+&= \underbrace{\mathbb{E}_{q_{\phi}(z|x)}\left[\log p_{\theta}(x|z)\right]}_{重构项} - \underbrace{D_{KL}(q_{\phi}(z|x)||p(z))}_{先验匹配项} & (KL散度的定义)
+\end{align*}</script><p>在这种情况下，我们学习一个中间瓶颈分布$q_{\phi}(z|x)$，它可以被视为一个编码器；它将输入转换为潜在变量的分布。同时，我们学习一个确定性函数$p_{\theta}(x|z)$，将给定的潜在向量z转换为观察值x，这可以被解释为一个解码器。</p>
+<p>公式（19）中的两项都有直观的解释：第一项衡量解码器从我们的变分分布中重构的似然性；这确保了学习到的分布正在对有效的潜在变量进行建模，以便可以从这些潜在变量中再生原始数据。第二项衡量学习到的变分分布与对潜在变量的先验信念的相似程度。最小化这项鼓励编码器实际学习一个分布，而不是坍缩为狄拉克δ函数。因此，最大化ELBO相当于最大化其第一项并最小化其第二项。</p>
+<p>VAE的一个显著特点是如何联合优化参数$\phi$和$\theta$来最大化ELBO。VAE的编码器通常被选择为对具有对角协方差的多元高斯分布进行建模，而先验通常被选择为标准多元高斯分布：</p>
+<script type="math/tex; mode=display">q_{\phi}(z|x)=\mathcal{N}(z;\mu_{\phi}(x),\sigma_{\phi}^{2}(x)I) \tag{20}</script><script type="math/tex; mode=display">p(z)=\mathcal{N}(z;0,I) \tag{21}</script><p>然后，ELBO的KL散度项可以通过解析计算，重构项可以使用蒙特卡罗估计进行近似。我们的目标可以重写为：</p>
+<script type="math/tex; mode=display">\underset{\phi,\theta}{arg \max} \mathbb{E}_{q_{\phi}(z|x)}\left[\log p_{\theta}(x|z)\right] - D_{KL}(q_{\phi}(z|x)||p(z)) \approx \underset{\phi,\theta}{arg \max} \sum_{l=1}^{L} \log p_{\theta}(x|z^{(l)}) - D_{KL}(q_{\phi}(z|x)||p(z))</script><p>其中，潜在变量$\{z^{(l)}\}_{l = 1}^{L}$是从$q_{\phi}(z|x)$中采样得到的，对于数据集中的每个观察值x都是如此。然而，在这个默认设置中出现了一个问题：我们计算损失所依据的每个$z^{(l)}$都是通过随机采样过程生成的，而这个过程通常是不可微的。幸运的是，当$q_{\phi}(z|x)$被设计为对某些分布进行建模时，包括多元高斯分布，可以通过重参数化技巧来解决这个问题。</p>
+<p>重参数化技巧将一个随机变量重写为一个噪声变量的确定性函数；这允许通过梯度下降来优化非随机项。例如，从均值为$\mu$、方差为$\sigma^{2}$的正态分布$x \sim N(x;\mu,\sigma^{2})$中采样可以重写为：</p>
+<script type="math/tex; mode=display">x = \mu + \sigma\epsilon \text{ ，其中 } \epsilon \sim \mathcal{N}(\epsilon;0,I)</script><p>换句话说，任意高斯分布可以被解释为标准高斯分布（$\epsilon$是其样本），其均值通过加法从0移动到目标均值$\mu$，方差通过目标方差$\sigma^{2}$进行拉伸。因此，通过重参数化技巧，从任意高斯分布中采样可以通过从标准高斯分布中采样、将结果按目标标准差缩放并按目标均值移动来实现。</p>
+<p>在VAE中，每个$z$因此被计算为输入x和辅助噪声变量$\epsilon$的确定性函数：</p>
+<script type="math/tex; mode=display">z = \mu_{\phi}(x) + \sigma_{\phi}(x) \odot \epsilon \text{ ，其中 } \epsilon \sim \mathcal{N}(\epsilon;0,I)</script><p>其中$\odot$表示逐元素相乘。在这种重参数化的$z$版本下，可以根据需要计算关于$\phi$的梯度，以优化$\mu_{\phi}$和$\sigma_{\phi}$。因此，VAE利用重参数化技巧和蒙特卡罗估计来联合优化$\phi$和$\theta$以最大化ELBO。</p>
+<p>训练完VAE后，可以通过直接从潜在空间$p(z)$中采样，然后将其通过解码器来生成新数据。当$z$的维度小于输入$x$的维度时，变分自编码器特别有趣，因为我们可能正在学习紧凑、有用的表示。此外，当学习到一个语义有意义的潜在空间时，可以在将潜在向量传递给解码器之前对其进行编辑，以更精确地控制生成的数据。</p>
+<h4 id="分层变分自编码器"><a href="#分层变分自编码器" class="headerlink" title="分层变分自编码器"></a>分层变分自编码器</h4><p>分层变分自编码器（HVAE）是VAE的一种推广，它扩展到潜在变量的多个层次。在这种公式下，潜在变量本身被解释为由其他更高级、更抽象的潜在变量生成。直观地说，就像我们将观察到的三维物体视为由更高级的抽象潜在变量生成一样，柏拉图洞穴中的人将三维物体视为生成他们二维观察结果的潜在变量。因此，从柏拉图洞穴居民的角度来看，他们的观察结果可以被视为由深度为二（或更多）的潜在层次结构建模。</p>
+<p>在具有T个层次的一般HVAE中，每个潜在变量都可以依赖于所有先前的潜在变量，在本文中，我们关注一个特殊情况，称为马尔可夫HVAE（MHVAE）。在MHVAE中，生成过程是一个马尔可夫链；也就是说，层次结构中的每次转换都是马尔可夫的，解码每个潜在变量$z_{t}$仅依赖于前一个潜在变量$z_{t + 1}$。直观地说，从视觉上看，这可以看作是简单地将VAE堆叠在一起，如图2所示；描述这个模型的另一个合适术语是递归VAE。在数学上，我们将马尔可夫HVAE的联合分布和后验表示为：</p>
+<script type="math/tex; mode=display">p(x,z_{1:T}) = p(z_{T})p_{\theta}(x|z_{1})\prod_{t = 2}^{T}p_{\theta}(z_{t - 1}|z_{t})</script><script type="math/tex; mode=display">q_{\phi}(z_{1:T}|x) = q_{\phi}(z_{1}|x)\prod_{t = 2}^{T}q_{\phi}(z_{t}|z_{t - 1}) \tag{24}</script><p>然后，我们可以很容易地将ELBO扩展为：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+\log p(x) &= \log \int p(x,z_{1:T})dz_{1:T} & & (应用公式1)\\
+&= \log \int \frac{p(x,z_{1:T})q_{\phi}(z_{1:T}|x)}{q_{\phi}(z_{1:T}|x)}dz_{1:T} & & (乘以1=\frac{q_{\phi}(z_{1:T}|x)}{q_{\phi}(z_{1:T}|x)})\\
+&= \log \mathbb{E}_{q_{\phi}(z_{1:T}|x)}\left[\frac{p(x,z_{1:T})}{q_{\phi}(z_{1:T}|x)}\right] & & (期望的定义)\\
+&\geq \mathbb{E}_{q_{\phi}(z_{1:T}|x)}\left[\log \frac{p(x,z_{1:T})}{q_{\phi}(z_{1:T}|x)}\right] & & (应用詹森不等式)
+\end{align*}</script><p>然后，我们可以将联合分布（公式23）和后验（公式24）代入公式28，得到另一种</p>
+
       
     </div>
 
@@ -1322,87 +1639,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/02/28/Classifier-Free-Diffusion-Guidance%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
-      <meta itemprop="name" content="Zongqing Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lzq's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2025/02/28/Classifier-Free-Diffusion-Guidance%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" class="post-title-link" itemprop="url">Classifier-Free Diffusion Guidance论文精读</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2025-02-28 16:36:13" itemprop="dateCreated datePublished" datetime="2025-02-28T16:36:13+08:00">2025-02-28</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-03-08 09:57:33" itemprop="dateModified" datetime="2025-03-08T09:57:33+08:00">2025-03-08</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>分类器引导（Classifier guidance）是最近提出的一种方法，用于在条件扩散模型训练后，在模式覆盖和样本保真度之间进行权衡，这与其他类型生成模型中的低温采样或截断操作思路相似。分类器引导将扩散模型的得分估计与图像分类器的梯度相结合，因此需要训练一个与扩散模型分离的图像分类器。这也引发了一个问题：能否在不使用分类器的情况下进行引导。我们证明，确实可以通过一个纯生成模型在不使用分类器的情况下进行引导：在我们称为无分类器引导（classifier-free guidance）的方法中，我们联合训练一个条件扩散模型和一个无条件扩散模型，并结合得到的条件和无条件得分估计，在样本质量和多样性之间实现类似于使用分类器引导时的权衡。<br>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/02/28/Classifier-Free-Diffusion-Guidance%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1474,7 +1710,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">49</span>
+          <span class="site-state-item-count">50</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1512,7 +1748,7 @@
     <h3 class="widget-title">Tag Cloud</h3>
     <div id="myCanvasContainer" class="widget tagcloud">
         <canvas width="250" height="250" id="resCanvas" style="width=100%">
-            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2023/" rel="tag">2023</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2025/" rel="tag">2025</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICML/" rel="tag">ICML</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">17</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2023/" rel="tag">2023</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2025/" rel="tag">2025</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICML/" rel="tag">ICML</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">18</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
         </canvas>
     </div>
 </div>
