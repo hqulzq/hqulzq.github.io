@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="按照时间排序 (NSCN- Noise Conditional Score Networks) Generative Modeling by Estimating Gradients of the Data Distribution 发表于2029-NeurIPS  (DDPM) Denoising Diffusion Probabilistic Models 发表于2020-NeurIPS 提出">
+  <meta name="description" content="(NSCN Noise Conditional Score Networks) Generative Modeling by Estimating Gradients of the Data Distribution 发表于2029-NeurIPS  Q: 这篇论文试图解决什么问题？A: 这篇论文提出了一种新的生成模型，旨在解决现有生成模型中的一些固有局限性，特别是在处理低维流形上的数据分布时的问">
 <meta property="og:type" content="article">
 <meta property="og:title" content="diffusion论文阅读感悟">
 <meta property="og:url" content="https://hqulzq.github.io/2025/03/14/diffusion%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E6%84%9F%E6%82%9F/index.html">
 <meta property="og:site_name" content="Lzq&#39;s blog">
-<meta property="og:description" content="按照时间排序 (NSCN- Noise Conditional Score Networks) Generative Modeling by Estimating Gradients of the Data Distribution 发表于2029-NeurIPS  (DDPM) Denoising Diffusion Probabilistic Models 发表于2020-NeurIPS 提出">
+<meta property="og:description" content="(NSCN Noise Conditional Score Networks) Generative Modeling by Estimating Gradients of the Data Distribution 发表于2029-NeurIPS  Q: 这篇论文试图解决什么问题？A: 这篇论文提出了一种新的生成模型，旨在解决现有生成模型中的一些固有局限性，特别是在处理低维流形上的数据分布时的问">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-03-14T12:56:45.000Z">
-<meta property="article:modified_time" content="2025-03-14T13:07:57.202Z">
+<meta property="article:modified_time" content="2025-03-16T13:34:44.591Z">
 <meta property="article:author" content="Zongqing Li">
 <meta property="article:tag" content="diffusion">
 <meta name="twitter:card" content="summary">
@@ -218,10 +218,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2025-03-14 20:56:45 / 修改时间：21:07:57" itemprop="dateCreated datePublished" datetime="2025-03-14T20:56:45+08:00">2025-03-14</time>
+              <time title="创建时间：2025-03-14 20:56:45" itemprop="dateCreated datePublished" datetime="2025-03-14T20:56:45+08:00">2025-03-14</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-03-16 21:34:44" itemprop="dateModified" datetime="2025-03-16T21:34:44+08:00">2025-03-16</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -243,43 +249,90 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p><strong>按照时间排序</strong></p>
-<h2 id="NSCN-Noise-Conditional-Score-Networks-Generative-Modeling-by-Estimating-Gradients-of-the-Data-Distribution"><a href="#NSCN-Noise-Conditional-Score-Networks-Generative-Modeling-by-Estimating-Gradients-of-the-Data-Distribution" class="headerlink" title="(NSCN- Noise Conditional Score Networks) Generative Modeling by Estimating Gradients of the Data Distribution"></a>(NSCN- Noise Conditional Score Networks) Generative Modeling by Estimating Gradients of the Data Distribution</h2><ul>
-<li>发表于<strong>2029-NeurIPS</strong></li>
+        <h2 id="NSCN-Noise-Conditional-Score-Networks-Generative-Modeling-by-Estimating-Gradients-of-the-Data-Distribution"><a href="#NSCN-Noise-Conditional-Score-Networks-Generative-Modeling-by-Estimating-Gradients-of-the-Data-Distribution" class="headerlink" title="(NSCN Noise Conditional Score Networks) Generative Modeling by Estimating Gradients of the Data Distribution"></a>(NSCN Noise Conditional Score Networks) Generative Modeling by Estimating Gradients of the Data Distribution</h2><ul>
+<li>发表于2029-NeurIPS</li>
+</ul>
+<p>Q: 这篇论文试图解决什么问题？<br>A: 这篇论文提出了一种新的生成模型，旨在解决现有生成模型中的一些固有局限性，特别是在处理低维流形上的数据分布时的问题。具体来说，论文试图解决以下问题：<br><span id="more"></span></p>
+<ul>
+<li>梯度的不明确性：在数据分布在低维流形上时，数据分布的梯度（即得分）在高维空间中可能是未定义的，这使得基于梯度的生成模型难以应用。</li>
+<li>得分估计的困难：在数据密度较低的区域（例如，远离流形的区域），训练数据稀缺，这使得得分估计不准确，并减慢了基于马尔可夫链蒙特卡洛（MCMC）采样的Langevin动力学的混合过程。</li>
+<li>多模态分布的采样挑战：当数据分布具有多个模态，并且这些模态通过低数据密度区域分隔时，Langevin动力学可能无法在合理时间内正确恢复这些模态的相对权重，因此可能无法收敛到真实分布。</li>
+</ul>
+<p>Q: 论文如何解决这个问题？<br>A: 论文通过提出一种新的方法来解决生成模型在低维流形数据分布上的问题，具体解决方案包括以下几个关键步骤：</p>
+<ul>
+<li>数据扰动：通过在数据上添加不同级别的高斯噪声，确保数据分布在整个高维空间中，从而避免了在低维流形上的得分未定义的问题。</li>
+<li>噪声条件得分网络（Noise Conditional Score Networks, NCSN）：训练一个神经网络，以噪声水平为条件，联合估计所有噪声扰动数据分布的得分。这样，即使在数据密度较低的区域，也能通过大噪声水平下的样本来改善得分估计。</li>
+<li>退火Langevin动力学（Annealed Langevin Dynamics）：提出了一种采样策略，该策略从大噪声水平的分布开始采样，并逐渐减小噪声水平，直到接近原始数据分布。这种策略受到模拟退火的启发，有助于在多模态分布中改善采样过程。</li>
+<li>得分匹配的改进：使用切片得分匹配（Sliced Score Matching）和去噪得分匹配（Denoising Score Matching）来训练得分网络，这两种方法都可以有效地避免直接计算梯度迹线，从而在大规模数据和深度网络上更高效地训练得分网络。</li>
 </ul>
 <h2 id="DDPM-Denoising-Diffusion-Probabilistic-Models"><a href="#DDPM-Denoising-Diffusion-Probabilistic-Models" class="headerlink" title="(DDPM) Denoising Diffusion Probabilistic Models"></a>(DDPM) Denoising Diffusion Probabilistic Models</h2><ul>
 <li>发表于<strong>2020-NeurIPS</strong></li>
 <li>提出了一种马尔可夫的加噪与去噪过程，diffusion的经典之作</li>
 </ul>
+<p>Q: 这篇论文试图解决什么问题？<br>A: 这篇论文试图解决的问题是提高扩散概率模型（diffusion probabilistic models）在生成高质量图像样本方面的性能。扩散概率模型是一种潜在变量模型，受到非平衡热力学的启发，通过训练一个参数化的马尔可夫链来生成与数据匹配的样本。尽管这些模型易于定义且训练效率高，但据作者所知，尚未有证据表明它们能够生成高质量的样本。</p>
+<p>Q: 论文如何解决这个问题？<br>A: 论文通过以下几个关键步骤解决了提高扩散概率模型生成高质量图像样本的问题：</p>
+<ul>
+<li>新的训练目标：论文提出了一种新的训练目标，这个目标是基于扩散概率模型与去噪得分匹配（denoising score matching）以及Langevin动力学之间的联系。这个训练目标允许模型在训练过程中自然地采用一种渐进的有损解压方案，这可以被解释为自回归解码的一种泛化。</li>
+<li>模型参数化：论文展示了一种特定的模型参数化方式，这种参数化方式揭示了扩散模型在训练过程中与多噪声水平下的去噪得分匹配以及在采样过程中使用退火Langevin动力学的等价性。这种参数化方式使得模型在训练过程中能够更好地捕捉数据的分布。</li>
+</ul>
 <h2 id="Palette-Image-to-Image-Diffusion-Models"><a href="#Palette-Image-to-Image-Diffusion-Models" class="headerlink" title="Palette Image-to-Image Diffusion Models"></a>Palette Image-to-Image Diffusion Models</h2><ul>
 <li>发表于<strong>2021-CVPR</strong></li>
 </ul>
-<h2 id="Classifier-Free-Diffusion-Guidance"><a href="#Classifier-Free-Diffusion-Guidance" class="headerlink" title="Classifier-Free Diffusion Guidance"></a>Classifier-Free Diffusion Guidance</h2><ul>
-<li>发表于<strong>2021-CVPR-Workshop</strong></li>
+<p>Q: 这篇论文试图解决什么问题？<br>A: 这篇论文提出了一个统一的框架，用于解决基于条件扩散模型的图像到图像的转换问题。具体来说，它旨在解决以下挑战性图像到图像转换任务：</p>
+<ul>
+<li>彩色化（Colorization）：将输入的灰度图像转换为具有合理颜色的彩色图像。</li>
+<li>修复（Inpainting）：在图像中填充用户指定的遮蔽区域，使其内容看起来真实。</li>
+<li>去边框（Uncropping）：扩展输入图像，使其在至少一个方向上增大。</li>
+<li>JPEG恢复（JPEG restoration）：纠正JPEG压缩产生的伪影，恢复图像的合理细节。</li>
 </ul>
-<h2 id="GLIDE-Towards-Photorealistic-Image-Generation-and-Editing-with-Text-Guided-Diffusion-Models"><a href="#GLIDE-Towards-Photorealistic-Image-Generation-and-Editing-with-Text-Guided-Diffusion-Models" class="headerlink" title="GLIDE: Towards Photorealistic Image Generation and Editing with Text-Guided Diffusion Models"></a>GLIDE: Towards Photorealistic Image Generation and Editing with Text-Guided Diffusion Models</h2><ul>
-<li>发表于<strong>2021</strong></li>
-</ul>
-<h2 id="DDIM-Denoising-Diffusion-Implicit-Models"><a href="#DDIM-Denoising-Diffusion-Implicit-Models" class="headerlink" title="(DDIM) Denoising Diffusion Implicit Models"></a>(DDIM) Denoising Diffusion Implicit Models</h2><ul>
-<li>发表于<strong>2021-ICLR</strong></li>
-</ul>
-<h2 id="Score-Based-Models-Score-Based-Generative-Modeling-through-Stochastic-Differential-Equations"><a href="#Score-Based-Models-Score-Based-Generative-Modeling-through-Stochastic-Differential-Equations" class="headerlink" title="(Score-Based Models) Score-Based Generative Modeling through Stochastic Differential Equations"></a>(Score-Based Models) Score-Based Generative Modeling through Stochastic Differential Equations</h2><ul>
-<li>发表于<strong>2021-ICLR</strong></li>
-</ul>
-<h2 id="IDDPM-Improved-Denoising-Diffusion-Probabilistic-Model"><a href="#IDDPM-Improved-Denoising-Diffusion-Probabilistic-Model" class="headerlink" title="(IDDPM) Improved Denoising Diffusion Probabilistic Model"></a>(IDDPM) Improved Denoising Diffusion Probabilistic Model</h2><ul>
-<li>发表于<strong>2021-ICML</strong></li>
+<p>论文的主要贡献包括：</p>
+<ul>
+<li>提出了一个简单的图像到图像扩散模型实现，该模型在所有任务上都优于强大的GAN和回归基线，且无需特定任务的超参数调整、架构定制或任何辅助损失。</li>
+<li>研究了去噪扩散目标中L2与L1损失对样本多样性的影响。</li>
+<li>通过实证研究展示了自注意力在神经架构中的重要性。<br>提倡基于ImageNet的统一评估协议，包括人类评估和样本质量分数（FID、Inception Score、预训练ResNet50的分类准确率和与原始图像的感知距离）。</li>
+<li>展示了一个通用的、多任务扩散模型在性能上与特定任务专家模型相当或更优。</li>
 </ul>
 <h2 id="Classifier-Guidance-diffusion-models-beat-gans-on-image-synthesis"><a href="#Classifier-Guidance-diffusion-models-beat-gans-on-image-synthesis" class="headerlink" title="(Classifier Guidance) diffusion-models-beat-gans-on-image-synthesis"></a>(Classifier Guidance) diffusion-models-beat-gans-on-image-synthesis</h2><ul>
 <li>发表于<strong>2021-NeurIPS</strong></li>
+<li>通过<strong>分类器引导（classifier guidance）提高样本质量</strong>。这是一种简单且计算效率高的方法，可以在多样性和保真度之间进行权衡，成为stable diffusion的重要基础</li>
+</ul>
+<h2 id="Classifier-Free-Diffusion-Guidance"><a href="#Classifier-Free-Diffusion-Guidance" class="headerlink" title="Classifier-Free Diffusion Guidance"></a>Classifier-Free Diffusion Guidance</h2><ul>
+<li>发表于<strong>2021-CVPR-Workshop</strong></li>
+<li>论文探讨了是否可以在不依赖额外分类器的情况下实现类似的引导效果。作者提出了<strong>无分类器引导方法</strong>，通过联合训练条件和无条件扩散模型，并结合这两种模型的分数估计来实现样本质量和多样性之间的权衡。</li>
+</ul>
+<h2 id="GLIDE-Towards-Photorealistic-Image-Generation-and-Editing-with-Text-Guided-Diffusion-Models"><a href="#GLIDE-Towards-Photorealistic-Image-Generation-and-Editing-with-Text-Guided-Diffusion-Models" class="headerlink" title="GLIDE: Towards Photorealistic Image Generation and Editing with Text-Guided Diffusion Models"></a>GLIDE: Towards Photorealistic Image Generation and Editing with Text-Guided Diffusion Models</h2><ul>
+<li>发表于<strong>2021</strong></li>
+<li>这篇论文探讨了如何使用文本引导的扩散模型（text-guided diffusion models）来生成逼真的图像并进行图像编辑。</li>
+</ul>
+<h2 id="DDIM-Denoising-Diffusion-Implicit-Models"><a href="#DDIM-Denoising-Diffusion-Implicit-Models" class="headerlink" title="(DDIM) Denoising Diffusion Implicit Models"></a>(DDIM) Denoising Diffusion Implicit Models</h2><ul>
+<li>发表于<strong>2021-ICLR</strong></li>
+<li>这篇论文试图解决的问题是提高去噪扩散概率模型（Denoising Diffusion Probabilistic Models, DDPMs）的采样效率。DDPMs在图像生成方面取得了高质量的成果，但它们需要模拟一个马尔可夫链（Markov chain）进行多步迭代才能生成一个样本，这使得采样过程非常耗时。为了加速采样过程，论文提出了去噪扩散隐式模型（Denoising Diffusion Implicit Models, DDIMs），这是一种更高效的迭代隐式概率模型，<strong>它与DDPMs有相同的训练过程</strong>，但能够通过<strong>非马尔可夫过程</strong>实现更快的样本生成。DDIMs通过使用非马尔可夫过程，可以在较少的步骤中生成高质量的样本，同时允许在潜在空间中直接进行语义上有意义的图像插值，并以非常低的误差重建观测数据。</li>
+</ul>
+<h2 id="Score-Based-Models-Score-Based-Generative-Modeling-through-Stochastic-Differential-Equations"><a href="#Score-Based-Models-Score-Based-Generative-Modeling-through-Stochastic-Differential-Equations" class="headerlink" title="(Score-Based Models) Score-Based Generative Modeling through Stochastic Differential Equations"></a>(Score-Based Models) Score-Based Generative Modeling through Stochastic Differential Equations</h2><ul>
+<li>发表于<strong>2021-ICLR</strong></li>
+<li>提出了一种<strong>基于随机微分方程（SDE）</strong>的生成模型框架</li>
+<li>论文提供了一个<strong>统一的框架</strong>，可以将现有的基于分数的生成模型（如SMLD和DDPM）整合进来，并允许探索和调整不同的SDE以改进模型性能。</li>
+<li>通过引入<strong>概率流普通微分方程（ODE）</strong>，论文提供了一种新的方法来计算精确的似然，这对于扩散模型的加速采样至关重要</li>
+<li>利用神经网络估计分数，并使用数值SDE求解器生成样本。提出了预测-校正（PC）框架，结合数值SDE求解器和基于分数的MCMC方法，以提高采样质量。</li>
+</ul>
+<h2 id="IDDPM-Improved-Denoising-Diffusion-Probabilistic-Model"><a href="#IDDPM-Improved-Denoising-Diffusion-Probabilistic-Model" class="headerlink" title="(IDDPM) Improved Denoising Diffusion Probabilistic Model"></a>(IDDPM) Improved Denoising Diffusion Probabilistic Model</h2><ul>
+<li>发表于<strong>2021-ICML</strong></li>
+<li>通过<strong>学习逆向过程的方差Σθ(xt, t)</strong>并使用一个简单的重参数化技巧，结合了VLB和Ho et al. (2020)提出的简化目标的混合学习目标，以更紧密地优化VLB。</li>
+<li>出了一种新的<strong>余弦加噪过程</strong>，它在扩散过程的中间线性下降，在t=0和t=T时变化缓慢，以防止噪声水平的突然变化</li>
+<li>提高采样速度：通过在模型中<strong>纳入学习到的方差</strong>，发现可以在更少的步骤中进行采样，而对样本质量的影响很小。这显著加快了采样速度，使得在实际应用中的采样更加高效</li>
 </ul>
 <h2 id="LDM-Stable-Diffusion原型-High-Resolution-Image-Synthesis-with-Latent-Diffusion-Models"><a href="#LDM-Stable-Diffusion原型-High-Resolution-Image-Synthesis-with-Latent-Diffusion-Models" class="headerlink" title="(LDM: Stable Diffusion原型) High-Resolution Image Synthesis with Latent Diffusion Models"></a>(LDM: Stable Diffusion原型) High-Resolution Image Synthesis with Latent Diffusion Models</h2><ul>
 <li>发表于<strong>2022-CVPR</strong></li>
+<li>潜在空间训练：论文提出在预训练的自编码器的潜在空间中训练扩散模型，而不是直接在像素空间。这样做可以显著降低数据的维度，从而减少计算复杂性。</li>
+<li>交叉注意力机制：为了使扩散模型能够处理多种条件输入（如文本或边界框），论文引入了交叉注意力层。这使得模型能够灵活地处理各种输入模式，同时保持高效的并行处理能力。</li>
 </ul>
 <h2 id="ADPM-Analytic-DPM-an-Analytic-Estimate-of-the-Optimal-Reverse-Variance-in-Diffusion-Probabilistic-Models"><a href="#ADPM-Analytic-DPM-an-Analytic-Estimate-of-the-Optimal-Reverse-Variance-in-Diffusion-Probabilistic-Models" class="headerlink" title="(ADPM) Analytic-DPM an Analytic Estimate of the Optimal Reverse Variance in Diffusion Probabilistic Models"></a>(ADPM) Analytic-DPM an Analytic Estimate of the Optimal Reverse Variance in Diffusion Probabilistic Models</h2><ul>
 <li>发表于<strong>2022-ICLR</strong></li>
+<li>提供了一种无需额外训练即可提高预训练DPMs推理效率的方法，通过使用蒙特卡洛方法和预训练的基于分数的模型来<strong>估计方差和KL散度的解析形式</strong>，从而改进了逆向过程的方差估计，推导出了<strong>最优方差的上下界</strong>，并通过对估计值进行剪辑来获得更好的结果</li>
 </ul>
 <h2 id="DPM-Solver-DPM-Solver-A-Fast-ODE-Solver-for-Diffusion-Probabilistic-Model-Sampling-in-Around-10-Steps"><a href="#DPM-Solver-DPM-Solver-A-Fast-ODE-Solver-for-Diffusion-Probabilistic-Model-Sampling-in-Around-10-Steps" class="headerlink" title="(DPM-Solver) DPM-Solver-A Fast ODE Solver for Diffusion Probabilistic Model Sampling in Around 10 Steps"></a>(DPM-Solver) DPM-Solver-A Fast ODE Solver for Diffusion Probabilistic Model Sampling in Around 10 Steps</h2><ul>
 <li>发表于<strong>2022-NeurIPS</strong></li>
+<li>提出了一个名为 DPM-Solver 的快速、专用的高阶求解器，用于解决与 DPMs 相关的扩散常微分方程（ODEs）。DPM-Solver <strong>利用扩散 ODEs 的半线性结构</strong>，通过分析<strong>计算线性部分的解</strong>，避免了将所有项留给黑盒 ODE 求解器，从而减少了离散化误差。此外，通过变量替换，解可以<strong>简化为神经网络的指数加权积分</strong>，这可以通过指数积分器的数值方法高效近似。</li>
 </ul>
 
     </div>
@@ -361,7 +414,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#NSCN-Noise-Conditional-Score-Networks-Generative-Modeling-by-Estimating-Gradients-of-the-Data-Distribution"><span class="nav-number">1.</span> <span class="nav-text">(NSCN- Noise Conditional Score Networks) Generative Modeling by Estimating Gradients of the Data Distribution</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DDPM-Denoising-Diffusion-Probabilistic-Models"><span class="nav-number">2.</span> <span class="nav-text">(DDPM) Denoising Diffusion Probabilistic Models</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Palette-Image-to-Image-Diffusion-Models"><span class="nav-number">3.</span> <span class="nav-text">Palette Image-to-Image Diffusion Models</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Classifier-Free-Diffusion-Guidance"><span class="nav-number">4.</span> <span class="nav-text">Classifier-Free Diffusion Guidance</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GLIDE-Towards-Photorealistic-Image-Generation-and-Editing-with-Text-Guided-Diffusion-Models"><span class="nav-number">5.</span> <span class="nav-text">GLIDE: Towards Photorealistic Image Generation and Editing with Text-Guided Diffusion Models</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DDIM-Denoising-Diffusion-Implicit-Models"><span class="nav-number">6.</span> <span class="nav-text">(DDIM) Denoising Diffusion Implicit Models</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Score-Based-Models-Score-Based-Generative-Modeling-through-Stochastic-Differential-Equations"><span class="nav-number">7.</span> <span class="nav-text">(Score-Based Models) Score-Based Generative Modeling through Stochastic Differential Equations</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IDDPM-Improved-Denoising-Diffusion-Probabilistic-Model"><span class="nav-number">8.</span> <span class="nav-text">(IDDPM) Improved Denoising Diffusion Probabilistic Model</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Classifier-Guidance-diffusion-models-beat-gans-on-image-synthesis"><span class="nav-number">9.</span> <span class="nav-text">(Classifier Guidance) diffusion-models-beat-gans-on-image-synthesis</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LDM-Stable-Diffusion%E5%8E%9F%E5%9E%8B-High-Resolution-Image-Synthesis-with-Latent-Diffusion-Models"><span class="nav-number">10.</span> <span class="nav-text">(LDM: Stable Diffusion原型) High-Resolution Image Synthesis with Latent Diffusion Models</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ADPM-Analytic-DPM-an-Analytic-Estimate-of-the-Optimal-Reverse-Variance-in-Diffusion-Probabilistic-Models"><span class="nav-number">11.</span> <span class="nav-text">(ADPM) Analytic-DPM an Analytic Estimate of the Optimal Reverse Variance in Diffusion Probabilistic Models</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DPM-Solver-DPM-Solver-A-Fast-ODE-Solver-for-Diffusion-Probabilistic-Model-Sampling-in-Around-10-Steps"><span class="nav-number">12.</span> <span class="nav-text">(DPM-Solver) DPM-Solver-A Fast ODE Solver for Diffusion Probabilistic Model Sampling in Around 10 Steps</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#NSCN-Noise-Conditional-Score-Networks-Generative-Modeling-by-Estimating-Gradients-of-the-Data-Distribution"><span class="nav-number">1.</span> <span class="nav-text">(NSCN Noise Conditional Score Networks) Generative Modeling by Estimating Gradients of the Data Distribution</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DDPM-Denoising-Diffusion-Probabilistic-Models"><span class="nav-number">2.</span> <span class="nav-text">(DDPM) Denoising Diffusion Probabilistic Models</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Palette-Image-to-Image-Diffusion-Models"><span class="nav-number">3.</span> <span class="nav-text">Palette Image-to-Image Diffusion Models</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Classifier-Guidance-diffusion-models-beat-gans-on-image-synthesis"><span class="nav-number">4.</span> <span class="nav-text">(Classifier Guidance) diffusion-models-beat-gans-on-image-synthesis</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Classifier-Free-Diffusion-Guidance"><span class="nav-number">5.</span> <span class="nav-text">Classifier-Free Diffusion Guidance</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GLIDE-Towards-Photorealistic-Image-Generation-and-Editing-with-Text-Guided-Diffusion-Models"><span class="nav-number">6.</span> <span class="nav-text">GLIDE: Towards Photorealistic Image Generation and Editing with Text-Guided Diffusion Models</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DDIM-Denoising-Diffusion-Implicit-Models"><span class="nav-number">7.</span> <span class="nav-text">(DDIM) Denoising Diffusion Implicit Models</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Score-Based-Models-Score-Based-Generative-Modeling-through-Stochastic-Differential-Equations"><span class="nav-number">8.</span> <span class="nav-text">(Score-Based Models) Score-Based Generative Modeling through Stochastic Differential Equations</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IDDPM-Improved-Denoising-Diffusion-Probabilistic-Model"><span class="nav-number">9.</span> <span class="nav-text">(IDDPM) Improved Denoising Diffusion Probabilistic Model</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LDM-Stable-Diffusion%E5%8E%9F%E5%9E%8B-High-Resolution-Image-Synthesis-with-Latent-Diffusion-Models"><span class="nav-number">10.</span> <span class="nav-text">(LDM: Stable Diffusion原型) High-Resolution Image Synthesis with Latent Diffusion Models</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ADPM-Analytic-DPM-an-Analytic-Estimate-of-the-Optimal-Reverse-Variance-in-Diffusion-Probabilistic-Models"><span class="nav-number">11.</span> <span class="nav-text">(ADPM) Analytic-DPM an Analytic Estimate of the Optimal Reverse Variance in Diffusion Probabilistic Models</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DPM-Solver-DPM-Solver-A-Fast-ODE-Solver-for-Diffusion-Probabilistic-Model-Sampling-in-Around-10-Steps"><span class="nav-number">12.</span> <span class="nav-text">(DPM-Solver) DPM-Solver-A Fast ODE Solver for Diffusion Probabilistic Model Sampling in Around 10 Steps</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

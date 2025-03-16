@@ -31,7 +31,7 @@
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/12/DPM-Solver-A-Fast-ODE-Solver-for-Diffusion-Probabilistic-Model-Sampling-in-Around-10-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/a2.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/12/DPM-Solver-A-Fast-ODE-Solver-for-Diffusion-Probabilistic-Model-Sampling-in-Around-10-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f2.png">
 <meta property="article:published_time" content="2025-03-12T12:59:26.000Z">
-<meta property="article:modified_time" content="2025-03-14T13:26:25.038Z">
+<meta property="article:modified_time" content="2025-03-16T13:34:59.728Z">
 <meta property="article:author" content="Zongqing Li">
 <meta property="article:tag" content="diffusion">
 <meta property="article:tag" content="2022">
@@ -232,7 +232,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-03-14 21:26:25" itemprop="dateModified" datetime="2025-03-14T21:26:25+08:00">2025-03-14</time>
+                <time title="修改时间：2025-03-16 21:34:59" itemprop="dateModified" datetime="2025-03-16T21:34:59+08:00">2025-03-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -255,7 +255,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散概率模型（DPMs）是新兴的强大生成模型。尽管DPMs具有高质量的生成性能，但它们的采样速度仍然较慢，因为通常需要对大型神经网络进行数百或数千次的顺序函数评估（步骤）才能生成一个样本。从DPMs中采样可以看作是求解相应的扩散常微分方程（ODEs）。在这项工作中，我们提出了扩散ODEs解的精确公式。该公式通过解析计算解的线性部分，而不是像以往工作那样将所有项都留给黑箱ODE求解器处理。通过变量变换，解可以等效简化为神经网络的指数加权积分。基于我们的公式，我们提出了DPM-Solver，这是一种快速的、具有收敛阶保证的专用高阶扩散ODE求解器。DPM-Solver适用于离散时间和连续时间的DPMs，且无需任何额外训练。实验结果表明，DPM-Solver在各种数据集上仅需10 - 20次函数评估就能生成高质量样本。在CIFAR10数据集上，我们在10次函数评估中达到了4.70的FID（Frechet Inception Distance），在20次函数评估中达到了2.87的FID，并且与之前最先进的无训练采样器相比，在各种数据集上实现了4 - 16倍的加速。</p>
+        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散概率模型（DPMs）是新兴的强大生成模型。尽管DPMs具有高质量的生成性能，但它们的采样速度仍然较慢，因为通常需要对大型神经网络进行数百或数千次的顺序函数评估（步骤）才能生成一个样本。从DPMs中采样可以看作是求解相应的扩散常微分方程（ODEs）。在这项工作中，我们提出了扩散ODEs解的精确公式。该公式通过解析计算解的线性部分，而不是像以往工作那样将所有项都留给黑箱ODE求解器处理。通过变量变换，解可以等效简化为神经网络的指数加权积分。基于我们的公式，我们提出了DPM-Solver，这是一种快速的、具有收敛阶保证的专用高阶扩散ODE求解器。DPM-Solver适用于离散时间和连续时间的DPMs，且无需任何额外训练。实验结果表明，DPM-Solver在各种数据集上仅需10 - 20次函数评估就能生成高质量样本。在CIFAR10数据集上，我们在10次函数评估中达到了4.70的FID（Frechet Inception Distance），在20次函数评估中达到了2.87的FID，并且与之前最先进的无训练采样器相比，在各种数据集上实现了4 - 16倍的加速。<br><span id="more"></span></p>
 <h3 id="2-扩散概率模型"><a href="#2-扩散概率模型" class="headerlink" title="2 扩散概率模型"></a>2 扩散概率模型</h3><p>在本节中，我们将回顾扩散概率模型及其相关的微分方程。</p>
 <h4 id="2-1-正向过程和扩散随机微分方程"><a href="#2-1-正向过程和扩散随机微分方程" class="headerlink" title="2.1 正向过程和扩散随机微分方程"></a>2.1 正向过程和扩散随机微分方程</h4><p>假设我们有一个$D$维随机变量$x_{0} \in \mathbb{R}^{D}$，其分布$q_{0}(x_{0})$未知。扩散概率模型（DPMs）[1-3,10]定义了一个从$x_{0}$开始的正向过程$\{x_{t}\}_{t \in[0, T]}$（$T&gt;0$），使得对于任意$t \in[0, T]$，在给定$x_{0}$的条件下，$x_{t}$的分布满足：</p>
 <script type="math/tex; mode=display">q_{0 t}\left(x_{t} | x_{0}\right)=\mathcal{N}\left(x_{t} | \alpha(t) x_{0}, \sigma^{2}(t) I\right), \tag{2.1}</script><p>其中$\alpha(t)$、$\sigma(t) \in \mathbb{R}^{+}$是关于$t$的可微函数，且导数有界，为简化表示，我们将它们记为$\alpha_{t}$、$\sigma_{t}$。$\alpha_{t}$和$\sigma_{t}$的选择被称为DPM的噪声调度。令$q_{t}(x_{t})$表示$x_{t}$的边际分布，DPMs通过选择噪声调度，确保对于某个$\bar{\sigma}&gt;0$，有$q_{T}(x_{T}) \approx \mathcal{N}(x_{T} | 0, \tilde{\sigma}^{2} I)$，并且信噪比（SNR）$\alpha_{t}^{2} / \sigma_{t}^{2}$随$t$严格递减[10]。此外，Kingma等人[10]证明，对于任意$t \in[0, T]$，以下随机微分方程（SDE）与公式（2.1）具有相同的转移分布$q_{0 t}(x_{t} | x_{0})$：</p>
