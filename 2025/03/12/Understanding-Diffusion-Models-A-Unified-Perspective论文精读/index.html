@@ -20,21 +20,24 @@
     var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="全文翻译引言：生成模型给定来自目标分布的观测样本x，生成模型的目标是学习对其真实数据分布$p(x)$进行建模。一旦完成学习，我们就可以根据需要从近似模型中生成新样本。此外，在某些公式中，我们还可以使用所学模型来评估观测数据或生成数据的似然性。 当前文献中有几个著名的研究方向，我们将仅在较高层次上简要介绍。生成对抗网络（GANs）对复杂分布的采样过程进行建模，这种建模是通过对抗方式学习的。另一类生成">
+  <meta name="description" content="全文翻译引言：生成模型给定来自目标分布的观测样本$x$，生成模型的目标是学习对其真实数据分布$p(x)$进行建模。一旦完成学习，我们就可以根据需要从近似模型中生成新样本。此外，在某些公式中，我们还可以使用所学模型来评估观测数据或生成数据的似然性。 当前文献中有几个著名的研究方向，我们将仅在较高层次上简要介绍。生成对抗网络（GANs）对复杂分布的采样过程进行建模，这种建模是通过对抗方式学习的。另一类">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Understanding Diffusion Models: A Unified Perspective论文精读">
 <meta property="og:url" content="https://hqulzq.github.io/2025/03/12/Understanding-Diffusion-Models-A-Unified-Perspective%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/index.html">
 <meta property="og:site_name" content="Lzq&#39;s blog">
-<meta property="og:description" content="全文翻译引言：生成模型给定来自目标分布的观测样本x，生成模型的目标是学习对其真实数据分布$p(x)$进行建模。一旦完成学习，我们就可以根据需要从近似模型中生成新样本。此外，在某些公式中，我们还可以使用所学模型来评估观测数据或生成数据的似然性。 当前文献中有几个著名的研究方向，我们将仅在较高层次上简要介绍。生成对抗网络（GANs）对复杂分布的采样过程进行建模，这种建模是通过对抗方式学习的。另一类生成">
+<meta property="og:description" content="全文翻译引言：生成模型给定来自目标分布的观测样本$x$，生成模型的目标是学习对其真实数据分布$p(x)$进行建模。一旦完成学习，我们就可以根据需要从近似模型中生成新样本。此外，在某些公式中，我们还可以使用所学模型来评估观测数据或生成数据的似然性。 当前文献中有几个著名的研究方向，我们将仅在较高层次上简要介绍。生成对抗网络（GANs）对复杂分布的采样过程进行建模，这种建模是通过对抗方式学习的。另一类">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://pic1.zhimg.com/v2-8757675769575957959_b.jpg">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/12/Understanding-Diffusion-Models-A-Unified-Perspective%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/12/Understanding-Diffusion-Models-A-Unified-Perspective%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f2.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/12/Understanding-Diffusion-Models-A-Unified-Perspective%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f3.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/12/Understanding-Diffusion-Models-A-Unified-Perspective%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f4.png">
 <meta property="article:published_time" content="2025-03-12T08:44:25.000Z">
-<meta property="article:modified_time" content="2025-03-16T13:35:28.325Z">
+<meta property="article:modified_time" content="2025-03-17T09:08:13.504Z">
 <meta property="article:author" content="Zongqing Li">
 <meta property="article:tag" content="diffusion">
 <meta property="article:tag" content="2022">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://pic1.zhimg.com/v2-8757675769575957959_b.jpg">
+<meta name="twitter:image" content="https://hqulzq.github.io/2025/03/12/Understanding-Diffusion-Models-A-Unified-Perspective%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f1.png">
 
 <link rel="canonical" href="https://hqulzq.github.io/2025/03/12/Understanding-Diffusion-Models-A-Unified-Perspective%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
 
@@ -126,7 +129,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">43</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">44</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -136,7 +139,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">51</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">52</span></a>
 
   </li>
         <li class="menu-item menu-item-book">
@@ -229,7 +232,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-03-16 21:35:28" itemprop="dateModified" datetime="2025-03-16T21:35:28+08:00">2025-03-16</time>
+                <time title="修改时间：2025-03-17 17:08:13" itemprop="dateModified" datetime="2025-03-17T17:08:13+08:00">2025-03-17</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -252,13 +255,13 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="引言：生成模型"><a href="#引言：生成模型" class="headerlink" title="引言：生成模型"></a>引言：生成模型</h3><p>给定来自目标分布的观测样本x，生成模型的目标是学习对其真实数据分布$p(x)$进行建模。一旦完成学习，我们就可以根据需要从近似模型中生成新样本。此外，在某些公式中，我们还可以使用所学模型来评估观测数据或生成数据的似然性。</p>
+        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="引言：生成模型"><a href="#引言：生成模型" class="headerlink" title="引言：生成模型"></a>引言：生成模型</h3><p>给定来自目标分布的观测样本$x$，生成模型的目标是学习对其真实数据分布$p(x)$进行建模。一旦完成学习，我们就可以根据需要从近似模型中生成新样本。此外，在某些公式中，我们还可以使用所学模型来评估观测数据或生成数据的似然性。</p>
 <p>当前文献中有几个著名的研究方向，我们将仅在较高层次上简要介绍。生成对抗网络（GANs）对复杂分布的采样过程进行建模，这种建模是通过对抗方式学习的。另一类生成模型被称为“基于似然的”，旨在学习一个为观测数据样本分配高似然的模型。这包括自回归模型、归一化流和变分自编码器（VAEs）。另一种类似的方法是基于能量的建模，其中分布被学习为一个任意灵活的能量函数，然后进行归一化。</p>
 <p>分数生成模型与之高度相关；它们不是直接学习对能量函数本身进行建模，而是通过神经网络学习基于能量模型的分数。在本文中，我们将探讨并回顾扩散模型，正如我们将展示的那样，扩散模型同时具有基于似然和基于分数的解释。我们将极其详细地展示这些模型背后的数学原理，旨在让任何人都能理解扩散模型是什么以及它们的工作原理。<br><span id="more"></span></p>
 <h3 id="背景：证据下界、变分自编码器和分层变分自编码器"><a href="#背景：证据下界、变分自编码器和分层变分自编码器" class="headerlink" title="背景：证据下界、变分自编码器和分层变分自编码器"></a>背景：证据下界、变分自编码器和分层变分自编码器</h3><p>对于许多模态，我们可以认为所观察到的数据是由一个相关的不可见潜在变量表示或生成的，我们用随机变量$z$来表示这个潜在变量。表达这一概念的最佳直观方式是通过柏拉图的洞穴寓言。在这个寓言中，一群人一生都被锁在洞穴里，只能看到投射在他们面前墙壁上的二维影子，这些影子是由在火前经过的不可见三维物体产生的。对于这些人来说，他们所观察到的一切实际上是由他们永远无法看到的更高维抽象概念所决定的。</p>
 <p>类似地，我们在现实世界中遇到的物体也可能是由一些更高级的表示生成的；例如，这些表示可以封装颜色、大小、形状等抽象属性。那么，我们所观察到的可以被解释为这些抽象概念的三维投影或实例化，就像洞穴里的人所观察到的实际上是三维物体的二维投影一样。虽然洞穴里的人永远无法看到（甚至完全理解）隐藏的物体，但他们仍然可以对其进行推理和推断；同样，我们可以近似描述所观察数据的潜在表示。</p>
 <p>柏拉图的洞穴寓言说明了潜在变量作为决定观察结果的潜在不可观察表示的概念，但这个类比的一个局限性是，在生成建模中，我们通常寻求学习低维潜在表示，而不是高维表示。这是因为在没有强先验的情况下，尝试学习比观察结果维度更高的表示是徒劳的。另一方面，学习低维潜在表示也可以被视为一种压缩形式，并且有可能揭示描述观察结果的语义有意义的结构。</p>
-<h4 id="证据下界"><a href="#证据下界" class="headerlink" title="证据下界"></a>证据下界</h4><p>从数学角度来看，我们可以将潜在变量和观察到的数据想象为由联合分布$p(x,z)$建模。回想一下，生成建模的一种方法，即 “基于似然” 的方法，是学习一个模型来最大化所有观察到的x的似然$p(x)$。我们有两种方法可以处理这个联合分布，以得到纯粹观察数据的似然$p(x)$：我们可以明确地对潜在变量$z$进行边缘化：</p>
+<h4 id="证据下界"><a href="#证据下界" class="headerlink" title="证据下界"></a>证据下界</h4><p>从数学角度来看，我们可以将潜在变量和观察到的数据想象为由联合分布$p(x,z)$建模。回想一下，生成建模的一种方法，即 “基于似然” 的方法，是学习一个模型来最大化所有观察到的$x$的似然$p(x)$。我们有两种方法可以处理这个联合分布，以得到纯粹观察数据的似然$p(x)$：我们可以明确地对潜在变量$z$进行边缘化：</p>
 <script type="math/tex; mode=display">p(x)=\int p(x,z)dz \tag{1}</script><p>或者，我们也可以利用概率的链式法则：</p>
 <script type="math/tex; mode=display">p(x)=\frac{p(x,z)}{p(z|x)} \tag{2}</script><p>直接计算并最大化似然$p(x)$是困难的，因为这要么涉及在公式（1）中对所有潜在变量$z$进行积分，对于复杂模型来说这是难以处理的；要么在公式（2）中需要访问真实的潜在编码器$p(z|x)$。然而，利用这两个公式，我们可以推导出一个称为证据下界（ELBO）的项，正如其名称所示，它是证据的下界。在这种情况下，证据被量化为观察数据的对数似然。因此，最大化ELBO成为优化潜在变量模型的替代目标；在理想情况下，当ELBO被强大地参数化并完美优化时，它与证据完全等价。正式地，ELBO的公式为：</p>
 <script type="math/tex; mode=display">\mathbb{E}_{q_{\phi}(z|x)}\left[\log \frac{p(x,z)}{q_{\phi}(z|x)}\right] \tag{3}</script><p>为了明确与证据的关系，我们可以用数学公式表示为：</p>
@@ -273,42 +276,232 @@
 \end{align*}</script><p>在这个推导中，我们通过应用詹森不等式直接得到了下界。然而，这并没有为我们提供太多关于底层实际情况的有用信息；关键的是，这个证明没有直观地解释为什么ELBO实际上是证据的下界，因为詹森不等式只是一笔带过。此外，仅仅知道ELBO确实是数据的下界，并不能真正告诉我们为什么要将其作为目标进行最大化。为了更好地理解证据和ELBO之间的关系，让我们进行另一种推导，这次使用公式（2）：</p>
 <script type="math/tex; mode=display">
 \begin{align*}
-\log p(x) &= \log p(x)\int q_{\phi}(z|x)dz & (乘以1=\int q_{\phi}(z|x)dz)\\
-&= \int q_{\phi}(z|x)(\log p(x))dz & & (将证据放入积分中)\\
-&= E_{q_{\phi}(x|x)}[\log p(x)] & (期望的定义)\\
-&= \mathbb{E}_{q_{\phi}(x|x)}\left[\log \frac{p(z,z)}{p(z|x)}\right] & (应用公式2)\\
-&= \mathbb{E}_{q_{\phi}(x|x)}\left[\log \frac{p(x,z)q_{\phi}(z|x)}{p(z|x)}\right] & (乘以1=\frac{q_{\phi}(z|x)}{q_{\phi}(z|x)})\\
-&= \mathbb{E}_{q_{\phi}(z|x)}\left[\log \frac{p(x,z)}{q_{\phi}(z|x)}\frac{p(z|x)}{p(z|x)}\right] + D_{KL}(q_{\phi}(z|x)||p(z|x)) & (拆分期望)\\
-&= \mathbb{E}_{q_{\phi}(x|x)}\left[\log \frac{p(z,z)}{q_{\phi}(z|x)}\right] + D_{KL}(q_{\phi}(z|x)||p(z|x)) & (化简)
+\log p(x) &= \log p(x)\int q_{\phi}(z|x)dz  & & (乘以1=\int q_{\phi}(z|x)dz) \tag{9}\\
+&= \int q_{\phi}(z|x)(\log p(x))dz & & (将证据放入积分中) \tag{10}\\
+&= \mathbb{E}_{q_{\phi}(z|x)}[\log p(x)] & &  (期望的定义) \tag{11}\\
+&= \mathbb{E}_{q_{\phi}(z|x)}\left[\log \frac{p(x,z)}{p(z|x)}\right] & &  (应用公式2)\tag{12}\\
+&= \mathbb{E}_{q_{\phi}(z|x)}\left[\log \frac{p(x,z)q_{\phi}(z|x)}{p(z|x)q_{\phi}(z|x)}\right]  & &  (乘以1=\frac{q_{\phi}(z|x)}{q_{\phi}(z|x)}) \tag{13}\\
+&= \mathbb{E}_{q_{\phi}(\boldsymbol{z}|\boldsymbol{x})} \left[\log \frac{p(\boldsymbol{x}, \boldsymbol{z})}{q_{\phi}(\boldsymbol{z}|\boldsymbol{x})}\right] + \mathbb{E}_{q_{\phi}(\boldsymbol{z}|\boldsymbol{x})} \left[\log \frac{q_{\phi}(\boldsymbol{z}|\boldsymbol{x})}{p(\boldsymbol{z}|\boldsymbol{x})}\right] & & \text{(拆分期望)} \tag{14} \\
+&= \mathbb{E}_{q_{\phi}(\boldsymbol{z}|\boldsymbol{x})} \left[\log \frac{p(\boldsymbol{x}, \boldsymbol{z})}{q_{\phi}(\boldsymbol{z}|\boldsymbol{x})}\right] + D_{\text{KL}}(q_{\phi}(\boldsymbol{z}|\boldsymbol{x}) \| p(\boldsymbol{z}|\boldsymbol{x})) & & \text{(KL散度的定义)} \tag{15} \\
+&\geq \mathbb{E}_{q_{\phi}(\boldsymbol{z}|\boldsymbol{x})} \left[\log \frac{p(\boldsymbol{x}, \boldsymbol{z})}{q_{\phi}(\boldsymbol{z}|\boldsymbol{x})}\right] & & \text{(KL散度总是大于或等于0)} \tag{16}
 \end{align*}</script><p>从这个推导中，我们从公式（15）清楚地观察到，证据等于ELBO加上近似后验分布$q_{\phi}(z|x)$和真实后验分布$p(z|x)$之间的KL散度。事实上，在第一次推导的公式（8）中，正是这个KL散度项被詹森不等式神奇地消除了。理解这个项不仅是理解ELBO和证据之间关系的关键，也是理解为什么优化ELBO是一个合适目标的关键。</p>
-<p>首先，我们现在知道为什么ELBO确实是一个下界：证据和ELBO之间的差异是一个严格非负的KL项，因此ELBO的值永远不会超过证据。<br><img src="https://pic1.zhimg.com/v2-8757675769575957959_b.jpg" alt="图1：变分自编码器的图形表示"><br><em>图1：变分自编码器的图形表示。这里，编码器$q(z|x)$为观察值x定义了潜在变量z的分布，$p(x|z)$将潜在变量解码为观察值</em></p>
+<p>首先，我们现在知道为什么ELBO确实是一个下界：证据和ELBO之间的差异是一个严格非负的KL项，因此ELBO的值永远不会超过证据。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f1.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图1：变分自编码器的图形表示。这里，编码器$q(z\mid x)$为观察值x定义了潜在变量z的分布，$p(x\mid z)$将潜在变量解码为观察值</em></td>
+</tr>
+</tbody>
+</table>
+</div>
 <p>其次，我们探究为什么要最大化ELBO。在引入了我们想要建模的潜在变量z之后，我们的目标是学习描述观察数据的潜在结构。换句话说，我们希望优化变分后验分布$q_{\phi}(z|x)$的参数，使其与真实后验分布$p(z|x)$完全匹配，这可以通过最小化它们的KL散度（理想情况下为零）来实现。不幸的是，直接最小化这个KL散度项是难以处理的，因为我们无法访问真实的$p(z|x)$分布。然而，请注意，在公式（15）的左侧，数据的似然（因此我们的证据项$\log p(x)$）相对于$\phi$始终是一个常数，因为它是通过对联合分布$p(x,z)$中的所有潜在变量z进行边缘化计算得到的，与$\phi$无关。由于ELBO和KL散度项的和是一个常数，任何相对于$\phi$对ELBO项的最大化必然会导致对KL散度项的等量最小化。因此，最大化ELBO可以作为学习如何完美建模真实潜在后验分布的替代方法；我们对ELBO的优化越多，我们的近似后验分布就越接近真实后验分布。此外，一旦训练完成，ELBO也可以用于估计观察到的数据或生成数据的似然，因为它是为了逼近模型证据$\log p(x)$而学习的。</p>
 <h4 id="变分自编码器"><a href="#变分自编码器" class="headerlink" title="变分自编码器"></a>变分自编码器</h4><p>在变分自编码器（VAE）的默认公式中，我们直接最大化ELBO。这种方法是变分的，因为我们在由$\phi$参数化的一系列潜在后验分布中优化出最佳的$q_{\phi}(z|x)$。它被称为自编码器，是因为它让人联想到传统的自编码器模型，在该模型中，输入数据经过中间瓶颈表示步骤后被训练来预测自身。为了更清楚地说明这种联系，让我们进一步剖析ELBO项：</p>
 <script type="math/tex; mode=display">
 \begin{align*}
-\mathbb{E}_{q_{\phi}(z|x)}\left[\log \frac{p(x,z)}{q_{\phi}(z|x)}\right] &= \mathbb{E}_{q_{\phi}(z|x)}\left[\log \frac{p_{\theta}(x|z)p(z)}{q_{\phi}(z|x)}\right] & & (概率链式法则)\\
-&= \mathbb{E}_{q_{\phi}(z|x)}\left[\log p_{\theta}(x|z)\right] + \mathbb{E}_{q_{\phi}(z|x)}\left[\log \frac{p(z)}{q_{\phi}(z|x)}\right] & (拆分期望)\\
-&= \underbrace{\mathbb{E}_{q_{\phi}(z|x)}\left[\log p_{\theta}(x|z)\right]}_{重构项} - \underbrace{D_{KL}(q_{\phi}(z|x)||p(z))}_{先验匹配项} & (KL散度的定义)
+\mathbb{E}_{q_{\phi}(z|x)}\left[\log \frac{p(x,z)}{q_{\phi}(z|x)}\right] &= \mathbb{E}_{q_{\phi}(z|x)}\left[\log \frac{p_{\theta}(x|z)p(z)}{q_{\phi}(z|x)}\right] & & (概率链式法则) \tag{17}\\
+&= \mathbb{E}_{q_{\phi}(z|x)}\left[\log p_{\theta}(x|z)\right] + \mathbb{E}_{q_{\phi}(z|x)}\left[\log \frac{p(z)}{q_{\phi}(z|x)}\right] & &(拆分期望)\tag{18}\\
+&= \underbrace{\mathbb{E}_{q_{\phi}(z|x)}\left[\log p_{\theta}(x|z)\right]}_{重构项} - \underbrace{D_{KL}(q_{\phi}(z|x)||p(z))}_{先验匹配项} && (KL散度的定义) \tag{19}
 \end{align*}</script><p>在这种情况下，我们学习一个中间瓶颈分布$q_{\phi}(z|x)$，它可以被视为一个编码器；它将输入转换为潜在变量的分布。同时，我们学习一个确定性函数$p_{\theta}(x|z)$，将给定的潜在向量z转换为观察值x，这可以被解释为一个解码器。</p>
 <p>公式（19）中的两项都有直观的解释：第一项衡量解码器从我们的变分分布中重构的似然性；这确保了学习到的分布正在对有效的潜在变量进行建模，以便可以从这些潜在变量中再生原始数据。第二项衡量学习到的变分分布与对潜在变量的先验信念的相似程度。最小化这项鼓励编码器实际学习一个分布，而不是坍缩为狄拉克δ函数。因此，最大化ELBO相当于最大化其第一项并最小化其第二项。</p>
 <p>VAE的一个显著特点是如何联合优化参数$\phi$和$\theta$来最大化ELBO。VAE的编码器通常被选择为对具有对角协方差的多元高斯分布进行建模，而先验通常被选择为标准多元高斯分布：</p>
 <script type="math/tex; mode=display">q_{\phi}(z|x)=\mathcal{N}(z;\mu_{\phi}(x),\sigma_{\phi}^{2}(x)I) \tag{20}</script><script type="math/tex; mode=display">p(z)=\mathcal{N}(z;0,I) \tag{21}</script><p>然后，ELBO的KL散度项可以通过解析计算，重构项可以使用蒙特卡罗估计进行近似。我们的目标可以重写为：</p>
-<script type="math/tex; mode=display">\underset{\phi,\theta}{arg \max} \mathbb{E}_{q_{\phi}(z|x)}\left[\log p_{\theta}(x|z)\right] - D_{KL}(q_{\phi}(z|x)||p(z)) \approx \underset{\phi,\theta}{arg \max} \sum_{l=1}^{L} \log p_{\theta}(x|z^{(l)}) - D_{KL}(q_{\phi}(z|x)||p(z))</script><p>其中，潜在变量$\{z^{(l)}\}_{l = 1}^{L}$是从$q_{\phi}(z|x)$中采样得到的，对于数据集中的每个观察值x都是如此。然而，在这个默认设置中出现了一个问题：我们计算损失所依据的每个$z^{(l)}$都是通过随机采样过程生成的，而这个过程通常是不可微的。幸运的是，当$q_{\phi}(z|x)$被设计为对某些分布进行建模时，包括多元高斯分布，可以通过重参数化技巧来解决这个问题。</p>
+<script type="math/tex; mode=display">\underset{\phi,\theta}{arg \max} \mathbb{E}_{q_{\phi}(z|x)}\left[\log p_{\theta}(x|z)\right] - D_{KL}(q_{\phi}(z|x)||p(z)) \approx \underset{\phi,\theta}{arg \max} \sum_{l=1}^{L} \log p_{\theta}(x|z^{(l)}) - D_{KL}(q_{\phi}(z|x)||p(z)) \tag{22}</script><p>其中，潜在变量$\{z^{(l)}\}_{l = 1}^{L}$是从$q_{\phi}(z|x)$中采样得到的，对于数据集中的每个观察值x都是如此。然而，在这个默认设置中出现了一个问题：我们计算损失所依据的每个$z^{(l)}$都是通过随机采样过程生成的，而这个过程通常是不可微的。幸运的是，当$q_{\phi}(z|x)$被设计为对某些分布进行建模时，包括多元高斯分布，可以通过重参数化技巧来解决这个问题。</p>
 <p>重参数化技巧将一个随机变量重写为一个噪声变量的确定性函数；这允许通过梯度下降来优化非随机项。例如，从均值为$\mu$、方差为$\sigma^{2}$的正态分布$x \sim N(x;\mu,\sigma^{2})$中采样可以重写为：</p>
 <script type="math/tex; mode=display">x = \mu + \sigma\epsilon \text{ ，其中 } \epsilon \sim \mathcal{N}(\epsilon;0,I)</script><p>换句话说，任意高斯分布可以被解释为标准高斯分布（$\epsilon$是其样本），其均值通过加法从0移动到目标均值$\mu$，方差通过目标方差$\sigma^{2}$进行拉伸。因此，通过重参数化技巧，从任意高斯分布中采样可以通过从标准高斯分布中采样、将结果按目标标准差缩放并按目标均值移动来实现。</p>
 <p>在VAE中，每个$z$因此被计算为输入x和辅助噪声变量$\epsilon$的确定性函数：</p>
 <script type="math/tex; mode=display">z = \mu_{\phi}(x) + \sigma_{\phi}(x) \odot \epsilon \text{ ，其中 } \epsilon \sim \mathcal{N}(\epsilon;0,I)</script><p>其中$\odot$表示逐元素相乘。在这种重参数化的$z$版本下，可以根据需要计算关于$\phi$的梯度，以优化$\mu_{\phi}$和$\sigma_{\phi}$。因此，VAE利用重参数化技巧和蒙特卡罗估计来联合优化$\phi$和$\theta$以最大化ELBO。</p>
 <p>训练完VAE后，可以通过直接从潜在空间$p(z)$中采样，然后将其通过解码器来生成新数据。当$z$的维度小于输入$x$的维度时，变分自编码器特别有趣，因为我们可能正在学习紧凑、有用的表示。此外，当学习到一个语义有意义的潜在空间时，可以在将潜在向量传递给解码器之前对其进行编辑，以更精确地控制生成的数据。</p>
 <h4 id="分层变分自编码器"><a href="#分层变分自编码器" class="headerlink" title="分层变分自编码器"></a>分层变分自编码器</h4><p>分层变分自编码器（HVAE）是VAE的一种推广，它扩展到潜在变量的多个层次。在这种公式下，潜在变量本身被解释为由其他更高级、更抽象的潜在变量生成。直观地说，就像我们将观察到的三维物体视为由更高级的抽象潜在变量生成一样，柏拉图洞穴中的人将三维物体视为生成他们二维观察结果的潜在变量。因此，从柏拉图洞穴居民的角度来看，他们的观察结果可以被视为由深度为二（或更多）的潜在层次结构建模。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f2.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图2：具有T个层次潜在变量的马尔可夫层次变分自编码器。生成过程被建模为一个马尔可夫链，其中每个潜在变量$z_{t}$仅由前一个潜在变量$z_{t + 1}$生成。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
 <p>在具有T个层次的一般HVAE中，每个潜在变量都可以依赖于所有先前的潜在变量，在本文中，我们关注一个特殊情况，称为马尔可夫HVAE（MHVAE）。在MHVAE中，生成过程是一个马尔可夫链；也就是说，层次结构中的每次转换都是马尔可夫的，解码每个潜在变量$z_{t}$仅依赖于前一个潜在变量$z_{t + 1}$。直观地说，从视觉上看，这可以看作是简单地将VAE堆叠在一起，如图2所示；描述这个模型的另一个合适术语是递归VAE。在数学上，我们将马尔可夫HVAE的联合分布和后验表示为：</p>
-<script type="math/tex; mode=display">p(x,z_{1:T}) = p(z_{T})p_{\theta}(x|z_{1})\prod_{t = 2}^{T}p_{\theta}(z_{t - 1}|z_{t})</script><script type="math/tex; mode=display">q_{\phi}(z_{1:T}|x) = q_{\phi}(z_{1}|x)\prod_{t = 2}^{T}q_{\phi}(z_{t}|z_{t - 1}) \tag{24}</script><p>然后，我们可以很容易地将ELBO扩展为：</p>
+<script type="math/tex; mode=display">p(x,z_{1:T}) = p(z_{T})p_{\theta}(x|z_{1})\prod_{t = 2}^{T}p_{\theta}(z_{t - 1}|z_{t}) \tag{23}</script><script type="math/tex; mode=display">q_{\phi}(z_{1:T}|x) = q_{\phi}(z_{1}|x)\prod_{t = 2}^{T}q_{\phi}(z_{t}|z_{t - 1}) \tag{24}</script><p>然后，我们可以很容易地将ELBO扩展为：</p>
 <script type="math/tex; mode=display">
 \begin{align*}
-\log p(x) &= \log \int p(x,z_{1:T})dz_{1:T} & & (应用公式1)\\
-&= \log \int \frac{p(x,z_{1:T})q_{\phi}(z_{1:T}|x)}{q_{\phi}(z_{1:T}|x)}dz_{1:T} & & (乘以1=\frac{q_{\phi}(z_{1:T}|x)}{q_{\phi}(z_{1:T}|x)})\\
-&= \log \mathbb{E}_{q_{\phi}(z_{1:T}|x)}\left[\frac{p(x,z_{1:T})}{q_{\phi}(z_{1:T}|x)}\right] & & (期望的定义)\\
-&\geq \mathbb{E}_{q_{\phi}(z_{1:T}|x)}\left[\log \frac{p(x,z_{1:T})}{q_{\phi}(z_{1:T}|x)}\right] & & (应用詹森不等式)
-\end{align*}</script><p>然后，我们可以将联合分布（公式23）和后验（公式24）代入公式28，得到另一种</p>
+\log p(x) &= \log \int p(x,z_{1:T})dz_{1:T} && (应用公式1) \tag{25}\\
+&= \log \int \frac{p(x,z_{1:T})q_{\phi}(z_{1:T}|x)}{q_{\phi}(z_{1:T}|x)}dz_{1:T} & & (乘以1=\frac{q_{\phi}(z_{1:T}|x)}{q_{\phi}(z_{1:T}|x)}) \tag{26}\\
+&= \log \mathbb{E}_{q_{\phi}(z_{1:T}|x)}\left[\frac{p(x,z_{1:T})}{q_{\phi}(z_{1:T}|x)}\right] & & (期望的定义) \tag{27}\\
+&\geq \mathbb{E}_{q_{\phi}(z_{1:T}|x)}\left[\log \frac{p(x,z_{1:T})}{q_{\phi}(z_{1:T}|x)}\right] & & (应用詹森不等式) \tag{28}
+\end{align*}</script><p>然后，我们可以将联合分布（公式23）和后验分布（公式24）代入公式28，从而得到另一种形式：</p>
+<script type="math/tex; mode=display">\mathbb{E}_{q_{\phi}\left(z_{1: T} | x\right)}\left[\log \frac{p\left(x, z_{1: T}\right)}{q_{\phi}\left(z_{1: T} | x\right)}\right]=\mathbb{E}_{q_{\phi}\left(z_{1: T} | x\right)}\left[\log \frac{p\left(z_{T}\right) p_{\theta}\left(x | z_{1}\right) \prod_{t=2}^{T} p_{\theta}\left(z_{t-1} | z_{t}\right)}{q_{\phi}\left(z_{1} | x\right) \prod_{t=2}^{T} q_{\phi}\left(z_{t} | z_{t-1}\right)}\right] \tag{29}</script><p>如下文所示，当我们研究变分扩散模型时，这一目标可以进一步分解为可解释的部分。</p>
+<h3 id="变分扩散模型"><a href="#变分扩散模型" class="headerlink" title="变分扩散模型"></a>变分扩散模型</h3><p>理解变分扩散模型（VDM）[4, 5, 6]最简单的方式，是将其看作具有三个关键限制条件的马尔可夫分层变分自编码器。</p>
+<ul>
+<li>潜在维度与数据维度完全相等。</li>
+<li>每个时间步的潜在编码器结构不是学习得到的，而是预先定义为线性高斯模型。也就是说，它是一个以先前时间步的输出为中心的高斯分布。</li>
+<li>潜在编码器的高斯参数会随时间变化，使得在最终时间步 $T$ 时，潜在变量的分布为标准高斯分布。</li>
+</ul>
+<p>此外，我们明确保留了标准马尔可夫分层变分自编码器中分层转换之间的马尔可夫性质。</p>
+<p>让我们详细阐述这些假设的含义。根据第一个限制条件，在略微滥用符号的情况下，我们现在可以将真实数据样本和潜在变量都表示为 $x_t$ ，其中 $t = 0$ 代表真实数据样本，$t \in [1, T]$ 代表具有层次索引 $t$ 的相应潜在变量。VDM的后验与MHVAE的后验相同（公式24），但现在可以重写为：</p>
+<script type="math/tex; mode=display">q(x_{1:T}|x_0)=\prod_{t = 1}^{T}q(x_t|x_{t - 1}) \tag{30}</script><p>根据第二个假设，我们知道编码器中每个潜在变量的分布都是以其前一个层次潜在变量为中心的高斯分布。与马尔可夫HVAE不同，每个时间步 $t$ 的编码器结构不是学习得到的，而是固定为线性高斯模型，其均值和标准差可以预先设置为超参数[5]，也可以作为参数进行学习[6]。我们将高斯编码器的均值参数化为 $\mu_t(x_t)=\sqrt{\alpha_t}x_{t - 1}$ ，方差参数化为 $\sum_t(x_t)=(1 - \alpha_t)I$ ，选择这种系数形式是为了使潜在变量的方差保持在相似的尺度上，换句话说，编码过程是方差保持的。请注意，也允许使用其他高斯参数化方式，并且会得到类似的推导结果。关键在于，$\alpha_t$ 是一个（可能可学习的）系数，它可以随层次深度 $t$ 变化，以提供灵活性。从数学上看，编码器的转换表示为：</p>
+<script type="math/tex; mode=display">q(x_t|x_{t - 1})=\mathcal{N}(x_t;\sqrt{\alpha_t}x_{t - 1},(1 - \alpha_t)I) \tag{31}</script><p>根据第三个假设，我们知道 $\alpha_t$ 会根据固定或可学习的时间表随时间演化，其结构设计使得最终潜在变量的分布 $p(x_T)$ 是标准高斯分布。然后，我们可以更新马尔可夫HVAE的联合分布（公式23），从而写出VDM的联合分布：</p>
+<script type="math/tex; mode=display">p(x_{0:T}) = p(x_T)\prod_{t = 1}^{T}p_{\theta}(x_{t - 1}|x_t) \tag{32}</script><p>其中，</p>
+<script type="math/tex; mode=display">p(x_T)=\mathcal{N}(x_T;0, I) \tag{33}</script><p>总体而言，这组假设描述的是图像输入随时间逐渐被添加噪声的过程；我们逐步向图像中添加高斯噪声，直到它最终与纯高斯噪声完全相同。从视觉上看，这个过程如图3所示。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f3.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图3：变分扩散模型的可视化表示；$x_0$代表真实数据观测，如自然图像，$x_T$代表纯高斯噪声，$x_t$是$x_0$的一个中间带噪版本。每个$q(x_t \mid x_{t - 1})$都被建模为一个高斯分布，该分布以先前状态的输出作为其均值。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>请注意，我们的编码器分布 $q(x_t|x_{t - 1})$ 不再由 $\phi$ 参数化，因为它们在每个时间步都被完全建模为具有定义好的均值和方差参数的高斯分布。因此，在VDM中，我们只对学习条件分布 $p_{\theta}(x_{t - 1}|x_t)$ 感兴趣，这样我们就可以模拟新的数据。在优化VDM之后，采样过程非常简单，只需从 $p(x_T)$ 中采样高斯噪声，然后迭代运行去噪转换 $p_{\theta}(x_{t - 1}|x_t)$ ，经过 $T$ 步生成一个新的 $x_0$ 。</p>
+<p>与任何HVAE一样，VDM可以通过最大化证据下界（ELBO）来进行优化，其推导过程如下：</p>
+<script type="math/tex; mode=display">
+\begin{align}
+\log p(\boldsymbol{x}) &= \log \int p(\boldsymbol{x}_{0:T})d\boldsymbol{x}_{1:T} \tag{34}\\
+&= \log \int \frac{p(\boldsymbol{x}_{0:T})q(\boldsymbol{x}_{1:T}|\boldsymbol{x}_{0})}{q(\boldsymbol{x}_{1:T}|\boldsymbol{x}_{0})}d\boldsymbol{x}_{1:T} \tag{35}\\
+&= \log \mathbb{E}_{q(\boldsymbol{x}_{1:T}|\boldsymbol{x}_{0})} \left[\frac{p(\boldsymbol{x}_{0:T})}{q(\boldsymbol{x}_{1:T}|\boldsymbol{x}_{0})}\right] \tag{36}\\
+&\geq \mathbb{E}_{q(\boldsymbol{x}_{1:T}|\boldsymbol{x}_{0})} \left[\log \frac{p(\boldsymbol{x}_{0:T})}{q(\boldsymbol{x}_{1:T}|\boldsymbol{x}_{0})}\right] \tag{37}\\
+&= \mathbb{E}_{q(\boldsymbol{x}_{1:T}|\boldsymbol{x}_{0})} \left[\log \frac{p(\boldsymbol{x}_{T})\prod_{t = 1}^{T} p_{\boldsymbol{\theta}}(\boldsymbol{x}_{t - 1}|\boldsymbol{x}_{t})}{\prod_{t = 1}^{T} q(\boldsymbol{x}_{t}|\boldsymbol{x}_{t - 1})}\right] \tag{38}\\
+&= \mathbb{E}_{q(\boldsymbol{x}_{1:T}|\boldsymbol{x}_{0})} \left[\log \frac{p(\boldsymbol{x}_{T})p_{\boldsymbol{\theta}}(\boldsymbol{x}_{0}|\boldsymbol{x}_{1})\prod_{t = 2}^{T} p_{\boldsymbol{\theta}}(\boldsymbol{x}_{t - 1}|\boldsymbol{x}_{t})}{q(\boldsymbol{x}_{T}|\boldsymbol{x}_{T - 1})\prod_{t = 1}^{T - 1} q(\boldsymbol{x}_{t}|\boldsymbol{x}_{t - 1})}\right] \tag{39}\\
+&= \mathbb{E}_{q(\boldsymbol{x}_{1:T}|\boldsymbol{x}_{0})} \left[\log \frac{p(\boldsymbol{x}_{T})p_{\boldsymbol{\theta}}(\boldsymbol{x}_{0}|\boldsymbol{x}_{1})\prod_{t = 1}^{T - 1} p_{\boldsymbol{\theta}}(\boldsymbol{x}_{t}|\boldsymbol{x}_{t + 1})}{q(\boldsymbol{x}_{T}|\boldsymbol{x}_{T - 1})\prod_{t = 1}^{T - 1} q(\boldsymbol{x}_{t}|\boldsymbol{x}_{t - 1})}\right] \tag{40}\\
+&= \mathbb{E}_{q(\boldsymbol{x}_{1:T}|\boldsymbol{x}_{0})} \left[\log \frac{p(\boldsymbol{x}_{T})p_{\boldsymbol{\theta}}(\boldsymbol{x}_{0}|\boldsymbol{x}_{1})}{q(\boldsymbol{x}_{T}|\boldsymbol{x}_{T - 1})}\right] + \mathbb{E}_{q(\boldsymbol{x}_{1:T}|\boldsymbol{x}_{0})} \left[\log \prod_{t = 1}^{T - 1} \frac{p_{\boldsymbol{\theta}}(\boldsymbol{x}_{t}|\boldsymbol{x}_{t + 1})}{q(\boldsymbol{x}_{t}|\boldsymbol{x}_{t - 1})}\right] \tag{41}\\
+&= \mathbb{E}_{q(\boldsymbol{x}_{1:T}|\boldsymbol{x}_{0})} \left[\log p_{\boldsymbol{\theta}}(\boldsymbol{x}_{0}|\boldsymbol{x}_{1})\right] + \mathbb{E}_{q(\boldsymbol{x}_{1:T}|\boldsymbol{x}_{0})} \left[\log \frac{p(\boldsymbol{x}_{T})}{q(\boldsymbol{x}_{T}|\boldsymbol{x}_{T - 1})}\right] + \mathbb{E}_{q(\boldsymbol{x}_{1:T}|\boldsymbol{x}_{0})} \left[\sum_{t = 1}^{T - 1} \log \frac{p_{\boldsymbol{\theta}}(\boldsymbol{x}_{t}|\boldsymbol{x}_{t + 1})}{q(\boldsymbol{x}_{t}|\boldsymbol{x}_{t - 1})}\right] \tag{42}\\
+&= \mathbb{E}_{q(\boldsymbol{x}_{1:T}|\boldsymbol{x}_{0})} \left[\log p_{\boldsymbol{\theta}}(\boldsymbol{x}_{0}|\boldsymbol{x}_{1})\right] + \mathbb{E}_{q(\boldsymbol{x}_{1:T}|\boldsymbol{x}_{0})} \left[\log \frac{p(\boldsymbol{x}_{T})}{q(\boldsymbol{x}_{T}|\boldsymbol{x}_{T - 1})}\right] + \sum_{t = 1}^{T - 1} \mathbb{E}_{q(\boldsymbol{x}_{1:T}|\boldsymbol{x}_{0})} \left[\log \frac{p_{\boldsymbol{\theta}}(\boldsymbol{x}_{t}|\boldsymbol{x}_{t + 1})}{q(\boldsymbol{x}_{t}|\boldsymbol{x}_{t - 1})}\right] \tag{43}\\
+&= \mathbb{E}_{q(\boldsymbol{x}_{1}|\boldsymbol{x}_{0})} \left[\log p_{\boldsymbol{\theta}}(\boldsymbol{x}_{0}|\boldsymbol{x}_{1})\right] + \mathbb{E}_{q(\boldsymbol{x}_{T - 1},\boldsymbol{x}_{T}|\boldsymbol{x}_{0})} \left[\log \frac{p(\boldsymbol{x}_{T})}{q(\boldsymbol{x}_{T}|\boldsymbol{x}_{T - 1})}\right] \\ & + \sum_{t = 1}^{T - 1} \mathbb{E}_{q(\boldsymbol{x}_{t - 1},\boldsymbol{x}_{t},\boldsymbol{x}_{t + 1}|\boldsymbol{x}_{0})} \left[\log \frac{p_{\boldsymbol{\theta}}(\boldsymbol{x}_{t}|\boldsymbol{x}_{t + 1})}{q(\boldsymbol{x}_{t}|\boldsymbol{x}_{t - 1})}\right] \tag{44}\\
+&= \underbrace{\mathbb{E}_{q(\boldsymbol{x}_{1}|\boldsymbol{x}_{0})} \left[\log p_{\boldsymbol{\theta}}(\boldsymbol{x}_{0}|\boldsymbol{x}_{1})\right]}_{\text{reconstruction term}} - \underbrace{\mathbb{E}_{q(\boldsymbol{x}_{T - 1}|\boldsymbol{x}_{0})} \left[D_{\text{KL}}(q(\boldsymbol{x}_{T}|\boldsymbol{x}_{T - 1}) \| p(\boldsymbol{x}_{T}))\right]}_{\text{prior matching term}} \\
+& \quad - \sum_{t = 1}^{T - 1} \underbrace{\mathbb{E}_{q(\boldsymbol{x}_{t - 1},\boldsymbol{x}_{t + 1}|\boldsymbol{x}_{0})} \left[D_{\text{KL}}(q(\boldsymbol{x}_{t}|\boldsymbol{x}_{t - 1}) \| p_{\boldsymbol{\theta}}(\boldsymbol{x}_{t}|\boldsymbol{x}_{t + 1}))\right]}_{\text{consistency term}} \tag{45}
+\end{align}</script><p>推导得到的ELBO形式可以根据其各个组成部分进行解释：</p>
+<ol>
+<li>$\mathbb{E}_{q(x_1|x_0)}[\log p_{\theta}(x_0|x_1)]$ 可以解释为重建项，它预测在给定第一步潜在变量的情况下，原始数据样本的对数概率。这个项也出现在普通VAE中，可以以类似的方式进行训练。</li>
+<li>$\mathbb{E}_{q(x_{T - 1}|x_0)}[D_{KL}(q(x_T|x_{T - 1})|p(x_T))]$ 是先验匹配项；当最终潜在变量的分布与高斯先验匹配时，该项最小化。由于它没有可训练的参数，所以不需要进行优化；此外，因为我们假设 $T$ 足够大，使得最终分布是高斯分布，所以该项实际上为零。</li>
+<li>$\mathbb{E}_{q(x_{t - 1},x_{t + 1}|x_0)}[D_{KL}(q(x_t|x_{t - 1})|p_{\theta}(x_t|x_{t + 1}))]$ 是一致性项；它致力于使 $x_t$ 处的分布在正向和反向过程中保持一致。也就是说，对于每个中间时间步，从更嘈杂的图像进行去噪的步骤应该与从更清晰的图像进行相应的加噪步骤相匹配；这在数学上通过KL散度来体现。当我们训练 $p_{\theta}(x_t|x_{t + 1})$ 以匹配公式31中定义的高斯分布 $q(x_t|x_{t - 1})$ 时，该项最小化。</li>
+</ol>
+<p>从视觉上看，ELBO的这种解释如图4所示。优化VDM的成本主要由第三项主导，因为我们必须对所有时间步 $t$ 进行优化。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f4.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图4：在我们的第一种推导中，变分扩散模型（VDM）可以通过确保对于每一个中间的$x_t$，其上方潜在变量的后验分布$p_{\theta}(x_t \mid x_{t + 1})$与之前潜在变量的高斯噪声分布$q(x_t \mid x_{t - 1})$相匹配来进行优化。在本图中，对于每一个中间的$x_t$，我们最小化粉色和绿色箭头所代表的分布之间的差异。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>在这个推导中，ELBO的所有项都是作为期望计算的，因此可以使用蒙特卡罗估计进行近似。然而，使用我们刚刚推导的项来实际优化ELBO可能不是最优的；因为一致性项是在每个时间步对两个随机变量 ${x_{t - 1}, x_{t + 1}}$ 求期望计算得到的，其蒙特卡罗估计的方差可能比每个时间步仅使用一个随机变量估计的项的方差更高。由于它是由 $T - 1$ 个一致性项求和得到的，对于较大的 $T$ 值，最终估计的ELBO值可能具有较高的方差。</p>
+<p>让我们尝试推导一种ELBO形式，使得每个项在每个时间步仅对一个随机变量求期望。关键的见解是，我们可以将编码器转换重写为 $q(x_t|x_{t - 1}) = q(x_t|x_{t - 1}, x_0)$ ，由于马尔可夫性质，额外的条件项是多余的。然后，根据贝叶斯规则，我们可以将每个转换重写为：</p>
+<script type="math/tex; mode=display">q(x_t|x_{t - 1}, x_0)=\frac{q(x_{t - 1}|x_t, x_0)q(x_t|x_0)}{q(x_{t - 1}|x_0)} \tag{46}</script><p>有了这个新公式，我们可以从公式37中的ELBO继续重新推导：</p>
+<script type="math/tex; mode=display">
+\begin{align}
+\log p(\boldsymbol{x}) &\geq \mathbb{E}_{q(\boldsymbol{x}_{1:T}|\boldsymbol{x}_{0})} \left[\log \frac{p(\boldsymbol{x}_{0:T})}{q(\boldsymbol{x}_{1:T}|\boldsymbol{x}_{0})}\right] \tag{47}\\
+&= \mathbb{E}_{q(\boldsymbol{x}_{1:T}|\boldsymbol{x}_{0})} \left[\log \frac{p(\boldsymbol{x}_{T})\prod_{t = 1}^{T} p_{\boldsymbol{\theta}}(\boldsymbol{x}_{t - 1}|\boldsymbol{x}_{t})}{\prod_{t = 1}^{T} q(\boldsymbol{x}_{t}|\boldsymbol{x}_{t - 1})}\right] \tag{48}\\
+&= \mathbb{E}_{q(\boldsymbol{x}_{1:T}|\boldsymbol{x}_{0})} \left[\log \frac{p(\boldsymbol{x}_{T})p_{\boldsymbol{\theta}}(\boldsymbol{x}_{0}|\boldsymbol{x}_{1})\prod_{t = 2}^{T} p_{\boldsymbol{\theta}}(\boldsymbol{x}_{t - 1}|\boldsymbol{x}_{t})}{q(\boldsymbol{x}_{1}|\boldsymbol{x}_{0})\prod_{t = 2}^{T} q(\boldsymbol{x}_{t}|\boldsymbol{x}_{t - 1})}\right] \tag{49}\\
+&= \mathbb{E}_{q(\boldsymbol{x}_{1:T}|\boldsymbol{x}_{0})} \left[\log \frac{p(\boldsymbol{x}_{T})p_{\boldsymbol{\theta}}(\boldsymbol{x}_{0}|\boldsymbol{x}_{1})\prod_{t = 2}^{T} p_{\boldsymbol{\theta}}(\boldsymbol{x}_{t - 1}|\boldsymbol{x}_{t})}{q(\boldsymbol{x}_{1}|\boldsymbol{x}_{0})\prod_{t = 2}^{T} q(\boldsymbol{x}_{t}|\boldsymbol{x}_{t - 1},\boldsymbol{x}_{0})}\right] \tag{50}\\
+&= \mathbb{E}_{q(\boldsymbol{x}_{1:T}|\boldsymbol{x}_{0})} \left[\log \frac{p_{\boldsymbol{\theta}}(\boldsymbol{x}_{T})p_{\boldsymbol{\theta}}(\boldsymbol{x}_{0}|\boldsymbol{x}_{1})}{q(\boldsymbol{x}_{1}|\boldsymbol{x}_{0})} + \log \prod_{t = 2}^{T} \frac{p_{\boldsymbol{\theta}}(\boldsymbol{x}_{t - 1}|\boldsymbol{x}_{t})}{q(\boldsymbol{x}_{t}|\boldsymbol{x}_{t - 1},\boldsymbol{x}_{0})}\right] \tag{51}\\
+&= \mathbb{E}_{q(\boldsymbol{x}_{1:T}|\boldsymbol{x}_{0})} \left[\log \frac{p(\boldsymbol{x}_{T})p_{\boldsymbol{\theta}}(\boldsymbol{x}_{0}|\boldsymbol{x}_{1})}{q(\boldsymbol{x}_{1}|\boldsymbol{x}_{0})} + \log \prod_{t = 2}^{T} \frac{p_{\boldsymbol{\theta}}(\boldsymbol{x}_{t - 1}|\boldsymbol{x}_{t})}{\frac{q(\boldsymbol{x}_{t - 1}|\boldsymbol{x}_{t},\boldsymbol{x}_{0})q(\boldsymbol{x}_{t}|\boldsymbol{x}_{0})}{q(\boldsymbol{x}_{t - 1}|\boldsymbol{x}_{0})}}\right] \tag{52}\\
+&= \mathbb{E}_{q(\boldsymbol{x}_{1:T}|\boldsymbol{x}_{0})} \left[\log \frac{p(\boldsymbol{x}_{T})p_{\boldsymbol{\theta}}(\boldsymbol{x}_{0}|\boldsymbol{x}_{1})}{q(\boldsymbol{x}_{1}|\boldsymbol{x}_{0})} + \log \prod_{t = 2}^{T} \frac{p_{\boldsymbol{\theta}}(\boldsymbol{x}_{t - 1}|\boldsymbol{x}_{t})}{\frac{q(\boldsymbol{x}_{t - 1}|\boldsymbol{x}_{t},\boldsymbol{x}_{0})\cancel{q(\boldsymbol{x}_{t}|\boldsymbol{x}_{0})}}{\cancel{q(\boldsymbol{x}_{t - 1}|\boldsymbol{x}_{0})}}}\right] \tag{53}\\
+&= \mathbb{E}_{q(\boldsymbol{x}_{1:T}|\boldsymbol{x}_{0})} \left[\log \frac{p(\boldsymbol{x}_{T})p_{\boldsymbol{\theta}}(\boldsymbol{x}_{0}|\boldsymbol{x}_{1})}{\cancel{q(\boldsymbol{x}_{1}|\boldsymbol{x}_{0})}} + \log \frac{\cancel{q(\boldsymbol{x}_{1}|\boldsymbol{x}_{0})}}{q(\boldsymbol{x}_{T}|\boldsymbol{x}_{0})} + \log \prod_{t = 2}^{T} \frac{p_{\boldsymbol{\theta}}(\boldsymbol{x}_{t - 1}|\boldsymbol{x}_{t})}{q(\boldsymbol{x}_{t - 1}|\boldsymbol{x}_{t},\boldsymbol{x}_{0})}\right] \tag{54}\\
+&= \mathbb{E}_{q(\boldsymbol{x}_{1:T}|\boldsymbol{x}_{0})} \left[\log \frac{p(\boldsymbol{x}_{T})p_{\boldsymbol{\theta}}(\boldsymbol{x}_{0}|\boldsymbol{x}_{1})}{q(\boldsymbol{x}_{T}|\boldsymbol{x}_{0})} + \sum_{t = 2}^{T} \log \frac{p_{\boldsymbol{\theta}}(\boldsymbol{x}_{t - 1}|\boldsymbol{x}_{t})}{q(\boldsymbol{x}_{t - 1}|\boldsymbol{x}_{t},\boldsymbol{x}_{0})}\right] \tag{55}\\
+&= \mathbb{E}_{q(\boldsymbol{x}_{1:T}|\boldsymbol{x}_{0})} \left[\log p_{\boldsymbol{\theta}}(\boldsymbol{x}_{0}|\boldsymbol{x}_{1})\right] + \mathbb{E}_{q(\boldsymbol{x}_{1:T}|\boldsymbol{x}_{0})} \left[\log \frac{p(\boldsymbol{x}_{T})}{q(\boldsymbol{x}_{T}|\boldsymbol{x}_{0})}\right] + \sum_{t = 2}^{T} \mathbb{E}_{q(\boldsymbol{x}_{1:T}|\boldsymbol{x}_{0})} \left[\log \frac{p_{\boldsymbol{\theta}}(\boldsymbol{x}_{t - 1}|\boldsymbol{x}_{t})}{q(\boldsymbol{x}_{t - 1}|\boldsymbol{x}_{t},\boldsymbol{x}_{0})}\right] \tag{56}\\
+&= \mathbb{E}_{q(\boldsymbol{x}_{1}|\boldsymbol{x}_{0})} \left[\log p_{\boldsymbol{\theta}}(\boldsymbol{x}_{0}|\boldsymbol{x}_{1})\right] + \mathbb{E}_{q(\boldsymbol{x}_{T}|\boldsymbol{x}_{0})} \left[\log \frac{p(\boldsymbol{x}_{T})}{q(\boldsymbol{x}_{T}|\boldsymbol{x}_{0})}\right] + \sum_{t = 2}^{T} \mathbb{E}_{q(\boldsymbol{x}_{t},\boldsymbol{x}_{t - 1}|\boldsymbol{x}_{0})} \left[\log \frac{p_{\boldsymbol{\theta}}(\boldsymbol{x}_{t - 1}|\boldsymbol{x}_{t})}{q(\boldsymbol{x}_{t - 1}|\boldsymbol{x}_{t},\boldsymbol{x}_{0})}\right] \tag{57}\\
+&= \underbrace{\mathbb{E}_{q(\boldsymbol{x}_{1}|\boldsymbol{x}_{0})} \left[\log p_{\boldsymbol{\theta}}(\boldsymbol{x}_{0}|\boldsymbol{x}_{1})\right]}_{\text{reconstruction term}} - \underbrace{D_{\text{KL}}(q(\boldsymbol{x}_{T}|\boldsymbol{x}_{0}) \| p(\boldsymbol{x}_{T}))}_{\text{prior matching term}} - \sum_{t = 2}^{T} \underbrace{\mathbb{E}_{q(\boldsymbol{x}_{t}|\boldsymbol{x}_{0})} \left[D_{\text{KL}}(q(\boldsymbol{x}_{t - 1}|\boldsymbol{x}_{t},\boldsymbol{x}_{0}) \| p_{\boldsymbol{\theta}}(\boldsymbol{x}_{t - 1}|\boldsymbol{x}_{t}))\right]}_{\text{denoising matching term}} \tag{58}
+\end{align}</script><p>因此，我们成功推导了一种可以用较低方差估计的ELBO解释，因为每个项在每个时间步最多对一个随机变量求期望。这种公式化也有一个优雅的解释，当检查每个单独的项时就会发现：</p>
+<ol>
+<li>$\mathbb{E}_{q(x_1|x_0)}[\log p_{\theta}(x_0|x_1)]$ 可以解释为重建项；与普通VAE的ELBO中的类似项一样，这个项可以使用蒙特卡罗估计进行近似和优化。</li>
+<li>$D_{KL}(q(x_T|x_0)|p(x_T))$ 表示最终加噪输入的分布与标准高斯先验的接近程度。它没有可训练的参数，在我们的假设下也等于零。</li>
+<li>$E_{q(x_t|x_0)}[D_{KL}(q(x_{t - 1}|x_t, x_0)|p_{\theta}(x_{t - 1}|x_t))]$ 是去噪匹配项。我们学习期望的去噪转换步骤 $p_{\theta}(x_{t - 1}|x_t)$ ，以近似可处理的、真实的去噪转换步骤 $q(x_{t - 1}|x_t, x_0)$ 。$q(x_{t - 1}|x_t, x_0)$ 转换步骤可以作为真实信号，因为它定义了如何在知道最终完全去噪图像 $x_0$ 的情况下对嘈杂图像 $x_t$ 进行去噪。因此，当这两个去噪步骤通过它们的KL散度衡量尽可能接近时，该项最小化。</li>
+</ol>
+<p>需要注意的是，在ELBO的两个推导过程（公式45和公式58）中，只使用了马尔可夫假设；因此这些公式对于任何任意的马尔可夫HVAE都成立。此外，当我们设置 $T = 1$ 时，VDM的两种ELBO解释都精确地重现了普通VAE的ELBO公式（公式19）。</p>
+<p>在这个ELBO的推导中，优化成本的大部分仍然在于求和项，它主导了重建项。对于任意复杂的马尔可夫HVAE中的任意后验，由于同时学习编码器的复杂性增加，每个KL散度项 $D_{KL}(q(x_{t - 1}|x_t, x_0)|p_{\theta}(x_{t - 1}|x_t))$ 都很难最小化。然而，在VDM中，我们可以利用高斯转换假设使优化变得易于处理。根据贝叶斯规则，我们有：</p>
+<script type="math/tex; mode=display">q(x_{t - 1}|x_t, x_0)=\frac{q(x_t|x_{t - 1}, x_0)q(x_{t - 1}|x_0)}{q(x_t|x_0)}</script><p>因为我们已经从关于编码器转换的假设（公式31）中知道 $q(x_t|x_{t - 1}, x_0)=q(x_t|x_{t - 1})=\mathcal{N}(x_t;\sqrt{\alpha_t}x_{t - 1},(1 - \alpha_t)I)$ ，剩下的就是推导 $q(x_t|x_0)$ 和 $q(x_{t - 1}|x_0)$ 的形式。幸运的是，由于VDM的编码器转换是线性高斯模型，这些也变得易于处理。回想一下，在重参数化技巧下，样本 $x_t \sim q(x_t|x_{t - 1})$ 可以重写为：</p>
+<script type="math/tex; mode=display">x_t=\sqrt{\alpha_t}x_{t - 1}+\sqrt{1 - \alpha_t}\epsilon,\text{ 其中 }\epsilon \sim \mathcal{N}(\epsilon;0, I) \tag{59}</script><p>类似地，样本 $x_{t - 1} \sim q(x_{t - 1}|x_{t - 2})$ 可以重写为：</p>
+<script type="math/tex; mode=display">x_{t - 1}=\sqrt{\alpha_{t - 1}}x_{t - 2}+\sqrt{1 - \alpha_{t - 1}}\epsilon,\text{ 其中 }\epsilon \sim \mathcal{N}(\epsilon;0, I) \tag{60}</script><p>然后，$q(x_t|x_0)$ 的形式可以通过重复应用重参数化技巧递归推导出来。假设我们有 $2T$ 个独立同分布的随机噪声变量 ${\epsilon_{t}^{*}, \epsilon_{t}}_{t = 0}^{T} \sim \mathcal{N}(\epsilon;0, I)$ 。那么，对于任意样本 $x_t \sim q(x_t|x_0)$ ，我们可以将其重写为：</p>
+<script type="math/tex; mode=display">
+\begin{align}
+\boldsymbol{x}_t &= \sqrt{\alpha_t}\boldsymbol{x}_{t - 1}+\sqrt{1 - \alpha_t}\boldsymbol{\epsilon}_{t - 1}^* \tag{61}\\
+&= \sqrt{\alpha_t}\left(\sqrt{\alpha_{t - 1}}\boldsymbol{x}_{t - 2}+\sqrt{1 - \alpha_{t - 1}}\boldsymbol{\epsilon}_{t - 2}^*\right)+\sqrt{1 - \alpha_t}\boldsymbol{\epsilon}_{t - 1}^* \tag{62}\\
+&= \sqrt{\alpha_t\alpha_{t - 1}}\boldsymbol{x}_{t - 2}+\sqrt{\alpha_t - \alpha_t\alpha_{t - 1}}\boldsymbol{\epsilon}_{t - 2}^*+\sqrt{1 - \alpha_t}\boldsymbol{\epsilon}_{t - 1}^* \tag{63}\\
+&= \sqrt{\alpha_t\alpha_{t - 1}}\boldsymbol{x}_{t - 2}+\sqrt{\sqrt{\alpha_t - \alpha_t\alpha_{t - 1}}^2+\sqrt{1 - \alpha_t}^2}\boldsymbol{\epsilon}_{t - 2} \tag{64}\\
+&= \sqrt{\alpha_t\alpha_{t - 1}}\boldsymbol{x}_{t - 2}+\sqrt{\alpha_t - \alpha_t\alpha_{t - 1}+1 - \alpha_t}\boldsymbol{\epsilon}_{t - 2} \tag{65}\\
+&= \sqrt{\alpha_t\alpha_{t - 1}}\boldsymbol{x}_{t - 2}+\sqrt{1 - \alpha_t\alpha_{t - 1}}\boldsymbol{\epsilon}_{t - 2} \tag{66}\\
+&= \ldots \tag{67}\\
+&= \sqrt{\prod_{i = 1}^{t}\alpha_i}\boldsymbol{x}_0+\sqrt{1 - \prod_{i = 1}^{t}\alpha_i}\boldsymbol{\epsilon}_0 \tag{68}\\
+&= \sqrt{\bar{\alpha}_t}\boldsymbol{x}_0+\sqrt{1 - \bar{\alpha}_t}\boldsymbol{\epsilon}_0 \tag{69}\\
+&\sim \mathcal{N}(\boldsymbol{x}_t;\sqrt{\bar{\alpha}_t}\boldsymbol{x}_0,(1 - \bar{\alpha}_t)\mathbf{I}) \tag{70}
+\end{align}</script><p>其中在公式64中，我们利用了这样一个事实：两个独立的高斯随机变量之和仍是一个高斯随机变量，其均值为两个均值之和，方差为两个方差之和。将<script type="math/tex">\sqrt{1 - \alpha_{t}} \epsilon_{t - 1}^{*}</script> 解释为从高斯分布$N(0,(1 - \alpha_{t}) I)$ 中抽取的一个样本，将<script type="math/tex">\sqrt{\alpha_{t}-\alpha_{t} \alpha_{t - 1}} \epsilon_{t - 2}^{*}</script> 解释为从高斯分布$N(0,(\alpha_{t}-\alpha_{t} \alpha_{t - 1}) I)$ 中抽取的一个样本，那么我们可以将它们的和视为从高斯分布$N(0,(1 - \alpha_{t}+\alpha_{t}-\alpha_{t} \alpha_{t - 1}) I)=N(0,(1 - \alpha_{t} \alpha_{t - 1}) I)$ 中抽取的一个随机变量。然后，利用重参数化技巧，这个分布的一个样本可以表示为$\sqrt{1 - \alpha_{t} \alpha_{t - 1}} \epsilon_{t - 2}$，如公式66所示。</p>
+<p>因此，我们推导出了 $q(x_{t} | x_{0})$ 的高斯形式。对这个推导过程稍作修改，也能得出描述 $q(x_{t - 1} | x_{0})$ 的高斯参数化形式。现在，既然知道了 $q(x_{t} | x_{0})$ 和 $q(x_{t - 1} | x_{0})$ 的形式，我们就可以将其代入贝叶斯规则展开式，进而计算出 $q(x_{t - 1} | x_{t}, x_{0})$ 的形式：</p>
+<script type="math/tex; mode=display">
+\begin{align}
+q(\boldsymbol{x}_{t - 1}|\boldsymbol{x}_t,\boldsymbol{x}_0) &= \frac{q(\boldsymbol{x}_t|\boldsymbol{x}_{t - 1},\boldsymbol{x}_0)q(\boldsymbol{x}_{t - 1}|\boldsymbol{x}_0)}{q(\boldsymbol{x}_t|\boldsymbol{x}_0)} \tag{71}\\
+&= \frac{\mathcal{N}(\boldsymbol{x}_t;\sqrt{\alpha_t}\boldsymbol{x}_{t - 1},(1 - \alpha_t)\mathbf{I})\mathcal{N}(\boldsymbol{x}_{t - 1};\sqrt{\overline{\alpha}_{t - 1}}\boldsymbol{x}_0,(1 - \overline{\alpha}_{t - 1})\mathbf{I})}{\mathcal{N}(\boldsymbol{x}_t;\sqrt{\overline{\alpha}_t}\boldsymbol{x}_0,(1 - \overline{\alpha}_t)\mathbf{I})} \tag{72}\\
+&\propto \exp\left\{-\left[\frac{(\boldsymbol{x}_t - \sqrt{\alpha_t}\boldsymbol{x}_{t - 1})^2}{2(1 - \alpha_t)}+\frac{(\boldsymbol{x}_{t - 1} - \sqrt{\overline{\alpha}_{t - 1}}\boldsymbol{x}_0)^2}{2(1 - \overline{\alpha}_{t - 1})}-\frac{(\boldsymbol{x}_t - \sqrt{\overline{\alpha}_t}\boldsymbol{x}_0)^2}{2(1 - \overline{\alpha}_t)}\right]\right\} \tag{73}\\
+&= \exp\left\{-\frac{1}{2}\left[\frac{(\boldsymbol{x}_t - \sqrt{\alpha_t}\boldsymbol{x}_{t - 1})^2}{1 - \alpha_t}+\frac{(\boldsymbol{x}_{t - 1} - \sqrt{\overline{\alpha}_{t - 1}}\boldsymbol{x}_0)^2}{1 - \overline{\alpha}_{t - 1}}-\frac{(\boldsymbol{x}_t - \sqrt{\overline{\alpha}_t}\boldsymbol{x}_0)^2}{1 - \overline{\alpha}_t}\right]\right\} \tag{74}\\
+&= \exp\left\{-\frac{1}{2}\left[\frac{-2\sqrt{\alpha_t}\boldsymbol{x}_t\boldsymbol{x}_{t - 1}+\alpha_t\boldsymbol{x}_{t - 1}^2}{1 - \alpha_t}+\frac{(\boldsymbol{x}_{t - 1}^2 - 2\sqrt{\overline{\alpha}_{t - 1}}\boldsymbol{x}_{t - 1}\boldsymbol{x}_0)}{1 - \overline{\alpha}_{t - 1}}+C(\boldsymbol{x}_t,\boldsymbol{x}_0)\right]\right\} \tag{75}\\
+&\propto \exp\left\{-\frac{1}{2}\left[-\frac{2\sqrt{\alpha_t}\boldsymbol{x}_t\boldsymbol{x}_{t - 1}}{1 - \alpha_t}+\frac{\alpha_t\boldsymbol{x}_{t - 1}^2}{1 - \alpha_t}+\frac{\boldsymbol{x}_{t - 1}^2}{1 - \overline{\alpha}_{t - 1}}-\frac{2\sqrt{\overline{\alpha}_{t - 1}}\boldsymbol{x}_{t - 1}\boldsymbol{x}_0}{1 - \overline{\alpha}_{t - 1}}\right]\right\} \tag{76}\\
+&= \exp\left\{-\frac{1}{2}\left[\left(\frac{\alpha_t}{1 - \alpha_t}+\frac{1}{1 - \overline{\alpha}_{t - 1}}\right)\boldsymbol{x}_{t - 1}^2-2\left(\frac{\sqrt{\alpha_t}\boldsymbol{x}_t}{1 - \alpha_t}+\frac{\sqrt{\overline{\alpha}_{t - 1}}\boldsymbol{x}_0}{1 - \overline{\alpha}_{t - 1}}\right)\boldsymbol{x}_{t - 1}\right]\right\} \tag{77}\\
+&= \exp\left\{-\frac{1}{2}\left[\frac{\alpha_t(1 - \overline{\alpha}_{t - 1})+1 - \alpha_t}{(1 - \alpha_t)(1 - \overline{\alpha}_{t - 1})}\boldsymbol{x}_{t - 1}^2-2\left(\frac{\sqrt{\alpha_t}\boldsymbol{x}_t}{1 - \alpha_t}+\frac{\sqrt{\overline{\alpha}_{t - 1}}\boldsymbol{x}_0}{1 - \overline{\alpha}_{t - 1}}\right)\boldsymbol{x}_{t - 1}\right]\right\} \tag{78}\\
+&= \exp\left\{-\frac{1}{2}\left[\frac{\alpha_t - \overline{\alpha}_t + 1 - \alpha_t}{(1 - \alpha_t)(1 - \overline{\alpha}_t)}\boldsymbol{x}_{t - 1}^2-2\left(\frac{\sqrt{\alpha_t}\boldsymbol{x}_t}{1 - \alpha_t}+\frac{\sqrt{\overline{\alpha}_{t - 1}}\boldsymbol{x}_0}{1 - \overline{\alpha}_t}\right)\boldsymbol{x}_{t - 1}\right]\right\} \tag{79}\\
+&= \exp\left\{-\frac{1}{2}\left[\frac{1 - \overline{\alpha}_t}{(1 - \alpha_t)(1 - \overline{\alpha}_t)}\boldsymbol{x}_{t - 1}^2-2\left(\frac{\sqrt{\alpha_t}\boldsymbol{x}_t}{1 - \alpha_t}+\frac{\sqrt{\overline{\alpha}_{t - 1}}\boldsymbol{x}_0}{1 - \overline{\alpha}_t}\right)\boldsymbol{x}_{t - 1}\right]\right\} \tag{80}\\
+&= \exp\left\{-\frac{1}{2}\left(\frac{1 - \overline{\alpha}_t}{(1 - \alpha_t)(1 - \overline{\alpha}_t)}\right)\left[\boldsymbol{x}_{t - 1}^2-2\frac{\left(\frac{\sqrt{\alpha_t}\boldsymbol{x}_t}{1 - \alpha_t}+\frac{\sqrt{\overline{\alpha}_{t - 1}}\boldsymbol{x}_0}{1 - \overline{\alpha}_{t - 1}}\right)(1 - \alpha_t)(1 - \overline{\alpha}_{t - 1})}{1 - \overline{\alpha}_t}\boldsymbol{x}_{t - 1}\right]\right\} \tag{81}\\
+&= \exp\left\{-\frac{1}{2}\left(\frac{1 - \overline{\alpha}_t}{(1 - \alpha_t)(1 - \overline{\alpha}_t)}\right)\left[\boldsymbol{x}_{t - 1}^2-2\frac{\left(\frac{\sqrt{\alpha_t}\boldsymbol{x}_t(1 - \overline{\alpha}_{t - 1})}{1 - \alpha_t}+\frac{\sqrt{\overline{\alpha}_{t - 1}}(1 - \alpha_t)\boldsymbol{x}_0}{1 - \overline{\alpha}_{t - 1}}\right)}{1 - \overline{\alpha}_t}\boldsymbol{x}_{t - 1}\right]\right\} \tag{82}\\
+&= \exp\left\{-\frac{1}{2}\left(\frac{1}{(1 - \alpha_t)(1 - \overline{\alpha}_{t - 1})}\right)\left[\boldsymbol{x}_{t - 1}^2-2\frac{\sqrt{\alpha_t}(1 - \overline{\alpha}_{t - 1})\boldsymbol{x}_t+\sqrt{\overline{\alpha}_{t - 1}}(1 - \alpha_t)\boldsymbol{x}_0}{1 - \overline{\alpha}_t}\boldsymbol{x}_{t - 1}\right]\right\} \tag{83}\\
+&\propto \mathcal{N}(\boldsymbol{x}_{t - 1};\underbrace{\frac{\sqrt{\alpha_t}(1 - \overline{\alpha}_{t - 1})\boldsymbol{x}_t+\sqrt{\overline{\alpha}_{t - 1}}(1 - \alpha_t)\boldsymbol{x}_0}{1 - \overline{\alpha}_t}}_{\mu_q(\boldsymbol{x}_t,\boldsymbol{x}_0)},\underbrace{\frac{(1 - \alpha_t)(1 - \overline{\alpha}_{t - 1})}{1 - \overline{\alpha}_t}\mathbf{I}}_{\boldsymbol{\Sigma}_q(t)}) \tag{84}
+\end{align}</script><p>其中在公式75中，$C(x_{t}, x_{0})$ 是一个关于 $x_{t - 1}$ 的常数项，它仅由 $x_{t}$、$x_{0}$ 和 α 值组合计算得出；在公式84中隐式返回了这一项以完成配方。</p>
+<p>因此，我们已经证明，在每一步中，$x_{t - 1} \sim q(x_{t - 1} | x_{t}, x_{0})$ 呈正态分布，其均值$\mu_{q}(x_{t}, x_{0})$ 是$x_{t}$ 和$x_{0}$ 的函数，方差$\sum _{q}(t)$ 是α系数的函数。这些α系数在每个时间步都是已知且固定的；若将其建模为超参数，它们就是永久设定好的，或者将其视为试图对它们进行建模的网络的当前推理输出。根据公式84，我们可以将方差方程重写为$\sum _{q}(t)=\sigma_{q}^{2}(t) I$，其中：</p>
+<script type="math/tex; mode=display">\sigma_{q}^{2}(t)=\frac{(1 - \alpha_{t})(1 - \overline{\alpha}_{t - 1})}{1 - \overline{\alpha}_{t}} \tag{85}</script><p>为了使近似去噪转换步骤$p_{\theta}(x_{t - 1} | x_{t})$ 尽可能接近真实的去噪转换步骤$q(x_{t - 1} | x_{t}, x_{0})$，我们也可以将其建模为高斯分布。此外，由于已知所有的α项在每个时间步都是固定的，我们可以直接构建近似去噪转换步骤的方差，使其也为$\sum _{q}(t)=\sigma_{q}^{2}(t) I$。不过，我们必须将其均值$\mu_{\theta}(x_{t}, t)$ 参数化为$x_{t}$ 的函数，因为$p_{\theta}(x_{t - 1} | x_{t})$ 并不以$x_{0}$ 为条件。</p>
+<p>回想一下，两个高斯分布之间的KL散度为：</p>
+<script type="math/tex; mode=display">
+\begin{align}
+D_{\text{KL}}(\mathcal{N}(\boldsymbol{x};\boldsymbol{\mu}_x, \boldsymbol{\Sigma}_x) \| \mathcal{N}(\boldsymbol{y};\boldsymbol{\mu}_y, \boldsymbol{\Sigma}_y)) &= \frac{1}{2} \left[\log \frac{|\boldsymbol{\Sigma}_y|}{|\boldsymbol{\Sigma}_x|} - d + \text{tr}(\boldsymbol{\Sigma}_y^{-1}\boldsymbol{\Sigma}_x) + (\boldsymbol{\mu}_y - \boldsymbol{\mu}_x)^T\boldsymbol{\Sigma}_y^{-1}(\boldsymbol{\mu}_y - \boldsymbol{\mu}_x)\right] \tag{86}\\
+\end{align}</script><p>在我们的情况中，两个高斯分布的方差可以被设置为完全相等，此时优化KL散度项就简化为最小化两个分布均值之间的差异：</p>
+<script type="math/tex; mode=display">
+\begin{align}
+&\underset{\boldsymbol{\theta}}{\text{arg min}} D_{\text{KL}}(q(\boldsymbol{x}_{t - 1}|\boldsymbol{x}_t, \boldsymbol{x}_0) \| p_{\boldsymbol{\theta}}(\boldsymbol{x}_{t - 1}|\boldsymbol{x}_t)) \\
+=&\underset{\boldsymbol{\theta}}{\text{arg min}} D_{\text{KL}}(\mathcal{N}(\boldsymbol{x}_{t - 1};\boldsymbol{\mu}_q, \boldsymbol{\Sigma}_q(t)) \| \mathcal{N}(\boldsymbol{x}_{t - 1};\boldsymbol{\mu}_{\boldsymbol{\theta}}, \boldsymbol{\Sigma}_q(t))) \tag{87}\\
+=&\underset{\boldsymbol{\theta}}{\text{arg min}} \frac{1}{2} \left[\log \frac{|\boldsymbol{\Sigma}_q(t)|}{|\boldsymbol{\Sigma}_q(t)|} - d + \text{tr}(\boldsymbol{\Sigma}_q(t)^{-1}\boldsymbol{\Sigma}_q(t)) + (\boldsymbol{\mu}_{\boldsymbol{\theta}} - \boldsymbol{\mu}_q)^T\boldsymbol{\Sigma}_q(t)^{-1}(\boldsymbol{\mu}_{\boldsymbol{\theta}} - \boldsymbol{\mu}_q)\right] \tag{88}\\
+=&\underset{\boldsymbol{\theta}}{\text{arg min}} \frac{1}{2} \left[\log 1 - d + d + (\boldsymbol{\mu}_{\boldsymbol{\theta}} - \boldsymbol{\mu}_q)^T\boldsymbol{\Sigma}_q(t)^{-1}(\boldsymbol{\mu}_{\boldsymbol{\theta}} - \boldsymbol{\mu}_q)\right] \tag{89}\\
+=&\underset{\boldsymbol{\theta}}{\text{arg min}} \frac{1}{2} \left[(\boldsymbol{\mu}_{\boldsymbol{\theta}} - \boldsymbol{\mu}_q)^T\boldsymbol{\Sigma}_q(t)^{-1}(\boldsymbol{\mu}_{\boldsymbol{\theta}} - \boldsymbol{\mu}_q)\right] \tag{90}\\
+=&\underset{\boldsymbol{\theta}}{\text{arg min}} \frac{1}{2} \left[(\boldsymbol{\mu}_{\boldsymbol{\theta}} - \boldsymbol{\mu}_q)^T (\sigma_q^2(t)\mathbf{I})^{-1} (\boldsymbol{\mu}_{\boldsymbol{\theta}} - \boldsymbol{\mu}_q)\right] \tag{91}\\
+=&\underset{\boldsymbol{\theta}}{\text{arg min}} \frac{1}{2\sigma_q^2(t)} \left[\|\boldsymbol{\mu}_{\boldsymbol{\theta}} - \boldsymbol{\mu}_q\|_2^2\right] \tag{92}
+\end{align}</script><p>在这里，为了简洁起见，我们将$\mu_{q}(x_{t}, x_{0})$简记为$\mu_{q}$，将$\mu_{\theta}(x_{t}, t)$简记为$\mu_{\theta}$。换句话说，我们想要优化$\mu_{\theta}(x_{t}, t)$，使其与$\mu_{q}(x_{t}, x_{0})$相匹配。根据我们推导的公式84，$\mu_{q}(x_{t}, x_{0})$的形式为：</p>
+<script type="math/tex; mode=display">\begin{align}
+\boldsymbol{\mu}_q(\boldsymbol{x}_t, \boldsymbol{x}_0) &= \frac{\sqrt{\alpha_t}(1 - \overline{\alpha}_{t - 1})\boldsymbol{x}_t+\sqrt{\overline{\alpha}_{t - 1}}(1 - \alpha_t)\boldsymbol{x}_0}{1 - \overline{\alpha}_t} \tag{93}\\
+\end{align}</script><p>由于$\mu_{\theta}(x_{t}, t)$也以$x_{t}$为条件，我们可以通过将其设置为以下形式来紧密匹配$\mu_{q}(x_{t}, x_{0})$：</p>
+<script type="math/tex; mode=display">\begin{align}
+\boldsymbol{\mu}_{\boldsymbol{\theta}}(\boldsymbol{x}_t, t) &= \frac{\sqrt{\alpha_t}(1 - \overline{\alpha}_{t - 1})\boldsymbol{x}_t+\sqrt{\overline{\alpha}_{t - 1}}(1 - \alpha_t)\hat{\boldsymbol{x}}_{\boldsymbol{\theta}}(\boldsymbol{x}_t, t)}{1 - \overline{\alpha}_t} \tag{94}\\
+\end{align}</script><p>其中，$\hat{x}_{\theta}(x_{t}, t)$由一个神经网络进行参数化，该神经网络旨在从带噪图像$x_{t}$和时间索引$t$预测出$x_{0}$。那么，优化问题就简化为：</p>
+<script type="math/tex; mode=display">
+
+\begin{align}
+&\underset{\boldsymbol{\theta}}{\text{arg min}} D_{\text{KL}}(q(\boldsymbol{x}*{t - 1}|\boldsymbol{x}*t, \boldsymbol{x}*0) \| p*{\boldsymbol{\theta}}(\boldsymbol{x}*{t - 1}|\boldsymbol{x}*t)) \\
+=&\underset{\boldsymbol{\theta}}{\text{arg min}} D*{\text{KL}}(\mathcal{N}(\boldsymbol{x}*{t - 1};\boldsymbol{\mu}*q, \boldsymbol{\Sigma}*q(t)) \| \mathcal{N}(\boldsymbol{x}*{t - 1};\boldsymbol{\mu}*{\boldsymbol{\theta}}, \boldsymbol{\Sigma}*q(t))) \tag{95}\\
+=&\underset{\boldsymbol{\theta}}{\text{arg min}} \frac{1}{2\sigma_q^2(t)} \left[\left\|\frac{\sqrt{\alpha_t}(1 - \overline{\alpha}*{t - 1})\boldsymbol{x}*t+\sqrt{\overline{\alpha}*{t - 1}}(1 - \alpha_t)\hat{\boldsymbol{x}}_{\boldsymbol{\theta}}(\boldsymbol{x}_t, t)}{1 - \overline{\alpha}*t}-\frac{\sqrt{\alpha_t}(1 - \overline{\alpha}*{t - 1})\boldsymbol{x}*t+\sqrt{\overline{\alpha}*{t - 1}}(1 - \alpha_t)\boldsymbol{x}_0}{1 - \overline{\alpha}*t}\right\|*2^2\right] \tag{96}\\
+=&\underset{\boldsymbol{\theta}}{\text{arg min}} \frac{1}{2\sigma_q^2(t)} \left[\left\|\frac{\sqrt{\overline{\alpha}*{t - 1}}(1 - \alpha_t)\hat{\boldsymbol{x}}*{\boldsymbol{\theta}}(\boldsymbol{x}_t, t)}{1 - \overline{\alpha}*t}-\frac{\sqrt{\overline{\alpha}*{t - 1}}(1 - \alpha_t)\boldsymbol{x}_0}{1 - \overline{\alpha}_t}\right\|*2^2\right] \tag{97}\\
+=&\underset{\boldsymbol{\theta}}{\text{arg min}} \frac{1}{2\sigma_q^2(t)} \left[\left\|\frac{\sqrt{\overline{\alpha}*{t - 1}}(1 - \alpha_t)}{1 - \overline{\alpha}*t}(\hat{\boldsymbol{x}}*{\boldsymbol{\theta}}(\boldsymbol{x}_t, t)-\boldsymbol{x}_0)\right\|*2^2\right] \tag{98}\\
+=&\underset{\boldsymbol{\theta}}{\text{arg min}} \frac{1}{2\sigma_q^2(t)} \frac{\overline{\alpha}*{t - 1}(1 - \alpha_t)^2}{(1 - \overline{\alpha}*t)^2} \left[\|\hat{\boldsymbol{x}}*{\boldsymbol{\theta}}(\boldsymbol{x}_t, t)-\boldsymbol{x}_0\|_2^2\right] \tag{99}\\
+\end{align}</script><p>因此，优化变分扩散模型（VDM）归根结底就是学习一个神经网络，使其能从任意加噪版本的图像中预测出原始真实图像 。此外，通过最小化所有时间步上的期望，可以近似地最小化我们推导的证据下界（ELBO）目标（公式58）中所有噪声水平下的求和项：</p>
+<script type="math/tex; mode=display">
+\begin{align}
+&\underset{\boldsymbol{\theta}}{\text{arg min}} \mathbb{E}*{t\sim U\{2,T\}} \left[\mathbb{E}*{q(\boldsymbol{x}*t|\boldsymbol{x}*0)} \left[D*{\text{KL}}(q(\boldsymbol{x}*{t - 1}|\boldsymbol{x}*t, \boldsymbol{x}*0) \| p*{\boldsymbol{\theta}}(\boldsymbol{x}*{t - 1}|\boldsymbol{x}_t))\right]\right] \tag{100}
+\end{align}</script><p>然后可以通过在时间步上进行随机采样来对其进行优化。</p>
 
     </div>
 
@@ -393,7 +586,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E8%A8%80%EF%BC%9A%E7%94%9F%E6%88%90%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.1.</span> <span class="nav-text">引言：生成模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%83%8C%E6%99%AF%EF%BC%9A%E8%AF%81%E6%8D%AE%E4%B8%8B%E7%95%8C%E3%80%81%E5%8F%98%E5%88%86%E8%87%AA%E7%BC%96%E7%A0%81%E5%99%A8%E5%92%8C%E5%88%86%E5%B1%82%E5%8F%98%E5%88%86%E8%87%AA%E7%BC%96%E7%A0%81%E5%99%A8"><span class="nav-number">1.2.</span> <span class="nav-text">背景：证据下界、变分自编码器和分层变分自编码器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%81%E6%8D%AE%E4%B8%8B%E7%95%8C"><span class="nav-number">1.2.1.</span> <span class="nav-text">证据下界</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%98%E5%88%86%E8%87%AA%E7%BC%96%E7%A0%81%E5%99%A8"><span class="nav-number">1.2.2.</span> <span class="nav-text">变分自编码器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E5%B1%82%E5%8F%98%E5%88%86%E8%87%AA%E7%BC%96%E7%A0%81%E5%99%A8"><span class="nav-number">1.2.3.</span> <span class="nav-text">分层变分自编码器</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E8%A8%80%EF%BC%9A%E7%94%9F%E6%88%90%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.1.</span> <span class="nav-text">引言：生成模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%83%8C%E6%99%AF%EF%BC%9A%E8%AF%81%E6%8D%AE%E4%B8%8B%E7%95%8C%E3%80%81%E5%8F%98%E5%88%86%E8%87%AA%E7%BC%96%E7%A0%81%E5%99%A8%E5%92%8C%E5%88%86%E5%B1%82%E5%8F%98%E5%88%86%E8%87%AA%E7%BC%96%E7%A0%81%E5%99%A8"><span class="nav-number">1.2.</span> <span class="nav-text">背景：证据下界、变分自编码器和分层变分自编码器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%81%E6%8D%AE%E4%B8%8B%E7%95%8C"><span class="nav-number">1.2.1.</span> <span class="nav-text">证据下界</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%98%E5%88%86%E8%87%AA%E7%BC%96%E7%A0%81%E5%99%A8"><span class="nav-number">1.2.2.</span> <span class="nav-text">变分自编码器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E5%B1%82%E5%8F%98%E5%88%86%E8%87%AA%E7%BC%96%E7%A0%81%E5%99%A8"><span class="nav-number">1.2.3.</span> <span class="nav-text">分层变分自编码器</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%98%E5%88%86%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.3.</span> <span class="nav-text">变分扩散模型</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -409,7 +602,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-count">52</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -422,7 +615,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">43</span>
+        <span class="site-state-item-count">44</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -447,7 +640,7 @@
     <h3 class="widget-title">Tag Cloud</h3>
     <div id="myCanvasContainer" class="widget tagcloud">
         <canvas width="250" height="250" id="resCanvas" style="width=100%">
-            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2023/" rel="tag">2023</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2025/" rel="tag">2025</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICML/" rel="tag">ICML</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">19</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2023/" rel="tag">2023</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2025/" rel="tag">2025</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICML/" rel="tag">ICML</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">19</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%85%E8%AF%BB/" rel="tag">阅读</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
         </canvas>
     </div>
 </div>
