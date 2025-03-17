@@ -31,8 +31,9 @@
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/12/Understanding-Diffusion-Models-A-Unified-Perspective%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f2.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/12/Understanding-Diffusion-Models-A-Unified-Perspective%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f3.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/12/Understanding-Diffusion-Models-A-Unified-Perspective%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f4.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/12/Understanding-Diffusion-Models-A-Unified-Perspective%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f5.png">
 <meta property="article:published_time" content="2025-03-12T08:44:25.000Z">
-<meta property="article:modified_time" content="2025-03-17T09:08:13.504Z">
+<meta property="article:modified_time" content="2025-03-17T09:40:17.481Z">
 <meta property="article:author" content="Zongqing Li">
 <meta property="article:tag" content="diffusion">
 <meta property="article:tag" content="2022">
@@ -232,7 +233,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-03-17 17:08:13" itemprop="dateModified" datetime="2025-03-17T17:08:13+08:00">2025-03-17</time>
+                <time title="修改时间：2025-03-17 17:40:17" itemprop="dateModified" datetime="2025-03-17T17:40:17+08:00">2025-03-17</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -433,7 +434,21 @@
 <p>在这个ELBO的推导中，优化成本的大部分仍然在于求和项，它主导了重建项。对于任意复杂的马尔可夫HVAE中的任意后验，由于同时学习编码器的复杂性增加，每个KL散度项 $D_{KL}(q(x_{t - 1}|x_t, x_0)|p_{\theta}(x_{t - 1}|x_t))$ 都很难最小化。然而，在VDM中，我们可以利用高斯转换假设使优化变得易于处理。根据贝叶斯规则，我们有：</p>
 <script type="math/tex; mode=display">q(x_{t - 1}|x_t, x_0)=\frac{q(x_t|x_{t - 1}, x_0)q(x_{t - 1}|x_0)}{q(x_t|x_0)}</script><p>因为我们已经从关于编码器转换的假设（公式31）中知道 $q(x_t|x_{t - 1}, x_0)=q(x_t|x_{t - 1})=\mathcal{N}(x_t;\sqrt{\alpha_t}x_{t - 1},(1 - \alpha_t)I)$ ，剩下的就是推导 $q(x_t|x_0)$ 和 $q(x_{t - 1}|x_0)$ 的形式。幸运的是，由于VDM的编码器转换是线性高斯模型，这些也变得易于处理。回想一下，在重参数化技巧下，样本 $x_t \sim q(x_t|x_{t - 1})$ 可以重写为：</p>
 <script type="math/tex; mode=display">x_t=\sqrt{\alpha_t}x_{t - 1}+\sqrt{1 - \alpha_t}\epsilon,\text{ 其中 }\epsilon \sim \mathcal{N}(\epsilon;0, I) \tag{59}</script><p>类似地，样本 $x_{t - 1} \sim q(x_{t - 1}|x_{t - 2})$ 可以重写为：</p>
-<script type="math/tex; mode=display">x_{t - 1}=\sqrt{\alpha_{t - 1}}x_{t - 2}+\sqrt{1 - \alpha_{t - 1}}\epsilon,\text{ 其中 }\epsilon \sim \mathcal{N}(\epsilon;0, I) \tag{60}</script><p>然后，$q(x_t|x_0)$ 的形式可以通过重复应用重参数化技巧递归推导出来。假设我们有 $2T$ 个独立同分布的随机噪声变量 ${\epsilon_{t}^{*}, \epsilon_{t}}_{t = 0}^{T} \sim \mathcal{N}(\epsilon;0, I)$ 。那么，对于任意样本 $x_t \sim q(x_t|x_0)$ ，我们可以将其重写为：</p>
+<script type="math/tex; mode=display">x_{t - 1}=\sqrt{\alpha_{t - 1}}x_{t - 2}+\sqrt{1 - \alpha_{t - 1}}\epsilon,\text{ 其中 }\epsilon \sim \mathcal{N}(\epsilon;0, I) \tag{60}</script><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f5.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图5：图中展示了一种优化变分扩散模型（VDM）的替代低方差方法；我们使用贝叶斯规则计算真实去噪步骤$q(x_{t - 1} \mid x_{t}, x_{0})$的形式，并最小化它与我们的近似去噪步骤$p_{\theta}(x_{t - 1} \mid x_{t})$之间的KL散度。这再次通过使绿色箭头和粉色箭头所代表的分布匹配来直观呈现。这里存在一定的艺术加工；在完整的图中，每个粉色箭头也必须源于$x_{0}$，因为它也是一个条件项。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>然后，$q(x_t|x_0)$ 的形式可以通过重复应用重参数化技巧递归推导出来。假设我们有 $2T$ 个独立同分布的随机噪声变量 ${\epsilon_{t}^{*}, \epsilon_{t}}_{t = 0}^{T} \sim \mathcal{N}(\epsilon;0, I)$ 。那么，对于任意样本 $x_t \sim q(x_t|x_0)$ ，我们可以将其重写为：</p>
 <script type="math/tex; mode=display">
 \begin{align}
 \boldsymbol{x}_t &= \sqrt{\alpha_t}\boldsymbol{x}_{t - 1}+\sqrt{1 - \alpha_t}\boldsymbol{\epsilon}_{t - 1}^* \tag{61}\\
@@ -489,19 +504,47 @@ D_{\text{KL}}(\mathcal{N}(\boldsymbol{x};\boldsymbol{\mu}_x, \boldsymbol{\Sigma}
 \boldsymbol{\mu}_{\boldsymbol{\theta}}(\boldsymbol{x}_t, t) &= \frac{\sqrt{\alpha_t}(1 - \overline{\alpha}_{t - 1})\boldsymbol{x}_t+\sqrt{\overline{\alpha}_{t - 1}}(1 - \alpha_t)\hat{\boldsymbol{x}}_{\boldsymbol{\theta}}(\boldsymbol{x}_t, t)}{1 - \overline{\alpha}_t} \tag{94}\\
 \end{align}</script><p>其中，$\hat{x}_{\theta}(x_{t}, t)$由一个神经网络进行参数化，该神经网络旨在从带噪图像$x_{t}$和时间索引$t$预测出$x_{0}$。那么，优化问题就简化为：</p>
 <script type="math/tex; mode=display">
-
 \begin{align}
-&\underset{\boldsymbol{\theta}}{\text{arg min}} D_{\text{KL}}(q(\boldsymbol{x}*{t - 1}|\boldsymbol{x}*t, \boldsymbol{x}*0) \| p*{\boldsymbol{\theta}}(\boldsymbol{x}*{t - 1}|\boldsymbol{x}*t)) \\
-=&\underset{\boldsymbol{\theta}}{\text{arg min}} D*{\text{KL}}(\mathcal{N}(\boldsymbol{x}*{t - 1};\boldsymbol{\mu}*q, \boldsymbol{\Sigma}*q(t)) \| \mathcal{N}(\boldsymbol{x}*{t - 1};\boldsymbol{\mu}*{\boldsymbol{\theta}}, \boldsymbol{\Sigma}*q(t))) \tag{95}\\
-=&\underset{\boldsymbol{\theta}}{\text{arg min}} \frac{1}{2\sigma_q^2(t)} \left[\left\|\frac{\sqrt{\alpha_t}(1 - \overline{\alpha}*{t - 1})\boldsymbol{x}*t+\sqrt{\overline{\alpha}*{t - 1}}(1 - \alpha_t)\hat{\boldsymbol{x}}_{\boldsymbol{\theta}}(\boldsymbol{x}_t, t)}{1 - \overline{\alpha}*t}-\frac{\sqrt{\alpha_t}(1 - \overline{\alpha}*{t - 1})\boldsymbol{x}*t+\sqrt{\overline{\alpha}*{t - 1}}(1 - \alpha_t)\boldsymbol{x}_0}{1 - \overline{\alpha}*t}\right\|*2^2\right] \tag{96}\\
-=&\underset{\boldsymbol{\theta}}{\text{arg min}} \frac{1}{2\sigma_q^2(t)} \left[\left\|\frac{\sqrt{\overline{\alpha}*{t - 1}}(1 - \alpha_t)\hat{\boldsymbol{x}}*{\boldsymbol{\theta}}(\boldsymbol{x}_t, t)}{1 - \overline{\alpha}*t}-\frac{\sqrt{\overline{\alpha}*{t - 1}}(1 - \alpha_t)\boldsymbol{x}_0}{1 - \overline{\alpha}_t}\right\|*2^2\right] \tag{97}\\
-=&\underset{\boldsymbol{\theta}}{\text{arg min}} \frac{1}{2\sigma_q^2(t)} \left[\left\|\frac{\sqrt{\overline{\alpha}*{t - 1}}(1 - \alpha_t)}{1 - \overline{\alpha}*t}(\hat{\boldsymbol{x}}*{\boldsymbol{\theta}}(\boldsymbol{x}_t, t)-\boldsymbol{x}_0)\right\|*2^2\right] \tag{98}\\
-=&\underset{\boldsymbol{\theta}}{\text{arg min}} \frac{1}{2\sigma_q^2(t)} \frac{\overline{\alpha}*{t - 1}(1 - \alpha_t)^2}{(1 - \overline{\alpha}*t)^2} \left[\|\hat{\boldsymbol{x}}*{\boldsymbol{\theta}}(\boldsymbol{x}_t, t)-\boldsymbol{x}_0\|_2^2\right] \tag{99}\\
+&\underset{\boldsymbol{\theta}}{\text{arg min}} D_{\text{KL}}(q(\boldsymbol{x}_{t - 1}|\boldsymbol{x}_t, \boldsymbol{x}_0) \| p_{\boldsymbol{\theta}}(\boldsymbol{x}_{t - 1}|\boldsymbol{x}_t)) \\
+=&\underset{\boldsymbol{\theta}}{\text{arg min}} D_{\text{KL}}(\mathcal{N}(\boldsymbol{x}_{t - 1};\boldsymbol{\mu}_q, \boldsymbol{\Sigma}_q(t)) \| \mathcal{N}(\boldsymbol{x}_{t - 1};\boldsymbol{\mu}_{\boldsymbol{\theta}}, \boldsymbol{\Sigma}_q(t))) \tag{95}\\
+=&\underset{\boldsymbol{\theta}}{\text{arg min}} \frac{1}{2\sigma_q^2(t)} \left[\left\|\frac{\sqrt{\alpha_t}(1 - \overline{\alpha}_{t - 1})\boldsymbol{x}_t+\sqrt{\overline{\alpha}_{t - 1}}(1 - \alpha_t)\hat{\boldsymbol{x}}_{\boldsymbol{\theta}}(\boldsymbol{x}_t, t)}{1 - \overline{\alpha}_t}-\frac{\sqrt{\alpha_t}(1 - \overline{\alpha}_{t - 1})\boldsymbol{x}_t+\sqrt{\overline{\alpha}_{t - 1}}(1 - \alpha_t)\boldsymbol{x}_0}{1 - \overline{\alpha}_t}\right\|_2^2\right] \tag{96}\\
+=&\underset{\boldsymbol{\theta}}{\text{arg min}} \frac{1}{2\sigma_q^2(t)} \left[\left\|\frac{\sqrt{\overline{\alpha}_{t - 1}}(1 - \alpha_t)\hat{\boldsymbol{x}}_{\boldsymbol{\theta}}(\boldsymbol{x}_t, t)}{1 - \overline{\alpha}_t}-\frac{\sqrt{\overline{\alpha}_{t - 1}}(1 - \alpha_t)\boldsymbol{x}_0}{1 - \overline{\alpha}_t}\right\|_2^2\right] \tag{97}\\
+=&\underset{\boldsymbol{\theta}}{\text{arg min}} \frac{1}{2\sigma_q^2(t)} \left[\left\|\frac{\sqrt{\overline{\alpha}_{t - 1}}(1 - \alpha_t)}{1 - \overline{\alpha}_t}(\hat{\boldsymbol{x}}_{\boldsymbol{\theta}}(\boldsymbol{x}_t, t)-\boldsymbol{x}_0)\right\|_2^2\right] \tag{98}\\
+=&\underset{\boldsymbol{\theta}}{\text{arg min}} \frac{1}{2\sigma_q^2(t)} \frac{\overline{\alpha}_{t - 1}(1 - \alpha_t)^2}{(1 - \overline{\alpha}_t)^2} \left[\|\hat{\boldsymbol{x}}_{\boldsymbol{\theta}}(\boldsymbol{x}_t, t)-\boldsymbol{x}_0\|_2^2\right] \tag{99}
 \end{align}</script><p>因此，优化变分扩散模型（VDM）归根结底就是学习一个神经网络，使其能从任意加噪版本的图像中预测出原始真实图像 。此外，通过最小化所有时间步上的期望，可以近似地最小化我们推导的证据下界（ELBO）目标（公式58）中所有噪声水平下的求和项：</p>
 <script type="math/tex; mode=display">
 \begin{align}
-&\underset{\boldsymbol{\theta}}{\text{arg min}} \mathbb{E}*{t\sim U\{2,T\}} \left[\mathbb{E}*{q(\boldsymbol{x}*t|\boldsymbol{x}*0)} \left[D*{\text{KL}}(q(\boldsymbol{x}*{t - 1}|\boldsymbol{x}*t, \boldsymbol{x}*0) \| p*{\boldsymbol{\theta}}(\boldsymbol{x}*{t - 1}|\boldsymbol{x}_t))\right]\right] \tag{100}
+&\underset{\boldsymbol{\theta}}{\text{arg min}} \mathbb{E}_{t\sim U\{2,T\}} \left[\mathbb{E}_{q(\boldsymbol{x}_t|\boldsymbol{x}_0)} \left[D_{\text{KL}}(q(\boldsymbol{x}_{t - 1}|\boldsymbol{x}_t, \boldsymbol{x}_0) \| p_{\boldsymbol{\theta}}(\boldsymbol{x}_{t - 1}|\boldsymbol{x}_t))\right]\right] \tag{100}
 \end{align}</script><p>然后可以通过在时间步上进行随机采样来对其进行优化。</p>
+<h4 id="学习扩散噪声参数"><a href="#学习扩散噪声参数" class="headerlink" title="学习扩散噪声参数"></a>学习扩散噪声参数</h4><p>让我们研究一下变分扩散模型（VDM）的噪声参数是如何联合学习的。一种可行的方法是使用参数为$\eta$的神经网络$\hat{\alpha}_{\eta}(t)$对$\alpha_{t}$进行建模。然而，这并不高效，因为在每个时间步$t$都必须多次进行推理以计算$\bar{\alpha}_{t}$ 。虽然缓存可以减轻这种计算成本，但我们也可以推导出另一种学习扩散噪声参数的方法。通过将我们在公式（85）中的方差方程代入到公式（99）中每个时间步的目标函数，我们可以得到：</p>
+<script type="math/tex; mode=display">
+\begin{align}
+\frac{1}{2\sigma_q^2(t)} \frac{\overline{\alpha}_{t - 1}(1 - \alpha_t)^2}{(1 - \overline{\alpha}_t)^2} \left[\|\hat{\boldsymbol{x}}_{\boldsymbol{\theta}}(\boldsymbol{x}_t, t) - \boldsymbol{x}_0\|_2^2\right] 
+&= \frac{1}{2\frac{(1 - \alpha_t)(1 - \overline{\alpha}_{t - 1})}{1 - \overline{\alpha}_t}} \frac{\overline{\alpha}_{t - 1}(1 - \alpha_t)^2}{(1 - \overline{\alpha}_t)^2} \left[\|\hat{\boldsymbol{x}}_{\boldsymbol{\theta}}(\boldsymbol{x}_t, t) - \boldsymbol{x}_0\|_2^2\right] \tag{101}\\
+&= \frac{1}{2} \frac{1 - \overline{\alpha}_t}{(1 - \alpha_t)(1 - \overline{\alpha}_{t - 1})} \frac{\overline{\alpha}_{t - 1}(1 - \alpha_t)^2}{(1 - \overline{\alpha}_t)^2} \left[\|\hat{\boldsymbol{x}}_{\boldsymbol{\theta}}(\boldsymbol{x}_t, t) - \boldsymbol{x}_0\|_2^2\right] \tag{102}\\
+&= \frac{1}{2} \frac{\overline{\alpha}_{t - 1}(1 - \alpha_t)}{(1 - \overline{\alpha}_{t - 1})(1 - \overline{\alpha}_t)} \left[\|\hat{\boldsymbol{x}}_{\boldsymbol{\theta}}(\boldsymbol{x}_t, t) - \boldsymbol{x}_0\|_2^2\right] \tag{103}\\
+&= \frac{1}{2} \frac{\overline{\alpha}_{t - 1} - \overline{\alpha}_t}{(1 - \overline{\alpha}_{t - 1})(1 - \overline{\alpha}_t)} \left[\|\hat{\boldsymbol{x}}_{\boldsymbol{\theta}}(\boldsymbol{x}_t, t) - \boldsymbol{x}_0\|_2^2\right] \tag{104}\\
+&= \frac{1}{2} \frac{\overline{\alpha}_{t - 1} - \overline{\alpha}_{t - 1}\overline{\alpha}_t + \overline{\alpha}_{t - 1}\overline{\alpha}_t - \overline{\alpha}_t}{(1 - \overline{\alpha}_{t - 1})(1 - \overline{\alpha}_t)} \left[\|\hat{\boldsymbol{x}}_{\boldsymbol{\theta}}(\boldsymbol{x}_t, t) - \boldsymbol{x}_0\|_2^2\right] \tag{105}\\
+&= \frac{1}{2} \frac{\overline{\alpha}_{t - 1}(1 - \overline{\alpha}_t) - \overline{\alpha}_t(1 - \overline{\alpha}_{t - 1})}{(1 - \overline{\alpha}_{t - 1})(1 - \overline{\alpha}_t)} \left[\|\hat{\boldsymbol{x}}_{\boldsymbol{\theta}}(\boldsymbol{x}_t, t) - \boldsymbol{x}_0\|_2^2\right] \tag{106}\\
+&= \frac{1}{2} \left(\frac{\overline{\alpha}_{t - 1}(1 - \overline{\alpha}_t)}{(1 - \overline{\alpha}_{t - 1})(1 - \overline{\alpha}_t)} - \frac{\overline{\alpha}_t(1 - \overline{\alpha}_{t - 1})}{(1 - \overline{\alpha}_{t - 1})(1 - \overline{\alpha}_t)}\right) \left[\|\hat{\boldsymbol{x}}_{\boldsymbol{\theta}}(\boldsymbol{x}_t, t) - \boldsymbol{x}_0\|_2^2\right] \tag{107}\\
+&= \frac{1}{2} \left(\frac{\overline{\alpha}_{t - 1}}{1 - \overline{\alpha}_{t - 1}} - \frac{\overline{\alpha}_t}{1 - \overline{\alpha}_t}\right) \left[\|\hat{\boldsymbol{x}}_{\boldsymbol{\theta}}(\boldsymbol{x}_t, t) - \boldsymbol{x}_0\|_2^2\right] \tag{108}
+\end{align}</script><p>回顾公式（70），$q(x_{t}|x_{0})$是一个形式为$\mathcal{N}(x_{t};\sqrt{\bar{\alpha}_{t}}x_{0},(1 - \bar{\alpha}_{t})I)$的高斯分布。然后，根据信噪比（SNR）的定义$SNR=\frac{\mu^{2}}{\sigma^{2}}$，我们可以写出每个时间步$t$的信噪比为：</p>
+<script type="math/tex; mode=display">
+SNR_{t}=\frac{\bar{\alpha}_{t}}{1-\bar{\alpha}_{t}} \tag{109}</script><p>那么，我们推导的公式（108）（以及公式（99））可以简化为：</p>
+<script type="math/tex; mode=display">
+\begin{align}
+\frac{1}{2\sigma_q^2(t)} \frac{\overline{\alpha}_{t - 1}(1 - \alpha_t)^2}{(1 - \overline{\alpha}_t)^2} \left[\|\hat{\boldsymbol{x}}_{\boldsymbol{\theta}}(\boldsymbol{x}_t, t) - \boldsymbol{x}_0\|_2^2\right] 
+&= \frac{1}{2} (\text{SNR}(t - 1) - \text{SNR}(t)) \left[\|\hat{\boldsymbol{x}}_{\boldsymbol{\theta}}(\boldsymbol{x}_t, t) - \boldsymbol{x}_0\|_2^2\right] \tag{110}
+\end{align}</script><p>顾名思义，信噪比表示原始信号与噪声量之间的比率；较高的信噪比意味着更多的信号，较低的信噪比意味着更多的噪声。在扩散模型中，我们要求信噪比随着时间步$t$的增加而单调递减；这正式说明了被扰动的输入$x_{t}$随着时间变得越来越嘈杂，直到在$t = T$时变得与标准高斯噪声相同。</p>
+<p>根据公式（110）中目标函数的简化，我们可以使用神经网络直接对每个时间步的信噪比进行参数化，并与扩散模型一起联合学习。由于信噪比必须随时间单调递减，我们可以将其表示为：</p>
+<script type="math/tex; mode=display">
+SNR_{t}=exp({-\omega_{\eta}(t)}) \tag{111}</script><p>其中$\omega_{\eta}(t)$是一个用参数$\eta$建模的单调递增神经网络。对$\omega_{\eta}(t)$取负会得到一个单调递减的函数，而指数运算会使结果项为正。注意，公式（100）中的目标函数现在也必须对$\eta$进行优化。通过将公式（111）中信噪比的参数化与公式（109）中信噪比的定义相结合，我们还可以明确推导出$\bar{\alpha}_{t}$和$1-\bar{\alpha}_{t}$的简洁形式：</p>
+<script type="math/tex; mode=display">
+\begin{align}
+\frac{\overline{\alpha}_t}{1 - \overline{\alpha}_t} &= \exp(-\omega_{\boldsymbol{\eta}}(t)) \tag{112}\\
+\therefore \overline{\alpha}_t &= \text{sigmoid}(-\omega_{\boldsymbol{\eta}}(t)) \tag{113}\\
+\therefore 1 - \overline{\alpha}_t &= \text{sigmoid}(\omega_{\boldsymbol{\eta}}(t)) \tag{114}
+\end{align}</script><p>这些项在各种计算中都是必不可少的；例如，在优化过程中，正如公式69所推导的那样，它们被用于通过重参数化技巧从输入$x_{0}$生成任意带噪的$x_{t}$。 </p>
 
     </div>
 
@@ -586,7 +629,7 @@ D_{\text{KL}}(\mathcal{N}(\boldsymbol{x};\boldsymbol{\mu}_x, \boldsymbol{\Sigma}
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E8%A8%80%EF%BC%9A%E7%94%9F%E6%88%90%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.1.</span> <span class="nav-text">引言：生成模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%83%8C%E6%99%AF%EF%BC%9A%E8%AF%81%E6%8D%AE%E4%B8%8B%E7%95%8C%E3%80%81%E5%8F%98%E5%88%86%E8%87%AA%E7%BC%96%E7%A0%81%E5%99%A8%E5%92%8C%E5%88%86%E5%B1%82%E5%8F%98%E5%88%86%E8%87%AA%E7%BC%96%E7%A0%81%E5%99%A8"><span class="nav-number">1.2.</span> <span class="nav-text">背景：证据下界、变分自编码器和分层变分自编码器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%81%E6%8D%AE%E4%B8%8B%E7%95%8C"><span class="nav-number">1.2.1.</span> <span class="nav-text">证据下界</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%98%E5%88%86%E8%87%AA%E7%BC%96%E7%A0%81%E5%99%A8"><span class="nav-number">1.2.2.</span> <span class="nav-text">变分自编码器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E5%B1%82%E5%8F%98%E5%88%86%E8%87%AA%E7%BC%96%E7%A0%81%E5%99%A8"><span class="nav-number">1.2.3.</span> <span class="nav-text">分层变分自编码器</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%98%E5%88%86%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.3.</span> <span class="nav-text">变分扩散模型</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E8%A8%80%EF%BC%9A%E7%94%9F%E6%88%90%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.1.</span> <span class="nav-text">引言：生成模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%83%8C%E6%99%AF%EF%BC%9A%E8%AF%81%E6%8D%AE%E4%B8%8B%E7%95%8C%E3%80%81%E5%8F%98%E5%88%86%E8%87%AA%E7%BC%96%E7%A0%81%E5%99%A8%E5%92%8C%E5%88%86%E5%B1%82%E5%8F%98%E5%88%86%E8%87%AA%E7%BC%96%E7%A0%81%E5%99%A8"><span class="nav-number">1.2.</span> <span class="nav-text">背景：证据下界、变分自编码器和分层变分自编码器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%81%E6%8D%AE%E4%B8%8B%E7%95%8C"><span class="nav-number">1.2.1.</span> <span class="nav-text">证据下界</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%98%E5%88%86%E8%87%AA%E7%BC%96%E7%A0%81%E5%99%A8"><span class="nav-number">1.2.2.</span> <span class="nav-text">变分自编码器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E5%B1%82%E5%8F%98%E5%88%86%E8%87%AA%E7%BC%96%E7%A0%81%E5%99%A8"><span class="nav-number">1.2.3.</span> <span class="nav-text">分层变分自编码器</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%98%E5%88%86%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.3.</span> <span class="nav-text">变分扩散模型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AD%A6%E4%B9%A0%E6%89%A9%E6%95%A3%E5%99%AA%E5%A3%B0%E5%8F%82%E6%95%B0"><span class="nav-number">1.3.1.</span> <span class="nav-text">学习扩散噪声参数</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
