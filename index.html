@@ -128,7 +128,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">52</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">53</span></a>
 
   </li>
         <li class="menu-item menu-item-book">
@@ -186,6 +186,161 @@
 
           <div class="content index posts-expand">
             
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/03/18/Elucidating-the-Design-Space-of-Diffusion-Based-Generative-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2025/03/18/Elucidating-the-Design-Space-of-Diffusion-Based-Generative-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" class="post-title-link" itemprop="url">Elucidating the Design Space of Diffusion-Based Generative Models论文精读</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-03-18 10:50:30 / 修改时间：11:47:20" itemprop="dateCreated datePublished" datetime="2025-03-18T10:50:30+08:00">2025-03-18</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>我们认为，当前基于扩散的生成模型在理论和实践上过于复杂，因此试图通过提出一个设计空间来改善这种情况。该设计空间能清晰区分具体的设计选择，有助于我们确定在采样、训练过程以及分数网络预处理方面的若干改进方向。综合这些改进，在类别条件设定下，我们的模型在CIFAR-10数据集上实现了1.79的新最先进FID（弗雷歇距离），在无条件设定下为1.97，且采样速度比先前设计快得多（每生成一张图像仅需进行35次网络评估）。为进一步展示其模块化特性，我们表明，我们的设计改进能显著提升先前工作中预训练分数网络的效率和生成质量。例如，将之前训练的64×64分辨率ImageNet模型的FID从2.07提升至接近最先进的1.55，经过我们提出的改进方法重新训练后，FID达到了新的最先进水平1.36。</p>
+<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1 引言"></a>1 引言</h3><p>基于扩散的生成模型<script type="math/tex">46</script>已成为神经图像合成领域一个强大的新框架，在无条件<script type="math/tex">16, 37, 49</script>和条件<script type="math/tex">17, 36, 37, 39, 40, 42, 43, 49</script>设定下均表现出色，在某些情况下甚至超越了生成对抗网络（GANs）<script type="math/tex">13</script>的质量<script type="math/tex">9</script>。它们还迅速应用于其他领域，如音频<script type="math/tex">28, 38</script>和视频<script type="math/tex">19</script>生成、图像分割<script type="math/tex">4, 57</script>以及语言翻译<script type="math/tex">35</script>。因此，人们对应用这些模型并在图像/分布质量、训练成本和生成速度方面进一步改进它们有着浓厚的兴趣。</p>
+<p>关于这些模型的文献理论性很强，采样调度、训练动态、噪声水平参数化等的推导往往尽可能直接地基于理论框架，这确保了模型有坚实的理论基础。然而，这种方法存在一个问题，即可能会掩盖可用的设计空间 —— 一个提出的模型可能看起来像是一个紧密耦合的整体，其中任何一个单独的组件都不能在不破坏整个系统的情况下进行修改。作为我们的第一个贡献，我们从实际角度审视这些模型背后的理论，更多地关注训练和采样阶段出现的 “有形” 对象和算法，而较少关注它们可能源自的统计过程。我们的目标是更好地理解这些组件是如何相互关联的，以及在整个系统设计中有哪些自由度。我们专注于一类广泛的模型，其中神经网络用于对被高斯噪声破坏的训练数据的噪声水平相关边际分布的分数<script type="math/tex">22</script>进行建模。因此，我们的工作是在去噪分数匹配<script type="math/tex">54</script>的背景下进行的。</p>
+<p>我们的第二组贡献涉及使用扩散模型合成图像的采样过程。我们确定了采样时表现最佳的时间离散化方法，在采样过程中应用了高阶龙格 - 库塔方法，评估了不同的采样器调度，并分析了采样过程中随机性的作用。这些改进的结果是，合成过程中所需的采样步数显著减少，并且改进后的采样器可以直接替代几种广泛使用的扩散模型<script type="math/tex">37, 49</script>。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f1.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图1：CIFAR-10上的去噪分数匹配。(a) 从$p(x; \sigma)$中抽取的带噪图像。训练集中的图像被添加了不同程度的加性高斯噪声，高噪声水平会导致颜色过度饱和；为了更清晰地可视化，我们对图像进行了归一化处理。(b) 通过解析最小化公式2得到的最优去噪结果（见附录B.3）。随着噪声水平的增加，结果趋近于数据集均值。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>第三组贡献集中在对分数建模神经网络的训练上。虽然我们继续依赖常用的网络架构（DDPM<script type="math/tex">16</script>、NCSN<script type="math/tex">48</script>），但我们首次在扩散模型的背景下，对网络的输入、输出和损失函数的预处理进行了原则性分析，并推导出了改善训练动态的最佳实践方法。我们还提出了一种在训练过程中改进的噪声水平分布，并指出通常用于GANs的非泄漏增强<script type="math/tex">25</script>对扩散模型也有益处。</p>
+<p>总体而言，我们的贡献显著提高了结果质量，例如，在32×32分辨率下，CIFAR-10的FID达到了创纪录的1.79，在64×64分辨率下，ImageNet的FID达到了1.36。通过将设计空间的所有关键要素明确列表，我们相信我们的方法将使对单个组件的创新更加容易，从而能够更广泛、更有针对性地探索扩散模型的设计空间。我们的实现代码和预训练模型可在<a target="_blank" rel="noopener" href="https://github.com/NVlabs/edm">https://github.com/NVlabs/edm</a>上获取。</p>
+<h3 id="2-在通用框架中表达扩散模型"><a href="#2-在通用框架中表达扩散模型" class="headerlink" title="2 在通用框架中表达扩散模型"></a>2 在通用框架中表达扩散模型</h3><p>我们用$p_{data}(x)$表示数据分布，其标准差为$\sigma_{data}$，并考虑通过向数据中添加标准差为$\sigma$的独立同分布高斯噪声得到的平滑分布族$p(x; \sigma)$。对于$\sigma_{max} \gg \sigma_{data}$，$p(x; \sigma_{max})$实际上与纯高斯噪声难以区分。扩散模型的基本思想是，随机采样一个噪声图像$x_{0} \sim N(0, \sigma_{max}^{2}I)$，然后将其逐步去噪为噪声水平分别为$\sigma_{0}=\sigma_{max}&gt;\sigma_{1}&gt;\cdots&gt;\sigma_{N}=0$的图像$x_{i}$，使得在每个噪声水平下$x_{i} \sim p(x_{i}; \sigma_{i})$。因此，这个过程的终点$x_{N}$的分布与数据的分布一致。</p>
+<p>Song等人<script type="math/tex">49</script>提出了一种随机微分方程（SDE），它能在样本$x$随时间演化时保持所需的分布$p$。这使得上述过程可以通过随机求解器来实现，该求解器在每次迭代中同时去除和添加噪声。他们还给出了相应的 “概率流” 常微分方程（ODE），其中唯一的随机性来源是初始噪声图像$x_{0}$。与通常的处理顺序不同，我们首先研究ODE，因为它为分析采样轨迹及其离散化提供了富有成效的框架。相关见解也适用于随机采样，我们将在第4节中重新引入随机采样作为一种推广。</p>
+<ul>
+<li><strong>ODE公式</strong>：概率流ODE<script type="math/tex">49</script>在时间向前或向后移动时，分别连续增加或降低图像的噪声水平。为了确定该ODE，我们必须首先选择一个调度函数$\sigma(t)$，它定义了时间$t$时所需的噪声水平。例如，设置$\sigma(t) \propto \sqrt{t}$在数学上是自然的，因为它对应于恒定速度的热扩散<script type="math/tex">12</script>。然而，我们将在第3节中表明，调度函数的选择具有重大的实际影响，不应仅基于理论上的便利性来确定。</li>
+</ul>
+<p>概率流ODE的定义特征是，将样本$x_a \sim p(x_a; \sigma(t_a))$从时间$t_{a}$演化到$t_{b}$（无论是向前还是向后演化），会得到一个样本$x_{b} \sim p(x_{b}; \sigma(t_{b}))$。根据先前的工作<script type="math/tex">49</script>，这个要求可以通过以下公式满足（见附录B.1和B.2）：</p>
+<script type="math/tex; mode=display">dx = -\dot{\sigma}(t)\sigma(t)\nabla_{x}\log p(x; \sigma(t))dt \tag{1}</script><p>其中，点表示对时间的导数。$\nabla_{x}\log p(x; \sigma)$是分数函数<script type="math/tex">22</script>，它是一个向量场，在给定的噪声水平下指向数据密度更高的方向。直观地说，这个ODE的一个无穷小的向前步会以取决于噪声水平变化的速率将样本推离数据分布。同样地，向后步会将样本推向数据分布。</p>
+<ul>
+<li><strong>去噪分数匹配</strong>：分数函数具有一个显著的性质，即它不依赖于底层密度函数$p(x; \sigma)$中通常难以处理的归一化常数<script type="math/tex">22</script>。具体来说，如果$D(x; \sigma)$是一个去噪器函数，它针对从$p_{data}$中抽取的样本，分别为每个$\sigma$最小化预期的$L_{2}$去噪误差，即</li>
+</ul>
+<script type="math/tex; mode=display">\mathbb{E}_{y \sim p_{data}}\mathbb{E}_{n \sim \mathcal{N}(0, \sigma^{2}I)}\|D(y + n; \sigma) - y\|_{2}^{2} \tag{2}</script><script type="math/tex; mode=display">then, \nabla_{x}\log p(x; \sigma) = (D(x; \sigma) - x) / \sigma^{2} \tag{3}</script><p>其中$y$是训练图像，$n$是噪声。从这个角度来看，分数函数将$x$中的噪声分量与信号分离，公式1会随着时间放大（或缩小）这个噪声分量。图1展示了理想的$D$在实践中的表现。扩散模型的关键观察结果是，$D(x; \sigma)$可以通过根据公式2训练的神经网络$D_{\theta}(x; \sigma)$来实现。注意，$D_{\theta}$可能包括额外的预处理和后处理步骤，例如将$x$缩放到合适的动态范围；我们将在第5节中讨论这种预处理。</p>
+<ul>
+<li><strong>时间相关的信号缩放</strong>：一些方法（见附录C.1）引入了额外的缩放调度$s(t)$，并将$x = s(t)\hat{x}$视为原始未缩放变量$\hat{x}$的缩放版本。这会改变时间相关的概率密度，从而也改变ODE的解轨迹。得到的ODE是公式1的推广：<script type="math/tex; mode=display">dx = \left[\frac{\dot{s}(t)}{s(t)}x - s(t)^{2}\dot{\sigma}(t)\sigma(t)\nabla_{x}\log p\left(\frac{x}{s(t)}; \sigma(t)\right)\right]dt \tag{4}</script>注意，在计算分数函数时，我们明确地消除了$x$的缩放，以保持$p(x; \sigma)$的定义与$s(t)$无关。</li>
+<li><strong>通过离散化求解</strong>：要求解的ODE是通过将公式3代入公式4来定义逐点梯度得到的，其解可以通过数值积分找到，即在离散的时间间隔上进行有限步的计算。这需要选择积分方案（例如，欧拉法或龙格 - 库塔法的变体）以及离散采样时间$\{t_{0}, t_{1}, \cdots, t_{N}\}$。许多先前的工作依赖于欧拉法，但我们在第3节中表明，二阶求解器在计算上具有更好的权衡。为简洁起见，我们在这里没有给出应用于我们的ODE的欧拉法的单独伪代码，但可以通过省略算法1中的第6 - 8行从该算法中提取。</li>
+<li><strong>整合</strong>：表1展示了在我们的框架中重现三种早期方法的确定性变体的公式。选择这些方法是因为它们被广泛使用且达到了最先进的性能，同时也是因为它们源自不同的理论基础。我们的一些公式与原始论文中的公式看起来有很大不同，因为去除了间接性和递归性；详细内容见附录C。这种重新表述的主要目的是揭示在先前工作中常常纠缠在一起的所有独立组件。在我们的框架中，组件之间没有隐式依赖关系 —— 原则上，对单个公式的任何合理选择都将导致一个可行的模型。换句话说，改变一个组件并不一定需要在其他地方进行改变，例如，以保持模型在极限情况下收敛到数据的性质。当然，在实践中，某些选择和组合会比其他的效果更好。</li>
+</ul>
+<h3 id="3-确定性采样的改进"><a href="#3-确定性采样的改进" class="headerlink" title="3 确定性采样的改进"></a>3 确定性采样的改进</h3><p>提高输出质量和（或）降低采样的计算成本是扩散模型研究中的常见课题（例如，[10, 24, 31, 32, 33, 37, 44, 53, 55, 56, 59]）。我们的假设是，与采样过程相关的选择在很大程度上独立于其他组件，如网络架构和训练细节。换句话说，$D_{\theta}$的训练过程不应决定$\sigma(t)$、$s(t)$和$\{t\}$，反之亦然；从采样器的角度来看，$D_{\theta}$只是一个黑箱[55, 56]。我们通过在三个预训练模型上评估不同的采样器来验证这一假设，每个模型代表不同的理论框架和模型家族。我们首先使用这些模型的原始采样器实现来测量基线结果，然后使用表1中的公式将这些采样器纳入我们的统一框架，接着进行我们的改进。这使我们能够评估不同的实际选择，并提出适用于所有模型的采样过程的通用改进方法。</p>
+<p>我们评估了Song等人[49]在无条件CIFAR-10[29]数据集上训练的“DDPM++ cont. (VP)”和“NCSN++ cont. (VE)”模型，分辨率为32×32，它们分别对应于方差保持（VP）和方差爆炸（VE）公式[49]，最初受到DDPM[16]和SMLD[48]的启发。我们还评估了Dhariwal和Nichol[9]在类别条件ImageNet[8]数据集上训练的“ADM (dropout)”模型，分辨率为64×64，对应于改进的DDPM（iDDPM）公式[37]。该模型使用了一组离散的$M = 1000$个噪声水平进行训练。更多细节见附录C。</p>
+<p>我们根据生成的50,000张图像与所有可用真实图像之间计算的弗雷歇初始距离（Fréchet inception distance，FID）[15]来评估结果质量。图2展示了FID与神经函数评估次数（NFE）的关系，即生成一张图像时$D_{\theta}$的评估次数。由于采样过程完全由$D_{\theta}$的计算成本主导，NFE的减少直接转化为采样速度的提升。原始确定性采样器以蓝色显示，我们在统一框架中重新实现的这些方法（橙色）产生了相似但始终更好的结果。差异是由原始实现中的一些疏忽以及我们在DDIM情况下对离散噪声水平更仔细的处理造成的；见附录C。注意，即使原始代码库的结构彼此差异很大，我们的重新实现也完全由算法1和表1指定。</p>
+<ul>
+<li><strong>离散化和高阶积分器</strong>：数值求解ODE必然是对真实解轨迹的近似。在每一步中，求解器会引入截断误差，该误差在N步的过程中累积。局部误差通常与步长呈超线性关系，因此增加N可以提高解的准确性。</li>
+</ul>
+<p>常用的欧拉法是一阶ODE求解器，其局部误差与步长$h$的关系为$O(h^{2})$ 。高阶龙格 - 库塔方法[50]在误差缩放方面表现更好，但每一步需要对$D_{\theta}$进行多次评估。最近也有人提出使用线性多步法进行扩散模型的采样[31, 59]。通过大量测试，我们发现Heun的二阶方法（也称为改进的欧拉法、梯形法则）[2]（Jolicoeur-Martineau等人[24]之前在扩散模型的背景下对其进行过探索）在截断误差和NFE之间提供了出色的权衡。如算法1所示，它为$x_{i + 1}$引入了一个额外的校正步骤，以考虑$dx/dt$在$t_{i}$和$t_{i + 1}$之间的变化。这个校正步骤以每步额外评估一次$D_{\theta}$为代价，使局部误差达到$O(h^{3})$ 。注意，当步长达到$\sigma = 0$时会导致除以零的情况，因此在这种情况下我们恢复使用欧拉法。我们在附录D.2中讨论二阶求解器的一般家族。时间步长$\{t\}$决定了步长以及截断误差在不同噪声水平之间的分布。我们在附录D.1中进行了详细分析，得出步长应随着$\sigma$的减小而单调减小，并且不需要在每个样本的基础上变化。我们采用一种参数化方案，其中时间步长根据噪声水平序列$\{\sigma_{i}\}$定义，即$t_{i} = \sigma^{-1}(\sigma_{i})$ 。我们设置$\sigma_{i&lt;N} = (Ai + B)^{\rho}$，并选择常数A和B，使得$\sigma_{0} = \sigma_{max}$且$\sigma_{N - 1} = \sigma_{min}$，这给出：</p>
+<script type="math/tex; mode=display">\sigma_{i<N}=\left(\sigma_{max}^{\frac{1}{\rho}}+\frac{i}{N - 1}\left(\sigma_{min}^{\frac{1}{\rho}}-\sigma_{max}^{\frac{1}{\rho}}\right)\right)^{\rho} \text{ 且 } \sigma_{N}=0 \tag{5}</script><p>这里$\rho$控制着靠近$\sigma_{min}$的步长以牺牲靠近$\sigma_{max}$的较长步长为代价缩短的程度。我们在附录D.1中的分析表明，设置$\rho = 3$几乎可以使每一步的截断误差相等，但在采样图像时，$\rho$在5到10之间的表现要优异得多。这表明靠近$\sigma_{min}$的误差影响很大。在本文的其余部分，我们将$\rho$设置为7。</p>
+<p>Heun方法和公式5的结果如图2中的绿色曲线所示。我们在所有情况下都观察到了一致的改进：Heun方法在NFE显著更低的情况下达到了与欧拉法相同的FID。</p>
+<ul>
+<li><strong>轨迹曲率和噪声调度</strong>：ODE解轨迹的形状由函数$\sigma(t)$和$s(t)$定义。这些函数的选择提供了一种减少上述截断误差的方法，因为误差的大小预计与$dx/dt$的曲率成比例。我们认为这些函数的最佳选择是$\sigma(t) = t$和$s(t) = 1$，这也是DDIM[47]中的选择。有了这个选择，公式4中的ODE简化为$dx/dt = (x - D(x; t)) / t$，并且$\sigma$和$t$变得可以互换。</li>
+</ul>
+<p>一个直接的结果是，在任何$x$和$t$处，向$t = 0$进行单个欧拉步就可以得到去噪图像$D_{\theta}(x; t)$ 。因此，解轨迹的切线总是指向去噪器的输出。可以预期，这会随着噪声水平的变化而缓慢改变，这对应于大致线性的解轨迹。图3c的一维ODE示意图支持了这一直觉；在大噪声水平和小噪声水平下，解轨迹都接近线性，只有在中间的一个小区域内有明显的曲率。在图1b的真实数据中也可以看到相同的效果，不同去噪器目标之间的变化发生在相对较窄的$\sigma$范围内。采用所倡导的调度，这意味着高ODE曲率被限制在相同的范围内。</p>
+<p>设置$\sigma(t) = t$和$s(t) = 1$的效果如图2中的红色曲线所示。由于DDIM已经采用了相同的选择，因此对于ImageNet - 64，红色曲线与绿色曲线相同。然而，VP和VE在从其原始调度切换到该调度时受益显著。</p>
+<ul>
+<li><strong>讨论</strong>：我们在本节中为改进确定性采样所做的选择总结在表1的“采样”部分。这些选择共同大幅减少了达到高质量结果所需的NFE：VP模型减少了7.3倍，VE模型减少了300倍，DDIM模型减少了3.2倍，对应于图2中突出显示的NFE值。在实践中，我们可以在单个NVIDIA V100上每秒生成26.3张高质量的CIFAR-10图像。改进的一致性证实了我们的假设，即采样过程与每个模型最初的训练方式无关。作为进一步的验证，我们在图2中展示了使用我们的调度的自适应RK45方法[11]的结果，以黑色虚线表示；这种复杂的ODE求解器的成本超过了其带来的好处。</li>
+</ul>
+<h3 id="4-随机采样"><a href="#4-随机采样" class="headerlink" title="4 随机采样"></a>4 随机采样</h3><p>确定性采样有诸多优点，例如能够通过反转ODE将真实图像转换为相应的潜在表示。然而，与在每一步向图像中注入新噪声的随机采样相比，它往往会导致更差的输出质量<script type="math/tex">47, 49</script>。鉴于ODE和SDE在理论上能恢复相同的分布，那么随机性究竟起到什么作用呢？</p>
+<ul>
+<li><strong>背景</strong>：Song等人<script type="math/tex">49</script>提出的SDE可以被推广<script type="math/tex">20, 58</script>为公式1中的概率流ODE与一个时变的朗之万扩散SDE<script type="math/tex">14</script>的和（见附录B.5）：<script type="math/tex; mode=display">dx_{\pm}=\underbrace{-\dot{\sigma}(t)\sigma(t)\nabla_{x}\log p(x;\sigma(t))dt}*{概率流ODE (公式1)} \pm \underbrace{\beta(t)\sigma(t)^{2}\nabla*{x}\log p(x;\sigma(t))dt}*{确定性噪声衰减}+\underbrace{\sqrt{2\beta(t)}\sigma(t)d\omega*{t}}*{噪声注入}+\underbrace{\sqrt{2\beta(t)}\sigma(t)d\omega*{t}}*{噪声注入} \tag{6}</script></li>
+</ul>
+<p>其中$\omega*{t}$是标准维纳过程。$dx_{+}$和$dx_{-}$分别是时间正向和反向演化的SDE，通过Anderson的时间反转公式<script type="math/tex">1</script>相互关联。朗之万项可以进一步看作是基于分数的确定性去噪项和随机噪声注入项的组合，它们的净噪声水平贡献相互抵消。因此，$\beta(t)$有效地表示了现有噪声被新噪声替代的相对速率。当选择$\beta(t)=\dot{\sigma}(t)/\sigma(t)$时，可得到Song等人<script type="math/tex">49</script>提出的SDE，此时正向SDE中的分数项消失。</p>
+<p>从这个角度可以揭示随机性在实践中有用的原因：隐式的朗之万扩散会在给定时间将样本推向期望的边际分布，主动纠正早期采样步骤中产生的任何错误。另一方面，用离散的SDE求解器步骤来近似朗之万项本身会引入误差。先前的结果<script type="math/tex">3, 24, 47, 49</script>表明非零的$\beta(t)$是有帮助的，但就我们所知，Song等人<script type="math/tex">49</script>中对$\beta(t)$的隐式选择并没有特殊性质。因此，最优的随机程度应该通过实验确定。</p>
+<ul>
+<li><strong>我们的随机采样器</strong>：我们提出一种随机采样器，它将我们的二阶确定性ODE积分器与类似朗之万的显式 “搅动”（添加和去除噪声）相结合。算法2给出了其伪代码。在每一步$i$，给定噪声水平$t_{i}(=\sigma(t_{i}))$下的样本$x_{i}$，我们执行两个子步骤。首先，根据因子$\gamma_{i}≥0$向样本中添加噪声，使其达到更高的噪声水平$\hat{t}<em>{i}=t</em>{i}+\gamma_{i}t_{i}$。其次，从增加噪声后的样本$\hat{x}<em>{i}$开始，用单步从$\hat{t}</em>{i}$反向求解ODE到$t_{i + 1}$。这会得到一个噪声水平为$t_{i + 1}$的样本$x_{i + 1}$，然后继续迭代。</li>
+</ul>
+<p>我们强调这不是一个通用的SDE求解器，而是针对特定问题定制的采样过程。它的正确性源于两个子步骤的交替，每个子步骤（在ODE步骤的截断误差范围内）都能保持正确的分布。Song等人<script type="math/tex">49</script>的预测 - 校正采样器在概念上与我们的结构相似。</p>
+<p>为了分析我们的方法与欧拉 - 丸山方法的主要区别，我们首先注意到后者在离散化公式6时存在一个细微差异。可以将欧拉 - 丸山方法解释为先添加噪声，然后执行一个ODE步骤，但不是从噪声注入后的中间状态开始，而是假设$x$和$\sigma$在迭代步骤开始时保持初始状态。在我们的方法中，算法2第7行用于评估$D_{\theta}$的参数对应于噪声注入后的状态，而类似欧拉 - 丸山的方法会使用$x_{i}$和$t_{i}$，而不是$\hat{x}<em>{i}$和$\hat{t}</em>{i}$。在$\Delta_{t}$趋近于零的极限情况下，这些选择可能没有差异，但在采用大步长追求低NFE时，这种区别似乎变得很重要。</p>
+<ul>
+<li><strong>实际考虑因素</strong>：增加随机程度可以有效地纠正早期采样步骤中产生的错误，但它也有自身的缺点。我们观察到（见附录E.1），在所有数据集和去噪器网络中，过度类似朗之万的噪声添加和去除会导致生成图像的细节逐渐丢失。在极低和极高噪声水平下，还会出现颜色过度饱和的漂移现象。我们怀疑实际的去噪器在公式3中引入了一个略微非保守的向量场，违反了朗之万扩散的前提条件，从而导致这些不利影响。值得注意的是，我们使用解析去噪器（如图1b中的去噪器）进行的实验并未显示出这种退化。</li>
+</ul>
+<p>如果退化是由$D_{\theta}(x;\sigma)$的缺陷引起的，那么只能在采样过程中使用启发式方法来补救。我们通过仅在特定的噪声水平范围$t_{i} \in [S_{tmin}, S_{tmax}]$内启用随机性来解决颜色过度饱和的漂移问题。对于这些噪声水平，我们定义$\gamma_{i}=S_{churn}/N$，其中$S_{churn}$控制整体的随机程度。我们进一步限制$\gamma_{i}$，确保引入的新噪声不会超过图像中已有的噪声。最后，我们发现将$S_{noise}$设置为略大于1以增大新添加噪声的标准差，可以部分抵消细节的丢失。这表明，假设的$D_{\theta}(x;\sigma)$的非保守性的一个主要因素是倾向于去除略多的噪声，这很可能是由于任何基于$L_{2}$训练的去噪器都会出现的向均值回归现象<script type="math/tex">30</script>。</p>
+<ul>
+<li><strong>评估</strong>：图4显示，我们的随机采样器在性能上显著优于以前的采样器<script type="math/tex">24, 37, 49</script>，尤其是在低步数的情况下。Jolicoeur-Martineau等人<script type="math/tex">24</script>使用标准的高阶自适应SDE求解器<script type="math/tex">41</script>，其性能通常是这类求解器的良好基线。我们的采样器是针对特定用例定制的，例如，它按顺序执行噪声注入和ODE步骤，并且不具有自适应性。在扩散模型采样中，自适应求解器是否能比经过良好调整的固定调度更具优势，仍是一个悬而未决的问题。</li>
+</ul>
+<p>仅通过采样器的改进，我们就能将最初FID为2.07<script type="math/tex">9</script>的ImageNet-64模型提升到1.55，非常接近当前的最优水平；此前，级联扩散<script type="math/tex">17</script>的FID为1.48，无分类器引导<script type="math/tex">18</script>的FID为1.55，StyleGANXL<script type="math/tex">45</script>的FID为1.52。虽然我们的结果展示了通过改进采样器可以实现的潜在收益，但它们也凸显了随机性的主要缺点：为了获得最佳结果，必须根据具体模型进行若干启发式选择，这些选择可能是隐式的，也可能是显式的。实际上，我们必须使用网格搜索（附录E.2）针对每个案例找到$\{S_{churn}, S_{tmin}, S_{tmax}, S_{noise}\}$的最优值。这引发了一个普遍的担忧，即使用随机采样作为评估模型改进的主要方法，可能会在不经意间影响与模型架构和训练相关的设计选择。</p>
+<h3 id="5-预处理与训练"><a href="#5-预处理与训练" class="headerlink" title="5 预处理与训练"></a>5 预处理与训练</h3><p>在有监督的神经网络训练中，存在各种已知的有效方法。例如，通常建议将输入和输出信号的幅度固定，比如保持单位方差，并避免每个样本的梯度幅度出现较大变化<script type="math/tex">5, 21</script>。直接训练神经网络来对D进行建模并非理想选择。例如，由于输入$x = y + n$是干净信号$y$和噪声$n \sim N(0, \sigma^{2}I)$的组合，其幅度会因噪声水平$\sigma$的不同而有很大差异。因此，常见的做法是不直接将$D_{\theta}$表示为神经网络，而是训练另一个网络$F_{\theta}$，并从中推导出$D_{\theta}$ 。</p>
+<p>先前的方法<script type="math/tex">37, 47, 49</script>通过依赖于$\sigma$的归一化因子来处理输入缩放问题，并尝试通过训练$F_{\theta}$来预测缩放至单位方差的噪声$n$，进而通过$D_{\theta}(x; \sigma)=x - \sigma F_{\theta}(\cdot)$来重建信号。这种方法的缺点在于，当$\sigma$较大时，网络需要仔细调整输出，以精确抵消现有的噪声$n$，并给出正确缩放的输出。需要注意的是，网络产生的任何误差都会被$\sigma$放大。在这种情况下，直接预测期望输出$D(x; \sigma)$似乎要容易得多。与先前那些自适应混合信号和噪声的参数化方法（例如<script type="math/tex">10, 44, 53</script>）类似，我们提出通过依赖于$\sigma$的跳跃连接对神经网络进行预处理，使网络能够估计$y$或$n$，或者介于两者之间的数值。因此，我们将$D_{\theta}$写为以下形式：</p>
+<script type="math/tex; mode=display">D_{\theta}(x; \sigma)=c_{skip}(\sigma)x + c_{out}(\sigma)F_{\theta}(c_{in}(\sigma)x; c_{noise}(\sigma)) \tag{7}</script><p>其中，$F_{\theta}$是要训练的神经网络，$c_{skip}(\sigma)$调节跳跃连接，$c_{in}(\sigma)$和$c_{out}(\sigma)$对输入和输出幅度进行缩放，$c_{noise}(\sigma)$将噪声水平$\sigma$映射为$F_{\theta}$的条件输入。对公式2在噪声水平上取加权期望，可得到总体训练损失$\mathbb{E}<em>{\sigma, y, n}[\lambda(\sigma)|D(y + n; \sigma) - y|</em>{2}^{2}]$，其中$\sigma \sim p_{train}$，$y \sim p_{data}$，$n \sim N(0, \sigma^{2}I)$。采样到给定噪声水平$\sigma$的概率由$p_{train}(\sigma)$给出，相应的权重由$\lambda(\sigma)$给出。我们可以根据公式7中的原始网络输出$F_{\theta}$等效地表达这个损失：</p>
+<script type="math/tex; mode=display">\mathbb{E}*{\sigma, y, n}[\underbrace{\lambda(\sigma)c*{out}(\sigma)^{2}}*{有效权重}\| \underbrace{F*{\theta}(c_{in}(\sigma)\cdot(y + n); c_{noise}(\sigma))}*{网络输出}-\underbrace{\frac{1}{c*{out}(\sigma)}(y - c_{skip}(\sigma)\cdot(y + n))}_{有效训练目标} \| _{2}^{2}] \tag{8}</script><p>这个形式揭示了$F_{\theta}$的有效训练目标，使我们能够从基本原理出发确定合适的预处理函数选择。如附录B.6所述，我们通过要求网络输入和训练目标具有单位方差（$(c_{in}, c_{out})$），并尽可能减少$F_{\theta}$中的误差放大（$( c_{skip})$），推导出了表1“我们的方法”一列中所示的选择。$C_{noise}$的公式是通过经验选择的。</p>
+<p>表2展示了一系列训练设置的FID，使用我们在第3节中的确定性采样器进行评估。我们从Song等人<script type="math/tex">49</script>的基线训练设置开始，该设置在VP和VE两种情况下有很大差异；我们分别给出了每种情况的结果（配置A）。为了获得更有意义的比较点，我们重新调整了基本超参数（配置B），并通过去除最低分辨率层并加倍最高分辨率层的容量来提高模型的表达能力（配置C）；更多细节见附录F.3。然后，我们用我们的预处理方法替换了原来的$\{c_{in}, c_{out}, c_{noise}, c_{skip}\}$选择（配置D），结果基本保持不变，不过在64×64分辨率下，VE有了显著提升。我们的预处理的主要好处不是直接提高FID，而是使训练更加稳健，使我们能够专注于重新设计损失函数而不会产生不利影响。</p>
+<ul>
+<li><strong>损失加权和采样</strong>：公式8表明，按照公式7进行预处理后训练$F_{\theta}$，每个样本的有效损失权重为$\lambda(\sigma)c_{out}(\sigma)^{2}$。为了平衡有效损失权重，我们设置$\lambda(\sigma)=1 / c_{out}(\sigma)^{2}$，这也使整个$\sigma$范围内的初始训练损失趋于均衡，如图5a中的绿色曲线所示。最后，我们需要选择$p_{train}(\sigma)$，即在训练过程中选择噪声水平的方式。检查训练后的每个$\sigma$的损失（蓝色和橙色曲线）可以发现，只有在中等噪声水平下才有可能显著降低损失；在极低噪声水平下，辨别微小的噪声分量既困难又无关紧要，而在高噪声水平下，训练目标总是与接近数据集平均值的正确答案差异较大。因此，我们使用表1中详细说明的简单对数正态分布$p_{train}(\sigma)$，将训练重点放在相关范围内，如图5a中的红色曲线所示。</li>
+</ul>
+<p>表2显示，当与我们的预处理（配置D）结合使用时，我们提出的$p_{train}$和$\lambda$（配置E）在所有情况下都显著提高了FID。在同期工作中，Choi等人<script type="math/tex">6</script>提出了类似的方案，以优先处理与形成图像中可感知内容最相关的噪声水平。然而，他们只单独考虑了$\lambda$的选择，因此整体改进较小。</p>
+<ul>
+<li><strong>增强正则化</strong>：为了防止在较小数据集上训练扩散模型时经常出现的过拟合问题，我们借鉴了生成对抗网络（GAN）文献中的增强管道<script type="math/tex">25</script>。该管道由各种几何变换组成（见附录F.2），在添加噪声之前应用于训练图像。为了防止增强信息泄漏到生成的图像中，我们将增强参数作为$F_{\theta}$的条件输入；在推理时，我们将其设置为零，以确保只生成未增强的图像。表2显示，数据增强持续带来改进（配置F），在条件和无条件CIFAR-10上产生了新的最先进FID，分别为1.79和1.97，超过了之前的记录1.85<script type="math/tex">45</script>和2.10<script type="math/tex">53</script>。</li>
+<li><strong>重新审视随机采样</strong>：有趣的是，随着模型本身的改进，随机采样的相关性似乎在降低，如图5b和图5c所示。在CIFAR-10上使用我们的训练设置时（图5b），确定性采样获得了最佳结果，任何程度的随机采样都是有害的。</li>
+</ul>
+<p>ImageNet-64：作为最后一个实验，我们使用提出的训练改进方法从头开始训练了一个类别条件ImageNet-64模型。该模型实现了新的最先进FID 1.36，而之前的记录是1.48<script type="math/tex">17</script>。我们使用了Dhariwal和Nichol<script type="math/tex">9</script>的ADM架构，未做任何更改，并使用配置E进行训练，只进行了最小限度的调整；详细信息见附录F.3。我们没有发现过拟合的问题，因此选择不使用增强正则化。如图5c所示，与预训练模型相比，最优的随机采样量要低得多，但与CIFAR-10不同的是，随机采样明显优于确定性采样。这表明，更多样化的数据集仍然受益于随机采样。</p>
+<h3 id="6-结论"><a href="#6-结论" class="headerlink" title="6 结论"></a>6 结论</h3><p>我们将扩散模型纳入通用框架的方法揭示了其模块化设计。这使得对单个组件进行有针对性的研究成为可能，有助于更全面地探索可行的设计空间。在我们的测试中，这种方法让我们能够简单地替换早期模型中的采样器，显著提升结果。例如，在ImageNet-64上，我们的采样器将一个普通模型（FID为2.07）提升为与之前最先进模型（FID为1.48）<script type="math/tex">17</script>相媲美的有力竞争者（FID为1.55），并且通过训练改进，达到了FID为1.36的最先进水平。我们还在CIFAR-10上取得了新的最先进结果，且仅使用了35次模型评估、确定性采样和一个小型网络。当前的高分辨率扩散模型依赖于单独的超分辨率步骤<script type="math/tex">17, 36, 40</script>、子空间投影<script type="math/tex">23</script>、非常大的网络<script type="math/tex">9, 49</script>或混合方法<script type="math/tex">39, 42, 53</script> ，我们认为我们的贡献与这些扩展方法并不冲突。不过，对于更高分辨率的数据集，我们的许多参数值可能需要重新调整。此外，我们认为随机采样与训练目标之间的精确交互仍然是一个有趣的问题，值得未来进一步研究。</p>
+<p><strong>社会影响</strong>：我们在样本质量方面的进展如果在像DALL·E 2这样的大规模系统中使用，可能会放大负面社会影响，包括各种虚假信息，以及强化刻板印象和有害偏见等问题<script type="math/tex">34</script>。扩散模型的训练和采样需要消耗大量电力，我们的项目在内部的NVIDIA V100集群上消耗了约250兆瓦时的电量。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
   
   
@@ -891,169 +1046,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/03/08/%E5%B8%B8%E7%94%A8%E7%A7%91%E7%A0%94%E7%BD%91%E7%AB%99%E5%90%88%E9%9B%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
-      <meta itemprop="name" content="Zongqing Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lzq's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2025/03/08/%E5%B8%B8%E7%94%A8%E7%A7%91%E7%A0%94%E7%BD%91%E7%AB%99%E5%90%88%E9%9B%86/" class="post-title-link" itemprop="url">常用科研网站合集</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2025-03-08 09:24:48 / 修改时间：09:45:41" itemprop="dateCreated datePublished" datetime="2025-03-08T09:24:48+08:00">2025-03-08</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Ps：本文转载于<a target="_blank" rel="noopener" href="https://hwcoder.top/Awesome-Sites">科研常用网站合集</a><br>记录科研常用网站，包括：论文检索、代码检索、学者信息、论文写作、科研论坛、截稿日期、电子书。本文持续更新。</p>
-<h2 id="Paper"><a href="#Paper" class="headerlink" title="Paper"></a><a href="#paper"></a>Paper</h2><div class="table-container">
-<table>
-<thead>
-<tr>
-<th>Site</th>
-<th>Describe</th>
-<th>推荐指数</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><a target="_blank" rel="noopener" href="http://www.arxivdaily.com/">ArXiv Daily</a></td>
-<td><strong>每日爬取 ArXiv</strong> 各个领域论文，适合速刷</td>
-<td>※※※※※</td>
-</tr>
-<tr>
-<td><a target="_blank" rel="noopener" href="https://papers.labml.ai/papers/daily">Daliy Papers</a></td>
-<td>近期<strong>热点论文</strong>追踪，每天必刷！</td>
-<td>※※※※※</td>
-</tr>
-<tr>
-<td><a target="_blank" rel="noopener" href="https://www.semanticscholar.org/">Semantic Scholar</a></td>
-<td>查看一篇论文的<strong>被引</strong>，按次数排序，<strong>更新速度很快</strong></td>
-<td>※※※※</td>
-</tr>
-<tr>
-<td><a target="_blank" rel="noopener" href="https://www.connectedpapers.com/">Connected Papers</a></td>
-<td>用<strong>连通图</strong>展示同领域论文，大小论文都适用</td>
-<td>※※※※</td>
-</tr>
-<tr>
-<td><a target="_blank" rel="noopener" href="https://openreview.net/">OpenReview</a></td>
-<td>检索<strong>最新在投论文</strong>，追踪顶会动向，可以看到<strong>审稿意见</strong></td>
-<td>※※※※</td>
-</tr>
-<tr>
-<td><a target="_blank" rel="noopener" href="https://www.scholar-inbox.com/">Shcolar Inbox</a></td>
-<td>将最新论文按照<strong>研究兴趣匹配程度</strong>进行排序并推送</td>
-<td>※※※※</td>
-</tr>
-<tr>
-<td><a target="_blank" rel="noopener" href="https://arxiv.org/">ArXiv</a></td>
-<td>预印版论文下载，适合占坑</td>
-<td>※※※</td>
-</tr>
-<tr>
-<td><a target="_blank" rel="noopener" href="https://github.com/">GitHub</a></td>
-<td>偶尔会有好心人放出领域论文集</td>
-<td>※※※</td>
-</tr>
-<tr>
-<td><a target="_blank" rel="noopener" href="https://www.paperdigest.org/">Paper Digest</a></td>
-<td>快速搜索<strong>领域论文</strong>、最新会议论文索引 + <strong>highlight</strong></td>
-<td>※※※</td>
-</tr>
-<tr>
-<td><a target="_blank" rel="noopener" href="https://openaccess.thecvf.com/menu">CVF Open Access</a></td>
-<td>CV 会议论文下载</td>
-<td>※※</td>
-</tr>
-<tr>
-<td><a target="_blank" rel="noopener" href="https://ai-paper-collector.vercel.app/">AI-Paper-Search</a></td>
-<td>国人开发的插件，支持关键词匹配 AI 顶会</td>
-<td>※</td>
-</tr>
-<tr>
-<td><a target="_blank" rel="noopener" href="https://ac.scmor.com/">思谋学术导航</a></td>
-<td>谷歌学术镜像与 Sci-Hub 导航</td>
-<td>※</td>
-</tr>
-<tr>
-<td><a target="_blank" rel="noopener" href="https://xueshu.dailyheadlines.cc/">深度学术搜索</a></td>
-<td>谷歌学术镜像</td>
-<td>※</td>
-</tr>
-<tr>
-<td><a target="_blank" rel="noopener" href="https://readpaper.com/">ReadPaper</a></td>
-<td>国内论文社区，可以看到别人对热点论文的<strong>笔记</strong></td>
-<td>※</td>
-</tr>
-<tr>
-<td>其他途径</td>
-<td>公众号、组会分享、学术主页、顶会 Accept List</td>
-<td>※※※※</td>
-</tr>
-</tbody>
-</table>
-</div>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/03/08/%E5%B8%B8%E7%94%A8%E7%A7%91%E7%A0%94%E7%BD%91%E7%AB%99%E5%90%88%E9%9B%86/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1125,7 +1117,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">52</span>
+          <span class="site-state-item-count">53</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1163,7 +1155,7 @@
     <h3 class="widget-title">Tag Cloud</h3>
     <div id="myCanvasContainer" class="widget tagcloud">
         <canvas width="250" height="250" id="resCanvas" style="width=100%">
-            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2023/" rel="tag">2023</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2025/" rel="tag">2025</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICML/" rel="tag">ICML</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">19</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%85%E8%AF%BB/" rel="tag">阅读</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2023/" rel="tag">2023</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2025/" rel="tag">2025</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICML/" rel="tag">ICML</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">20</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%85%E8%AF%BB/" rel="tag">阅读</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
         </canvas>
     </div>
 </div>
