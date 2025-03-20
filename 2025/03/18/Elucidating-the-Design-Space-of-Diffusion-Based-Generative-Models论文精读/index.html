@@ -37,7 +37,7 @@
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/18/Elucidating-the-Design-Space-of-Diffusion-Based-Generative-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f5.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/18/Elucidating-the-Design-Space-of-Diffusion-Based-Generative-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t2.png">
 <meta property="article:published_time" content="2025-03-18T02:50:30.000Z">
-<meta property="article:modified_time" content="2025-03-19T12:33:59.464Z">
+<meta property="article:modified_time" content="2025-03-20T07:21:47.542Z">
 <meta property="article:author" content="Zongqing Li">
 <meta property="article:tag" content="diffusion">
 <meta property="article:tag" content="2022">
@@ -238,7 +238,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-03-19 20:33:59" itemprop="dateModified" datetime="2025-03-19T20:33:59+08:00">2025-03-19</time>
+                <time title="修改时间：2025-03-20 15:21:47" itemprop="dateModified" datetime="2025-03-20T15:21:47+08:00">2025-03-20</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -362,14 +362,14 @@
 <ul>
 <li><strong>背景</strong>：Song等人<script type="math/tex">49</script>提出的SDE可以被推广<script type="math/tex">20, 58</script>为公式1中的概率流ODE与一个时变的朗之万扩散SDE<script type="math/tex">14</script>的和（见附录B.5）：<script type="math/tex; mode=display">dx_{\pm}=\underbrace{-\dot{\sigma}(t)\sigma(t)\nabla_{x}\log p(x;\sigma(t))dt}_{概率流ODE (公式1)} \pm \underbrace{\underbrace{\beta(t)\sigma(t)^{2}\nabla_{x}\log p(x;\sigma(t))dt}_{确定性噪声衰减}+\underbrace{\sqrt{2\beta(t)}\sigma(t)d\omega_{t}}_{噪声注入}}_{朗之万扩散 SDE}\tag{6}</script></li>
 </ul>
-<p>其中$\omega*{t}$是标准维纳过程。$dx_{+}$和$dx_{-}$分别是时间正向和反向演化的SDE，通过Anderson的时间反转公式<script type="math/tex">1</script>相互关联。朗之万项可以进一步看作是基于分数的确定性去噪项和随机噪声注入项的组合，它们的净噪声水平贡献相互抵消。因此，$\beta(t)$有效地表示了现有噪声被新噪声替代的相对速率。当选择$\beta(t)=\dot{\sigma}(t)/\sigma(t)$时，可得到Song等人<script type="math/tex">49</script>提出的SDE，此时正向SDE中的分数项消失。</p>
+<p>其中$\omega_{t}$是标准维纳过程。$dx_{+}$和$dx_{-}$分别是时间正向和反向演化的SDE，通过Anderson的时间反转公式<script type="math/tex">1</script>相互关联。朗之万项可以进一步看作是基于分数的确定性去噪项和随机噪声注入项的组合，它们的净噪声水平贡献相互抵消。因此，$\beta(t)$有效地表示了现有噪声被新噪声替代的相对速率。当选择$\beta(t)=\dot{\sigma}(t)/\sigma(t)$时，可得到Song等人<script type="math/tex">49</script>提出的SDE，此时正向SDE中的分数项消失。</p>
 <p>从这个角度可以揭示随机性在实践中有用的原因：隐式的朗之万扩散会在给定时间将样本推向期望的边际分布，主动纠正早期采样步骤中产生的任何错误。另一方面，用离散的SDE求解器步骤来近似朗之万项本身会引入误差。先前的结果<script type="math/tex">3, 24, 47, 49</script>表明非零的$\beta(t)$是有帮助的，但就我们所知，Song等人<script type="math/tex">49</script>中对$\beta(t)$的隐式选择并没有特殊性质。因此，最优的随机程度应该通过实验确定。</p>
 <p><img src="a2.png"></p>
 <ul>
 <li><strong>我们的随机采样器</strong>：我们提出一种随机采样器，它将我们的二阶确定性ODE积分器与类似朗之万的显式 “搅动”（添加和去除噪声）相结合。算法2给出了其伪代码。在每一步$i$，给定噪声水平$t_{i}(=\sigma(t_{i}))$下的样本$x_{i}$，我们执行两个子步骤。首先，根据因子$\gamma_{i}≥0$向样本中添加噪声，使其达到更高的噪声水平$\hat{t}_{i}=t_{i}+\gamma_{i}t_{i}$。其次，从增加噪声后的样本$\hat{x}_{i}$开始，用单步从$\hat{t}_{i}$反向求解ODE到$t_{i + 1}$。这会得到一个噪声水平为$t_{i + 1}$的样本$x_{i + 1}$，然后继续迭代。</li>
 </ul>
 <p>我们强调这不是一个通用的SDE求解器，而是针对特定问题定制的采样过程。它的正确性源于两个子步骤的交替，每个子步骤（在ODE步骤的截断误差范围内）都能保持正确的分布。Song等人<script type="math/tex">49</script>的预测 - 校正采样器在概念上与我们的结构相似。</p>
-<p>为了分析我们的方法与欧拉 - 丸山方法的主要区别，我们首先注意到后者在离散化公式6时存在一个细微差异。可以将欧拉 - 丸山方法解释为先添加噪声，然后执行一个ODE步骤，但不是从噪声注入后的中间状态开始，而是假设$x$和$\sigma$在迭代步骤开始时保持初始状态。在我们的方法中，算法2第7行用于评估$D_{\theta}$的参数对应于噪声注入后的状态，而类似欧拉 - 丸山的方法会使用$x_{i}$和$t_{i}$，而不是$\hat{x}<em>{i}$和$\hat{t}</em>{i}$。在$\Delta_{t}$趋近于零的极限情况下，这些选择可能没有差异，但在采用大步长追求低NFE时，这种区别似乎变得很重要。</p>
+<p>为了分析我们的方法与欧拉 - 丸山方法的主要区别，我们首先注意到后者在离散化公式6时存在一个细微差异。可以将欧拉 - 丸山方法解释为先添加噪声，然后执行一个ODE步骤，但不是从噪声注入后的中间状态开始，而是假设$x$和$\sigma$在迭代步骤开始时保持初始状态。在我们的方法中，算法2第7行用于评估$D_{\theta}$的参数对应于噪声注入后的状态，而类似欧拉 - 丸山的方法会使用$x_{i}$和$t_{i}$，而不是$\hat{x}_{i}$和$\hat{t}_{i}$。在$\Delta_{t}$趋近于零的极限情况下，这些选择可能没有差异，但在采用大步长追求低NFE时，这种区别似乎变得很重要。</p>
 <ul>
 <li><strong>实际考虑因素</strong>：增加随机程度可以有效地纠正早期采样步骤中产生的错误，但它也有自身的缺点。我们观察到（见附录E.1），在所有数据集和去噪器网络中，过度类似朗之万的噪声添加和去除会导致生成图像的细节逐渐丢失。在极低和极高噪声水平下，还会出现颜色过度饱和的漂移现象。我们怀疑实际的去噪器在公式3中引入了一个略微非保守的向量场，违反了朗之万扩散的前提条件，从而导致这些不利影响。值得注意的是，我们使用解析去噪器（如图1b中的去噪器）进行的实验并未显示出这种退化。</li>
 </ul>
