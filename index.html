@@ -215,7 +215,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2025-03-24 18:47:26 / 修改时间：18:54:46" itemprop="dateCreated datePublished" datetime="2025-03-24T18:47:26+08:00">2025-03-24</time>
+              <time title="创建时间：2025-03-24 18:47:26 / 修改时间：19:00:07" itemprop="dateCreated datePublished" datetime="2025-03-24T18:47:26+08:00">2025-03-24</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -252,186 +252,15 @@
 </tbody>
 </table>
 </div>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th style="text-align:center"><img src="f2.png" alt="f2"></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">**</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th style="text-align:center"><img src="f3.png" alt="f3"></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">**</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th style="text-align:center"><img src="f4.png" alt="f4"></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">**</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th style="text-align:center"><img src="f5.png" alt="f5"></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">**</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th style="text-align:center"><img src="f6.png" alt="f6"></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">**</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th style="text-align:center"><img src="f7.png" alt="f7"></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">**</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th style="text-align:center"><img src="f8.png" alt="f8"></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">**</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th style="text-align:center"><img src="f9.png" alt="f9"></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">**</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th style="text-align:center"><img src="f10.png" alt="f10"></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">**</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th style="text-align:center"><img src="t1.png" alt="t1"></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">**</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th style="text-align:center"><img src="t2.png" alt="t2"></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">**</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th style="text-align:center"><img src="t3.png" alt="t3"></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">**</td>
-</tr>
-</tbody>
-</table>
-</div>
 <p>我们探索了一类基于Transformer架构的新型扩散模型。我们训练图像的潜在扩散模型，用在潜在图像块上操作的Transformer替换常用的U-Net骨干网络。我们通过以每秒千兆次浮点运算（Gflops）衡量的前向传递复杂度，分析了我们的扩散Transformer（DiT）的可扩展性。我们发现，具有更高Gflops的DiT模型——通过增加Transformer的深度、宽度或增加输入令牌的数量——始终具有更低的FID（弗雷歇初始距离，Frechet Inception Distance）。除了具有良好的可扩展性，我们最大的DiT-XL/2模型在类条件ImageNet 512×512和256×256基准测试中优于所有先前的扩散模型，在后者上实现了2.27的最先进FID分数。</p>
-<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1. 引言"></a>1. 引言</h3><p>机器学习正经历一场由Transformer推动的复兴。在过去五年里，自然语言处理[8, 42]、计算机视觉[10]等多个领域的神经架构在很大程度上已被Transformer[60]所取代。然而，许多类图像级生成模型却未跟上这一趋势——尽管Transformer在自回归模型[3, 6, 43, 47]中得到广泛应用，但在其他生成建模框架中的应用却较少。例如，扩散模型一直处于图像级生成模型近期进展的前沿[9, 46]；然而，它们都采用卷积U-Net架构作为事实上的骨干网络选择。</p>
-<p>Ho等人的开创性工作[19]首次将U-Net骨干网络引入扩散模型。U-Net最初在像素级自回归模型和条件生成对抗网络（GANs）[23]中取得成功，它从PixelCNN++[52, 58]继承而来，并做了一些改动。该模型是卷积式的，主要由残差网络（ResNet）[15]块组成。与标准U-Net[49]不同，在较低分辨率层穿插了额外的空间自注意力块，这是Transformer的重要组成部分。Dhariwal和Nichol[9]对U-Net的多个架构选择进行了消融实验，比如使用自适应归一化层[40]注入条件信息，以及卷积层的通道数设置等。不过，Ho等人提出的U-Net的高层设计在很大程度上保持不变。</p>
-<p>通过这项工作，我们旨在揭示扩散模型中架构选择的重要性，并为未来的生成建模研究提供实证基线。我们证明了U-Net的归纳偏差对扩散模型的性能并非至关重要，并且可以很容易地用Transformer等标准设计来替代。因此，扩散模型有望从最近的架构统一趋势中受益，例如，从其他领域继承最佳实践和训练方法，同时保留可扩展性、稳健性和效率等优良特性。标准化的架构也将为跨领域研究开辟新的可能性。</p>
-<p>在本文中，我们专注于一类基于Transformer的新型扩散模型，称之为扩散Transformer，简称DiT。DiT遵循视觉Transformer（ViT）[10]的最佳实践，事实证明，与传统卷积网络（如ResNet[15]）相比，ViT在视觉识别方面的扩展性更强。</p>
-<p>更具体地说，我们研究Transformer在网络复杂度与样本质量方面的缩放行为。通过在潜在扩散模型（LDMs）[48]框架下构建和基准测试DiT的设计空间，我们成功地用Transformer替换了U-Net骨干网络，其中扩散模型在变分自编码器（VAE）的潜在空间内进行训练。我们进一步表明，DiT是扩散模型的可扩展架构：网络复杂度（以Gflops衡量）与样本质量（以FID衡量）之间存在很强的相关性。通过简单地扩展DiT，并使用高容量骨干网络（118.6 Gflops）训练LDM，我们在类条件256×256 ImageNet生成基准测试中实现了2.27的最先进FID结果。</p>
-<h3 id="2-相关工作"><a href="#2-相关工作" class="headerlink" title="2. 相关工作"></a>2. 相关工作</h3><ul>
-<li><strong>Transformer</strong>：Transformer[60]已在语言、视觉[10]、强化学习[5, 25]和元学习[39]等领域取代了特定领域的架构。在语言领域，随着模型规模、训练计算量和数据量的增加，Transformer展现出了卓越的缩放特性，这在通用自回归模型[17]和视觉Transformer（ViT）[63]中均有体现。除语言领域外，Transformer还被用于自回归预测像素[6, 7, 38]。此外，Transformer也在离散码本上进行训练，既作为自回归模型[11, 47]，也作为掩码生成模型[4, 14]，前者在高达200亿参数规模下仍表现出出色的缩放特性[62]。最后，Transformer已在去噪扩散概率模型（DDPM）中得到探索，用于合成非空间数据，例如在DALL·E 2中生成CLIP图像嵌入[41, 46]。在本文中，我们研究Transformer作为图像扩散模型骨干网络时的缩放特性。</li>
-<li><strong>去噪扩散概率模型（DDPMs）</strong>：扩散模型[19, 54]和基于分数的生成模型[22, 56]在图像生成模型方面取得了显著成功，在许多情况下超越了此前作为最先进模型的生成对抗网络（GANs）[12]。在过去两年中，DDPM的改进主要得益于采样技术的提升[19, 27, 55]，其中最显著的是无分类器引导[21]、将扩散模型重新表述为预测噪声而非像素[19]，以及使用级联DDPM管道，即低分辨率基础扩散模型与上采样器并行训练[9, 20]。对于上述所有扩散模型，卷积U-Nets[49]是事实上的骨干网络架构选择。同期工作[24]引入了一种基于注意力机制的新颖高效架构用于DDPM；而我们探索的是纯Transformer架构。</li>
-<li><strong>架构复杂度</strong>：在图像生成文献中评估架构复杂度时，使用参数数量是相当常见的做法。一般来说，参数数量并不能很好地代表图像模型的复杂度，因为它没有考虑到图像分辨率等因素，而图像分辨率对模型性能有显著影响[44, 45]。因此，本文中大部分模型复杂度分析是通过理论Gflops（每秒数十亿次浮点运算）进行的，这与架构设计文献中广泛使用Gflops来衡量复杂度的做法一致。实际上，黄金复杂度指标仍存在争议，因为它通常取决于特定的应用场景。Nichol和Dhariwal改进扩散模型的开创性工作[9, 36]与我们的研究最为相关，他们在其中分析了U-Net架构类别的可扩展性和Gflop特性。在本文中，我们关注的是Transformer类别。</li>
-</ul>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/03/24/Scalable-Diffusion-Models-with-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
