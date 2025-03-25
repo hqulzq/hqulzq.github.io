@@ -128,7 +128,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">55</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">57</span></a>
 
   </li>
         <li class="menu-item menu-item-book">
@@ -186,6 +186,299 @@
 
           <div class="content index posts-expand">
             
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/03/25/FAST-SAMPLING-OF-DIFFUSION-MODELS-WITH-EXPONENTIAL-INTEGRATOR%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2025/03/25/FAST-SAMPLING-OF-DIFFUSION-MODELS-WITH-EXPONENTIAL-INTEGRATOR%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" class="post-title-link" itemprop="url">FAST SAMPLING OF DIFFUSION MODELS WITH EXPONENTIAL INTEGRATOR论文精读</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-03-25 16:10:14" itemprop="dateCreated datePublished" datetime="2025-03-25T16:10:14+08:00">2025-03-25</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/03/25/DPM-Solver-Plus-Plus-Fast-Solver-for-Guided-Sampling-of-Diffusion-Probabilistic-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2025/03/25/DPM-Solver-Plus-Plus-Fast-Solver-for-Guided-Sampling-of-Diffusion-Probabilistic-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" class="post-title-link" itemprop="url">DPM-Solver-Plus-Plus-Fast Solver for Guided Sampling of Diffusion Probabilistic Models论文精读</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-03-25 15:03:39 / 修改时间：19:15:54" itemprop="dateCreated datePublished" datetime="2025-03-25T15:03:39+08:00">2025-03-25</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散概率模型（DPMs）在高分辨率图像合成中取得了显著成功，尤其是在近期大规模文本到图像生成应用中。一种提高DPMs样本质量的关键技术是引导采样，通常需要较大的引导尺度才能获得最佳样本质量。常用的引导采样快速采样器是DDIM，它是一种一阶扩散常微分方程（ODE）求解器，通常需要100到250步才能生成高质量样本。尽管近期有研究提出了专用的高阶求解器，并在无引导采样方面实现了进一步加速，但它们在引导采样中的有效性此前尚未得到充分测试。<font color="red" style="background: rgb(234, 238, 23)">在这项工作中，我们证明了以前的高阶快速采样器存在不稳定性问题，并且当引导尺度增大时，它们甚至比DDIM更慢。</font>为了进一步加速引导采样，我们提出了DPM-Solver++，这是一种用于DPMs引导采样的高阶求解器。DPM-Solver++使用数据预测模型求解扩散ODE，并采用阈值化方法使解与训练数据分布相匹配。我们进一步提出了DPM-Solver++的多步变体，通过减小有效步长来解决不稳定性问题。实验表明，DPM-Solver++仅需15到20步就能为像素空间和潜空间DPMs的引导采样生成高质量样本。</p>
+<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1 引言"></a>1 引言</h3><p>扩散概率模型（DPMs）（Sohl-Dickstein等人，2015；Ho等人，2020；Song等人，2021b）在各种任务中取得了显著成功，例如高分辨率图像合成（Dhariwal和Nichol，2021；Ho等人，2022；Rombach等人，2022）、图像编辑（Meng等人，2022；Saharia等人，2022a；Zhao等人，2022）、文本到图像生成（Nichol等人，2021；Saharia等人，2022b；Ramesh等人，2022；Rombach等人，2022；Gu等人，2022）、语音合成（Liu等人，2022a；Chen等人，2021a、b）、分子生成（Xu等人，2022；Hoogeboom等人，2022；Wu等人，2022）和数据压缩（Theis等人，2022；Kingma等人，2021）。与生成对抗网络（GANs）（Goodfellow等人，2014）和变分自编码器（VAEs）（Kingma和Welling，2014）等其他深度生成模型相比，DPMs通过利用一种称为引导采样的关键技术（Dhariwal和Nichol，2021；Ho和Salimans，2021），甚至可以实现更好的样本质量。该技术使用额外的引导模型来提高样本保真度和条件样本对齐度。通过它，DPMs在文本到图像和图像到图像任务中可以生成与给定条件高度相关的高分辨率逼真艺术图像，引领了人工智能绘画的新潮流。</p>
+<p>DPMs的采样过程是从纯高斯随机变量中逐渐去除噪声以获得清晰数据，这可以看作是对由参数化噪声预测模型或数据预测模型定义的扩散随机微分方程（SDEs）（Ho等人，2020；Song等人，2021b）或扩散常微分方程（ODEs）（Song等人，2021b、a）进行离散化（Ho等人，2020；Kingma等人，2021）。DPMs的引导采样也可以通过将无条件模型与引导模型相结合，用这种离散化方法进行形式化，其中一个超参数控制引导模型的尺度（即引导尺度）。常用的引导采样方法是DDIM（Song等人，2021a），它被证明是一种一阶扩散ODE求解器（Salimans和Ho，2022；Lu等人，2022），通常需要进行100到250次大规模神经网络评估才能收敛，非常耗时。</p>
+<p>专用的高阶扩散ODE求解器（Lu等人，2022；Zhang和Chen，2022）可以在10到20步内为无引导采样生成高质量样本。然而，它们在引导采样中的有效性此前尚未得到仔细研究。在这项工作中，我们证明了以前用于DPMs的高阶求解器在引导采样时生成的样本不尽人意，甚至比简单的一阶求解器DDIM还差。<font color="red" style="background: rgb(234, 238, 23)">我们确定了将高阶求解器应用于引导采样面临的两个挑战：（1）较大的引导尺度缩小了高阶求解器的收敛半径，使其不稳定；（2）收敛解与原始数据不在同一范围内（也称为 “训练 - 测试不匹配”（Saharia等人，2022b））。</font></p>
+<p>基于这些观察，我们提出了DPM-Solver++，这是一种无需训练的用于引导采样的快速扩散ODE求解器。我们发现DPM的参数化对解的质量有至关重要的影响。随后，我们求解由数据预测模型定义的扩散ODE，该模型根据含噪数据预测干净数据。我们推导了一种用于求解具有数据预测参数化的ODE的高阶求解器，并采用动态阈值化方法（Saharia等人，2022b）来缓解训练 - 测试不匹配问题。此外，我们开发了一种多步求解器，使用较小的步长来解决不稳定性问题。</p>
+<p>如图1所示，DPM-Solver++仅需15步就能生成高质量样本，比之前所有无需训练的引导采样采样器都要快得多。我们的额外实验结果表明，DPM-Solver++可以生成高保真样本，并且在仅15到20步内几乎就能收敛，适用于各种引导采样应用，包括像素空间DPMs和潜空间DPMs。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f1.png" width="80%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图1：以往的高阶求解器在引导采样中不稳定：在ImageNet 256×256数据集上，使用预训练的扩散概率模型（Dhariwal和Nichol，2021），分类器引导尺度设为8.0，仅进行15次函数评估，采用不同采样器（以及不同求解器阶数）生成的样本。†：采用动态阈值化的DDIM（Saharia等人，2022b）。我们提出的DPM-Solver++（详见算法2）能够生成比一阶DDIM更好的样本，而其他高阶采样器生成的样本比DDIM更差。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="2-扩散概率模型"><a href="#2-扩散概率模型" class="headerlink" title="2 扩散概率模型"></a>2 扩散概率模型</h3><p>在本节中，我们回顾扩散概率模型（DPMs）及其采样方法。</p>
+<h4 id="2-1-基于扩散ODE的DPMs快速采样"><a href="#2-1-基于扩散ODE的DPMs快速采样" class="headerlink" title="2.1 基于扩散ODE的DPMs快速采样"></a>2.1 基于扩散ODE的DPMs快速采样</h4><p>扩散概率模型（DPMs）（Sohl-Dickstein等人，2015；Ho等人，2020；Song等人，2021b）逐渐向一个$D$维随机变量$x_{0} \in \mathbb{R}^{D}$添加高斯噪声，从而将时间0时相应的未知数据分布$q_{0}(x_{0})$扰动为时间$T&gt;0$时的简单正态分布$q_{T}(x_{T}) \approx N(x_{T} | 0, \tilde{\sigma}^{2} I)$，其中$\tilde{\sigma}&gt;0$。在每个时间$t \in [0, T]$，转移分布$q_{t0}(x_{t} | x_{0})$满足：</p>
+<script type="math/tex; mode=display">q_{t0}\left(x_{t} | x_{0}\right)=\mathcal{N}\left(x_{t} | \alpha_{t} x_{0}, \sigma_{t}^{2} I\right) \tag{1}</script><p>其中$\alpha_{t}$、$\sigma_{t}&gt;0$，且信噪比（SNR）$\alpha_{t}^{2} / \sigma_{t}^{2}$随时间$t$严格递减（Kingma等人，2021）。公式（1）可以写成$x_{t}=\alpha_{t} x_{0}+\sigma_{t} \epsilon$，其中$\epsilon \sim N(0, I)$。</p>
+<ul>
+<li><strong>参数化：噪声预测和数据预测</strong>：DPMs通过顺序去噪过程，基于含噪输入$x_{T}$学习恢复数据$x_{0}$。定义模型有两种可选方式。噪声预测模型$\epsilon_{\theta}(x_{t}, t)$试图从数据$x_{t}$中预测噪声$\epsilon$，它通过以下目标来优化参数$\theta$（Ho等人，2020；Song等人，2021b）：<script type="math/tex; mode=display">min _{\theta} \mathbb{E}_{x_{0}, \epsilon, t}\left[\omega(t)\left\| \epsilon_{\theta}\left(x_{t}, t\right)-\epsilon\right\|_{2}^{2}\right] \tag{2}</script>其中$x_{0} \sim q_{0}(x_{0})$，$\epsilon \sim N(0, I)$，$t \sim U([0,1])$，且$\omega(t)&gt;0$是一个加权函数。另外，数据预测模型$x_{\theta}(x_{t}, t)$基于含噪的$x_{t}$预测原始数据$x_{0}$，它与$\epsilon_{\theta}(x_{t}, t)$的关系为$x_{\theta}(x_{t}, t):=(x_{t}-\sigma_{t} \epsilon_{\theta}(x_{t}, t)) / \alpha_{t}$（Kingma等人，2021）。</li>
+<li><strong>扩散ODE采样</strong>：DPMs的采样可以通过求解扩散ODE来实现（Song等人，2021b、a；Liu等人，2022b；Zhang和Chen，2022；Lu等人，2022），这通常比其他采样方法更快。具体来说，基于扩散ODE的采样需要对以下ODE进行离散化（Song等人，2021b），其中时间$t$从$T$变化到$0$：<script type="math/tex; mode=display">\frac{d x_{t}}{ d t}=f(t) x_{t}+\frac{g^{2}(t)}{2 \sigma_{t}} \epsilon_{\theta}\left(x_{t}, t\right), x_{T} \sim \mathcal{N}\left(0, \overline{\sigma}^{2} I\right) \tag{3}</script>关于数据预测模型$x_{\theta}$的等效扩散ODE为：<script type="math/tex; mode=display">\frac{d x_{t}}{ d t}=\left(f(t)+\frac{g^{2}(t)}{2 \sigma_{t}^{2}}\right) x_{t}-\frac{\alpha_{t} g^{2}(t)}{2 \sigma_{t}^{2}} x_{\theta}\left(x_{t}, t\right), x_{T} \sim \mathcal{N}\left(0, \overline{\sigma}^{2} I\right) \tag{4}</script>其中系数$f(t)=\frac{d log \alpha_{t}}{~d t}$，$g^{2}(t)=\frac{d \sigma_{t}^{2}}{~d t}-2 \frac{d log \alpha_{t}}{~d t} \sigma_{t}^{2}$（Kingma等人，2021）。</li>
+</ul>
+<h4 id="2-2-DPMs的引导采样"><a href="#2-2-DPMs的引导采样" class="headerlink" title="2.2 DPMs的引导采样"></a>2.2 DPMs的引导采样</h4><p>引导采样（Dhariwal和Nichol，2021；Ho和Salimans，2021）是一种广泛应用于DPMs条件采样的技术，在文本到图像、图像到图像和类别到图像的应用中非常有用（Dhariwal和Nichol，2021；Saharia等人，2022b；Rombach等人，2022；Nichol等人，2021；Ramesh等人，2022）。给定一个条件变量$c$，引导采样定义了一个条件噪声预测模型$\tilde{\epsilon}_{\theta}(x_{t}, t, c)$。引导采样方法有两种类型，取决于它们是否需要分类器模型。</p>
+<ul>
+<li><strong>分类器引导</strong>：分类器引导（Dhariwal和Nichol，2021）利用预训练的分类器$p_{\phi}(c | x_{t}, t)$来定义条件噪声预测模型：<script type="math/tex; mode=display">\tilde{\epsilon}_{\theta}\left(x_{t}, t, c\right):=\epsilon_{\theta}\left(x_{t}, t\right)-s \cdot \sigma_{t} \nabla_{x_{t}} log p_{\phi}\left(c | x_{t}, t\right) \tag{5}</script>其中$s&gt;0$是引导尺度。在实践中，为了提高引导采样中的条件样本对齐度，通常倾向于使用较大的$s$（Rombach等人，2022；Saharia等人，2022b）。</li>
+<li><strong>无分类器引导</strong>：无分类器引导（Ho和Salimans，2021）对无条件和有条件噪声预测模型使用相同的参数化模型$\epsilon_{\theta}(x_{t}, t, c)$，其中无条件模型的输入$c$是一个特殊占位符$\infty$。相应的条件模型定义为：<script type="math/tex; mode=display">\tilde{\epsilon}_{\theta}\left(x_{t}, t, c\right):=s \cdot \epsilon_{\theta}\left(x_{t}, t, c\right)+(1-s) \cdot \epsilon_{\theta}\left(x_{t}, t, \infty\right) \tag{6}</script>然后，可以通过用$\epsilon_{\theta}(x_{t}, t, c)$代替$\epsilon_{\theta}(x_{t}, t)$来求解ODE（3），从而得到样本。DDIM（Song等人，2021a）是一种典型的引导采样求解器，它需要几百步来生成样本。</li>
+</ul>
+<h4 id="2-3-指数积分器和高阶ODE求解器"><a href="#2-3-指数积分器和高阶ODE求解器" class="headerlink" title="2.3 指数积分器和高阶ODE求解器"></a>2.3 指数积分器和高阶ODE求解器</h4><p>最近的研究（Lu等人，2022；Zhang和Chen，2022）表明，基于指数积分器（Hochbruck和Ostermann，2010）的ODE求解器在求解无条件扩散ODE（3）时，比传统求解器收敛速度快得多。给定时间$s&gt;0$时的初始值$x_{s}$，Lu等人（2022）推导出扩散ODE（3）在时间$t$的解$x_{t}$为：</p>
+<script type="math/tex; mode=display">x_{t}=\frac{\alpha_{t}}{\alpha_{s}} x_{s}-\alpha_{t} \int_{\lambda_{s}}^{\lambda_{t}} e^{-\lambda} \hat{\epsilon}_{\theta}\left(\hat{x}_{\lambda}, \lambda\right) d \lambda \tag{7}</script><p>其中通过变量变换公式，ODE从$(t)$域转换到了对数信噪比（$\lambda$）域。这里，对数信噪比$\lambda_{t}:=log (\alpha_{t} / \sigma_{t})$是$t$的严格递减函数，其反函数为$t_{\lambda}(\cdot)$，且$\hat{x}_{\lambda}:=x_{t_{\lambda}(\lambda)}$，$\hat{\epsilon}_{\theta}(\hat{x}_{\lambda}, \lambda):=\epsilon_{\theta}(x_{t_{\lambda}(\lambda)}, t_{\lambda}(\lambda))$是关于$\lambda$的相应变量变换形式。Lu等人（2022）表明，DDIM是公式（7）的一阶求解器。他们进一步提出了一种名为“DPM-Solver”的高阶求解器，它可以在仅10 - 20步内为无条件模型生成逼真的样本。</p>
+<p>不幸的是，现有高阶求解器的出色效率在引导采样中并未体现，我们将很快对此进行讨论。</p>
+<h3 id="3-高阶求解器用于引导采样面临的挑战"><a href="#3-高阶求解器用于引导采样面临的挑战" class="headerlink" title="3 高阶求解器用于引导采样面临的挑战"></a>3 高阶求解器用于引导采样面临的挑战</h3><p>在开发新的快速求解器之前，我们首先研究现有高阶扩散常微分方程（ODE）求解器的性能，并突出其中面临的挑战。</p>
+<p>第一个挑战是较大的引导尺度会导致高阶求解器不稳定。如图1所示，当引导尺度$s = 8.0$且进行15次函数评估时，以往的高阶扩散ODE求解器（Lu等人，2022；Zhang和Chen，2022；Liu等人，2022b）生成的图像质量较低。它们生成的样本质量甚至比一阶的DDIM还差。此外，求解器的阶数越高，样本质量反而越差。</p>
+<p>直观来看，较大的引导尺度可能会同时放大模型$\tilde{\epsilon}_{\theta}$在公式（5）中的输出和导数。模型的导数会影响ODE求解器的收敛范围，这种放大效应可能会导致高阶ODE求解器需要更小的步长才能收敛，因此高阶求解器的性能可能会比一阶求解器更差。而且，高阶求解器需要计算高阶导数，而高阶导数通常对这种放大效应更为敏感，这进一步缩小了收敛半径。</p>
+<p>第二个挑战是“训练-测试不匹配”问题（Saharia等人，2022b）。数据通常位于一个有界区间内（例如，图像数据的区间为$[-1, 1]$）。然而，较大的引导尺度会使条件噪声预测模型$\tilde{\epsilon}_{\theta}(x_{t}, t, c)$偏离真实噪声，进而导致样本（即扩散ODE的收敛解$x_{0}$）超出边界。在这种情况下，生成的图像会出现饱和且不自然的现象（Saharia等人，2022b）。</p>
+<h3 id="4-设计用于引导采样的免训练快速采样器"><a href="#4-设计用于引导采样的免训练快速采样器" class="headerlink" title="4 设计用于引导采样的免训练快速采样器"></a>4 设计用于引导采样的免训练快速采样器</h3><p>在本节中，我们设计了新的高阶扩散ODE求解器，以实现更快的引导采样。如第3节所述，以往的高阶求解器在大引导尺度下存在不稳定性和 “训练-测试不匹配” 问题。“训练-测试不匹配” 问题源于ODE本身，我们发现ODE的参数化对于收敛解的有界性至关重要。以往的高阶求解器是为噪声预测模型 $\tilde{\epsilon}_{\theta}$ 设计的，而我们求解数据预测模型 $x_{\theta}$ 的ODE（4），该模型本身具有一些优势，并且可以进一步采用阈值化方法来确保样本有界（Ho等人，2020；Saharia等人，2022b）。我们还提出了一种多步求解器来解决不稳定性问题。</p>
+<h4 id="4-1-基于数据预测模型设计求解器"><a href="#4-1-基于数据预测模型设计求解器" class="headerlink" title="4.1 基于数据预测模型设计求解器"></a>4.1 基于数据预测模型设计求解器</h4><p>我们沿用Lu等人（2022）中的符号。给定一个从 $t_{0}=T$ 递减到 $t_{M}=0$ 的序列 $\{t_{i}\}_{i = 0}^{M}$ 以及初始值 $x_{t_{0}} \sim N(0 | \tilde{\sigma}^{2} I)$，求解器旨在迭代计算序列 $\{\tilde{x}_{t_{i}}\}_{i = 0}^{M}$，以逼近每个时间 $t_{i}$ 处的精确解，最终值 $\tilde{x}_{t_{M}}$ 即为扩散ODE的近似样本。记 $h_{i}:=\lambda_{t_{i}}-\lambda_{t_{i - 1}}$，其中 $i = 1, \cdots, M$。</p>
+<p>为求解关于 $x_{\theta}$ 的扩散ODE（4），我们首先给出以下关于 $x_{\theta}$ 的扩散ODE精确解的简化形式。这种形式精确计算了公式（4）中的线性项，并且仅保留了 $x_{\theta}$ 的指数加权积分。记 $\hat{x}_{\theta}(\hat{x}_{\lambda}, \lambda):=x_{\theta}(x_{t_{\lambda}(\lambda)}, t_{\lambda}(\lambda))$ 为 $x_{\theta}$ 关于 $\lambda$ 的变量变换形式，我们有：</p>
+<p><strong>命题4.1（$x_{\theta}$ 的扩散ODE精确解，证明见附录A）</strong>：给定时间 $s&gt;0$ 时的初始值 $x_{s}$，公式（4）中扩散ODE在时间 $t \in [0, s]$ 的解 $x_{t}$ 为：</p>
+<script type="math/tex; mode=display">x_{t}=\frac{\sigma_{t}}{\sigma_{s}} x_{s}+\sigma_{t} \int_{\lambda_{s}}^{\lambda_{t}} e^{\lambda} \hat{x}_{\theta}\left(\hat{x}_{\lambda}, \lambda\right) d \lambda \tag{8}</script><p>由于公式（3）和公式（4）中的扩散ODE是等价的，公式（7）和公式（8）中的精确解形式也是等价的。然而，从设计ODE求解器的角度来看，这两种形式是不同的。首先，公式（7）精确计算线性项 $\frac{\alpha_{1}}{\alpha_{s}} x_{s}$，而公式（8）精确计算另一个线性项 $\frac{\sigma_{2}}{\sigma_{s}} x_{s}$。此外，为设计ODE求解器，公式（7）需要近似积分 $\int e^{-\lambda} \epsilon_{\theta} d \lambda$，而公式（8）需要近似 $\int e^{\lambda} x_{\theta} d \lambda$，这两个积分是不同的（回想一下 $x_{\theta}:=(x_{t}-\sigma_{t} \epsilon_{\theta}) / \alpha_{t}$）。因此，基于公式（7）和公式（8）的高阶求解器本质上是不同的。我们进一步给出基于公式（8）设计高阶ODE求解器的一般方法。</p>
+<p>给定时间 $t_{i - 1}$ 处的先前值 $\tilde{x}_{t_{i - 1}}$，我们求解器的目标是逼近时间 $t_{i}$ 处的精确解。记 $x_{\theta}^{(n)}(\lambda):=\frac{d^{n} \hat{x}_{\theta}(x_{\lambda}, \lambda)}{d \lambda^{n}}$ 为 $x_{\theta}$ 关于对数信噪比 $\lambda$ 的 $n$ 阶总导数。</p>
+<p>对于 $k \geq 1$，对 $x_{\theta}$ 在 $\lambda \in [\lambda_{t_{i - 1}}, \lambda_{t_{i}}]$ 上关于 $\lambda_{t_{i - 1}}$ <font color = "red">进行 $(k - 1)$ 阶泰勒展开</font>，并将其代入公式（8）（其中 $s = t_{i - 1}$，$t = t_{i}$），我们得到：</p>
+<script type="math/tex; mode=display">\tilde{x}_{t_{i}}=\frac{\sigma_{t_{i}}}{\sigma_{t_{i - 1}}} \tilde{x}_{t_{i - 1}}+\sigma_{t_{i}} \sum_{n = 0}^{k - 1} \underbrace{x_{\theta}^{(n)}\left(\hat{x}_{\lambda_{t_{i - 1}}}, \lambda_{t_{i - 1}}\right)}_{估计值} \underbrace{\int_{\lambda_{t_{i - 1}}}^{\lambda_{t_{i}}} e^{\lambda} \frac{\left(\lambda-\lambda_{t_{i - 1}}\right)^{n}}{n!} d \lambda}_{解析计算值（附录A） }+\underbrace{\mathcal{O}\left(h_{i}^{k + 1}\right)}_{省略项 } \tag{9}</script><p>其中积分 $\int e^{\lambda} \frac{(\lambda-\lambda_{t_{i - 1}})^{n}}{n!} d \lambda$ 可以通过分部积分法进行解析计算（详见附录A）。因此，为设计一个 $k$ 阶ODE求解器，在省略 $O(h_{i}^{k + 1})$ 高阶误差项后，我们只需要估计 $n \leq k - 1$ 时的 $n$ 阶导数 $x_{\theta}^{(n)}(\lambda_{t_{i - 1}})$，这些都是经过充分研究的技术，我们将在4.2节详细讨论。$k = 1$ 是一个特殊情况，此时求解器与DDIM（Song等人，2021a）相同，我们将在6.1节讨论。</p>
+<p>对于 $k = 2$，我们使用与DPM-Solver-2（Lu等人，2022）类似的技术来估计导数 $x_{\theta}^{(1)}(\hat{x}_{\lambda_{t_{i - 1}}}, \lambda_{t_{i - 1}})$。具体来说，我们在 $t_{i - 1}$ 和 $t_{i}$ 之间引入一个额外的中间时间步 $s_{i}$，并结合 $s_{i}$ 和 $t_{i - 1}$ 处的函数值来近似导数，这是单步ODE求解器的标准方法（Atkinson等人，2011）。总体而言，我们需要 $2M + 1$ 个时间步（$\{t_{i}\}_{i = 0}^{M}$ 和 $\{s_{i}\}_{i = 1}^{M}$），满足 $t_{0}&gt;s_{1}&gt;t_{1}&gt;\cdots&gt;t_{M - 1}&gt;s_{M}&gt;t_{M}$ 。详细算法见算法1，在算法1中，我们将时间 $t_{i - 1}$ 处的先前值 $\tilde{x}_{t_{i - 1}}$ 与时间 $s_{i}$ 处的中间值 $u_{i}$ 相结合，计算时间 $t_{i}$ 处的值 $\tilde{x}_{t_{i}}$ 。</p>
+<p>我们将该算法命名为DPM-Solver++(2S)，这意味着所提出的求解器是一种二阶单步方法。我们在附录A中给出了收敛阶数的理论保证。对于 $k \geq 3$，如第3节所述，高阶求解器可能不适合大引导尺度，因此在这项工作中我们主要考虑 $k = 2$，将更高阶求解器留作未来研究。</p>
+<p>此外，我们在附录B中对DPM-Solver-2（Lu等人，2022）和DPM-Solver++(2S) 进行了理论比较。我们发现DPM-Solver++(2S) 在高阶误差项前的常数更小，因此通常比DPM-Solver-2具有更小的离散化误差。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="a1.png" width="60%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">**</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="4-2-从单步到多步"><a href="#4-2-从单步到多步" class="headerlink" title="4.2 从单步到多步"></a>4.2 从单步到多步</h4><p>在每一步（从 $t_{i - 1}$ 到 $t_{i}$），所提出的单步求解器需要对神经网络 $x_{\theta}$ 进行两次连续的函数评估。此外，中间值 $u_{i}$ 仅使用一次就被丢弃。这种方法丢失了先前的信息，可能效率不高。在本节中，我们提出另一种二阶扩散ODE求解器，它在每一步都利用先前的信息。</p>
+<p>一般来说，为了近似公式（9）中 $n \geq 1$ 时的导数 $x_{\theta}^{(n)}$，还有另一种主流方法（Atkinson等人，2011）：多步方法（如Adams–Bashforth方法）。给定时间 $t_{i - 1}$ 处的先前值 $\{\tilde{x}_{t_{j}}\}_{j = 0}^{i - 1}$，多步方法通过重用先前的值来近似高阶导数。经验表明，多步方法比单步方法更高效，尤其是在函数评估次数有限的情况下（Atkinson等人，2011）。</p>
+<p>我们将设计多步求解器的技术与公式（9）中的泰勒展开相结合，进一步提出了一种用于 $x_{\theta}$ 的扩散ODE的多步二阶求解器。详细算法见算法2，在算法2中，我们结合先前值 $\overline{x}_{t_{i - 1}}$ 和 $\tilde{x}_{t_{i - 2}}$ 来计算值 $\bar{x}_{t_{i}}$，无需额外的中间值。我们将该算法命名为DPM-Solver++(2M)，这意味着所提出的求解器是一种二阶多步求解器。我们也在附录A中给出了收敛阶数的详细理论保证。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="a2.png" width="60%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">**</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>对于固定的总函数评估次数预算 $N$，多步方法可以使用 $M = N$ 步，而 $k$ 阶单步方法最多只能使用不超过 $M = N / k$ 步。因此，多步方法的每一步步长 $h_{i}$ 大约是单步方法的 $1/k$，所以多步方法公式（9）中的高阶误差项 $O(h_{i}^{k})$ 也可能比单步方法的更小。我们在7.1节表明，多步方法略优于单步方法。</p>
+<h4 id="4-3-DPM-Solver-与阈值化方法相结合"><a href="#4-3-DPM-Solver-与阈值化方法相结合" class="headerlink" title="4.3 DPM-Solver++与阈值化方法相结合"></a>4.3 DPM-Solver++与阈值化方法相结合</h4><p>对于有界数据的分布（如图像数据），阈值化方法（Ho等人，2020；Saharia等人，2022b）可以将超出边界的样本向内推，在一定程度上减少大引导尺度的不利影响。具体来说，阈值化方法通过在数据边界内对原始模型 $x_{\theta}:=(x_{t}-\sigma_{t} \epsilon_{\theta}) / \alpha_{t}$ 进行逐元素裁剪，定义了一个裁剪后的数据预测模型 $\hat{x}_{\theta}(x_{t}, t, c)$，这在大引导尺度下可以提高样本质量（Saharia等人，2022b）。由于我们提出的DPM-Solver++是为 $x_{\theta}$ 模型设计的，我们可以直接将阈值化方法与DPM-Solver++相结合。</p>
+<h3 id="5-扩散随机微分方程（SDEs）的快速求解器"><a href="#5-扩散随机微分方程（SDEs）的快速求解器" class="headerlink" title="5 扩散随机微分方程（SDEs）的快速求解器"></a>5 扩散随机微分方程（SDEs）的快速求解器</h3><p>扩散模型的采样也可以通过求解扩散随机微分方程（Song等人，2021b）来实现：</p>
+<script type="math/tex; mode=display">dx_t = \left[f(t)x_t + \frac{g^2(t)}{\sigma_t}\epsilon_{\theta}(x_t,t)\right]dt + g(t)d\overline{w}_t \tag{10}</script><p>其中，$\overline{w}_t$是从$T$到$0$的反向维纳过程。在本节中，我们考虑关于对数信噪比$\lambda$的扩散随机微分方程，并推导相应的二阶求解器。</p>
+<p>记$dw_{\lambda} := \sqrt{-\frac{d\lambda_t}{dt}}d\overline{w}_{t_{\lambda}(\lambda)}$为关于$\lambda$的相应维纳过程。为简化表示，记$x_{\lambda} := x_{t(\lambda)}$，$\sigma_{\lambda} := \sigma_{t(\lambda)}$，$w_{\lambda} := w_{\lambda_t}$，$\epsilon_{\theta}(x_{\lambda},\lambda) := \epsilon_{\theta}(x_{t(\lambda)},t(\lambda))$。对于VP型扩散模型（Song等人，2021b）（即$\alpha_t^2 + \sigma_t^2 = 1$），我们有$\frac{d\log\alpha_{\lambda}}{d\lambda} = \sigma_{\lambda}^2$且$\frac{d\log\sigma_{\lambda}}{d\lambda} = -\alpha_{\lambda}^2$。由于$f(t) = \frac{d\log\alpha_t}{dt}$且$g(t) = \sigma_t\sqrt{-2\frac{d\lambda_t}{dt}}$（Kingma等人，2021），关于$\lambda$的扩散随机微分方程为：</p>
+<script type="math/tex; mode=display">\begin{align}
+dx_{\lambda} & = \left[\sigma_{\lambda}^2x_{\lambda} - 2\sigma_{\lambda}\epsilon_{\theta}(x_{\lambda},\lambda)\right]d\lambda + \sqrt{2}\sigma_{\lambda}dw_{\lambda} \tag{11} \\
+& = \left[-(1 + \alpha_{\lambda}^2)x_{\lambda} + 2\alpha_{\lambda}x_{\theta}(x_{\lambda},\lambda)\right]d\lambda + \sqrt{2}\sigma_{\lambda}dw_{\lambda} \tag{12}
+\end{align}</script><p>通过应用常数变易公式，我们给出扩散随机微分方程的精确解如下。<br><strong>命题5.1（扩散随机微分方程的精确解，证明见附录A）</strong>：给定在时间$s &gt; 0$的初始值$x_s$，方程（10）中扩散随机微分方程在时间$t \in [0, s]$的解$x_t$为：</p>
+<script type="math/tex; mode=display">\begin{align}
+x_t & = \frac{\alpha_t}{\alpha_s}x_s - 2\alpha_t\int_{\lambda_s}^{\lambda_t}e^{-\lambda}\epsilon_{\theta}(x_{\lambda},\lambda)d\lambda + \sqrt{2}\alpha_t\int_{\lambda_s}^{\lambda_t}e^{-\lambda}dw_{\lambda}  \tag{13}\\
+& = \frac{\sigma_t}{\sigma_s}e^{-(\lambda_t - \lambda_s)}x_s + 2\alpha_t\int_{\lambda_s}^{\lambda_t}e^{-2(\lambda_t - \lambda)}x_{\theta}(x_{\lambda},\lambda)d\lambda + \sqrt{2}\sigma_t\int_{\lambda_s}^{\lambda_t}e^{-(\lambda_t - \lambda)}dw_{\lambda} \tag{14}
+\end{align}</script><p>此外，我们可以通过以下方式计算伊藤积分：</p>
+<script type="math/tex; mode=display">\int_{\lambda_s}^{\lambda_t}e^{-\lambda}dw_{\lambda} = \left(\sqrt{\int_{\lambda_s}^{\lambda_t}e^{-2\lambda}d\lambda}\right)z_s = \frac{e^{-\lambda_t}}{\sqrt{2}}\sqrt{e^{2(\lambda_t - \lambda_s)} - 1}z_s \tag{15}</script><script type="math/tex; mode=display">\int_{\lambda_s}^{\lambda_t}e^{\lambda}dw_{\lambda} = \left(\sqrt{\int_{\lambda_s}^{\lambda_t}e^{2\lambda}d\lambda}\right)z_s = \frac{e^{\lambda_t}}{\sqrt{2}}\sqrt{1 - e^{-2(\lambda_t - \lambda_s)}}z_s \tag{16}</script><p>其中$z_s \sim N(0, I)$。因此，我们可以对关于$\epsilon_{\theta}$或$x_{\theta}$的积分进行离散化，得到相应的扩散随机微分方程求解器，如下所示。为简化表示，记$h := \lambda_t - \lambda_s$。</p>
+<ul>
+<li><strong>SDE-DPM-Solver-1</strong>：令$z_s \sim N(0, I)$。假设$\epsilon_{\theta}(x_{\lambda},\lambda) \approx \epsilon_{\theta}(x_s,s)$，则有：<script type="math/tex; mode=display">x_t = \frac{\alpha_t}{\alpha_s}x_s - 2\sigma_t(e^h - 1)\epsilon_{\theta}(x_s,s) + \sigma_t\sqrt{e^{2h} - 1}z_s \tag{17}</script></li>
+<li><strong>SDE-DPM-Solver++1</strong>：令$z_s \sim N(0, I)$。假设$x_{\theta}(x_{\lambda},\lambda) \approx x_{\theta}(x_s,s)$，则有：<script type="math/tex; mode=display">x_t = \frac{\sigma_t}{\sigma_s}e^{-h}x_s + \alpha_t(1 - e^{-2h})x_{\theta}(x_s,s) + \sigma_t\sqrt{1 - e^{-2h}}z_s \tag{18}</script></li>
+<li><strong>SDE-DPM-Solver-2M</strong>：令$z_s \sim N(0, I)$。假设在时间$r &lt; t$有一个先前的解$x_r$及其模型输出$\epsilon_{\theta}(x_r,r)$。记$r_1 = \frac{\lambda_r - \lambda_s}{h}$。假设$\epsilon_{\theta}(x_{\lambda},\lambda) \approx \epsilon_{\theta}(x_s,s) + \frac{\lambda - \lambda_s}{r_1h}(\epsilon_{\theta}(x_r,r) - \epsilon_{\theta}(x_s,s))$，则有：<script type="math/tex; mode=display">x_t = \frac{\alpha_t}{\alpha_s}x_s - 2\sigma_t(e^h - 1)\epsilon_{\theta}(x_s,s) - \sigma_t(e^h - 1)\frac{\epsilon_{\theta}(x_r,r) - \epsilon_{\theta}(x_s,s)}{r_1} + \sigma_t\sqrt{e^{2h} - 1}z_s \tag{19}</script></li>
+<li><strong>SDE-DPM-Solver++(2M)</strong>：令$z_s \sim N(0, I)$。假设在时间$r &lt; t$有一个先前的解$x_r$及其模型输出$x_{\theta}(x_r,r)$。记$r_1 = \frac{\lambda_r - \lambda_s}{h}$。假设$x_{\theta}(x_{\lambda},\lambda) \approx x_{\theta}(x_s,s) + \frac{\lambda - \lambda_s}{r_1h}(x_{\theta}(x_r,r) - x_{\theta}(x_s,s))$，则有：<script type="math/tex; mode=display">x_t = \frac{\sigma_t}{\sigma_s}e^{-h}x_s + \alpha_t(1 - e^{-2h})x_{\theta}(x_s,s) + \frac{\alpha_t(1 - e^{-2h})}{2}\left(\frac{x_{\theta}(x_r,r) - x_{\theta}(x_s,s)}{r_1}\right) + \sigma_t\sqrt{1 - e^{-2h}}z_s \tag{20}</script></li>
+</ul>
+<h3 id="6-与其他快速采样方法的关系"><a href="#6-与其他快速采样方法的关系" class="headerlink" title="6 与其他快速采样方法的关系"></a>6 与其他快速采样方法的关系</h3><p>本质上，所有针对扩散概率模型（DPMs）的免训练采样方法，都可理解为对扩散随机微分方程（SDEs）进行离散化（Ho等人，2020；Song等人，2021b；Jolicoeur-Martineau等人，2021；Tachibana等人，2021；Kong和Ping，2021；Bao等人，2022b；Zhang等人，2022），或者对扩散常微分方程（ODEs）进行离散化（Song等人，2021b、a；Liu等人，2022b；Zhang和Chen，2022；Lu等人，2022）。由于DPM-Solver++是为求解扩散ODEs而设计的，在本节中，我们将探讨DPM-Solver++与其他扩散ODE求解器之间的关系，并简要讨论其他针对DPMs的快速采样方法。</p>
+<h4 id="6-1-与基于指数积分器的求解器的比较"><a href="#6-1-与基于指数积分器的求解器的比较" class="headerlink" title="6.1 与基于指数积分器的求解器的比较"></a>6.1 与基于指数积分器的求解器的比较</h4><p>一般版本的DDIM（$\eta \geq 0$）公式为（Song等人，2021a）：</p>
+<script type="math/tex; mode=display">\overline{x}_{t_{i}}=\alpha_{t_{i}} x_{\theta}\left(\overline{x}_{t_{i-1}}, t_{i-1}\right)+\sqrt{\sigma_{t_{i}}^{2}-\eta^{2}} \epsilon_{\theta}\left(\overline{x}_{t_{i-1}}, t_{i-1}\right)+\eta z_{t_{i-1}} \tag{21}</script><p>以往最先进的快速扩散ODE求解器（Lu等人，2022；Zhang和Chen，2022）利用指数积分器，通过噪声预测模型$\epsilon_{\theta}$来求解扩散ODEs。简而言之，这些求解器对公式（7）中的精确解进行近似，并且将$\eta = 0$时的DDIM（Song等人，2021a）作为一阶情况。下面我们证明，DPM-Solver++的一阶情况同样是DDIM。</p>
+<p>当$k = 1$时，公式（9）（省略$O(h_{i}^{k + 1})$项后）变为：</p>
+<script type="math/tex; mode=display">\tilde{x}_{t_{i}}=\frac{\sigma_{t_{i}}}{\sigma_{t_{i-1}}} \tilde{x}_{t_{i-1}}+\sigma_{t_{i}} x_{\theta}\left(\tilde{x}_{t_{i-1}}, t_{i-1}\right) \int_{\lambda_{t_{i-1}}}^{\lambda_{t_{i}}} e^{\lambda} d \lambda=\frac{\sigma_{t_{i}}}{\sigma_{t_{i-1}}} \tilde{x}_{t_{i-1}}-\alpha_{t_{i}}\left(e^{-h_{i}} - 1\right) x_{\theta}\left(\tilde{x}_{t_{i-1}}, t_{i-1}\right)</script><p>因此，我们提出的DPM-Solver++是$\eta = 0$时DDIM在数据预测模型$x_{\theta}$方面的高阶扩展。据我们所知，此前尚未有人提出过这种扩展。我们在表1中列出了以往基于指数积分器的高阶求解器与DPM-Solver++之间的详细差异。需要强调的是，尽管这些求解器的一阶版本是等价的，但它们的高阶版本却有很大不同。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t1.png" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表1：基于指数积分器的高阶扩散常微分方程（ODE）求解器之间的比较，包括DEIS（Zhang和Chen，2022）、DPM-Solver（Lu等人，2022）以及DPM-Solver++（我们提出的方法）。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>此外，对于$\eta=\sigma_{t} \sqrt{1 - e^{-2h}}$的DDIM，很容易验证，这种随机DDIM与SDE-DPM-Solver++1是等价的。因此，我们提出的SDE-DPM-Solver++(2M)是一阶随机DDIM的二阶广义版本。据我们所知，此前的研究并未揭示这一发现。</p>
+<h4 id="6-2-其他快速采样方法"><a href="#6-2-其他快速采样方法" class="headerlink" title="6.2 其他快速采样方法"></a>6.2 其他快速采样方法</h4><p>基于扩散SDEs的采样器（Ho等人，2020；Song等人，2021b；Jolicoeur-Martineau等人，2021；Tachibana等人，2021；Kong和Ping，2021；Bao等人，2022b；Zhang等人，2022）通常比基于扩散ODEs的采样器（Lu等人，2022）需要更多的步骤才能收敛，这是因为SDEs引入了更多的随机性，使得去噪更加困难。基于额外训练的采样器包括模型蒸馏（Salimans和Ho，2022；Luhman和Luhman，2021）、学习反向过程方差（San-Roman等人，2021；Nichol和Dhariwal，2021；Bao等人，2022a）以及学习采样步骤（Lam等人，2021；Watson等人，2022）。然而，基于训练的采样器难以扩展到预训练的大型DPMs（Saharia等人，2022b；Rombach等人，2022；Ramesh等人，2022）。还有其他快速采样方法，例如将原始DPMs修改到潜在空间（Vahdat等人，2021），或者引入动量（Dockhorn等人，2022）。此外，将DPMs与GANs相结合（Xiao等人，2022；Wang等人，2022），可以提高GANs的样本质量和DPMs的采样速度。</p>
+<h3 id="7-实验"><a href="#7-实验" class="headerlink" title="7 实验"></a>7 实验</h3><p>在本节中，我们展示了DPM-Solver++能够加速像素空间和潜空间扩散概率模型（DPMs）的引导采样。我们改变函数评估次数（NFE，即对模型$\epsilon_{\theta}(x_{t}, t, c)$或$x_{\theta}(x_{t}, t, c)$的调用次数），并将DPM-Solver++与之前DPMs的前沿快速采样器进行比较，这些采样器包括DPM-Solver（Lu等人，2022）、DEIS（Zhang和Chen，2022）、PNDM（Liu等人，2022b）和DDIM（Song等人，2021a）。我们还将离散时间DPMs转换为连续时间，并使用这些连续时间求解器。具体的实现细节和实验设置请参考附录C。</p>
+<p>由于之前的求解器没有测试在引导采样中的性能，我们还通过调整步长调度（即时间步$\{t_{i}\}_{i = 0}^{M}$的选择）和求解器阶数，仔细优化了基线采样器。我们发现：</p>
+<ul>
+<li><strong>步长调度</strong>：我们在以下几种选择中搜索时间步：均匀的$t$（这是高分辨率图像合成中广泛使用的设置）、均匀的$\lambda$（用于（Lu等人，2022））、$t$的幂函数的均匀划分（用于（Zhang和Chen，2022），详见附录C），结果发现最佳选择是均匀的$t$。因此，在我们所有实验中，对所有求解器的时间步都使用均匀的$t$。</li>
+<li><strong>求解器阶数</strong>：我们发现对于较大的引导尺度，之前所有求解器的最佳选择是二阶（即DPM-Solver-2和DEIS-1）。然而，为了进行全面比较，我们运行了之前求解器的所有阶数，包括DPM-Solver-2和DPM-Solver-3、DEIS-1、DEIS-2和DEIS-3，并在每次比较中针对每个NFE选择它们的最佳结果。</li>
+</ul>
+<p>我们同时运行DPM-Solver++(2S)和DPM-Solver++(2M)，发现在较大引导尺度下，多步的DPM-Solver++(2M)性能更好；在稍小的引导尺度下，单步的DPM-Solver++(2S)性能更好。在后续章节中，我们报告DPM-Solver++和之前所有采样器的最佳结果，详细数值列于附录D。</p>
+<h4 id="7-1-带引导的像素空间DPMs"><a href="#7-1-带引导的像素空间DPMs" class="headerlink" title="7.1 带引导的像素空间DPMs"></a>7.1 带引导的像素空间DPMs</h4><p>我们首先在ImageNet 256x256数据集上，使用预训练的DPMs（Dhariwal和Nichol，2021），将DPM-Solver++与其他采样器在分类器引导的采样任务中进行比较。我们通过绘制10000个样本并计算广泛使用的FID分数（Heusel等人，2017）来衡量样本质量，通常FID分数越低，样本质量越好。我们对DDIM和DPM-Solver++都采用动态阈值化方法（Saharia等人，2022b）。我们将引导尺度$s$设置为8.0、4.0和2.0，结果如图4（a - c）所示。我们发现，在较大引导尺度下，之前所有的高阶采样器（DEIS、PNDM、DPM-Solver）收敛速度都比一阶的DDIM慢，这表明之前的高阶采样器不稳定。相比之下，DPM-Solver++在大、小引导尺度下都实现了最佳的加速性能。特别是在大引导尺度下，DPM-Solver++仅需15次NFE就几乎可以收敛。</p>
+<p>作为对比实验，我们还比较了单步的DPM-Solver-2、单步的DPM-Solver++(2S)和多步的DPM-Solver++(2M)，以证明我们方法的有效性。我们使用较大的引导尺度$s = 8.0$，并进行以下对比实验：</p>
+<ul>
+<li><strong>从$\epsilon_{\theta}$到$x_{\theta}$</strong>：<font color="red" >如图3a所示，通过简单地将求解器从基于$\epsilon_{\theta}$改为基于$x_{\theta}$（即从DPM-Solver-2改为DPM-Solver++(2S)）</font>，求解器可以实现稳定的加速性能，比一阶的DDIM更快。这一结果表明，对于引导采样，基于$x_{\theta}$的高阶求解器可能比基于$\epsilon_{\theta}$的更优。</li>
+<li><strong>从单步到多步</strong>：如图3b所示，多步的DPM-Solver++(2M)收敛速度略快于单步的DPM-Solver++(2S)，多步的DPM-Solver++(2M)几乎在15次NFE内就可以收敛。这一结果表明，对于较大引导尺度的引导采样，多步方法可能比单步方法更快。</li>
+<li><strong>有无阈值化</strong>：我们在图3c中比较了DDIM和DPM-Solver++在有无阈值化方法下的性能。需要注意的是，阈值化方法会改变模型$x_{\theta}$，从而也会改变扩散ODE的收敛解。首先，我们发现使用阈值化方法后，扩散ODE可以生成更高质量的样本，这与（Saharia等人，2022b）中的结论一致。其次，在相同的NFE下，使用阈值化的DPM-Solver++的样本质量优于不使用阈值化的DPM-Solver++。此外，当结合阈值化方法时，DPM-Solver++比一阶的DDIM更快，这表明DPM-Solver++结合阈值化方法也可以加速DPMs的引导采样。</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f3.png"/></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图3：DPM-Solver++的消融研究。在ImageNet 256×256数据集上，使用引导尺度为8.0的扩散概率模型（DPMs），采用不同采样方法并改变函数评估次数（NFE），通过FID来衡量样本质量。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="7-2-带引导的潜空间DPMs"><a href="#7-2-带引导的潜空间DPMs" class="headerlink" title="7.2 带引导的潜空间DPMs"></a>7.2 带引导的潜空间DPMs</h4><p>我们还在潜空间DPMs（Rombach等人，2022）上评估了DPM-Solver++，由于其官方代码“stable-diffusion”，潜空间DPMs最近在社区中很受欢迎。我们使用其官方代码中默认的引导尺度$s = 7.5$。潜空间DPMs通过训练一对编码器和解码器将图像数据映射为潜码，然后为潜码训练一个DPM。由于潜码是无界的，我们不应用阈值化方法。</p>
+<p>具体来说，我们从MS-COCO2014验证数据集中随机采样10000个字幕-图像对，并使用字幕作为条件，从预训练的“stable-diffusion”模型中绘制10000张图像，并且按照（Nichol等人，2021；Rombach等人，2022）中的标准评估程序，对每个字幕仅绘制一个图像样本。我们发现，即使仅用10步，所有求解器的FID都能达到15.0至16.0左右，这与“stable-diffusion”官方页面上报告的收敛样本计算出的FID非常接近。我们认为这得益于强大的预训练解码器，它可以将未收敛的潜码映射为高质量的图像样本。对于潜空间DPMs，不同的扩散ODE求解器直接影响潜空间上的收敛速度。为了进一步比较不同的潜空间DPMs采样器，我们根据采样得到的$x_{0}$与真实解<script type="math/tex">x_{0}^{*}</script>之间的L2范数（它们之间的误差为<script type="math/tex">\left\|x_{0}-x_{0}^{*}\right\|_{2} / \sqrt{D}</script>），直接比较不同求解器在潜空间上的收敛误差。具体来说，我们首先从标准正态分布中采样10000个噪声变量并固定它们。然后，使用不同的DPM采样器，从这10000个固定的噪声变量开始采样10000个潜码。由于所有这些求解器都可以理解为对扩散ODE进行离散化，我们将不同采样器在不同NFE下得到的采样潜码$x_{0}$，与999步DDIM得到的真实解$x_{0}^{*}$进行比较，结果如图4（d）所示。我们发现，“stable-diffusion”中支持的快速采样器（DDIM和PNDM）的收敛速度比DPM-Solver++和DEIS慢得多，并且我们发现二阶多步的DPM-Solver++和DEIS在潜空间上实现了相当接近的加速效果。此外，由于“stable-diffusion”默认使用50步的PNDM，我们发现DPM-Solver++仅需15至20步就能达到类似的收敛误差。我们在附录D中还给出了不同求解器采样图像的实证比较，发现DPM-Solver++确实可以在仅15至20步内生成质量相当好的图像样本。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f4.png" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图4：（a - c）在ImageNet 256x256数据集上，针对不同引导尺度s的扩散概率模型（DPMs），使用不同采样方法，通过FID衡量样本质量，同时改变函数评估次数（NFE）。†：求解器结合动态阈值化方法（Saharia等人，2022b）的结果。（d）在MS - COCO2014验证集上，针对潜空间DPM “stable - diffusion”（Rombach等人，2022），改变函数评估次数（NFE），通过L2范数（除以维度）衡量不同采样方法与1000步DDIM之间的收敛误差，其官方代码中默认引导尺度s = 7.5。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="8-结论"><a href="#8-结论" class="headerlink" title="8 结论"></a>8 结论</h3><p>我们研究了加速扩散概率模型（DPMs）引导采样的问题。研究表明，以往基于噪声预测模型的高阶求解器在大引导尺度的引导采样中异常不稳定，生成的样本质量比一阶求解器DDIM更差。为解决这一问题并加快引导采样速度，我们提出了DPM-Solver++，这是一种无需训练的快速扩散常微分方程（ODE）求解器，用于引导采样。DPM-Solver++基于使用数据预测模型的扩散ODE，可直接采用阈值化方法，进一步稳定采样过程。我们提出了DPM-Solver++的单步和多步变体。实验结果显示，DPM-Solver++能够生成高保真样本，并且仅需15至20步就几乎可以收敛，适用于像素空间和潜空间的DPMs。</p>
+<h4 id="伦理声明"><a href="#伦理声明" class="headerlink" title="伦理声明"></a>伦理声明</h4><p>与生成对抗网络（GANs）等其他深度生成模型一样，DPMs也可能被用于生成有害的虚假内容（图像）。本文提出的求解器可以加速DPMs的引导采样，这可能会进一步用于图像编辑并生成逼真的虚假图像。这种影响可能会放大DPMs在恶意应用中的潜在不良后果。</p>
+<h4 id="可重复性声明"><a href="#可重复性声明" class="headerlink" title="可重复性声明"></a>可重复性声明</h4><p>我们的代码基于DPM-Solver（Lu等人，2022）的官方代码，以及Dhariwal和Nichol（2021）与Stable-Diffusion（Rombach等人，2022）中的预训练检查点。我们将在盲审结束后发布代码。此外，实验中使用的数据集均可公开获取。我们在附录C中列出了详细的实验设置和实现方式，在附录A中给出了求解器收敛性的证明。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
   
   
@@ -999,168 +1292,6 @@ x_{t - \delta}=\phi(x_{t},e_{t}',t,t+\delta)
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/03/12/FLOW-MATCHING-FOR-GENERATIVE-MODELING%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
-      <meta itemprop="name" content="Zongqing Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lzq's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2025/03/12/FLOW-MATCHING-FOR-GENERATIVE-MODELING%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" class="post-title-link" itemprop="url">FLOW MATCHING FOR GENERATIVE MODELING论文精读</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2025-03-12 15:37:40" itemprop="dateCreated datePublished" datetime="2025-03-12T15:37:40+08:00">2025-03-12</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-03-16 21:35:48" itemprop="dateModified" datetime="2025-03-16T21:35:48+08:00">2025-03-16</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>我们提出了一种基于连续归一化流（CNFs）的生成式建模新范式，使我们能够以前所未有的规模训练CNFs。具体来说，我们提出了流匹配（FM）的概念，这是一种无需模拟的训练CNFs的方法，它基于对固定条件概率路径的向量场进行回归。流匹配与用于在噪声和数据样本之间进行转换的一般高斯概率路径族兼容，现有扩散路径是其中的特定实例。有趣的是，我们发现将FM与扩散路径结合使用，为训练扩散模型提供了一种更强大、更稳定的替代方法。此外，流匹配为使用其他非扩散概率路径训练CNFs开辟了道路。特别值得关注的一个实例是使用最优传输（OT）位移插值来定义条件概率路径。这些路径比扩散路径更高效，训练和采样速度更快，泛化性能也更好。在ImageNet数据集上使用流匹配训练CNFs，在似然性和样本质量方面均优于基于扩散的替代方法，并且使用现成的数值常微分方程（ODE）求解器就能快速可靠地生成样本。<br>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/03/12/FLOW-MATCHING-FOR-GENERATIVE-MODELING%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/03/09/Improved-Denoising-Diffusion-Probabilistic-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
-      <meta itemprop="name" content="Zongqing Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lzq's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2025/03/09/Improved-Denoising-Diffusion-Probabilistic-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" class="post-title-link" itemprop="url">Improved Denoising Diffusion Probabilistic Models论文精读</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2025-03-09 10:51:35" itemprop="dateCreated datePublished" datetime="2025-03-09T10:51:35+08:00">2025-03-09</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-03-16 21:36:07" itemprop="dateModified" datetime="2025-03-16T21:36:07+08:00">2025-03-16</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>去噪扩散概率模型（DDPM）是一类生成模型，最近研究表明，这类模型能够生成高质量样本。研究发现，通过一些简单的修改，DDPM在保持高样本质量的同时，还能获得具有竞争力的对数似然值。此外，研究人员还发现，对反向扩散过程的方差进行学习，可以在样本质量差异可忽略不计的情况下，将前向传递次数减少一个数量级，这对这些模型的实际应用至关重要。此外，研究人员使用精度和召回率来比较DDPM和生成对抗网络（GAN）对目标分布的覆盖程度。最后，研究表明，这些模型的样本质量和对数似然值会随着模型容量和训练计算量的增加而平稳提升，这使得它们易于扩展。研究人员已将代码发布在<a target="_blank" rel="noopener" href="https://github.com/openai/improved-diffusion">https://github.com/openai/improved-diffusion</a> 。<br>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/03/09/Improved-Denoising-Diffusion-Probabilistic-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1232,7 +1363,7 @@ x_{t - \delta}=\phi(x_{t},e_{t}',t,t+\delta)
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">55</span>
+          <span class="site-state-item-count">57</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1270,7 +1401,7 @@ x_{t - \delta}=\phi(x_{t},e_{t}',t,t+\delta)
     <h3 class="widget-title">Tag Cloud</h3>
     <div id="myCanvasContainer" class="widget tagcloud">
         <canvas width="250" height="250" id="resCanvas" style="width=100%">
-            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2023/" rel="tag">2023</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2025/" rel="tag">2025</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICML/" rel="tag">ICML</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">22</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%85%E8%AF%BB/" rel="tag">阅读</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2023/" rel="tag">2023</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2025/" rel="tag">2025</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICML/" rel="tag">ICML</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">23</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%85%E8%AF%BB/" rel="tag">阅读</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
         </canvas>
     </div>
 </div>
