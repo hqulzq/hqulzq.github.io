@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="全文翻译摘要         **     我们探索了一类基于Transformer架构的新型扩散模型。我们训练图像的潜在扩散模型，用在潜在图像块上操作的Transformer替换常用的U-Net骨干网络。我们通过以每秒千兆次浮点运算（Gflops）衡量的前向传递复杂度，分析了我们的扩散Transformer（DiT）的可扩展性。我们发现，具有更高Gflops的DiT模型——通过增加Transfo">
+  <meta name="description" content="全文翻译摘要我们探索了一类基于Transformer架构的新型扩散模型。我们训练图像的潜在扩散模型，用在潜在图像块上操作的Transformer替换常用的U-Net骨干网络。我们通过以每秒千兆次浮点运算（Gflops）衡量的前向传递复杂度，分析了我们的扩散Transformer（DiT）的可扩展性。我们发现，具有更高Gflops的DiT模型——通过增加Transformer的深度、宽度或增加输入令">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Scalable Diffusion Models with Transformers论文精读">
 <meta property="og:url" content="https://hqulzq.github.io/2025/03/24/Scalable-Diffusion-Models-with-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/index.html">
 <meta property="og:site_name" content="Lzq&#39;s blog">
-<meta property="og:description" content="全文翻译摘要         **     我们探索了一类基于Transformer架构的新型扩散模型。我们训练图像的潜在扩散模型，用在潜在图像块上操作的Transformer替换常用的U-Net骨干网络。我们通过以每秒千兆次浮点运算（Gflops）衡量的前向传递复杂度，分析了我们的扩散Transformer（DiT）的可扩展性。我们发现，具有更高Gflops的DiT模型——通过增加Transfo">
+<meta property="og:description" content="全文翻译摘要我们探索了一类基于Transformer架构的新型扩散模型。我们训练图像的潜在扩散模型，用在潜在图像块上操作的Transformer替换常用的U-Net骨干网络。我们通过以每秒千兆次浮点运算（Gflops）衡量的前向传递复杂度，分析了我们的扩散Transformer（DiT）的可扩展性。我们发现，具有更高Gflops的DiT模型——通过增加Transformer的深度、宽度或增加输入令">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/24/Scalable-Diffusion-Models-with-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f1.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/24/Scalable-Diffusion-Models-with-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f2.png">
@@ -41,7 +41,7 @@
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/24/Scalable-Diffusion-Models-with-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t3.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/24/Scalable-Diffusion-Models-with-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f10.png">
 <meta property="article:published_time" content="2025-03-24T10:47:26.000Z">
-<meta property="article:modified_time" content="2025-03-24T11:00:07.312Z">
+<meta property="article:modified_time" content="2025-03-25T02:24:46.857Z">
 <meta property="article:author" content="Zongqing Li">
 <meta property="article:tag" content="diffusion">
 <meta property="article:tag" content="2022">
@@ -234,10 +234,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2025-03-24 18:47:26 / 修改时间：19:00:07" itemprop="dateCreated datePublished" datetime="2025-03-24T18:47:26+08:00">2025-03-24</time>
+              <time title="创建时间：2025-03-24 18:47:26" itemprop="dateCreated datePublished" datetime="2025-03-24T18:47:26+08:00">2025-03-24</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-03-25 10:24:46" itemprop="dateModified" datetime="2025-03-25T10:24:46+08:00">2025-03-25</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -259,7 +265,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><div class="table-container">
+        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>我们探索了一类基于Transformer架构的新型扩散模型。我们训练图像的潜在扩散模型，用在潜在图像块上操作的Transformer替换常用的U-Net骨干网络。我们通过以每秒千兆次浮点运算（Gflops）衡量的前向传递复杂度，分析了我们的扩散Transformer（DiT）的可扩展性。我们发现，具有更高Gflops的DiT模型——通过增加Transformer的深度、宽度或增加输入令牌的数量——始终具有更低的FID（弗雷歇初始距离，Frechet Inception Distance）。除了具有良好的可扩展性，我们最大的DiT-XL/2模型在类条件ImageNet 512×512和256×256基准测试中优于所有先前的扩散模型，在后者上实现了2.27的最先进FID分数。<br><span id="more"></span></p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -268,13 +275,11 @@
 </thead>
 <tbody>
 <tr>
-<td style="text-align:center">**</td>
+<td style="text-align:center"><em>图1. 以Transformer为骨干网络的扩散模型实现了最先进的图像质量。我们展示了分别在512×512和256×256分辨率下，于ImageNet上训练的两个类条件DiT-XL/2模型的精选样本。</em></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p>我们探索了一类基于Transformer架构的新型扩散模型。我们训练图像的潜在扩散模型，用在潜在图像块上操作的Transformer替换常用的U-Net骨干网络。我们通过以每秒千兆次浮点运算（Gflops）衡量的前向传递复杂度，分析了我们的扩散Transformer（DiT）的可扩展性。我们发现，具有更高Gflops的DiT模型——通过增加Transformer的深度、宽度或增加输入令牌的数量——始终具有更低的FID（弗雷歇初始距离，Frechet Inception Distance）。除了具有良好的可扩展性，我们最大的DiT-XL/2模型在类条件ImageNet 512×512和256×256基准测试中优于所有先前的扩散模型，在后者上实现了2.27的最先进FID分数。</p>
-<span id="more"></span>
 <h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1. 引言"></a>1. 引言</h3><p>机器学习正经历一场由Transformer推动的复兴。在过去五年里，自然语言处理[8, 42]、计算机视觉[10]等多个领域的神经架构在很大程度上已被Transformer[60]所取代。然而，许多类图像级生成模型却未跟上这一趋势——尽管Transformer在自回归模型[3, 6, 43, 47]中得到广泛应用，但在其他生成建模框架中的应用却较少。例如，扩散模型一直处于图像级生成模型近期进展的前沿[9, 46]；然而，它们都采用卷积U-Net架构作为事实上的骨干网络选择。</p>
 <p>Ho等人的开创性工作[19]首次将U-Net骨干网络引入扩散模型。U-Net最初在像素级自回归模型和条件生成对抗网络（GANs）[23]中取得成功，它从PixelCNN++[52, 58]继承而来，并做了一些改动。该模型是卷积式的，主要由残差网络（ResNet）[15]块组成。与标准U-Net[49]不同，在较低分辨率层穿插了额外的空间自注意力块，这是Transformer的重要组成部分。Dhariwal和Nichol[9]对U-Net的多个架构选择进行了消融实验，比如使用自适应归一化层[40]注入条件信息，以及卷积层的通道数设置等。不过，Ho等人提出的U-Net的高层设计在很大程度上保持不变。</p>
 <p>通过这项工作，我们旨在揭示扩散模型中架构选择的重要性，并为未来的生成建模研究提供实证基线。我们证明了U-Net的归纳偏差对扩散模型的性能并非至关重要，并且可以很容易地用Transformer等标准设计来替代。因此，扩散模型有望从最近的架构统一趋势中受益，例如，从其他领域继承最佳实践和训练方法，同时保留可扩展性、稳健性和效率等优良特性。标准化的架构也将为跨领域研究开辟新的可能性。</p>
@@ -286,7 +291,7 @@
 <li><strong>架构复杂度</strong>：在图像生成文献中评估架构复杂度时，使用参数数量是相当常见的做法。一般来说，参数数量并不能很好地代表图像模型的复杂度，因为它没有考虑到图像分辨率等因素，而图像分辨率对模型性能有显著影响[44, 45]。因此，本文中大部分模型复杂度分析是通过理论Gflops（每秒数十亿次浮点运算）进行的，这与架构设计文献中广泛使用Gflops来衡量复杂度的做法一致。实际上，黄金复杂度指标仍存在争议，因为它通常取决于特定的应用场景。Nichol和Dhariwal改进扩散模型的开创性工作[9, 36]与我们的研究最为相关，他们在其中分析了U-Net架构类别的可扩展性和Gflop特性。在本文中，我们关注的是Transformer类别。</li>
 </ul>
 <h3 id="3-扩散Transformer"><a href="#3-扩散Transformer" class="headerlink" title="3. 扩散Transformer"></a>3. 扩散Transformer</h3><h4 id="3-1-预备知识"><a href="#3-1-预备知识" class="headerlink" title="3.1 预备知识"></a>3.1 预备知识</h4><ul>
-<li><strong>扩散公式</strong>：在介绍我们的架构之前，我们简要回顾一些理解扩散模型（DDPMs）所需的基本概念[19, 54]。高斯扩散模型假设一个正向加噪过程，该过程逐渐向真实数据$x_0$添加噪声：$q(x_t | x_0) = N(x_t; \sqrt{\bar{\alpha}_t} x_0, (1 - \bar{\alpha}_t) I)$，其中常数$\bar{\alpha}_t$是超参数。通过应用重参数化技巧，我们可以采样得到$x_t = \sqrt{\bar{\alpha}_t} x_0 + \sqrt{1 - \bar{\alpha}_t} \epsilon_t$，这里$\epsilon_t \sim N(0, I)$。扩散模型旨在学习反向过程，以还原正向过程造成的破坏：$p_{\theta}(x_{t - 1} | x_t) = N(\mu_{\theta}(x_t), \sum_{\theta}(x_t))$，其中神经网络用于预测$p_{\theta}$的统计量。反向过程模型通过$x_0$对数似然的变分下界进行训练[30]，简化后为$L(\theta) = -p(x_0 | x_1) + \sum_{t} D_{KL}(q^{<em>}(x_{t - 1} | x_t, x_0) || p_{\theta}(x_{t - 1} | x_t))$，这里省略了一个与训练无关的额外项。由于$q^{</em>}$和$p_{\theta}$均为高斯分布，$D_{KL}$可以通过两个分布的均值和协方差进行计算。通过将$\mu_{\theta}$重新参数化为噪声预测网络$\epsilon_{\theta}$，模型可以通过预测噪声$\epsilon_{\theta}(x_t)$与真实采样的高斯噪声$\epsilon_t$之间的简单均方误差进行训练，即$L_{simple }(\theta)=\left|\epsilon_{\theta}(x_{t})-\epsilon_{t}\right|_{2}^{2}$ 。但是，为了训练具有学习到的反向过程协方差$\sum_{\theta}$的扩散模型，需要优化完整的$D_{KL}$项。我们采用Nichol和Dhariwal的方法[36]：使用$L_{simple}$训练$\epsilon_{\theta}$，并使用完整的$D_{KL}$项训练$\sum_{\theta}$。一旦$p_{\theta}$训练完成，就可以通过初始化$x_{t_{max}} \sim N(0, I)$并通过重参数化技巧采样$x_{t - 1} \sim p_{\theta}(x_{t - 1} | x_t)$来生成新图像。</li>
+<li><strong>扩散公式</strong>：在介绍我们的架构之前，我们简要回顾一些理解扩散模型（DDPMs）所需的基本概念[19, 54]。高斯扩散模型假设一个正向加噪过程，该过程逐渐向真实数据$x_0$添加噪声：$q(x_t | x_0) = N(x_t; \sqrt{\bar{\alpha}_t} x_0, (1 - \bar{\alpha}_t) I)$，其中常数$\bar{\alpha}_t$是超参数。通过应用重参数化技巧，我们可以采样得到$x_t = \sqrt{\bar{\alpha}_t} x_0 + \sqrt{1 - \bar{\alpha}_t} \epsilon_t$，这里$\epsilon_t \sim N(0, I)$。扩散模型旨在学习反向过程，以还原正向过程造成的破坏：$p_{\theta}(x_{t - 1} | x_t) = N(\mu_{\theta}(x_t), \sum_{\theta}(x_t))$，其中神经网络用于预测$p_{\theta}$的统计量。反向过程模型通过$x_0$对数似然的变分下界进行训练[30]，简化后为<script type="math/tex">L(\theta) = -p(x_0 | x_1) + \sum_{t} D_{KL}(q^{*}(x_{t - 1} | x_t, x_0) || p_{\theta}(x_{t - 1} | x_t))</script>，这里省略了一个与训练无关的额外项。由于<script type="math/tex">q^{*}</script>和$p_{\theta}$均为高斯分布，$D_{KL}$可以通过两个分布的均值和协方差进行计算。通过将$\mu_{\theta}$重新参数化为噪声预测网络$\epsilon_{\theta}$，模型可以通过预测噪声$\epsilon_{\theta}(x_t)$与真实采样的高斯噪声$\epsilon_t$之间的简单均方误差进行训练，即$L_{simple }(\theta)=\left|\epsilon_{\theta}(x_{t})-\epsilon_{t}\right|_{2}^{2}$ 。但是，为了训练具有学习到的反向过程协方差$\sum_{\theta}$的扩散模型，需要优化完整的$D_{KL}$项。我们采用Nichol和Dhariwal的方法[36]：使用$L_{simple}$训练$\epsilon_{\theta}$，并使用完整的$D_{KL}$项训练$\sum_{\theta}$。一旦$p_{\theta}$训练完成，就可以通过初始化$x_{t_{max}} \sim N(0, I)$并通过重参数化技巧采样$x_{t - 1} \sim p_{\theta}(x_{t - 1} | x_t)$来生成新图像。</li>
 <li><strong>无分类器引导</strong>：条件扩散模型将额外信息作为输入，例如类标签$c$。在这种情况下，反向过程变为$p_{\theta}(x_{t - 1} | x_t, c)$，其中$\epsilon_{\theta}$和$\sum_{\theta}$以$c$为条件。在这种设置下，无分类器引导可用于促使采样过程找到使$log p(c | x)$较高的$x$ [21]。根据贝叶斯规则，$log p(c | x) \propto log p(x | c) - log p(x)$，因此$\nabla_{x} log p(c | x) \propto \nabla_{x} log p(x | c) - \nabla_{x} log p(x)$。通过将扩散模型的输出解释为分数函数，DDPM采样过程可以通过以下方式引导采样出具有高$p(x | c)$的$x$：$\hat{\epsilon}_{\theta}(x_t, c)=\epsilon_{\theta}(x_t, \emptyset)+s \nabla_{x} log p(x | c) \propto \epsilon_{\theta}(x_t, \emptyset)+s \cdot(\epsilon_{\theta}(x_t, c)-\epsilon_{\theta}(x_t, \emptyset))$，其中$s &gt; 1$表示引导的强度（注意，当$s = 1$时恢复标准采样）。在训练过程中，通过随机丢弃$c$并用学习到的“空”嵌入$\theta$替换它来评估$c = \emptyset$时的扩散模型。无分类器引导在生成样本方面明显优于通用采样技术[21, 35, 46]，这一趋势在我们的DiT模型中同样适用。</li>
 <li><strong>潜在扩散模型</strong>：直接在高分辨率像素空间中训练扩散模型在计算上可能具有挑战性。潜在扩散模型（LDMs）[48]通过两阶段方法解决了这个问题：（1）学习一个自动编码器，使用学习到的编码器$E$将图像压缩为较小的空间表示；（2）训练表示$z = E(x)$的扩散模型，而不是图像$x$的扩散模型（$E$被冻结）。然后，可以通过从扩散模型中采样表示$\approx$，并随后使用学习到的解码器$x = D(z)$将其解码为图像，来生成新图像。如图2所示，LDMs在使用像ADM这样的像素空间扩散模型的一小部分Gflops的情况下，仍能取得良好的性能。由于我们关注计算效率，这使得它们成为架构探索的一个有吸引力的起点。在本文中，我们将DiT应用于潜在空间，尽管它们也可以直接应用于像素空间而无需修改。这使得我们的图像生成管道成为一种混合方法；我们使用现成的卷积VAE和基于Transformer的DDPM。</li>
 </ul>
@@ -299,7 +304,7 @@
 </thead>
 <tbody>
 <tr>
-<td style="text-align:center">**</td>
+<td style="text-align:center"><em>图2. 使用扩散Transformer（DiT）进行ImageNet图像生成。气泡面积表示扩散模型的浮点运算量（FLOPS）。左图：我们的DiT模型在40万次训练迭代时的FID-50K指标（数值越低越好）。随着模型浮点运算量的增加，FID性能稳步提升。右图：我们性能最佳的模型DiT-XL/2计算效率高，优于所有之前基于U-Net的扩散模型，如ADM和LDM。</em></td>
 </tr>
 </tbody>
 </table>
@@ -314,7 +319,7 @@
 </thead>
 <tbody>
 <tr>
-<td style="text-align:center">**</td>
+<td style="text-align:center"><em>图3. 扩散Transformer（DiT）架构。左图：我们训练条件潜在DiT模型。输入的潜在向量被分解为图像块，然后由多个DiT块进行处理。右图：我们的DiT块的详细信息。我们对标准Transformer块的多种变体进行了实验，这些变体通过自适应层归一化、交叉注意力机制和额外输入令牌来融入条件信息。其中，自适应层归一化的效果最佳。</em></td>
 </tr>
 </tbody>
 </table>
@@ -326,12 +331,12 @@
 <table>
 <thead>
 <tr>
-<th style="text-align:center"><img src="f4.png" alt="f4"></th>
+<th style="text-align:center"><img src="f4.png" width="70%" /></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:center">**</td>
+<td style="text-align:center"><em>图4. DiT的输入规格。给定大小为$p×p$的图像块，形状为$I×I×C$的空间表示（来自变分自编码器的带噪潜在向量）会被“分块”成一个长度为$T=(I/p)^2$、隐藏维度为$d$的序列。图像块大小$p$越小，序列长度越长，因此每秒的浮点运算次数（Gflops）也越多。</em></td>
 </tr>
 </tbody>
 </table>
@@ -350,12 +355,12 @@
 <table>
 <thead>
 <tr>
-<th style="text-align:center"><img src="t1.png" alt="t1"></th>
+<th style="text-align:center"><img src="t1.png" width="75%" /></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:center">**</td>
+<td style="text-align:center"><em>表1. DiT模型的详细信息。我们遵循视觉Transformer（ViT）[10]的模型配置来设置小型（S）、基础（B）和大型（L）变体；我们还引入了超大（XL）配置作为我们最大的模型。</em></td>
 </tr>
 </tbody>
 </table>
@@ -377,12 +382,12 @@
 <table>
 <thead>
 <tr>
-<th style="text-align:center"><img src="f5.png" alt="f5"></th>
+<th style="text-align:center"><img src="f5.png" width="50%" /></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:center">**</td>
+<td style="text-align:center"><em>图5. 不同条件策略的比较。在训练的各个阶段，adaLN-Zero的表现均优于交叉注意力和上下文内条件策略。</em></td>
 </tr>
 </tbody>
 </table>
@@ -399,7 +404,7 @@
 </thead>
 <tbody>
 <tr>
-<td style="text-align:center">**</td>
+<td style="text-align:center"><em>图6. 在训练的各个阶段，对DiT模型进行缩放都能提升FID。我们展示了12个DiT模型在训练迭代过程中的FID-50K指标变化。上图：在保持图像块大小不变的情况下比较FID。下图：在保持模型大小不变的情况下比较FID。对Transformer骨干网络进行缩放，在所有模型大小和图像块大小下都能产生性能更优的生成模型。</em></td>
 </tr>
 </tbody>
 </table>
@@ -408,12 +413,12 @@
 <table>
 <thead>
 <tr>
-<th style="text-align:center"><img src="f8.png" alt="f8"></th>
+<th style="text-align:center"><img src="f8.png" width="60%" /></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:center">**</td>
+<td style="text-align:center"><em>图8. Transformer的每秒浮点运算次数（Gflops）与FID（弗雷歇初始距离）密切相关。我们绘制了每个DiT模型的Gflops，以及在40万次训练步骤后每个模型的FID-50K（5万样本的FID）。</em></td>
 </tr>
 </tbody>
 </table>
@@ -425,12 +430,12 @@
 <table>
 <thead>
 <tr>
-<th style="text-align:center"><img src="f9.png" alt="f9"></th>
+<th style="text-align:center"><img src="f9.png" width="60%" /></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:center">**</td>
+<td style="text-align:center"><em>图9. 更大的DiT模型能更高效地利用大量计算资源。我们绘制了FID与总训练计算量的函数关系图。</em></td>
 </tr>
 </tbody>
 </table>
@@ -447,7 +452,7 @@
 </thead>
 <tbody>
 <tr>
-<td style="text-align:center">**</td>
+<td style="text-align:center"><em>图7. 增加Transformer前向传递的每秒浮点运算次数（Gflops）可提升样本质量。建议放大查看。我们在40万次训练步骤后，使用相同的输入潜在噪声和类别标签，从12个DiT模型中进行采样。通过增加Transformer的深度/宽度或增加输入令牌数量来提高模型的Gflops，能够显著提升视觉保真度。</em></td>
 </tr>
 </tbody>
 </table>
@@ -459,12 +464,12 @@
 <table>
 <thead>
 <tr>
-<th style="text-align:center"><img src="t2.png" alt="t2"></th>
+<th style="text-align:center"><img src="t2.png" width="70%" /></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:center">**</td>
+<td style="text-align:center"><em>表2. ImageNet 256×256分辨率下类条件图像生成的基准测试结果。DiT-XL/2达到了最先进的FID分数。</em></td>
 </tr>
 </tbody>
 </table>
@@ -476,12 +481,12 @@
 <table>
 <thead>
 <tr>
-<th style="text-align:center"><img src="t3.png" alt="t3"></th>
+<th style="text-align:center"><img src="t3.png" width="70%" /></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:center">**</td>
+<td style="text-align:center"><em>表3. ImageNet 512×512分辨率下类条件图像生成的基准测试。请注意，先前的工作[9]在512×512分辨率下使用1000个真实样本测量精度（Precision）和召回率（Recall）；为保持一致性，我们也采用相同的做法。</em></td>
 </tr>
 </tbody>
 </table>
@@ -496,7 +501,7 @@
 </thead>
 <tbody>
 <tr>
-<td style="text-align:center">**</td>
+<td style="text-align:center"><em>图10. 增加采样计算量并不能弥补模型计算量的不足。对于我们每个训练了40万次迭代的DiT模型，我们分别使用[16, 32, 64, 128, 256, 1000]次采样步骤来计算FID-10K。对于每个采样步骤数，我们绘制出FID以及每个图像采样所使用的每秒浮点运算次数（Gflops）。小型模型即使在测试时的采样计算量比大型模型更多，也无法缩小与大型模型之间的性能差距。</em></td>
 </tr>
 </tbody>
 </table>
