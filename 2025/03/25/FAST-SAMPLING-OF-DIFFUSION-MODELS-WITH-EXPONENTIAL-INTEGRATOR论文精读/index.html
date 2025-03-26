@@ -20,15 +20,30 @@
     var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta property="og:type" content="article">
+  <meta name="description" content="全文翻译摘要在过去几年里，扩散模型（DMs）在生成式建模任务中取得了巨大成功，能够生成高保真样本。然而，DM的一个主要局限性是其采样过程极为缓慢，通常需要对学习到的扩散过程进行数百到数千次时间离散化步骤才能达到所需的精度。我们的目标是为DM开发一种快速采样方法，在减少步骤的同时保持高样本质量。为此，我们系统地分析了DM中的采样过程，确定了影响样本质量的关键因素，其中离散化方法最为关键。通过仔细研究">
+<meta property="og:type" content="article">
 <meta property="og:title" content="FAST SAMPLING OF DIFFUSION MODELS WITH EXPONENTIAL INTEGRATOR论文精读">
 <meta property="og:url" content="https://hqulzq.github.io/2025/03/25/FAST-SAMPLING-OF-DIFFUSION-MODELS-WITH-EXPONENTIAL-INTEGRATOR%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/index.html">
 <meta property="og:site_name" content="Lzq&#39;s blog">
+<meta property="og:description" content="全文翻译摘要在过去几年里，扩散模型（DMs）在生成式建模任务中取得了巨大成功，能够生成高保真样本。然而，DM的一个主要局限性是其采样过程极为缓慢，通常需要对学习到的扩散过程进行数百到数千次时间离散化步骤才能达到所需的精度。我们的目标是为DM开发一种快速采样方法，在减少步骤的同时保持高样本质量。为此，我们系统地分析了DM中的采样过程，确定了影响样本质量的关键因素，其中离散化方法最为关键。通过仔细研究">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/25/FAST-SAMPLING-OF-DIFFUSION-MODELS-WITH-EXPONENTIAL-INTEGRATOR%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/25/FAST-SAMPLING-OF-DIFFUSION-MODELS-WITH-EXPONENTIAL-INTEGRATOR%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/25/FAST-SAMPLING-OF-DIFFUSION-MODELS-WITH-EXPONENTIAL-INTEGRATOR%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f2.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/25/FAST-SAMPLING-OF-DIFFUSION-MODELS-WITH-EXPONENTIAL-INTEGRATOR%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f3.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/25/FAST-SAMPLING-OF-DIFFUSION-MODELS-WITH-EXPONENTIAL-INTEGRATOR%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f4.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/25/FAST-SAMPLING-OF-DIFFUSION-MODELS-WITH-EXPONENTIAL-INTEGRATOR%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f5.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/25/FAST-SAMPLING-OF-DIFFUSION-MODELS-WITH-EXPONENTIAL-INTEGRATOR%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t2.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/25/FAST-SAMPLING-OF-DIFFUSION-MODELS-WITH-EXPONENTIAL-INTEGRATOR%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f6.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/25/FAST-SAMPLING-OF-DIFFUSION-MODELS-WITH-EXPONENTIAL-INTEGRATOR%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f7.png">
 <meta property="article:published_time" content="2025-03-25T08:10:14.000Z">
-<meta property="article:modified_time" content="2025-03-25T08:10:14.980Z">
+<meta property="article:modified_time" content="2025-03-25T13:06:28.408Z">
 <meta property="article:author" content="Zongqing Li">
+<meta property="article:tag" content="diffusion">
+<meta property="article:tag" content="ICLR">
+<meta property="article:tag" content="2023">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hqulzq.github.io/2025/03/25/FAST-SAMPLING-OF-DIFFUSION-MODELS-WITH-EXPONENTIAL-INTEGRATOR%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f1.png">
 
 <link rel="canonical" href="https://hqulzq.github.io/2025/03/25/FAST-SAMPLING-OF-DIFFUSION-MODELS-WITH-EXPONENTIAL-INTEGRATOR%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
 
@@ -215,8 +230,18 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2025-03-25 16:10:14" itemprop="dateCreated datePublished" datetime="2025-03-25T16:10:14+08:00">2025-03-25</time>
+              <time title="创建时间：2025-03-25 16:10:14 / 修改时间：21:06:28" itemprop="dateCreated datePublished" datetime="2025-03-25T16:10:14+08:00">2025-03-25</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
             </span>
 
           
@@ -230,7 +255,192 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        
+        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>在过去几年里，扩散模型（DMs）在生成式建模任务中取得了巨大成功，能够生成高保真样本。然而，DM的一个主要局限性是其采样过程极为缓慢，通常需要对学习到的扩散过程进行数百到数千次时间离散化步骤才能达到所需的精度。我们的目标是为DM开发一种快速采样方法，在减少步骤的同时保持高样本质量。为此，我们系统地分析了DM中的采样过程，确定了影响样本质量的关键因素，其中离散化方法最为关键。通过仔细研究学习到的扩散过程，我们提出了扩散指数积分采样器（DEIS）。它基于为离散化常微分方程（ODE）设计的指数积分器，并利用学习到的扩散过程的半线性结构来减少离散化误差。所提出的方法可以应用于任何DM，并且能够在仅10步内生成高保真样本。此外，通过直接使用预训练的DM，在得分函数评估次数（NFE）有限的情况下，我们实现了最先进的采样性能，例如在CIFAR10数据集上，10次NFE时的FID为4.17，20次NFE时的FID为2.86。项目页面和代码：<a target="_blank" rel="noopener" href="https://qsh-zh.github.io/deis">https://qsh-zh.github.io/deis</a> 。</p>
+<span id="more"></span>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f1.png" width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图1：使用各种扩散模型生成的图像。潜在扩散模型（Rombach等人，2021年）（左图），256×256分辨率，带有文字“一件印有‘世界和平’字样的衬衫”（15次得分函数评估）。VE扩散模型（Song等人，2020b）（中图），256×256分辨率的FFHQ图像（12次得分函数评估）。VP扩散模型（Ho等人，2020）（右图），CIFAR10数据集图像（7次得分函数评估）和CELEBA数据集图像（5次得分函数评估）。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1 引言"></a>1 引言</h3><p>扩散模型（DM）（Ho等人，2020）是一种近期发展起来的生成式建模方法，它基于对给定的简单扩散过程进行逆向操作的基本思想。为此，需要学习一个随时间变化的得分函数，因此DM也被称为基于得分的模型（Song等人，2020b）。与其他生成式模型（如生成对抗网络GANs）相比，DM除了具有很强的可扩展性外，还具有训练稳定、对超参数不太敏感的优势（Creswell等人，2018；Kingma和Welling，2019）。近年来，DM在各种任务中取得了令人瞩目的成绩，包括无条件图像生成（Ho等人，2020；Song等人，2020b；Rombach等人，2021；Dhariwal和Nichol，2021）、文本条件图像生成（Nichol等人，2021；Ramesh等人，2022）、文本生成（Hoogeboom等人，2021；Austin等人，2021）、3D点云生成（Lyu等人，2021）、逆问题（Kawar等人，2021；Song等人，2021b）等。</p>
+<p>然而，DM的卓越性能是以采样速度慢为代价的；与GANs相比，生成高质量样本需要更长的时间。例如，去噪扩散概率模型（DDPM）（Ho等人，2020）生成一个样本需要1000步，且每一步都需要对学习到的神经网络进行一次评估；这比GANs（Goodfellow等人，2014；Karras等人，2019）要慢得多。因此，有多项研究旨在提高DM的采样速度（更多相关工作见附录A）。一类方法是修改/优化正向噪声过程，使反向去噪过程更高效（Nichol和Dhariwal，2021；Song等人，2020b；Watson等人，2021；Bao等人，2022）。一个重要且有效的例子是去噪扩散隐式模型（DDIM）（Song等人，2020a），它使用非马尔可夫噪声过程。另一类方法是加速与DM相关的随机微分方程（SDE）或常微分方程（ODE）的数值求解器（Jolicoeur-Martineau等人，2021；Song等人，2020b；Tachibana等人，2021）。在（Song等人，2020b）中，使用黑盒ODE求解器来求解一个称为概率流（PF）的边际等效ODE，以实现快速采样。在（Liu等人，2022）中，作者将DDIM与高阶方法相结合来求解这个ODE，实现了进一步加速。需要注意的是，确定性的DDIM也可以看作是PF的时间离散化，因为在连续极限下它与PF是匹配的（Song等人，2020a；Liu等人，2022）。然而，目前尚不清楚为什么DDIM比诸如欧拉法等通用方法表现更好。</p>
+<p>这项工作的目标是为DM中学习到的反向扩散过程建立一个有原则的离散化方案，以实现快速采样。由于在对DM进行采样时，最耗时的部分是对参数化反向扩散的神经网络的评估，因此我们寻求一种需要较少网络函数评估（NFE）的离散化方法。我们从与DM相关的一类边际等效SDE/ODE出发，研究数值误差来源，包括拟合误差和离散化误差。我们发现，即使使用相同的训练模型，不同的离散化方案在离散化误差方面也可能有显著差异。然后，我们进行了一系列实验，系统地研究了不同因素对离散化误差的影响。我们发现，利用反向扩散半线性结构的指数积分器（EI）（Hochbruck和Ostermann，2010）具有最小的误差。为了进一步减少离散化误差，我们建议使用高阶多项式来近似ODE中的非线性项，或者对变换后的ODE采用龙格 - 库塔方法。由此产生的算法，即扩散指数积分采样器（DEIS），在有限的NFE下实现了最佳的采样质量。</p>
+<p>我们的贡献总结如下：1）我们研究了一类用于快速采样的边际等效SDE/ODE，并对其数值求解器进行了系统的误差分析。2）我们提出了DEIS，这是一种高效的采样器，可以应用于任何DM，在有限的NFE下实现卓越的采样质量。DEIS还可以加速数据对数似然评估。3）我们证明了确定性DDIM是DEIS的一个特殊情况，从离散化的角度解释了DDIM的有效性。4）我们进行了全面的实验来验证DEIS的有效性。例如，使用预训练模型（Song等人，2020b），DEIS在CIFAR10数据集上，10次NFE时能够达到4.17的FID，20次NFE时能够达到2.86的FID。</p>
+<h3 id="2扩散模型背景知识"><a href="#2扩散模型背景知识" class="headerlink" title="2扩散模型背景知识"></a>2扩散模型背景知识</h3><p>扩散模型由一个固定的正向扩散（加噪）过程和一个经过学习的反向扩散（去噪）过程构成。正向扩散过程为数据添加噪声，而反向扩散过程则逐步去除所添加的噪声。反向扩散经过训练，使其在概率分布上与正向扩散相匹配。当达到这种匹配时，理论上就能够通过模拟反向扩散从数据分布中生成完美的样本。</p>
+<ul>
+<li><strong>正向加噪扩散</strong>：扩散模型对$D$维数据的正向扩散是一种线性扩散，由随机微分方程（SDE）描述（Särkkä和Solin，2019）：<script type="math/tex; mode=display">dx = F_txdt + G_tdw \tag{1}</script>其中，$F_t \in \mathbb{R}^{D×D}$表示线性漂移系数，$G_t \in \mathbb{R}^{D×D}$表示扩散系数，$w$是标准维纳过程。扩散方程（1）以训练数据为起始点，在固定的时间窗口$[0, T]$内进行模拟。用$p_t(x_t)$表示$x_t$的边际分布，$p_{0t}(x_t | x_0)$表示从$x_0$到$x_t$的条件分布，那么$p_0(x_0)$代表训练数据的潜在分布。模拟的轨迹记为$\{x_t\}_{0\leq t\leq T}$。选择参数$F_t$和$G_t$，使得条件边际分布$p_{0t}(x_t | x_0)$是一个简单的高斯分布，记为$N(\mu_tx_0, \sum_t)$，并且分布$\pi(x_T) := p_T(x_T)$易于采样。扩散模型中两种常见的SDE（Song等人，2020b）总结在表1中。此处我们使用矩阵符号表示$F_t$和$G_t$，以凸显我们方法的通用性。我们的方法适用于任何扩散模型，包括模糊扩散模型（BDM）（Hoogeboom和Salimans，2022；Rissanen等人，2022）以及临界阻尼朗之万扩散（CLD）（Dockhorn等人，2021），在这些模型中，这些系数实际上是非对角矩阵。</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t1.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表1：两种常见的随机微分方程，即方差保持随机微分方程（VPSDE）和方差爆炸随机微分方程（VESDE）。参数$\alpha_{t}$ 是递减的，其中$\alpha_{0} \approx1$ ，$\alpha_{T} \approx0$ ，而$\sigma_{t}$ 是递增的。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li><strong>反向去噪扩散</strong>：在一些温和的假设下（Anderson，1982；Song等人，2020b），正向扩散方程（1）与一个反向时间的扩散过程相关：<script type="math/tex; mode=display">dx = [F_txdt - G_tG_t^T\nabla \log p_t(x)]dt + G_tdw \tag{2}</script>其中，$w$表示反向时间方向的标准维纳过程。方程（2）的轨迹分布，其终端分布为$x_T \sim \pi$，与方程（1）初始分布为$x_0 \sim p_0$的轨迹分布一致，也就是说，方程（2）在概率法则上与方程（1）相匹配。因此，理论上我们可以通过模拟反向扩散方程（2）从数据分布$p_0$中生成新的样本。然而，为了解方程（2），我们需要评估得分函数$\nabla \log p_t(x)$，但这个函数无法直接获取。</li>
+<li><strong>训练</strong>：扩散模型的基本思路是使用一个随时间变化的网络$s_θ(x, t)$，即得分网络，来近似得分$\nabla \log p_t(x)$。这通过得分匹配技术（Hyvärinen，2005；Vincent，2011）来实现，其中得分网络$s_θ$通过最小化去噪得分匹配损失进行训练：<script type="math/tex; mode=display">\mathcal{L}(\theta)=\mathbb{E}_{t \sim Unif[0, T]} \mathbb{E}_{p\left(x_{0}\right) p_{0 t}\left(x_{t} | x_{0}\right)}\left[\left\| \nabla \log p_{0 t}\left(x_{t} | x_{0}\right)-s_{\theta}\left(x_{t}, t\right)\right\| _{\Lambda_{t}}^{2}\right] \tag{3}</script>这里，由于$p_{0t}(x_t | x_0)$是一个简单的高斯分布，所以$\nabla \log p_{0t}(x_t | x_0)$有一个封闭形式的表达式，$\Lambda_t$表示一个随时间变化的权重。这个损失可以通过蒙特卡罗方法使用经验样本进行评估，因此可以使用标准的随机优化算法进行训练。关于$\Lambda_t$的选择和训练技术的更多细节，读者可参考（Ho等人，2020；Song等人，2020b）。</li>
+</ul>
+<h3 id="3-基于学习得分模型的快速采样"><a href="#3-基于学习得分模型的快速采样" class="headerlink" title="3 基于学习得分模型的快速采样"></a>3 基于学习得分模型的快速采样</h3><p>一旦训练好得分网络$s_{\theta}(x, t) \approx \nabla \log p_t(x)$，就可以通过求解反向随机微分方程（SDE）（公式2）来生成新样本，其中$\log p_t(x)$用$s_{\theta}(x, t)$代替。实际上，可以使用的扩散过程有无数种。在这项工作中，我们考虑一类由$\lambda \geq 0$参数化的SDE：</p>
+<script type="math/tex; mode=display">d\hat{x} = \left[F_t\hat{x} - \frac{1 + \lambda^2}{2}G_tG_t^Ts_{\theta}(\hat{x}, t)\right]dt + \lambda G_tdw \tag{4}</script><p>这里我们用$\hat{x}$来区分与学习得分相关的SDE的解和公式（1）、（2）中的真实值$x$。当$\lambda = 0$时，公式（4）简化为一个常微分方程（ODE），称为概率流ODE（Song等人，2020b）。带有近似得分的反向时间扩散公式（2）是公式（4）在$\lambda = 1$时的特殊情况。用$\{\hat{x}_t^<em>\}_{0 \leq t \leq T}$表示由公式（4）生成的轨迹，用$\hat{p}_t^</em>$表示其边际分布。以下命题（Zhang和Chen，2021；证明见附录D）成立。</p>
+<p><strong>命题1</strong>：当对于所有的$x$和$t$，$s_{\theta}(x, t) = \nabla \log p_t(x)$，且 <script type="math/tex">\hat{p}_{T}^{\*} = \pi</script> 时，公式（4）的边际分布<script type="math/tex">\hat{p}_t^*</script>与正向扩散公式（1）的$p_t$在所有$0 \leq t \leq T$上都匹配。</p>
+<p>上述结果证明了使用公式（4）生成样本的合理性。为了生成一个新样本，可以从$\pi$中采样$\hat{x}_T^<em>$，然后求解公式（4）得到样本$\hat{x}_0^</em>$。然而，在实际中，公式（4）的精确解是无法得到的，需要对时间进行离散化来获得近似解。用$\hat{x}_t$表示近似解，用$\hat{p}_t$表示其边际分布，那么生成模型的误差，即$p_0(x)$和$\hat{p}_0(x)$之间的差异，是由两个误差源造成的：拟合误差和离散化误差。拟合误差是由于学习到的得分网络$s_{\theta}$与真实得分$\nabla \log p_t(x)$之间的不匹配。离散化误差包括在数值求解公式（4）时由离散化引入的所有额外误差。为了减少离散化误差，需要使用更小的步长，从而增加步数，这使得采样效率降低。</p>
+<p>这项工作的目标是研究这两个误差源，并从公式（4）中开发一种更高效、误差更小的采样方案。在本节中，我们主要关注$\lambda = 0$的ODE方法。除非另有说明，本节中的所有实验都是基于CIFAR10数据集上的方差保持SDE（VPSDE）进行的。关于$\lambda &gt; 0$的SDE方法的讨论推迟到附录C。</p>
+<h4 id="3-1-我们能学习到全局精确的得分吗？"><a href="#3-1-我们能学习到全局精确的得分吗？" class="headerlink" title="3.1 我们能学习到全局精确的得分吗？"></a>3.1 我们能学习到全局精确的得分吗？</h4><p>由于扩散模型在生成高保真样本方面展示了令人印象深刻的实验结果，人们可能会认为学习到的得分网络能够很好地拟合数据分布的得分，即对于几乎所有的$x \in \mathbb{R}^D$和$t \in [0, T]$，都有$s_{\theta}(x, t) \approx \nabla \log p_t(x)$。然而，事实并非如此。在某些$x$和$t$上，拟合误差可能会非常大，下面的一个简单例子可以说明这一点。实际上，对于大多数的$x$和$t$，学习到的得分模型并不准确。</p>
+<p>考虑一个在一维空间（即$D = 1$）上的生成建模任务。数据分布是一个方差非常小的高斯分布。我们在图2中绘制了通过最小化公式（3）训练得到的得分模型与真实得分之间的拟合误差。从图中可以看出，得分模型在$p_t(x)$较大的区域表现良好，但在$p_t(x)$较小的区域存在较大误差。这一现象可以通过研究训练损失公式（3）来解释。特别地，公式（3）的训练数据是从$p_t(x)$中采样得到的。在$p_t(x)$值较低的区域，由于缺乏训练数据，学习到的得分网络预计不会表现得很好。在具有高维数据的实际场景中，这种现象更加明显。因为实际数据通常在$\mathbb{R}^D$中稀疏分布，$p_t(x)$值较高的区域非常小；人们认为像图像这样的实际数据集中在一个内在的低维流形上（Deng等人，2009；Pless和Souvenir，2009；Liu等人，2022）。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f2.png" width="45%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图2：一个简单示例中的拟合误差。颜色较浅的区域在左图中代表概率较高的区域，在右图中代表拟合误差较大的区域。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>因此，为了确保$\hat{x}_0$接近$x_0$，我们需要确保$\hat{x}_t$在所有的$t$时刻都保持在$p_t(x)$较高的区域。这使得从公式（4）进行快速采样成为一项具有挑战性的任务，因为这阻止我们采用较大的步长，否则可能会使解进入学习到的得分网络拟合误差较大的区域。一个好的公式（4）离散化方案应该能够在采样过程中帮助减少得分网络拟合误差的影响。</p>
+<h4 id="3-2-离散化误差"><a href="#3-2-离散化误差" class="headerlink" title="3.2 离散化误差"></a>3.2 离散化误差</h4><p>接下来我们研究求解概率流ODE（$\lambda = 0$）时的离散化误差：</p>
+<script type="math/tex; mode=display">\frac{d\hat{x}}{dt} = F_t\hat{x} - \frac{1}{2}G_tG_t^Ts_{\theta}(\hat{x}, t) \tag{5}</script><p>该ODE的精确解为：</p>
+<script type="math/tex; mode=display">\hat{x}_t = \Psi(t, s)\hat{x}_s + \int_{s}^{t}\Psi(t, \tau)\left[-\frac{1}{2}G_{\tau}G_{\tau}^Ts_{\theta}(\hat{x}_{\tau}, \tau)\right]d\tau \tag{6}</script><p>其中，$\Psi(t, s)$满足$\frac{\partial}{\partial t}\Psi(t, s) = F_t\Psi(t, s)$，$\Psi(s, s) = I$，它是与$F_{\tau}$相关的从时间$s$到$t$的转移矩阵。公式（5）是一个半线性刚性ODE（Hochbruck和Ostermann，2010），由一个线性项$F_t\hat{x}$和一个非线性项$s_{\theta}(\hat{x}, t)$组成。对于公式（5），有许多不同的数值求解器，它们与不同的离散化方案相关，用于近似公式（6）（Griffiths和Higham，2010）。当离散化步长趋于零时，所有这些方法得到的解都收敛到公式（5）的解。然而，当步长较大时，这些方法的性能可能会有很大差异。另一方面，为了用公式（5）实现快速采样，我们需要用较少的离散化步骤来近似求解它，因此需要较大的步长。这促使我们开发一种最适合公式（5）的高效离散化方案。在本节的其余部分，我们将通过理论分析和精心设计的实验系统地研究求解公式（5）时的离散化误差。基于这些结果，我们为公式（5）开发了一种需要较少NFE的高效算法。</p>
+<ul>
+<li><strong>要素1：指数积分器优于欧拉法</strong>：欧拉法是求解ODE最基本的显式数值方法，广泛应用于数值计算软件中（Virtanen等人，2020）。当应用于公式（5）时，欧拉法的表达式为：<script type="math/tex; mode=display">\hat{x}_{t - \Delta t} = \hat{x}_t - \left[F_t\hat{x}_t - \frac{1}{2}G_tG_t^Ts_{\theta}(\hat{x}_t, t)\right]\Delta t \tag{7}</script>这一方法在许多现有的扩散模型研究中被使用（Song等人，2020b；Dockhorn等人，2021）。然而，这种方法精度较低，并且当步长不够小时，有时会不稳定。为了提高精度，我们建议使用指数积分器（EI），这是一种利用公式（5）半线性结构的方法。当应用于公式（5）时，EI的表达式为：<script type="math/tex; mode=display">\hat{x}_{t - \Delta t} = \Psi(t - \Delta t, t)\hat{x}_t + \left[\int_{t}^{t - \Delta t}-\frac{1}{2}\Psi(t - \Delta t, \tau)G_{\tau}G_{\tau}^Td\tau\right]s_{\theta}(\hat{x}_t, t)</script>如果非线性项$s_{\theta}(\hat{x}_t, t)$在解的过程中变化不大，那么这种方法是有效的。实际上，对于任何给定的$\Delta t$，如果$s_{\theta}(\hat{x}_t, t)$在时间区间$[t - \Delta t, t]$内是常数，那么公式（8）可以精确求解公式（5）。为了比较EI（公式8）和欧拉法（公式7），我们在图3a中绘制了在不同步数$N$下，真实值$\hat{x}_0^*$与通过这两种方法得到的数值解$\hat{x}_0$之间的平均像素差异$\Delta_p$。令人惊讶的是，EI方法的表现比欧拉法更差。</li>
+</ul>
+<p>这一观察结果表明，还有其他主要因素导致了误差$\Delta_p$。特别是，EI方法所假设的非线性项$s_{\theta}(\hat{x}_t, t)$在解的过程中变化不大这一条件并不成立。为了说明这一点，我们在图3b中绘制了沿着公式（5）的精确解$\{\hat{x}_t^*\}$的得分近似误差$\Delta_s(\tau)=\left|s_{\theta}(x_{\tau}, \tau) - s_{\theta}(x_{t}, t)\right|_2$，$\tau \in [t - \Delta t, t]$ 。可以看出，随着$t$接近0，近似误差迅速增长。这并不奇怪，因为实际数据分布的得分$\nabla \log p_t(x)$在$t \to 0$时应该变化很快（Dockhorn等人，2021）。</p>
+<ul>
+<li><strong>要素2：使用$\epsilon_{\theta}(x, t)$而非$s_{\theta}(x, t)$</strong>：得分$\nabla \log p_t(x)$快速变化带来的问题不仅存在于采样过程中，也出现在扩散模型的训练过程中。为了解决这些问题，人们使用了得分网络的不同参数化方式。具体来说，研究发现参数化（Ho等人，2020）$\nabla \log p_t(x) \approx -L_t^{-T}\epsilon_{\theta}(x, t)$（其中$L_t$可以是任何满足$L_tL_t^T = \sum_t$的矩阵）能够显著提高精度。这种参数化的原理是基于对训练损失公式（3）的重新表述（Ho等人，2020）：<script type="math/tex; mode=display">\overline{\mathcal{L}}(\theta)=\mathbb{E}_{t \sim Unif[0, T]} \mathbb{E}_{p\left(x_{0}\right), \epsilon \sim \mathcal{N}(0, I)}\left[\left\| \epsilon - \epsilon_{\theta}\left(\mu_{t}x_{0}+L_{t}\epsilon, t\right)\right\| _{\overline{\Lambda}_{t}}^{2}\right]</script>其中$\bar{\Lambda}_{t}=L_{t}^{-1}\Lambda_{t}L_{t}^{-T}$。网络$\epsilon_{\theta}$试图跟踪从标准高斯分布中采样得到的$\epsilon$，因此其幅度较小。相比之下，参数化$s_{\theta}=-L_t^{-T}\epsilon_{\theta}$在$t$接近0时，随着$L_t \to 0$，其值可能会很大。因此，用神经网络近似$\epsilon_{\theta}$比近似$s_{\theta}$更好。我们采用这种参数化方式，并将公式（5）改写为：<script type="math/tex; mode=display">\frac{d\hat{x}}{dt} = F_t\hat{x} + \frac{1}{2}G_tG_t^TL_t^{-T}\epsilon_{\theta}(\hat{x}, t) \tag{10}</script>将EI应用于公式（10）得到：<script type="math/tex; mode=display">\hat{x}_{t - \Delta t} = \Psi(t - \Delta t, t)\hat{x}_t + \left[\int_{t}^{t - \Delta t}\frac{1}{2}\Psi(t - \Delta t, \tau)G_{\tau}G_{\tau}^TL_{\tau}^{-T}d\tau\right]\epsilon_{\theta}(\hat{x}_t, t) \tag{11}</script>与公式（8）相比，公式（11）在时间区间$\tau \in [t - \Delta t, t]$内使用$-L_{\tau}^{-T}\epsilon_{\theta}(x_{t}, t)$而不是$s_{\theta}(x_{t}, t)=-L_{t}^{-T}\epsilon_{\theta}(x_{t}, t)$来近似得分$s_{\theta}(x_{\tau}, \tau)$。事实证明，从$L_t^{-T}$到$L_{\tau}^{-T}$的这种修改至关重要；系数$L_{\tau}^{-T}$随时间变化很快。图3d验证了这一点，我们在图中绘制了使用参数化$\epsilon_{\theta}$时的得分近似误差$\Delta_s$，可以看到与图3b相比，误差$\Delta_s$大大降低。通过这种修改，EI方法明显优于欧拉法，如图3c所示。接下来，我们基于公式（11）为扩散模型开发了几种快速采样算法，统称为扩散指数积分采样器（DEIS）。</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f3.png" width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图3：图3a展示了使用欧拉法和指数积分法（EI）得到的真实值$\hat{x}_{0}^{</em>}$与数值解$\hat{x}_{0}$之间的平均像素差异$\Delta_{p}$。图3b描绘了沿真实解的近似误差$\Delta_{s}$。图3d表明，如果使用参数化$\epsilon_{\theta}(x, t)$而非$s_{\theta}(x, t)$，$\Delta_{s}$可以显著降低。这种参数化使得EI方法在图3c中优于欧拉法。*</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>有趣的是，当正向扩散公式（1）是VPSDE时，基于EI的离散化公式（11）与流行的确定性DDIM是一致的，总结如下（证明见附录E）。</p>
+<p><strong>命题2</strong>：当正向扩散公式（1）设置为VPSDE（$F_t$，$G_t$在表1中指定）时，EI离散化公式（11）变为：</p>
+<script type="math/tex; mode=display">\hat{x}_{t - \Delta t}=\sqrt{\frac{\alpha_{t - \Delta t}}{\alpha_{t}}}\hat{x}_{t}+\left[\sqrt{1 - \alpha_{t - \Delta t}}-\sqrt{\frac{\alpha_{t - \Delta t}}{\alpha_{t}}}\sqrt{1 - \alpha_{t}}\right]\epsilon_{\theta}(\hat{x}_{t}, t) \tag{12}</script><p>这与确定性DDIM采样算法一致。</p>
+<p>我们的结果从数值离散化的角度为VPSDE中DDIM的有效性提供了另一种解释。与DDIM不同，我们的公式（11）可以应用于任何扩散SDE，以提高离散化的效率和准确性。</p>
+<p>在离散化公式（11）中，我们用$\epsilon_{\theta}(\hat{x}_t, t)$来近似所有$\tau \in [t - \Delta t, t]$的$\epsilon_{\theta}(\hat{x}_{\tau}, \tau)$，这是零阶近似。比较公式（11）和公式（6）可以发现，这种近似误差在很大程度上决定了离散化的精度。一个自然的问题是，是否可以使用对$\epsilon_{\theta}(\hat{x}_{\tau}, \tau)$更好的近似来进一步提高精度？下面我们通过一种改进的算法肯定地回答了这个问题。</p>
+<ul>
+<li><strong>要素3：$\epsilon_{\theta}$的多项式外推</strong>：在介绍我们的算法之前，我们研究了$\epsilon_{\theta}(x_t, t)$沿着从$t = T$到$t = 0$的真实解$\{\hat{x}_t\}$是如何演化的。我们在图4a中绘制了$\epsilon_{\theta}(x_t, t)$的2 - 范数的相对变化。结果显示，在大多数时间点，相对变化都很小。这促使我们使用直到时间$t$的$\epsilon_{\theta}$的先前（反向）评估值来外推$\tau \in [t - \Delta t, t]$的$\epsilon_{\theta}(x_{\tau}, \tau)$。</li>
+</ul>
+<p>受线性多步法中高阶多项式外推的启发，我们在EI方法中使用$\epsilon_{\theta}$的高阶多项式外推。为此，考虑时间离散化$\{t_i\}_{i = 0}^{N}$，其中$t_0 = 0$，$t_N = T$。对于每个$i$，我们根据插值点$(t_{i + j}, \epsilon_{\theta}(\hat{x}_{t_{i + j}}, t_{i + j}))$，$0 \leq j \leq r$拟合一个$r$次多项式$P_r(t)$。这个多项式$P_r(t)$有明确的表达式：</p>
+<script type="math/tex; mode=display">P_{r}(t)=\sum_{j=0}^{r}\left[\prod_{k \neq j} \frac{t - t_{i + k}}{t_{i + j} - t_{i + k}}\right] \epsilon_{\theta}\left(\hat{x}_{t_{i + j}}, t_{i + j}\right)\tag{13}</script><p>然后，我们在区间$[t_{i - 1}, t_i]$内用$P_r(t)$来近似$\epsilon_{\theta}(x_{\tau}, \tau)$。对于$i &gt; N - r$，我们需要使用较低阶的多项式来近似$\epsilon_{\theta}$。为了展示这种近似的优势，我们在图4b中绘制了沿着真实轨迹$\{\hat{x}_t^*\}$的$\epsilon_{\theta}(x_t, t)$与$P_r(t)$的近似误差$\Delta_{\epsilon}(t)=\left|\epsilon_{\theta}(x_{t}, t) - P_{r}(t)\right|_2$。可以看出，与公式（11）中使用零阶近似（$r = 0$）的情况相比，高阶多项式可以降低近似误差。</p>
+<p>正如在公式（11）的EI方法中对公式（6）中的得分采用零阶近似一样，r阶更新步长是通过将公式（13）的多项式近似代入公式（6）得到的。它可以明确地写为：</p>
+<script type="math/tex; mode=display">\hat{x}_{t_{i - 1}} = \Psi(t_{i - 1}, t_{i})\hat{x}_{t_{i}} + \sum_{j = 0}^{r}[C_{ij}\epsilon_{\theta}(\hat{x}_{t_{i + j}}, t_{i + j})] \tag{14}</script><script type="math/tex; mode=display">C_{ij} = \int_{t_{i}}^{t_{i - 1}}\frac{1}{2}\Psi(t_{i - 1}, \tau)G_{\tau}G_{\tau}^{T}L_{\tau}^{-T}\prod_{k \neq j}\left[\frac{\tau - t_{i + k}}{t_{i + j} - t_{i + k}}\right]d\tau \tag{15}</script><p>我们注意到，公式（14）中的更新是$\hat{x}_{t}$和$\epsilon_{\theta}(\hat{x}_{t_{i + j}}, t_{i + j})$的线性组合，其中权重$\Psi(t_{i - 1}, t_{i})$和$C_{ij}$针对给定的正向扩散公式（1）和时间离散化仅计算一次，并且可以在不同批次中重复使用。对于某些扩散公式（1），$\Psi(t_{i - 1}, t_{i})$和$C_{ij}$具有闭式表达式。即使没有解析公式，也可以使用高精度求解器来获得这些系数。在扩散模型（例如，方差保持随机微分方程（VPSDE）和方差爆炸随机微分方程（VESDE））中，公式（15）通常是一维或二维积分，因此很容易进行数值计算。这种方法类似于经典的亚当斯 - 巴什福思方法（Hochbruck和Ostermann，2010），因此我们将其称为tAB - DEIS。这里我们使用“t”来将它与我们在第4节中基于时间缩放常微分方程提出的其他DEIS算法区分开来。</p>
+<p>tAB-DEIS算法总结在算法1中。需要注意的是，对于VPSDE而言，确定性DDIM是tAB-DEIS在$r = 0$时的特殊情况。如图4c所示，当采样步数$N$较少时，DEIS中使用的多项式近似能显著提升采样质量。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f4.png" width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图4：图4a展示了$\epsilon_{\theta}(\hat{x}_{t}^{</em>}, t)$相对于t的相对变化较小，尤其是当$t &gt; 0.15$时。图4b描绘了在$N = 10$时的外推误差。高阶多项式能够有效地降低近似误差。图4c展示了外推的效果。当N较小时，高阶多项式近似能得到更好的样本。*</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="4-指数积分器：简化概率流常微分方程"><a href="#4-指数积分器：简化概率流常微分方程" class="headerlink" title="4 指数积分器：简化概率流常微分方程"></a>4 指数积分器：简化概率流常微分方程</h3><p>接下来我们从基于常微分方程变换的角度介绍一种不同的DEIS视角。概率常微分方程公式（10）可以转化为一个简单的非刚性常微分方程，然后就可以应用现成的常微分方程求解器有效地求解该方程。为此，我们引入变量$\hat{y}_t := \Psi(t, 0)\hat{x}_t$，并将公式（10）改写为：</p>
+<script type="math/tex; mode=display">\frac{d\hat{y}}{dt} = \frac{1}{2}\Psi(t, 0)G_tG_t^TL_t^{-T}\epsilon_{\theta}(\Psi(0, t)\hat{y}, t) \tag{16}</script><p>需要注意的是，与公式（10）不同，公式（16）不具有半线性结构。因此，我们可以在算法设计中不考虑半线性结构，直接将现成的常微分方程求解器应用于公式（16）。通过考虑$\Psi$、$G_t$、$L_t$的解析形式，公式（16）的这种变换可以进一步优化。这里我们给出针对VPSDE的处理方法；其结果可以扩展到其他（标量）扩散模型，如VESDE。<br><strong>命题3</strong>：对于VPSDE，令$\hat{y}_t=\sqrt{\frac{\alpha_{0}}{\alpha_{t}}}\hat{x}_{t}$，并进行时间缩放$\beta(t)=\sqrt{\alpha_{0}}(\sqrt{\frac{1 - \alpha_{t}}{\alpha_{t}}}-\sqrt{\frac{1 - \alpha_{0}}{\alpha_{0}}})$，公式（10）可以转化为：</p>
+<script type="math/tex; mode=display">\frac{d\hat{y}}{d\rho}=\epsilon_{\theta}\left(\sqrt{\frac{\alpha_{\beta^{-1}(\rho)}}{\alpha_{0}}}\hat{y}, \beta^{-1}(\rho)\right), \rho \in[\beta(0), \beta(T)] \tag{17}</script><p>变换后，该常微分方程变成了一个黑盒常微分方程，可以由通用的常微分方程求解器高效求解，因为半线性结构带来的刚性被消除了。这就是我们接下来要介绍的DEIS变体的核心思想。</p>
+<p>基于变换后的常微分方程公式（17）以及上述讨论，我们提出了DEIS算法的两个变体：应用经典龙格 - 库塔（RK）方法的$\rho$RK - DEIS，以及应用亚当斯 - 巴什福思方法的$\rho$AB - DEIS。需要注意的是，tAB - DEIS和$\rho$AB - DEIS的区别在于，tAB - DEIS在$t$上拟合多项式，而这些多项式在$\rho$上可能不是多项式。得益于简化后的常微分方程，DEIS具有与底层RK或AB求解器相同的收敛阶保证。</p>
+<h3 id="5-实验"><a href="#5-实验" class="headerlink" title="5 实验"></a>5 实验</h3><ul>
+<li><strong>消融研究</strong>：如图5所示，第3.2节中引入的要素可以显著提高在CIFAR10数据集上的采样效率。此外，DEIS在性能上大幅超越了标准采样器。</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f5.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图5：消融研究以及与其他采样器的比较。我们注意到，从欧拉法切换到指数积分器会使FID（弗雷歇距离，Frechet Inception Distance）变差，我们在第3节的要素2中对此进行了探究和解释。使用指数积分器（EI）$\epsilon_{\theta}$参数化、多项式外推以及优化时间戳能够显著提升采样质量。与其他采样器相比，基于RK45的ODE采样器（Song等人，2020b）、基于欧拉 - 丸山（EM）的SDE采样器（Song等人，2020b）以及SDE自适应步长求解器（Jolicoeur - Martineau等人，2021），DEIS的收敛速度要快得多。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li><strong>DEIS变体</strong>：我们在表2中列出了使用VPSDE在CIFAR10数据集上对各种DEIS的性能评估结果，包括DDIM、$\rho$RK - DEIS、$\rho$AB - DEIS和tAB - DEIS。对于$\rho$RK - DEIS，我们发现二阶RK方法中Heun方法效果最佳，记为$\rho2$Heun；三阶方法使用Kutta方法，记为$\rho3$Kutta；经典四阶RK方法记为$\rho4$RK。对于亚当斯 - 巴什福思方法，我们考虑在$\rho$上拟合1阶、2阶、3阶多项式，分别记为tAB和$\rho$AB。我们观察到，几乎所有的DEIS算法都能在较少的NFE下生成高保真图像。值得注意的是，使用高阶多项式近似的DEIS算法性能明显优于DDIM，而DDIM相当于零阶多项式近似。我们还发现，当NFE较小时，高阶$\rho$RK - DEIS的性能并不理想，但随着NFE增加，其性能具有竞争力。这在预期之内，因为高阶方法在使用小步长时具有较小的局部截断误差和总累积误差，而当减少步数时，这种优势会逐渐消失。</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t2.png" width="45%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表2：在有限的得分函数评估次数（NFE）下，针对CIFAR10数据集的方差保持随机微分方程（VPSDE）使用扩散指数积分采样器（DEIS）的更多结果。对于$\rho$RK - DEIS，右上角的数字表示额外使用的得分函数评估次数。粗体数字表示在相似的得分函数评估次数预算下所取得的最佳性能。为了进行公平比较，我们基于不同算法在不同得分函数评估次数下的最佳时间离散化来报告数据。在附录H.3中，我们给出了相同时间离散化情况下的比较。†：同期的研究工作（Karras等人，2022年）将休恩（Heun）方法应用于重新缩放后的扩散模型。这是$\rho2$休恩方法的一个特殊情况（更多讨论见附录B）。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li><strong>更多比较</strong>：我们与扩散模型中流行的采样器进行了更多比较，包括DDPM、DDIM、PNDM（Liu等人，2021）、A - DDIM（Bao等人，2022）、FastDPM（Kong和Ping，2021）以及Ito - Taylor（Tachibana等人，2021）。我们进一步提出了改进的PNDM（iPNDM），它避免了昂贵的预热启动过程，从而在实验中获得了更好的性能。我们在多个图像数据集上进行了比较，包括具有Song等人（2020a）预训练模型的$64×64$的CelebA数据集、具有预训练模型（Dhariwal和Nichol，2021）的类别条件$64×64$的ImageNet数据集、具有预训练模型（Dhariwal和Nichol，2021）的$256×256$的LSUN Bedroom数据集。我们在图7中对DEIS和选定的基线方法进行了定量比较，并在图6中展示了实验样本。更多实现细节、各种扩散模型的性能以及更多定性实验结果包含在附录H中。</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f6.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图6：使用无条件的256×256 ImageNet预训练模型（Dhariwal和Nichol，2021年），由DDIM和DEIS生成的样本。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f7.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图7：使用预训练扩散模型（DMs）时，不同采样算法生成样本的质量（通过弗雷歇初始距离（FID）衡量）。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="6-结论"><a href="#6-结论" class="headerlink" title="6 结论"></a>6 结论</h3><p>在这项工作中，我们研究了扩散模型的快速采样问题。我们提出了扩散指数积分采样器（DEIS），这是一种基于逆向扩散过程全新离散化方案的快速采样算法。DEIS不仅在理论上具有优越性，在实际应用中也非常高效，它能够在少于10次得分函数评估（NFE）的情况下生成高保真样本。探索更好的外推方法可能会进一步提升采样质量，更多相关讨论见附录B。</p>
+
     </div>
 
     
@@ -238,6 +448,11 @@
     
 
       <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/diffusion/" rel="tag"># diffusion</a>
+              <a href="/tags/ICLR/" rel="tag"># ICLR</a>
+              <a href="/tags/2023/" rel="tag"># 2023</a>
+          </div>
 
         
 
@@ -307,6 +522,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B%E8%83%8C%E6%99%AF%E7%9F%A5%E8%AF%86"><span class="nav-number">1.3.</span> <span class="nav-text">2扩散模型背景知识</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%9F%BA%E4%BA%8E%E5%AD%A6%E4%B9%A0%E5%BE%97%E5%88%86%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%BF%AB%E9%80%9F%E9%87%87%E6%A0%B7"><span class="nav-number">1.4.</span> <span class="nav-text">3 基于学习得分模型的快速采样</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E6%88%91%E4%BB%AC%E8%83%BD%E5%AD%A6%E4%B9%A0%E5%88%B0%E5%85%A8%E5%B1%80%E7%B2%BE%E7%A1%AE%E7%9A%84%E5%BE%97%E5%88%86%E5%90%97%EF%BC%9F"><span class="nav-number">1.4.1.</span> <span class="nav-text">3.1 我们能学习到全局精确的得分吗？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E7%A6%BB%E6%95%A3%E5%8C%96%E8%AF%AF%E5%B7%AE"><span class="nav-number">1.4.2.</span> <span class="nav-text">3.2 离散化误差</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%8C%87%E6%95%B0%E7%A7%AF%E5%88%86%E5%99%A8%EF%BC%9A%E7%AE%80%E5%8C%96%E6%A6%82%E7%8E%87%E6%B5%81%E5%B8%B8%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B"><span class="nav-number">1.5.</span> <span class="nav-text">4 指数积分器：简化概率流常微分方程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.6.</span> <span class="nav-text">5 实验</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E7%BB%93%E8%AE%BA"><span class="nav-number">1.7.</span> <span class="nav-text">6 结论</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -360,7 +576,7 @@
     <h3 class="widget-title">Tag Cloud</h3>
     <div id="myCanvasContainer" class="widget tagcloud">
         <canvas width="250" height="250" id="resCanvas" style="width=100%">
-            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2023/" rel="tag">2023</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2025/" rel="tag">2025</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICML/" rel="tag">ICML</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">23</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%85%E8%AF%BB/" rel="tag">阅读</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2023/" rel="tag">2023</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2025/" rel="tag">2025</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICML/" rel="tag">ICML</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">24</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%85%E8%AF%BB/" rel="tag">阅读</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
         </canvas>
     </div>
 </div>
@@ -469,6 +685,61 @@ document.querySelectorAll('.pdfobject-container').forEach(element => {
   
 
   
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
 
   
 
