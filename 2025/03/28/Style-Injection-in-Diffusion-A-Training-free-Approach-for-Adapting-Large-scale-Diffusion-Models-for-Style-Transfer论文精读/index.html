@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="全文翻译尽管扩散模型具有令人印象深刻的生成能力，但现有的基于扩散模型的风格迁移方法要么需要耗时的推理阶段优化（如风格的微调或文本反转），要么未能充分利用大规模扩散模型的生成能力。为解决这些问题，我们提出了一种基于预训练大规模扩散模型的新型艺术风格迁移方法，无需任何优化过程。具体而言，我们通过模仿交叉注意力机制的工作方式，对自注意力层的特征进行操作：在生成过程中，将内容的键（key）和值（value">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Style Injection in Diffusion A Training-free Approach for Adapting Large-scale Diffusion Models for Style Transfer论文精读">
+<meta property="og:url" content="https://hqulzq.github.io/2025/03/28/Style-Injection-in-Diffusion-A-Training-free-Approach-for-Adapting-Large-scale-Diffusion-Models-for-Style-Transfer%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/index.html">
+<meta property="og:site_name" content="Lzq&#39;s blog">
+<meta property="og:description" content="全文翻译尽管扩散模型具有令人印象深刻的生成能力，但现有的基于扩散模型的风格迁移方法要么需要耗时的推理阶段优化（如风格的微调或文本反转），要么未能充分利用大规模扩散模型的生成能力。为解决这些问题，我们提出了一种基于预训练大规模扩散模型的新型艺术风格迁移方法，无需任何优化过程。具体而言，我们通过模仿交叉注意力机制的工作方式，对自注意力层的特征进行操作：在生成过程中，将内容的键（key）和值（value">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/28/Style-Injection-in-Diffusion-A-Training-free-Approach-for-Adapting-Large-scale-Diffusion-Models-for-Style-Transfer%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/28/Style-Injection-in-Diffusion-A-Training-free-Approach-for-Adapting-Large-scale-Diffusion-Models-for-Style-Transfer%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f16.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/28/Style-Injection-in-Diffusion-A-Training-free-Approach-for-Adapting-Large-scale-Diffusion-Models-for-Style-Transfer%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f17.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/28/Style-Injection-in-Diffusion-A-Training-free-Approach-for-Adapting-Large-scale-Diffusion-Models-for-Style-Transfer%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f18.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/28/Style-Injection-in-Diffusion-A-Training-free-Approach-for-Adapting-Large-scale-Diffusion-Models-for-Style-Transfer%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f19.png">
+<meta property="article:published_time" content="2025-03-28T12:09:00.000Z">
+<meta property="article:modified_time" content="2025-03-28T12:33:16.669Z">
+<meta property="article:author" content="Zongqing Li">
+<meta property="article:tag" content="diffusion">
+<meta property="article:tag" content="CVPR">
+<meta property="article:tag" content="2024">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hqulzq.github.io/2025/03/28/Style-Injection-in-Diffusion-A-Training-free-Approach-for-Adapting-Large-scale-Diffusion-Models-for-Style-Transfer%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f1.png">
+
+<link rel="canonical" href="https://hqulzq.github.io/2025/03/28/Style-Injection-in-Diffusion-A-Training-free-Approach-for-Adapting-Large-scale-Diffusion-Models-for-Style-Transfer%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Style Injection in Diffusion A Training-free Approach for Adapting Large-scale Diffusion Models for Style Transfer论文精读 | Lzq's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lzq's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">45</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">60</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book">
+
+    <a href="/book" rel="section"><i class="fas fa-book fa-fw"></i>Book</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/03/28/Style-Injection-in-Diffusion-A-Training-free-Approach-for-Adapting-Large-scale-Diffusion-Models-for-Style-Transfer%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Style Injection in Diffusion A Training-free Approach for Adapting Large-scale Diffusion Models for Style Transfer论文精读
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-03-28 20:09:00 / 修改时间：20:33:16" itemprop="dateCreated datePublished" datetime="2025-03-28T20:09:00+08:00">2025-03-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><p>尽管扩散模型具有令人印象深刻的生成能力，但现有的基于扩散模型的风格迁移方法要么需要耗时的推理阶段优化（如风格的微调或文本反转），要么未能充分利用大规模扩散模型的生成能力。为解决这些问题，我们提出了一种基于预训练大规模扩散模型的新型艺术风格迁移方法，无需任何优化过程。具体而言，我们通过模仿交叉注意力机制的工作方式，对自注意力层的特征进行操作：在生成过程中，将内容的键（key）和值（value）替换为风格图像的对应特征。这种方法为风格迁移提供了几个理想特性：1）通过将相似风格传递到相似图像块来保留内容结构；2）基于内容与风格图像之间局部纹理（如边缘）的相似性进行风格传递。此外，我们引入查询保留和注意力温度缩放来缓解原始内容结构被破坏的问题，并提出初始潜在自适应实例归一化（AdaIN）来处理颜色不和谐（风格颜色传递失败）的问题。实验结果表明，我们的方法在传统和基于扩散的风格迁移基准上均超越了现有技术。代码可在github.com/jiwoogit/StyleID获取。<br><span id="more"></span></p>
+<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1. 引言"></a>1. 引言</h3><p>扩散模型（DMs）的最新进展在各种生成应用领域取得了突破，如文本到图像合成、图像或视频编辑。其中的一些成果也应用于风格迁移任务，即给定风格图像和内容图像，将内容图像的风格修改为与给定风格一致。</p>
+<p>在本文中，我们专注于将无需训练的风格迁移方法扩展到大规模预训练扩散模型的应用中。我们从基于大规模扩散模型的图像到图像转换的最新进展中得到启发，这些研究揭示了注意力层在图像编辑中的能力。值得注意的是，“即插即用”方法表明，残差块和自注意力（SA）的注意力图决定了生成图像的空间布局。同时，“Prompt-to-Prompt”方法通过替换从文本提示中获得的交叉注意力（CA）的键和值，在保持原始注意力图的情况下对图像进行局部编辑。这些研究都表明，注意力图决定了空间布局，而交叉注意力的键和值调整了填充的内容。</p>
+<p>受上述方法的启发，我们提出操纵自注意力层是一种有效的风格迁移方式（见图1）。具体来说，与交叉注意力类似，我们替换自注意力的键和值，并观察到生成的图像在视觉上仍然合理，并且自然地将替换图像的元素融入到原始图像中。这一观察促使我们提出一种基于自注意力的风格迁移技术，该技术将特定图像的风格（纹理）与不同图像的内容（语义和空间布局）相结合。此外，我们强调自注意力层在风格迁移中具有理想的特性。首先，如图2（a）所示，在基于自注意力的风格迁移中，具有语义相似性的内容图像块（查询）会与相似的风格（键）相互作用，从而在迁移后保持这些内容图像块之间的关系。其次，由于大规模扩散模型强大的特征表示能力，查询的每个图像块与具有相似纹理和语义的键具有更高的相似性。例如，在图2（b）中，我们可以观察到蓝色框内的内容查询特征与具有相似边缘纹理的风格键特征具有很高的相似性。这使得模型能够基于内容和风格之间的局部纹理（如边缘）相似性进行风格迁移。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f1.png" width="600" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图 1：用于风格迁移的自注意力特征操作。(a) 一般的自注意力（SA）在训练和推理阶段都从单个图像中提取查询、键和值特征。(b) 在推理阶段，我们认为操纵预训练的大规模扩散模型（DM）的自注意力特征是一种有效的风格迁移方式；将风格的键和值注入到内容的自注意力中是进行风格迁移的恰当方法。结果，注入风格后的内容$z_{ t−1}^{c}$​在修改风格以接近目标风格的同时，会保留内容。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>因此，我们的方法旨在通过操纵预训练大规模扩散模型的自注意力特征，在无需任何优化的情况下将风格图像的纹理转移到内容图像上。为此，我们首先提出一种基于注意力的风格注入方法。其基本思想是将自注意力中内容的键和值替换为风格图像的键和值，尤其是解码器后半部分与局部纹理相关的层。如上文所述，通过基于相似性的注意力机制，交换后的风格能够很好地与原始图像的内容和纹理对齐。通过我们提出的风格注入方法，我们观察到局部纹理模式能够成功转移，但仍然存在一些问题，如原始内容被破坏和颜色不和谐。为了解决这些问题，我们还提出了以下技术：查询保留、注意力温度缩放和初始潜在自适应实例归一化（AdaIN）。查询保留通过在自注意力中保留内容图像的查询，使反向扩散过程能够保留原始内容的空间结构。注意力温度缩放旨在通过处理因键替换而导致的模糊自注意力图，来保持内容结构。最后，初始潜在自适应实例归一化通过调整扩散模型中初始噪声的统计信息，来纠正颜色不和谐的问题，因为风格图像的颜色分布未能正确转移。我们的主要贡献总结如下：</p>
+<ul>
+<li>我们提出了一种风格迁移方法，通过简单操纵自注意力特征来利用大规模预训练扩散模型，在无需任何优化或监督（如文本）的情况下，将内容的键和值替换为风格的键和值。</li>
+<li>我们进一步改进了简单的风格迁移方法，通过提出查询保留、注意力温度缩放和初始潜在自适应实例归一化三个组件，使风格能够更好地适应。</li>
+<li>在风格迁移数据集上的广泛实验验证了我们提出的方法显著优于先前的方法，并达到了当前最优的性能。</li>
+</ul>
+<h3 id="2-相关工作"><a href="#2-相关工作" class="headerlink" title="2. 相关工作"></a>2. 相关工作</h3><h4 id="2-1-基于扩散模型的神经风格迁移"><a href="#2-1-基于扩散模型的神经风格迁移" class="headerlink" title="2.1 基于扩散模型的神经风格迁移"></a>2.1 基于扩散模型的神经风格迁移</h4><p>神经风格迁移是一种示例引导的图像生成任务，它将一幅图像的风格转移到另一幅图像上，同时保留原始图像的内容。在扩散模型领域，神经风格迁移通过利用预训练扩散模型的生成能力得到了发展。例如，InST引入了一种基于文本反转的方法，旨在将给定的风格映射到相应的文本嵌入中。StyleDiffusion旨在通过引入基于CLIP的风格解耦损失来微调扩散模型，从而实现风格和内容的解耦。此外，还有几种方法利用文本输入作为风格条件或用于确定要合成的内容。</p>
+<p>相反，DiffStyle提出了一种无需训练的风格迁移方法，该方法利用h空间并调整跳跃连接，以分别有效地传递风格和内容信息。然而，当DiffStyle应用于Stable Diffusion时，其表现与典型的风格迁移方法有很大不同；不仅纹理发生了变化，空间布局等语义信息也发生了改变。</p>
+<p>为了解决这些局限性，我们提出了一种新颖的算法，该算法在无需任何优化过程的情况下，在Stable Diffusion的自注意力层内和谐地融合风格和内容特征。</p>
+<h4 id="2-2-扩散模型中基于注意力的图像编辑"><a href="#2-2-扩散模型中基于注意力的图像编辑" class="headerlink" title="2.2 扩散模型中基于注意力的图像编辑"></a>2.2 扩散模型中基于注意力的图像编辑</h4><p>随着预训练的文本到图像扩散模型取得显著进展，出现了许多利用这些模型的图像编辑工作。值得注意的是，Prompt-to-Prompt提出了基于文本的局部图像编辑方法，通过操纵交叉注意力图来实现。具体来说，他们观察到交叉注意力在建模图像空间布局与提示中每个单词之间的关系方面起着重要作用。因此，他们用所需的单词和交叉注意力图替换原始的，从而获得符合文本条件的编辑图像。随后，Plug-and-play引入了文本引导的图像到图像转换方法。他们发现空间特征（即来自残差块的特征）和自注意力图决定了合成图像的空间布局。因此，在根据给定的文本条件生成新图像时，他们利用原始图像的特征和注意力图来引导扩散模型，以保留原始空间布局。最近，MasaCtrl提出了用于一致图像编辑的互自注意力控制方法，使用文本提示。详细来说，他们保留源图像自注意力层的键和值，同时用所需的文本提示对模型进行条件设置。</p>
+<p>与这些工作一样，我们认识到注意力图在表示空间信息方面的潜力。然而，与上述专注于利用文本条件的方法不同，我们专注于由来自不同风格的两幅图像组成的风格和内容图像进行条件设置。通过精确调整中间表示中的统计信息，将风格和内容图像的自注意力层中的特征相结合，我们将内容图像的纹理转移到给定的风格上。</p>
+<h3 id="3-背景"><a href="#3-背景" class="headerlink" title="3. 背景"></a>3. 背景</h3><p>潜在扩散模型（Latent Diffusion Model, LDM）是一类在低维潜在空间中进行训练的扩散模型，其目的是聚焦于数据的语义信息并降低计算成本。对于给定的图像$x \in \mathbb{R}^{H×W×3}$，编码器$\varepsilon$将$x$编码为潜在表示$z \in \mathbb{R}^{h×w×c}$，解码器则从该潜在表示中重建图像。</p>
+<p>利用预训练的编码器，LDM对数据集中的所有图像进行编码，并在潜在空间$z$上训练一个扩散模型，通过在时间步$t$从添加噪声后的潜在表示$z_t$预测噪声$\epsilon$。相应的训练目标为：</p>
+<script type="math/tex; mode=display">L_{LDM}=\mathbb{E}_{z, \epsilon, t}\left[\left\| \epsilon-\epsilon_{\theta}\left(z_{t}, t, y\right)\right\| _{2}^{2}\right] \tag{1}</script><p>其中，$\epsilon \in N(0,1)$是噪声，$t$是从$\{1, …, T\}$中均匀采样的时间步数，$y$是条件，$\epsilon_{\theta}$是一个神经网络，用于预测添加到$z$中的噪声。</p>
+<p>在我们的工作中，我们使用Stable Diffusion（SD），它是目前唯一公开的大规模预训练扩散模型。在SD中，$y$是文本，$\epsilon_{\theta}$采用U - Net架构，每个分辨率的模块依次包含一个残差块、一个自注意力块（SA）和一个交叉注意力块（CA）。如第1节所述，在这些模块中，我们重点关注SA块来实现风格迁移。给定残差块之后的特征$\phi$，自注意力块的计算过程如下：</p>
+<script type="math/tex; mode=display">\begin{aligned} Q=W_{Q}(\phi), K & =W_{K}(\phi), V=W_{V}(\phi), \\ \phi_{out }=Attn(Q, K, V) & =softmax\left(\frac{Q K^{T}}{\sqrt{d}}\right) \cdot V, \end{aligned}</script><p>其中，$d$表示投影后的查询维度，$W(.)$是投影层。需要注意的是，我们不使用任何文本条件，因此变量$y$始终为空文本提示（“”）。</p>
+<h3 id="4-方法"><a href="#4-方法" class="headerlink" title="4. 方法"></a>4. 方法</h3><p>本文旨在借助预训练的大规模文本到图像扩散模型的生成能力，解决艺术风格迁移问题。简而言之，艺术风格迁移是将给定内容图像$I^c$的风格修改为风格图像$I^s$的风格，生成的风格化图像$I^{cs}$应保留$I^c$的语义内容，同时其风格（如纹理）来自$I^s$。为简化说明，我们省略潜在扩散模型（LDM）中自动编码器的编码和解码过程，重点从扩散过程的角度详细阐述所提出的方法。因此，在以下部分中，我们将内容图像、风格图像和风格化图像等同于其编码后的对应表示$z_0^c$、$z_0^s$和$z_0^{cs}$。</p>
+<h4 id="4-1-基于注意力的风格注入"><a href="#4-1-基于注意力的风格注入" class="headerlink" title="4.1 基于注意力的风格注入"></a>4.1 基于注意力的风格注入</h4><p>我们从先前图像到图像转换方法，尤其是Prompt-to-Prompt的研究中获得启发。该方法的核心思想是在保持注意力图不变的情况下，改变交叉注意力（CA）的文本条件。由于注意力图会影响输出的空间布局，替换后的文本条件决定了生成图像中绘制的内容，而这些条件实际上就是交叉注意力中的键和值。受此启发，我们模仿交叉注意力的操作方式，对自注意力层的特征进行处理，将风格图像$I^s$的特征视为条件。具体而言，在生成过程中，我们将内容图像的键和值替换为风格图像的键和值，从而将风格图像的纹理转移到内容图像上。</p>
+<p>为此，我们首先利用去噪扩散隐式模型（DDIM）反演获取内容图像和风格图像的潜在表示，然后在DDIM反演过程中收集风格图像的自注意力特征。具体来说，对于预定义的时间步$t = \{0, …, T\}$，将风格图像$z_0^s$和内容图像$z_0^c$从图像（$t = 0$）反演为高斯噪声（$t = T$）。在DDIM反演过程中，我们还会收集每个时间步的内容查询特征（$Q_t^c$）以及风格的键和值特征（$K_t^s$，$V_t^s$）。</p>
+<p>之后，我们通过复制内容潜在噪声$z_T^c$来初始化风格化潜在噪声$z_T^{cs}$。然后，在对风格化潜在表示$z_t^{cs}$进行整个反向过程时，将从风格图像收集的键$K_t^s$和值$V_t^s$注入到自注意力层中，以替代原始的键$K_t^{cs}$和值$V_t^{cs}$，从而将目标风格转移到风格化潜在表示上。然而，仅进行这种替换可能会导致内容被破坏，因为随着注意力值的变化，风格化潜在表示的内容会逐渐改变。因此，我们提出查询保留机制来维持原始内容。简单来说，在整个反向过程中，我们将风格化潜在表示的查询$Q_t^{cs}$与内容的查询$Q_t^c$进行融合。时间步$t$的风格注入和查询保留过程如下所示：</p>
+<script type="math/tex; mode=display">\tilde{Q}_{t}^{c s}=\gamma × Q_{t}^{c}+(1-\gamma) × Q_{t}^{c s},</script><script type="math/tex; mode=display">\phi_{out }^{cs}=Attn\left(\overline{Q}_{t}^{c s}, K_{t}^{s}, V_{t}^{s}\right), (4)</script><p>其中，$\gamma$是融合程度，取值范围为$[0, 1]$。此外，我们将这些操作应用于解码器中与局部纹理相关的后半部分层（在Stable Diffusion中为第7 - 12层解码器层）。我们还强调，所提出的方法可以通过改变查询保留比例$\gamma$来调整风格转移的程度。具体而言，$\gamma$越高，保留的内容越多；$\gamma$越低，风格转移的效果越强。</p>
+<h4 id="4-2-注意力温度缩放"><a href="#4-2-注意力温度缩放" class="headerlink" title="4.2 注意力温度缩放"></a>4.2 注意力温度缩放</h4><p>注意力图通过查询和键特征之间的缩放点积计算得到。在训练过程中，自注意力层中的查询和键特征来自同一图像。然而，如果我们将键特征替换为风格图像的键特征，由于风格和内容很可能不相关，相似度的整体幅度会降低。因此，计算得到的注意力图可能会变得模糊或平滑，这将进一步导致输出图像不清晰，不利于捕捉内容和风格信息。</p>
+<p>为了量化这个问题，我们在进行基于注意力的风格注入时，测量注意力图的标准差。具体来说，我们计算应用softmax之前的注意力图，即查询和键之间的缩放点积。如图4（a）所示，我们验证了这种风格注入在整个时间步中倾向于降低注意力图的标准差。也就是说，应用风格注入后经过softmax的注意力图会过于平滑。</p>
+<p>为了使注意力图更加清晰，我们引入了一个注意力温度缩放参数。具体而言，我们将softmax之前的注意力图乘以一个大于1的常数温度缩放参数$\tau$。这样，经过softmax后的注意力图会比原始值更加清晰。修改后的注意力计算过程如下：</p>
+<script type="math/tex; mode=display">Attn_{\tau}\left(\tilde{Q_{t}^{c s}}, K_{t}^{s}, V_{t}^{s}\right)=softmax\left(\frac{\tau \tilde{Q_{t}^{c s}}\left(K_{t}^{s}\right)^{T}}{\sqrt{d}}\right) \cdot V_{t}^{s}, \tau>1 .</script><p>我们将$\tau = 1.5$作为默认设置，这是整个时间步的平均比例。如图4（b）所示，我们证实它有效地将注意力图的标准差校准到与原始值相近的水平。</p>
+<h4 id="4-3-初始潜在自适应实例归一化（Initial-Latent-AdaIN）"><a href="#4-3-初始潜在自适应实例归一化（Initial-Latent-AdaIN）" class="headerlink" title="4.3 初始潜在自适应实例归一化（Initial Latent AdaIN）"></a>4.3 初始潜在自适应实例归一化（Initial Latent AdaIN）</h4><p>在艺术风格迁移中，色调通常占据风格信息的重要部分。在这种情况下，我们观察到仅使用基于注意力的风格注入在捕捉给定风格的色调方面往往效果不佳。如图5（a）所示，纹理和局部图案成功转移到了内容图像上，但内容图像的色调仍然保持不变。此外，即使注入了风格的查询、键和值，生成的图像仍然保留了内容图像的色调，如图5（b）所示。</p>
+<p>由于替换自注意力特征对色调的影响较小，我们分析了扩散模型的另一个关键部分：初始潜在噪声。扩散模型领域的一项最新发现是，扩散模型在合成纯黑色或纯白色图像时存在困难。相反，由于初始噪声是从均值为零、方差为1的分布中采样得到的，模型倾向于生成中等颜色的图像。因此，我们假设初始噪声的统计信息在很大程度上影响了生成图像的颜色和亮度。</p>
+<p>基于这一假设，我们尝试在风格迁移过程中使用风格图像的初始潜在表示$z_T^s$。然而，如果我们直接从风格潜在表示$z_T^s$开始生成图像，合成结果的结构信息也会遵循风格图像，从而丢失内容图像的结构。为了充分利用两个初始潜在表示中的有价值信息，我们考虑到色调信息与初始潜在表示的通道统计信息密切相关，这遵循了风格损失和自适应实例归一化（AdaIN）的原理。因此，我们采用AdaIN来调整初始潜在表示，以实现有效的色调信息转移，具体表示为：</p>
+<script type="math/tex; mode=display">z_{T}^{c s}=\sigma\left(z_{T}^{s}\right)\left(\frac{z_{T}^{c}-\mu\left(z_{T}^{c}\right)}{\sigma\left(z_{T}^{c}\right)}\right)+\mu\left(z_{T}^{s}\right),</script><p>其中，$\mu(·)$和$\sigma(·)$分别表示通道维度上的均值和标准差。基于此，初始潜在表示$z_T^{cs}$在保留来自$z_T^c$的内容信息的同时，使通道维度上的均值和标准差与$z_T^s$对齐。</p>
+<h3 id="5-实验"><a href="#5-实验" class="headerlink" title="5. 实验"></a>5. 实验</h3><h4 id="5-1-实验设置"><a href="#5-1-实验设置" class="headerlink" title="5.1 实验设置"></a>5.1 实验设置</h4><p>我们在基于LAION数据集预训练的Stable Diffusion 1.4上进行所有实验，并采用DDIM采样，总共50个时间步（$t = \{1, …, 50\}$）。对于超参数的默认设置，如果没有特别说明，我们使用$\gamma = 0.75$和$\tau = 1.5$。</p>
+<h4 id="5-2-评估协议"><a href="#5-2-评估协议" class="headerlink" title="5.2 评估协议"></a>5.2 评估协议</h4><p>传统的风格迁移方法通常将风格损失（Style Loss）既用作训练目标，也用作评估指标，因此其结果往往会过度拟合风格损失。为了进行公平比较，我们采用了最近提出的ArtFID指标。ArtFID在评估整体风格迁移性能时，兼顾了内容和风格的保留情况，并且被认为与人类判断高度吻合。具体来说，ArtFID的计算方式为（$ArtFID = (1 + LPIPS) \cdot (1 + FID)$）。其中，LPIPS用于衡量风格化图像与相应内容图像之间的内容保真度，FID用于评估风格化图像与相应风格图像之间的风格保真度。</p>
+<ul>
+<li><strong>数据集</strong>：我们的评估使用来自MSCOCO数据集的内容图像和来自WikiArt数据集的风格图像。所有输入图像均中心裁剪为512×512分辨率。此外，为了进行定量比较，我们从每个数据集中随机选择20个内容图像和40个风格图像，如同$StyTR ^{2}$所做的那样，生成800张风格化图像。</li>
+<li><strong>内容特征结构距离（CFSD）</strong>：在风格迁移评估中，内容保真度的评估通常依赖于LPIPS距离。然而，由于LPIPS使用的是在ImageNet上预训练用于分类任务的AlexNet的特征空间，该空间具有纹理偏向性。因此，图像的风格信息会影响LPIPS得分。为了减轻这种风格影响，我们额外引入了内容特征结构距离（CFSD），这是一种仅考虑图像块之间空间相关性的距离度量。</li>
+</ul>
+<p>具体来说，我们首先定义图像块特征之间的相关图。对于给定的图像$I$，我们获取卷积层conv3在VGG19中的输出特征图$F \in \mathbb{R}^{hw×c}$。然后，计算块相似度图$M = F × F^{T}$，$M \in \mathbb{R}^{hw×hw}$，它表示$F$中每对特征之间的相似度图。之后，为了计算两个块相似度图之间的距离，我们通过应用softmax操作将单个块与其他块之间的相似度建模为概率分布。最后，相关图表示为$S = [softmax(M_{i})]_{i = 1}^{hw}$，$S \in \mathbb{R}^{hw×hw}$，其中$M_{i} \in \mathbb{R}^{1×hw}$是第$i$个块与其他块之间的相似度图。</p>
+<p>然后，CFSD被定义为两个相关图之间的KL散度。在我们的实验中，计算内容图像（$S^{c}$）和风格化图像（$S^{cs}$）的相关图之间的CFSD，公式如下：</p>
+<script type="math/tex; mode=display">CFSD=\frac{1}{hw} \sum_{i=1}^{hw} D_{KL}\left(S_{i}^{c} \| S_{i}^{c s}\right),</script><h4 id="5-3-定量比较"><a href="#5-3-定量比较" class="headerlink" title="5.3 定量比较"></a>5.3 定量比较</h4><p>我们通过与12种最先进的方法进行比较来评估所提出的方法，其中包括9种传统风格迁移方法（AesPA-Net、CAST、$StyTR ^{2}$、EFDM、MAST、AdaAttN、ArtFlow、AdaConv、AdaIN）和3种基于扩散的风格迁移方法（DiffuseIT、InST、DiffStyle），这些方法都以风格图像作为输入。我们使用所有基线方法的公开实现，并采用其推荐的配置。</p>
+<ul>
+<li><strong>与传统风格迁移方法比较</strong>：如表1所示，在ArtFID指标上，我们的方法大幅超越传统风格迁移方法，该指标与人类偏好相符。此外，我们的方法获得了最低的FID值，这表明风格化图像与目标风格高度相似。在内容保真度指标方面，我们的方法在CFSD和LPIPS上均表现出色。需要指出的是，与其他方法相比，我们的方法在CFSD指标上得分低很多，CFSD是仅考虑空间相关性的指标。</li>
+</ul>
+<p>此外，我们还强调，所提出的方法可以通过改变$\gamma$任意调整风格迁移的程度。当我们匹配LPIPS（内容）的值时，我们的方法在FID（风格）方面显著超越所有其他方法（图10）。</p>
+<ul>
+<li><strong>与基于扩散的风格迁移方法比较</strong>：如表1所示，在LPIPS、FID及其组合（ArtFID）方面，我们的方法展现出最佳性能，优势明显。对于扩散模型而言，运行时间是一个重要因素，因为它们合成单张图像需要多个步骤，不可避免地会消耗时间。因此，我们在单个TITAN RTX GPU上测量了一对内容和风格图像的推理时间，如表2所示。我们的方法总共需要12.4秒，其中DDIM反演耗时8.2秒，采样耗时4.2秒。结果表明，即使使用大规模扩散模型，我们的方法也明显比其他方法更快。这种更快的速度源于我们的方法在DDIM反演时可以使用更少的步骤，因为我们额外利用了反演步骤中收集的特征，大大降低了对内容和风格进行完美反演的必要性。</li>
+</ul>
+<h4 id="5-4-定性比较"><a href="#5-4-定性比较" class="headerlink" title="5.4 定性比较"></a>5.4 定性比较</h4><ul>
+<li><strong>与传统风格迁移方法比较</strong>：如图6所示，我们发现我们的方法在很好地保留内容图像结构信息的同时，还能有效地迁移风格。例如，在第三行中，我们的方法保留了桥梁的结构，而基线方法在保留结构或迁移风格方面表现不佳。我们在图7及补充材料中还提供了带放大细节的定性比较。</li>
+<li><strong>与基于扩散的风格迁移方法比较</strong>：我们还将我们的方法与最近的基于扩散的风格迁移基线方法进行了比较。如图6所示，我们观察到所提出的技术能够很好地将风格迁移到内容上。另一方面，当给定任意内容 - 风格对时，基线方法常常会丢失内容的结构或无法成功迁移风格。例如，DiffuseIT和DiffStyle在生成形状合理且视觉效果好的图像方面存在困难，或者会丢失原始内容。不同的是，InST虽然能合成逼真的图像，但在迁移风格（第一行）或改变图像内容（第二、三行）方面存在困难。</li>
+</ul>
+<h4 id="5-5-消融研究"><a href="#5-5-消融研究" class="headerlink" title="5.5 消融研究"></a>5.5 消融研究</h4><p>为了验证所提出组件的有效性，我们从定量和定性两个方面进行了消融研究。如图8和表3所示，风格注入对于引导给定图像的风格和内容至关重要（配置B）。此外，初始潜在AdaIN在转移风格色调方面起着重要作用（配置D）。注意力温度缩放负责提高合成结果的质量，例如锐化细节和解决模糊问题。例如，这种缩放同时降低了FID和LPIPS（表3中配置$A^{*}$与C的对比）。为了进行更详细的分析，我们在图10（b）中展示了在改变注意力缩放参数$\tau$时，风格 - 内容权衡的定量指标。结果表明，注意力缩放有效地降低了FID和LPIPS，证明了其在内容保留和风格迁移能力方面的作用（$\tau = 1.0$与$\tau = 1.5$对比）。</p>
+<h4 id="5-6-额外分析"><a href="#5-6-额外分析" class="headerlink" title="5.6 额外分析"></a>5.6 额外分析</h4><ul>
+<li><strong>内容 - 风格权衡</strong>：如4.1节所述，我们提出的方法通过调整参数$\gamma$，可以灵活控制内容保真度和风格保真度之间的权衡关系。具体来说，我们在$\gamma$取值范围为$[0.3, 1]$内，以0.1为步长变化时，计算FID和LPIPS。如图10（a）所示，在所有内容和风格保真度范围内，我们的方法都超越了基线方法。这一结果表明，当我们通过调整我们方法的$\gamma$，使风格或内容指标与对比模型相匹配时，我们的方法明显优于其他方法。需要注意的是，图中的虚线表示表1中我们模型的结果。</li>
+</ul>
+<p>我们还通过调整$\gamma$合成图像，以可视化内容 - 风格权衡的效果。如图9所示，$\gamma$越低，生成图像反映风格的程度越高，但会丢失给定图像的内容，反之亦然。我们方法的这一特性意味着用户可以根据个人喜好调整风格程度。</p>
+<ul>
+<li><strong>$\tau$值的研究</strong>：我们观察到，随着$\tau$逐渐增大，风格迁移的性能逐渐提升，尽管当$\tau$较大时，其提升效果逐渐变小，如图10（b）所示。这一结果表明，注意力温度缩放通过简单调整注意力图的幅度，能够有效地发挥作用。</li>
+<li><strong>与文本引导的风格迁移比较</strong>：我们额外将所提出的方法与基于文本输入的风格迁移方法进行了比较。由于文本引导的方法倾向于大幅修改风格，在本次实验中我们将$\gamma$设为0.3。由于文本条件很难包含风格图像中的所有信息，如纹理和色调，文本引导方法的迁移结果与目标风格的相似度较低，如图11所示。相比之下，我们验证了所提出的方法能够以高保真度成功迁移风格。</li>
+</ul>
+<h3 id="6-结论"><a href="#6-结论" class="headerlink" title="6. 结论"></a>6. 结论</h3><p>我们的工作解决了基于扩散模型的风格迁移方法所面临的挑战，这些方法通常需要耗时的优化步骤，且难以充分利用大规模扩散模型的生成潜力。为此，我们提出了一种无需训练的方法，用于在风格迁移中适配预训练的大规模扩散模型。我们的方法主要通过模仿交叉注意力机制，在内容生成过程中，将自注意力层的键和值替换为风格图像的对应特征。此外，我们提出了查询保留和注意力温度缩放机制，以缓解内容被破坏的问题，并利用初始潜在自适应实例归一化（AdaIN）处理颜色不协调（风格颜色转移失败）的问题。实验结果表明，与以往基线中的最先进技术相比，我们提出的方法具有显著优势。</p>
+<h3 id="致谢"><a href="#致谢" class="headerlink" title="致谢"></a>致谢</h3><p>这项工作部分得到了韩国科学技术信息通信部（MSIT）/韩国信息技术振兴院（IITP）（编号：2022 - 0 - 00680、2019 - 0 - 00421、2020 - 0 - 01821、2021 - 002068），以及韩国科学技术信息通信部和韩国国家警察厅（MSIT&amp;KNPA）/韩国知识产权战略推进院（KIPoT）（警察实验室2.0，编号：210121M06）的支持。</p>
+<h3 id="7-附录"><a href="#7-附录" class="headerlink" title="7. 附录"></a>7. 附录</h3><ul>
+<li><strong>颜色转移能力的消融研究</strong>：为了验证消融方法在颜色转移方面的有效性，我们采用了HistoGAN中提出的RGB-uv直方图来衡量颜色转移能力。具体来说，对于给定的输入图像$I$，我们将其转换到对数色度空间。例如，选择红色（R）颜色通道作为主通道，并通过绿色（G）和蓝色（B）通道进行归一化，得到：<script type="math/tex; mode=display">I_{uR}(x)=\log\left(\frac{I_{R}(x)+\epsilon}{I_{G}(x)+\epsilon}\right), I_{vR}(x)=\log\left(\frac{I_{R}(x)+\epsilon}{I_{B}(x)+\epsilon}\right)</script>其中，$I_{R}$、$I_{G}$、$I_{B}$分别是图像$I$的颜色通道，$\epsilon$是一个用于数值稳定性的小常数，$x$是像素索引。</li>
+</ul>
+<p>然后，计算强度$I_{y}(x)=\sqrt{I_{R}^{2}(x)+I_{G}^{2}(x)+I_{B}^{2}(x)}$用于加权缩放，并对直方图进行微分。最终的直方图表示为：</p>
+<script type="math/tex; mode=display">H(u, v, c) \propto \sum_{x} k\left(I_{uc}(x), I_{vc}(x), u, v\right) I_{y}(x)</script><p>其中，$I_{uG}$、$I_{vG}$、$I_{uB}$、$I_{vB}$是与公式（8）类似投影到对数色度空间的绿色和蓝色通道，$c \in \{R, G, B\}$，$k(·)$是一个逆二次核函数。</p>
+<p>我们使用直方图损失（Histogram Loss）作为颜色相似度度量，它衡量了风格化图像和风格图像的直方图之间的Hellinger距离：</p>
+<script type="math/tex; mode=display">C\left(H_{g}, H_{t}\right)=\frac{1}{\sqrt{2}}\left\| H_{cs}^{\frac{1}{2}}-H_{s}^{\frac{1}{2}}\right\| _{2}</script><p>其中，$H_{cs}$和$H_{s}$分别是风格化图像和风格图像的颜色直方图，$|\cdot|$是标准欧几里得范数，$H^{\frac{1}{2}}$表示元素级的平方根。我们采用HistoGAN的默认配置。关于直方图损失的详细描述，请参考原始的HistoGAN论文。</p>
+<p>结果表明，我们评估了初始潜在自适应实例归一化（Initial Latent AdaIN）在色调转移方面的有效性。在表4中，每个提出的组件都有助于转移给定风格图像的色调。特别是，我们证实初始潜在自适应实例归一化对色调转移有显著影响。</p>
+<ul>
+<li><strong>注意力温度缩放消融的定性比较</strong>：为了突出注意力温度缩放的效果，我们提供了一些在消融注意力缩放时的风格转移结果示例。如图12所示，我们验证了注意力缩放使模型能够合成清晰的图像，并很好地保留给定风格图像中的图案（例如左边示例中的星星）。这一实验结果证实了所提出的注意力温度缩放方法的重要性。请注意，在本实验中我们使用$\gamma = 0.3$，以在可视化中保持较强的风格转移效果。</li>
+<li><strong>其他数据集上的定量比较</strong>：在表5中，我们对一组新的风格-内容对（20个内容，40个风格）进行了定量实验，这些图像是随机采样的，与原始图像没有任何重叠。结果显示，所提方法的性能提升仍然显著，这证实了超参数具有良好的泛化性。LPIPS基于CNN特征，会受到纹理和颜色的影响。为了独立评估内容和颜色，我们在补充材料中针对近期表现最佳且ArtFID最低的基线方法（AesPA-Net、InST、AdaAttN）测量了LPIPS灰度值和直方图损失。如表5所示，我们的方法在LPIPS灰度值上最低，在颜色相似度上最高。</li>
+<li><strong>查询保留特征空间分析</strong>：图13可视化了一对风格-内容图像的$Q_{t}^{c}$、$Q_{t}^{s}$、$Q_{t}^{cs}$和$\tilde{Q}_{t}^{cs}$的特征。可以看到，插值后的特征（$\tilde{Q}_{t}^{cs}$）位于内容附近的分布中，因为我们在整个反向过程中逐渐融合了内容查询（$Q_{t}^{c}$）和风格化查询（$Q_{t}^{cs}$）。</li>
+</ul>
+<p>此外，我们计算了$\tilde{Q}_{t}^{cs}$到（内容、风格、自身）中前5个最近邻（NNs）的平均距离，以及在所有注入层中$t = [10, 20, 30, 40]$时最近邻中这些特征的数量。距离和最近邻数量分别为$(5.49, 9.06, 4.43)$、$(1.24, 0.00, 3.76)$，这表明$\tilde{Q}_{t}^{cs}$位于内容附近的分布中。</p>
+<ul>
+<li><strong>使用文本提示的风格转移</strong>：在本段落中，我们利用由BLIP获得的文本提示，而不是空文本标记，用于DDIM反演。使用官方存储库中“data vis”的图像，这些图像大多由单个对象组成，容易添加字幕。结果如表6所示，使用文本提示的我们的方法略有改进。</li>
+<li><strong>用户研究</strong>：我们将我们的方法与最新的传统方法AesPA-Net和基于扩散的方法InST进行比较，邀请18位用户参与，每位用户评估10个示例。我们观察到，分别有（57.2%，76.7%）的用户更喜欢我们提出的方法，而非（AesPA-Net，InST）。需要注意的是，我们的方法推理速度比InST快得多。</li>
+<li><strong>与StyleDiffusion的定性比较</strong>：由于StyleDiffusion的实现不可用，我们将我们的方法与StyleDiffusion补充材料中的示例进行比较。我们从其基线方法的存储库中获取StyleDiffusion的风格-内容对。我们观察到，我们的方法更适合转移局部纹理，而StyleDiffusion则倾向于显著改变图像的结构，如图15所示。我们推测，在CLIP语义丰富的特征空间中优化风格，使得StyleDiffusion以这种方式进行训练。</li>
+<li><strong>更多定性结果</strong>：我们进一步将所提方法与最新的基线方法（AesPA-Net）和ArtFID最低的基线方法（AdaAttN）进行比较。图14展示了我们的方法与基于扩散模型的基线方法的更多定性比较。此外，如图16、17所示，我们观察到我们的方法能更好地将给定风格的局部纹理转移到内容图像中。<br>-</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f16.png"></th>
+<th style="text-align:center"><img src="f17.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图 16：与基线方法（AesPA-Net，AdaAttN）的定性比较。为了可视化详细纹理，我们在每对内容 - 风格图像的第二行提供了风格图像及其风格化对应图像的裁剪版本。放大可查看细节。</em></td>
+<td style="text-align:center">_图 17：与基线方法（AesPA-Net，AdaAttN）的定性比较。为了可视化详细纹理，我们在每对内容 - 风格图像的第二行提供了风格图像及其风格化对应图像的裁剪版本。放大可查看细节。_</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>同样，在图18、19中，我们可视化了各种内容和风格图像对的风格转移结果。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f18.png"></th>
+<th style="text-align:center"><img src="f19.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图 18：风格和内容图像对的风格转移结果。放大可查看细节。</em></td>
+<td style="text-align:center"><em>图 19：风格和内容图像对的风格转移结果。放大可查看细节。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/diffusion/" rel="tag"># diffusion</a>
+              <a href="/tags/CVPR/" rel="tag"># CVPR</a>
+              <a href="/tags/2024/" rel="tag"># 2024</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/03/28/Consistency-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" rel="prev" title="Consistency Models论文精读">
+      <i class="fa fa-chevron-left"></i> Consistency Models论文精读
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.1.</span> <span class="nav-text">1. 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.2.</span> <span class="nav-text">2. 相关工作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E5%9F%BA%E4%BA%8E%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B%E7%9A%84%E7%A5%9E%E7%BB%8F%E9%A3%8E%E6%A0%BC%E8%BF%81%E7%A7%BB"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 基于扩散模型的神经风格迁移</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B%E4%B8%AD%E5%9F%BA%E4%BA%8E%E6%B3%A8%E6%84%8F%E5%8A%9B%E7%9A%84%E5%9B%BE%E5%83%8F%E7%BC%96%E8%BE%91"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 扩散模型中基于注意力的图像编辑</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E8%83%8C%E6%99%AF"><span class="nav-number">1.3.</span> <span class="nav-text">3. 背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.</span> <span class="nav-text">4. 方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E5%9F%BA%E4%BA%8E%E6%B3%A8%E6%84%8F%E5%8A%9B%E7%9A%84%E9%A3%8E%E6%A0%BC%E6%B3%A8%E5%85%A5"><span class="nav-number">1.4.1.</span> <span class="nav-text">4.1 基于注意力的风格注入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%B8%A9%E5%BA%A6%E7%BC%A9%E6%94%BE"><span class="nav-number">1.4.2.</span> <span class="nav-text">4.2 注意力温度缩放</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-%E5%88%9D%E5%A7%8B%E6%BD%9C%E5%9C%A8%E8%87%AA%E9%80%82%E5%BA%94%E5%AE%9E%E4%BE%8B%E5%BD%92%E4%B8%80%E5%8C%96%EF%BC%88Initial-Latent-AdaIN%EF%BC%89"><span class="nav-number">1.4.3.</span> <span class="nav-text">4.3 初始潜在自适应实例归一化（Initial Latent AdaIN）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.5.</span> <span class="nav-text">5. 实验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#5-1-%E5%AE%9E%E9%AA%8C%E8%AE%BE%E7%BD%AE"><span class="nav-number">1.5.1.</span> <span class="nav-text">5.1 实验设置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-2-%E8%AF%84%E4%BC%B0%E5%8D%8F%E8%AE%AE"><span class="nav-number">1.5.2.</span> <span class="nav-text">5.2 评估协议</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-3-%E5%AE%9A%E9%87%8F%E6%AF%94%E8%BE%83"><span class="nav-number">1.5.3.</span> <span class="nav-text">5.3 定量比较</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-4-%E5%AE%9A%E6%80%A7%E6%AF%94%E8%BE%83"><span class="nav-number">1.5.4.</span> <span class="nav-text">5.4 定性比较</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-5-%E6%B6%88%E8%9E%8D%E7%A0%94%E7%A9%B6"><span class="nav-number">1.5.5.</span> <span class="nav-text">5.5 消融研究</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-6-%E9%A2%9D%E5%A4%96%E5%88%86%E6%9E%90"><span class="nav-number">1.5.6.</span> <span class="nav-text">5.6 额外分析</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E7%BB%93%E8%AE%BA"><span class="nav-number">1.6.</span> <span class="nav-text">6. 结论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%B4%E8%B0%A2"><span class="nav-number">1.7.</span> <span class="nav-text">致谢</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E9%99%84%E5%BD%95"><span class="nav-number">1.8.</span> <span class="nav-text">7. 附录</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zongqing Li"
+      src="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+  <p class="site-author-name" itemprop="name">Zongqing Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">45</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hqulzq" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hqulzq" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hqulzq@163.com" title="E-Mail → mailto:hqulzq@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+      
+<script type="text/javascript" charset="utf-8" src="/js/tagcloud.js"></script>
+<script type="text/javascript" charset="utf-8" src="/js/tagcanvas.js"></script>
+<div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div id="myCanvasContainer" class="widget tagcloud">
+        <canvas width="250" height="250" id="resCanvas" style="width=100%">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2023/" rel="tag">2023</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2024/" rel="tag">2024</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2025/" rel="tag">2025</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICML/" rel="tag">ICML</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">27</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%85%E8%AF%BB/" rel="tag">阅读</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+        </canvas>
+    </div>
+</div>
+
+
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zongqing Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('post.copy_button').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('post.copy_success')
+          else $(this).text('post.copy_failure')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('post.copy_button')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
