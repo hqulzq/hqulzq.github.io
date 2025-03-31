@@ -39,7 +39,7 @@
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/28/Consistency-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f5.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/28/Consistency-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f6.png">
 <meta property="article:published_time" content="2025-03-28T08:42:39.000Z">
-<meta property="article:modified_time" content="2025-03-28T12:28:05.036Z">
+<meta property="article:modified_time" content="2025-03-29T08:01:40.366Z">
 <meta property="article:author" content="Zongqing Li">
 <meta property="article:tag" content="diffusion">
 <meta property="article:tag" content="2023">
@@ -232,10 +232,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2025-03-28 16:42:39 / 修改时间：20:28:05" itemprop="dateCreated datePublished" datetime="2025-03-28T16:42:39+08:00">2025-03-28</time>
+              <time title="创建时间：2025-03-28 16:42:39" itemprop="dateCreated datePublished" datetime="2025-03-28T16:42:39+08:00">2025-03-28</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-03-29 16:01:40" itemprop="dateModified" datetime="2025-03-29T16:01:40+08:00">2025-03-29</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -257,7 +263,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散模型在图像、音频和视频生成领域取得了显著进展，但它们依赖于迭代采样过程，导致生成速度较慢。为了克服这一限制，我们提出了一致性模型（Consistency Models），这是一类新的模型，通过直接将噪声映射到数据来生成高质量样本。一致性模型在设计上支持快速单步生成，同时也允许多步采样，以便在计算量和样本质量之间进行权衡。它们还支持零样本数据编辑，如图像修复、上色和超分辨率，而无需在这些任务上进行明确的训练。一致性模型既可以通过提炼预训练的扩散模型进行训练，也可以作为独立的生成模型进行训练。通过大量实验，我们证明了在单步和少步采样中，一致性模型优于现有的扩散模型提炼技术，在CIFAR-10数据集上实现了3.55的最先进FID（Frechet Inception Distance），在64×64分辨率的ImageNet数据集上实现了6.20的最先进FID。在独立训练时，一致性模型成为一类新的生成模型，在CIFAR-10、64×64分辨率的ImageNet和256×256分辨率的LSUN等标准基准测试中，其性能优于现有的单步、非对抗性生成模型。<br><span id="more"></span></p>
+        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散模型在图像、音频和视频生成领域取得了显著进展，但它们依赖于迭代采样过程，导致生成速度较慢。为了克服这一限制，我们提出了一致性模型（Consistency Models），这是一类新的模型，通过直接将噪声映射到数据来生成高质量样本。<font color="red" style="background: rgb(234, 238, 23)">一致性模型在设计上支持快速单步生成，同时也允许多步采样，以便在计算量和样本质量之间进行权衡。</font>它们还支持零样本数据编辑，如图像修复、上色和超分辨率，而无需在这些任务上进行明确的训练。一致性模型既可以通过提炼预训练的扩散模型进行训练，也可以作为独立的生成模型进行训练。通过大量实验，我们证明了在单步和少步采样中，一致性模型优于现有的扩散模型提炼技术，在CIFAR-10数据集上实现了3.55的最先进FID（Frechet Inception Distance），在64×64分辨率的ImageNet数据集上实现了6.20的最先进FID。在独立训练时，一致性模型成为一类新的生成模型，在CIFAR-10、64×64分辨率的ImageNet和256×256分辨率的LSUN等标准基准测试中，其性能优于现有的单步、非对抗性生成模型。<br><span id="more"></span></p>
 <h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1. 引言"></a>1. 引言</h3><p>扩散模型（Sohl-Dickstein等人, 2015; Song和Ermon, 2019; 2020; Ho等人, 2020; Song等人, 2021），也称为基于分数的生成模型，已在多个领域取得了前所未有的成功，包括图像生成（Dhariwal和Nichol, 2021; Nichol等人, 2021; Ramesh等人, 2022; Saharia等人, 2022; Rombach等人, 2022）、音频合成（Kong等人, 2020; Chen等人, 2021; Popov等人, 2021）和视频生成（Ho等人, 2022b; 2022a）。扩散模型的一个关键特征是迭代采样过程，该过程从随机初始向量中逐步去除噪声。这个迭代过程在计算量和样本质量之间提供了灵活的权衡，因为使用更多计算资源进行更多次迭代通常会产生质量更好的样本。这也是扩散模型许多零样本数据编辑能力的关键，使它们能够解决从图像修复、上色、笔画引导的图像编辑到计算机断层扫描和磁共振成像等具有挑战性的逆问题（Song和Ermon, 2019; Song等人, 2021; 2022; 2023; Kawar等人, 2021; 2022; Chung等人, 2023; Meng等人, 2021）。然而，与生成对抗网络（GANs, Goodfellow等人, 2014）、变分自编码器（VAEs, Kingma和Welling, 2014; Rezende等人, 2014）或归一化流（Dinh等人, 2015; 2017; Kingma和Dhariwal, 2018）等单步生成模型相比，扩散模型的迭代生成过程在生成样本时通常需要多10 - 2000倍的计算量（Song和Ermon, 2020; Ho等人, 2020; Song等人, 2021; Zhang和Chen, 2022; Lu等人, 2022），这导致推理速度较慢，限制了其在实时应用中的使用。</p>
 <p>我们的目标是创建能够实现高效单步生成的生成模型，同时不牺牲迭代采样的重要优势，例如在必要时用计算量换取样本质量，以及执行零样本数据编辑任务。如图1所示，我们基于连续时间扩散模型（Song等人, 2021）中的概率流（PF）常微分方程（ODE）构建模型，其轨迹将数据分布平稳地转换为易于处理的噪声分布。我们提议学习一个模型，该模型能将任意时间步的任意点映射到轨迹的起始点。我们模型的一个显著特性是自一致性：同一轨迹上的点会映射到相同的起始点。因此，我们将这类模型称为一致性模型。一致性模型使我们能够通过仅一次网络评估，将随机噪声向量（ODE轨迹的终点，例如图1中的 $x_{T}$ ）转换为数据样本（ODE轨迹的起始点，例如图1中的 $x_{0}$ ）。重要的是，通过在多个时间步链接一致性模型的输出，我们可以提高样本质量，并以增加计算量为代价执行零样本数据编辑，这与扩散模型的迭代采样类似。</p>
 <div class="table-container">
