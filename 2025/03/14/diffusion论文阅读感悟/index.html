@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="(NSCN Noise Conditional Score Networks) Generative Modeling by Estimating Gradients of the Data Distribution 发表于2029-NeurIPS  Q: 这篇论文试图解决什么问题？A: 这篇论文提出了一种新的生成模型，旨在解决现有生成模型中的一些固有局限性，特别是在处理低维流形上的数据分布时的问">
+  <meta name="description" content="(NSCN Noise Conditional Score Networks) Generative Modeling by Estimating Gradients of the Data Distribution 发表于2019-NeurIPS 核心公式与推导： 创新点： 不足之处：因为设计了加噪的马尔可夫过程，导致采样效率低。 提出了一种马尔可夫的加噪与去噪过程，diffusion的经典之作">
 <meta property="og:type" content="article">
 <meta property="og:title" content="diffusion论文阅读感悟">
 <meta property="og:url" content="https://hqulzq.github.io/2025/03/14/diffusion%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E6%84%9F%E6%82%9F/index.html">
 <meta property="og:site_name" content="Lzq&#39;s blog">
-<meta property="og:description" content="(NSCN Noise Conditional Score Networks) Generative Modeling by Estimating Gradients of the Data Distribution 发表于2029-NeurIPS  Q: 这篇论文试图解决什么问题？A: 这篇论文提出了一种新的生成模型，旨在解决现有生成模型中的一些固有局限性，特别是在处理低维流形上的数据分布时的问">
+<meta property="og:description" content="(NSCN Noise Conditional Score Networks) Generative Modeling by Estimating Gradients of the Data Distribution 发表于2019-NeurIPS 核心公式与推导： 创新点： 不足之处：因为设计了加噪的马尔可夫过程，导致采样效率低。 提出了一种马尔可夫的加噪与去噪过程，diffusion的经典之作">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-03-14T12:56:45.000Z">
-<meta property="article:modified_time" content="2025-03-28T03:28:22.262Z">
+<meta property="article:modified_time" content="2025-04-01T07:29:14.589Z">
 <meta property="article:author" content="Zongqing Li">
 <meta property="article:tag" content="diffusion">
 <meta name="twitter:card" content="summary">
@@ -226,7 +226,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-03-28 11:28:22" itemprop="dateModified" datetime="2025-03-28T11:28:22+08:00">2025-03-28</time>
+                <time title="修改时间：2025-04-01 15:29:14" itemprop="dateModified" datetime="2025-04-01T15:29:14+08:00">2025-04-01</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -250,20 +250,11 @@
 
       
         <h2 id="NSCN-Noise-Conditional-Score-Networks-Generative-Modeling-by-Estimating-Gradients-of-the-Data-Distribution"><a href="#NSCN-Noise-Conditional-Score-Networks-Generative-Modeling-by-Estimating-Gradients-of-the-Data-Distribution" class="headerlink" title="(NSCN Noise Conditional Score Networks) Generative Modeling by Estimating Gradients of the Data Distribution"></a>(NSCN Noise Conditional Score Networks) Generative Modeling by Estimating Gradients of the Data Distribution</h2><ul>
-<li>发表于2029-NeurIPS</li>
-</ul>
-<p>Q: 这篇论文试图解决什么问题？<br>A: 这篇论文提出了一种新的生成模型，旨在解决现有生成模型中的一些固有局限性，特别是在处理低维流形上的数据分布时的问题。具体来说，论文试图解决以下问题：<br><span id="more"></span></p>
-<ul>
-<li>梯度的不明确性：在数据分布在低维流形上时，数据分布的梯度（即得分）在高维空间中可能是未定义的，这使得基于梯度的生成模型难以应用。</li>
-<li>得分估计的困难：在数据密度较低的区域（例如，远离流形的区域），训练数据稀缺，这使得得分估计不准确，并减慢了基于马尔可夫链蒙特卡洛（MCMC）采样的Langevin动力学的混合过程。</li>
-<li>多模态分布的采样挑战：当数据分布具有多个模态，并且这些模态通过低数据密度区域分隔时，Langevin动力学可能无法在合理时间内正确恢复这些模态的相对权重，因此可能无法收敛到真实分布。</li>
-</ul>
-<p>Q: 论文如何解决这个问题？<br>A: 论文通过提出一种新的方法来解决生成模型在低维流形数据分布上的问题，具体解决方案包括以下几个关键步骤：</p>
-<ul>
-<li>数据扰动：通过在数据上添加不同级别的高斯噪声，确保数据分布在整个高维空间中，从而避免了在低维流形上的得分未定义的问题。</li>
-<li>噪声条件得分网络（Noise Conditional Score Networks, NCSN）：训练一个神经网络，以噪声水平为条件，联合估计所有噪声扰动数据分布的得分。这样，即使在数据密度较低的区域，也能通过大噪声水平下的样本来改善得分估计。</li>
-<li>退火Langevin动力学（Annealed Langevin Dynamics）：提出了一种采样策略，该策略从大噪声水平的分布开始采样，并逐渐减小噪声水平，直到接近原始数据分布。这种策略受到模拟退火的启发，有助于在多模态分布中改善采样过程。</li>
-<li>得分匹配的改进：使用切片得分匹配（Sliced Score Matching）和去噪得分匹配（Denoising Score Matching）来训练得分网络，这两种方法都可以有效地避免直接计算梯度迹线，从而在大规模数据和深度网络上更高效地训练得分网络。</li>
+<li>发表于2019-NeurIPS</li>
+<li>核心公式与推导：</li>
+<li>创新点：</li>
+<li>不足之处：<br>因为设计了加噪的马尔可夫过程，导致采样效率低。</li>
+<li>提出了一种马尔可夫的加噪与去噪过程，diffusion的经典之作</li>
 </ul>
 <h2 id="DDPM-Denoising-Diffusion-Probabilistic-Models"><a href="#DDPM-Denoising-Diffusion-Probabilistic-Models" class="headerlink" title="(DDPM) Denoising Diffusion Probabilistic Models"></a>(DDPM) Denoising Diffusion Probabilistic Models</h2><ul>
 <li>发表于<strong>2020-NeurIPS</strong></li>
