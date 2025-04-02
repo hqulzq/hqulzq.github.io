@@ -35,9 +35,13 @@
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/02/NCSN%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f4.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/02/NCSN%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f5.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/02/NCSN%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f6.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/02/NCSN%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/ff2.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/02/NCSN%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/ff3.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/02/NCSN%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/ff4.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/02/NCSN%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/a1.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/02/NCSN%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/ff1.png">
 <meta property="article:published_time" content="2025-03-02T14:25:20.000Z">
-<meta property="article:modified_time" content="2025-04-01T15:52:54.069Z">
+<meta property="article:modified_time" content="2025-04-02T14:44:46.243Z">
 <meta property="article:author" content="Zongqing Li">
 <meta property="article:tag" content="diffusion">
 <meta property="article:tag" content="NeurIPS">
@@ -238,7 +242,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-04-01 23:52:54" itemprop="dateModified" datetime="2025-04-01T23:52:54+08:00">2025-04-01</time>
+                <time title="修改时间：2025-04-02 22:44:46" itemprop="dateModified" datetime="2025-04-02T22:44:46+08:00">2025-04-02</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -263,7 +267,7 @@
       
         <p><strong>Generative Modeling by Estimating Gradients of the Data Distribution</strong></p>
 <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p><font style="background: yellow">我们提出了一种新的生成模型，该模型通过朗之万动力学（Langevin dynamics）来生成样本，所使用的梯度是通过分数匹配（score matching估计的数据分布梯度。由于当数据位于低维流形上时，梯度可能定义不明确且难以估计，因此我们用不同程度的高斯噪声对数据进行扰动，并联合估计相应的分数，即所有噪声水平下扰动数据分布的梯度向量场。在采样时，我们提出了一种退火朗之万动力学方法，在采样过程接近数据流形时，使用对应逐渐降低噪声水平的梯度。</font>我们的框架允许灵活的模型架构，在训练过程中无需采样或使用对抗方法，并且提供了一个可用于原则性模型比较的学习目标。我们的模型在<font style="background: yellow">MNIST、CelebA和CIFAR - 10数据集</font>上生成的样本可与生成对抗网络（GANs）相媲美，在CIFAR - 10数据集上达到了8.87的新最先进的初始得分（inception score）。此外，我们通过图像修复实验证明了我们的模型能够学习到有效的表示。<br><span id="more"></span></p>
-<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1 引言"></a>1 引言</h3><p>生成模型在机器学习领域应用广泛。例如，它们被用于生成高保真图像[26, 6]、合成逼真的语音和音乐片段[58]、提升半监督学习的性能[28, 10]、检测对抗样本及其他异常数据[54]、进行模仿学习[22]，以及在强化学习中探索有前景的状态[41]。近期该领域的进展主要得益于两种方法：基于似然的方法[17, 29, 11, 60]和生成对抗网络（GAN [15]）。前者以对数似然（或合适的替代物）作为训练目标，而后者则通过对抗训练来最小化模型分布与数据分布之间的kf - 散度[40]或积分概率度量[2, 55]。</p>
+<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1 引言"></a>1 引言</h3><p>生成模型在机器学习领域应用广泛。例如，它们被用于生成高保真图像[26, 6]、合成逼真的语音和音乐片段[58]、提升半监督学习的性能[28, 10]、检测对抗样本及其他异常数据[54]、进行模仿学习[22]，以及在强化学习中探索有前景的状态[41]。近期该领域的进展主要得益于两种方法：基于似然的方法[17, 29, 11, 60]和生成对抗网络（GAN [15]）。前者以对数似然（或合适的替代物）作为训练目标，而后者则通过对抗训练来最小化模型分布与数据分布之间的f - 散度[40]或积分概率度量[2, 55]。</p>
 <p>尽管基于似然的模型和GAN取得了巨大成功，但它们存在一些固有缺陷。比如，基于似然的模型要么需采用特定架构构建归一化概率模型（如自回归模型、流模型），要么使用替代损失（如变分自编码器[29]中使用的证据下界、基于能量的模型[21]中的对比散度）进行训练。GAN虽避免了基于似然模型的部分局限，但其对抗训练过程可能导致训练不稳定。此外，GAN的目标函数并不适用于评估和比较不同的GAN模型。虽然存在其他生成建模目标，如噪声对比估计[19]和最小概率流[50]，但这些方法通常仅适用于低维数据。</p>
 <p>在本文中，我们探索一种基于估计对数数据密度的（斯坦因）分数[33]并从中采样的新型生成建模原理，分数即对数密度函数在输入数据点处的梯度。这是一个指向对数数据密度增长最快方向的向量场。我们使用通过分数匹配[24]训练的神经网络，从数据中学习这个向量场。然后，我们利用朗之万动力学生成样本，其大致原理是将一个随机初始样本沿着（估计的）分数向量场逐渐移动到高密度区域。<font  style="background: yellow">然而，这种方法面临两个主要挑战。第一，如果数据分布支撑在低维流形上（许多现实世界的数据集通常如此假设），那么在环境空间中分数将无定义，分数匹配也无法提供一致的分数估计。第二，在数据低密度区域（如远离流形的区域），训练数据稀缺，这不仅妨碍分数估计的准确性，还会减缓朗之万动力学采样的混合速度。由于朗之万动力学通常在数据分布的低密度区域初始化，这些区域中不准确的分数估计会对采样过程产生负面影响。此外，由于需要穿越低密度区域以在分布的不同模态之间转换，混合可能会很困难。<br>为应对这两个挑战，我们提议用不同幅度的随机高斯噪声对数据进行扰动。添加随机噪声可确保所得分布不会坍缩到低维流形上。较大的噪声水平会在原始（未扰动）数据分布的低密度区域生成样本，从而改善分数估计。关键在于，我们训练一个基于噪声水平的单一分数网络，并估计所有噪声幅度下的分数。然后，我们提出一种退火版本的朗之万动力学，最初使用对应最高噪声水平的分数，之后逐渐降低噪声水平，直至其小到与原始数据分布难以区分。我们的采样策略受模拟退火[30, 37]启发，模拟退火通过启发式方法改进了多模态环境下的优化过程。
 </font><br>我们的方法具有诸多优点。其一，几乎对于分数网络的所有参数化，我们的目标函数都是易于处理的，无需特殊约束或架构，且在训练过程中无需对抗训练、蒙特卡罗采样（MCMC sampling）或其他近似方法。该目标函数还可用于在同一数据集上对不同模型进行定量比较。实验中，我们在MNIST、CelebA [34]和CIFAR - 10 [31]数据集上验证了方法的有效性。结果表明，生成的样本与现代基于似然的模型和GAN生成的样本质量相当。在CIFAR - 10数据集上，我们的模型在无条件生成模型中创造了8.87的新最先进初始得分，并取得了25.32的FID分数，极具竞争力。我们通过图像修复实验证明，该模型能够学习到有意义的数据表示。</p>
@@ -326,8 +330,8 @@
 </tbody>
 </table>
 </div>
-<h3 id="4-噪声条件分数网络：学习与推理"><a href="#4-噪声条件分数网络：学习与推理" class="headerlink" title="4 噪声条件分数网络：学习与推理"></a>4 噪声条件分数网络：学习与推理</h3><p>我们发现，用随机高斯噪声扰动数据，能让数据分布更适合基于分数的生成式建模。首先，由于我们的高斯噪声分布的支撑集是整个空间，经过扰动的数据不会局限于低维流形，这就避免了流形假设带来的困难，使分数估计有了明确的定义。其次，较大的高斯噪声能填充原始未扰动数据分布中的低密度区域，因此分数匹配可以获得更多训练信号，从而改进分数估计。此外，通过使用多个噪声水平，我们可以得到一系列收敛到真实数据分布的噪声扰动分布。我们可以借鉴模拟退火算法  和退火重要性采样的思想，利用这些中间分布，提高朗之万动力学在多峰分布上的混合速率。</p>
-<p>基于上述想法，我们提出从两个方面改进基于分数的生成式建模：一是用不同程度的噪声扰动数据；二是通过训练一个条件分数网络，同时估计所有噪声水平对应的分数。训练完成后，在使用朗之万动力学生成样本时，我们先使用对应较大噪声的分数，然后逐渐降低噪声水平。这样能将较大噪声水平的优势平稳地转移到较小噪声水平，此时扰动后的数据与原始数据几乎没有区别。接下来，我们将详细阐述我们方法的具体细节，包括分数网络的架构、训练目标，以及朗之万动力学的退火调度。</p>
+<h3 id="4-噪声条件分数网络：学习与推理"><a href="#4-噪声条件分数网络：学习与推理" class="headerlink" title="4 噪声条件分数网络：学习与推理"></a>4 噪声条件分数网络：学习与推理</h3><p>我们发现，用随机高斯噪声扰动数据，能让数据分布更适合基于分数的生成式建模。首先，由于我们的高斯噪声分布的支撑集是整个空间，经过扰动的数据不会局限于低维流形，这就避免了流形假设带来的困难，使分数估计有了明确的定义。其次，较大的高斯噪声能填充原始未扰动数据分布中的低密度区域，因此分数匹配可以获得更多训练信号，从而改进分数估计。此外，通过使用多个噪声水平，我们可以得到一系列收敛到真实数据分布的噪声扰动分布。我们可以借鉴<code>模拟退火算法</code>  和<code>退火重要性采样</code>的思想，利用这些中间分布，提高朗之万动力学在多峰分布上的混合速率。</p>
+<p>基于上述想法，我们提出从两个方面改进基于分数的生成式建模：<font style="background: yellow">一是用不同程度的噪声扰动数据；二是通过训练一个条件分数网络，同时估计所有噪声水平对应的分数。训练完成后，在使用朗之万动力学生成样本时，我们先使用对应较大噪声的分数，然后逐渐降低噪声水平。这样能将较大噪声水平的优势平稳地转移到较小噪声水平，此时扰动后的数据与原始数据几乎没有区别。</font>接下来，我们将详细阐述我们方法的具体细节，包括分数网络的架构、训练目标，以及朗之万动力学的退火调度。</p>
 <h4 id="4-1-噪声条件分数网络"><a href="#4-1-噪声条件分数网络" class="headerlink" title="4.1 噪声条件分数网络"></a>4.1 噪声条件分数网络</h4><p>设$\{\sigma_{i}\}_{i = 1}^{L}$ 是一个正几何序列，满足$\frac{\sigma_{1}}{\sigma_{2}}=\cdots=\frac{\sigma_{L - 1}}{\sigma_{L}}&gt;1$ 。令$q_{\sigma}(x)=\int p_{data }(t)N(x|t,\sigma^{2}I)dt$ 表示扰动后的数据分布。我们选择噪声水平$\{\sigma_{i}\}_{i = 1}^{L}$ ，使得$\sigma_{1}$足够大，以缓解第3节中讨论的困难，$\sigma_{L}$足够小，以尽量减少对数据的影响。我们旨在训练一个条件分数网络，联合估计所有扰动数据分布的分数，即$\forall \sigma \in \{\sigma_{i}\}_{i = 1}^{L}$ ：$s_{\theta}(x,\sigma)\approx\nabla_{x}\log q_{\sigma}(x)$ 。注意，当$x\in\mathbb{R}^{D}$ 时，$s_{\theta}(x,\sigma)\in\mathbb{R}^{D}$ 。我们将$s_{\theta}(x,\sigma)$称为噪声条件分数网络（NCSN）。</p>
 <p>与基于似然的生成式模型和生成对抗网络类似，模型架构的设计在生成高质量样本方面起着重要作用。在这项工作中，我们主要关注对图像生成有用的架构，将其他领域的架构设计留作未来的工作。由于我们的噪声条件分数网络$s_{\theta}(x,\sigma)$的输出与输入图像$x$具有相同的形状，我们从成功的图像密集预测模型架构（如语义分割模型）中获得灵感。在实验中，我们的模型$s_{\theta}(x,\sigma)$结合了U - Net的架构设计和扩张卷积（空洞卷积）  ，这两种设计在语义分割中都被证明非常成功。此外，受实例归一化在某些图像生成任务中的出色表现启发 ，我们在分数网络中采用了实例归一化，并使用了条件实例归一化的改进版本，以对$\sigma_{i}$进行条件设定。关于我们架构的更多细节可以在附录A中找到。</p>
 <h4 id="4-2-通过分数匹配学习噪声条件分数网络"><a href="#4-2-通过分数匹配学习噪声条件分数网络" class="headerlink" title="4.2 通过分数匹配学习噪声条件分数网络"></a>4.2 通过分数匹配学习噪声条件分数网络</h4><p>切片分数匹配和去噪分数匹配都可以用于训练噪声条件分数网络。我们采用去噪分数匹配，因为它速度稍快，并且自然适用于估计噪声扰动数据分布的分数这一任务。不过，需要强调的是，从经验上看，切片分数匹配在训练噪声条件分数网络方面与去噪分数匹配效果相当。我们选择噪声分布为$q_{\sigma}(\tilde{x}|x)=N(\tilde{x}|x,\sigma^{2}I)$ ，因此$\nabla_{\tilde{x}}\log q_{\sigma}(\tilde{x}|x)= - (\tilde{x}-x)/\sigma^{2}$ 。对于给定的$\sigma$ ，去噪分数匹配的目标（公式（2））为：</p>
@@ -420,14 +424,73 @@ Z_{\theta}=\int e^{-f_{\theta}(\mathbf{x})}\mathrm{d}\mathbf{x} \tag{1.3}</scrip
 \tilde{x}_{t} &= \tilde{x}_{t - 1}+\frac{\epsilon}{2} \nabla_{x} \log p(\tilde{x}_{t - 1})+\sqrt{\epsilon} z_{t} && \text{//朗之万动力学采样公式} \tag{1.6}\\
 &= \tilde{x}_{t - 1}+\frac{\epsilon}{2} \mathbf{s}_{\theta}(\tilde{x}_{t - 1}) +\sqrt{\epsilon} z_{t} && \text{//将} \mathbf{s}_{\theta}(\mathbf{x}) = \nabla_{\mathbf{x}} \log p_{\theta}(\mathbf{x}) \text{代入} \tag{1.7}
 \end{align}</script><p>通过公式(1.6)和公式(1.7)可以知道：只要得到了原始数据的概率密度函数的梯度$\nabla_{\mathbf{x}} \log p(\mathbf{x})$的准确预测$\mathbf{s}_{\theta}(\mathbf{x})$，就可以使用<code>朗之万动力学采样</code>来动态生成新的样本。</p>
-<video src="lang.mp4" position= "absolute" width="30%"  controls="controls"></video>
+<video src="lang.mp4" position= "absolute" width="40%"  controls="controls"></video>
+
+<h4 id="退火朗之万采样"><a href="#退火朗之万采样" class="headerlink" title="退火朗之万采样"></a>退火朗之万采样</h4><p>虽然经过上面的设计与推导，score-based model的基本方案已经有了，但是在具体实现中还有一些问题需要解决。这些问题的根源主要在于“流形假设”（manifold hypothesis）。</p>
+<p>流形假设指出，现实世界的数据分布倾向于聚集在内嵌于一个高维空间（也叫ambinet space）的低维流形上。这个假设对于大部分数据集（自然也包括这里用来训练score-based model的数据集）都是成立的，它也是流形学习的理论基础。</p>
+<p>但是基于这个假设，score-basde model在实际中会遇到两个问题：</p>
+<p>(1) score-based model中的“score”——$\nabla_{\mathbf{x}} \log p_{data}(\mathbf{x})$是定义在ambient space的，当$\mathbf{x}$被限制中一个低维流形中的时候，它是未定义的。</p>
+<p>(2) 只有当数据分布的覆盖范围（support）是整个空间时，score matching的目标函数才能够保证score的估计是一致的，而当数据位于低维流形上时，score估计将不一致。</p>
+<p>这些问题可能导致score-based model在训练时loss不收敛，从而无法得到理想的生成效果。</p>
+<p>解决方法：用高斯噪声去扰动训练数据</p>
+<h5 id="低概率密度区域-score-估计不准确"><a href="#低概率密度区域-score-估计不准确" class="headerlink" title="低概率密度区域 score 估计不准确"></a>低概率密度区域 score 估计不准确</h5><p>用高斯噪声去扰动训练数据时，一方面，因为加的扰动噪声服从高斯分布，能够覆盖整个概率空间的，所以在一定程度上可以“弥补”原始训练集分布范围有限的问题，让其不至于被局限在一个低维流形上；另一方面，如果所加噪声足够大，也会让新产生的加噪数据集的分布中，原来低概率密度的区域被填充，从而能够提高该区域 score 估计的准确性。通过使用不同的噪声强度进行加噪，最终可以获得一系列噪声扰动的数据分布，它们将收敛到真实的数据分布。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="ff2.png"  width="50%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>未被扰动的数据</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="ff3.png"  width="50%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>被高斯噪声扰动的数据</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h5 id="“忽视”数据分布的比例"><a href="#“忽视”数据分布的比例" class="headerlink" title="“忽视”数据分布的比例"></a>“忽视”数据分布的比例</h5><p>在加噪扰动后，数据分布比例高的区域，被采样的概率也会增大，这也就意味着采样的时候更可能向比例高的分布接近，从而能够让生成模型的分布和原数据分布有相同的比例特性</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="ff4.png"  width="50%"/></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>从左往右依次为原始数据分布，没加噪声扰动的拟合结果和加了噪声扰动之后的结果</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h5 id="退火朗之万采样的具体实现"><a href="#退火朗之万采样的具体实现" class="headerlink" title="退火朗之万采样的具体实现"></a>退火朗之万采样的具体实现</h5><p>我们选择噪声分布为$q_{\sigma}(\tilde{x}|x)=N(\tilde{x}|x,\sigma^{2}I)$ ，因此$\nabla_{\tilde{x}}\log q_{\sigma}(\tilde{x}|x)= - (\tilde{x}-x)/\sigma^{2}$ 。对于给定的$\sigma$ ，对于去噪分数匹配的目标为：</p>
+<script type="math/tex; mode=display">\ell(\theta ; \sigma) \triangleq \frac{1}{2} \mathbb{E}_{p_{data}(x)} \mathbb{E}_{\tilde{x} \sim \mathcal{N}\left(x, \sigma^{2}I\right)}\left[\left\| s_{\theta}(\tilde{x}, \sigma)+\frac{\tilde{x}-x}{\sigma^{2}}\right\| _{2}^{2}\right] \tag{5}</script><p>然后，我们将所有$\sigma \in \{\sigma_{i}\}_{i = 1}^{L}$ 的公式（5）结合起来，得到一个统一的目标：</p>
+<script type="math/tex; mode=display">\mathcal{L}\left(\theta ;\left\{\sigma_{i}\right\}_{i = 1}^{L}\right) \triangleq \frac{1}{L} \sum_{i = 1}^{L} \lambda\left(\sigma_{i}\right) \ell\left(\theta ; \sigma_{i}\right) \tag{6}</script><p>其中$\lambda(\sigma_{i})&gt;0$是一个依赖于$\sigma_{i}$的系数函数。假设$s_{\theta}(x,\sigma)$具有足够的容量，<script type="math/tex">s_{\theta^{*}}(x,\sigma)</script>最小化公式（6）当且仅当对于所有<script type="math/tex">i \in \{1,2,\cdots,L\}</script> ，<script type="math/tex">s_{\theta^{*}}(x,\sigma_{i})=\nabla_{x}\log q_{\sigma_{i}}(x)</script>几乎必然成立，因为公式（6）是$L$个去噪分数匹配目标的锥形组合。$\lambda(\cdot)$有很多可能的选择。理想情况下，我们希望对于所有$\{\sigma_{i}\}_{i = 1}^{L}$ ，$\lambda(\sigma_{i})\ell(\theta ; \sigma_{i})$的值大致处于同一数量级。从经验上我们观察到，当分数网络训练到最优时，大致有$\left|s_{\theta}(x,\sigma)\right|_{2} \propto 1 / \sigma$ 。这启发我们选择$\lambda(\sigma)=\sigma^{2}$ 。因为在这种选择下，我们有$\lambda(\sigma)\ell(\theta ; \sigma)=\sigma^{2}\ell(\theta ; \sigma)=\frac{1}{2} \mathbb{E}\left[\left|\sigma s_{\theta}(\tilde{x}, \sigma)+\frac{\tilde{x}-x}{\sigma}\right|_{2}^{2}\right]$ 。由于$\frac{\tilde{x}-x}{\sigma} \sim N(0, I)$且$\left|\sigma s_{\theta}(x, \sigma)\right|_{2} \propto 1$ ，我们可以很容易得出$\lambda(\sigma)\ell(\theta ; \sigma)$的数量级不依赖于$\sigma$ 。</p>
+<p>本文作者提出了一种<code>退火朗之万动力学</code>方法，具体算法流程如下：</p>
+<p><img src="a1.png"  width="40%"/></p>
+<p>一开始的噪声是最大的，经过迭代，数据分布收敛到较小的噪声附近，为下一轮的去噪初始化一个良好的初始分布，直到除去最小的噪声，模型可以更好的拟合真实的数据分布，如下面的视频所示：</p>
+<video src="lang2.mp4" position= "absolute" width="60%"  controls="controls"></video>
 
 <h3 id="损失函数与模型训练"><a href="#损失函数与模型训练" class="headerlink" title="损失函数与模型训练"></a>损失函数与模型训练</h3><p>为了得到$s_{\theta}$，我们构造了以下损失函数：</p>
-<script type="math/tex; mode=display">\frac{1}{2}\mathbb{E}_{p_{\text{data}}}[(\nabla_{x} \log p_{\text{data}}(x) -  s_{\theta}(x)]^{2}_{2} \tag{1.8}</script><p>在一个常数范围内，它等价于下式：</p>
+<script type="math/tex; mode=display">\frac{1}{2}\mathbb{E}_{p_{\text{data}}}[\Vert(\nabla_{x} \log p_{\text{data}}(x) -  s_{\theta}(x)\Vert^{2}_{2}] \tag{1.8}</script><p>在一个常数范围内，它等价于下式：</p>
 <script type="math/tex; mode=display">\mathbb{E}_{p_{data}(x)}[tr(\nabla_{x} s_{\theta}(x))+\frac{1}{2}\| s_{\theta}(x)\| _{2}^{2}] \tag{1.9}</script><p>推导过程如下：</p>
 <script type="math/tex; mode=display">
 \begin{align*}
-&\frac{1}{2}\mathbb{E}_{p_{\text{data}}}[(\nabla_{x} \log p_{\text{data}}(x) -  s_{\theta}(x)]^{2}\\
+&\frac{1}{2}\mathbb{E}_{p_{\text{data}}}[(\Vert\nabla_{x} \log p_{\text{data}}(x) -  s_{\theta}(x)\Vert _{2}^{2})]\\
 &=\frac{1}{2}\int p_{\text{data}}(x)(\nabla_{x}\log p_{\text{data}}(x) -  s_{\theta}(x))^{2}\mathrm{d}x &&\text{//期望与积分的关系}\\
 &=\underbrace{\frac{1}{2}\int p_{\text{data}}(x)(\nabla_{x}\log p_{\text{data}}(x))^{2}\mathrm{d}x}_{\text{const}} + \frac{1}{2}\int p_{\text{data}}(x)( s_{\theta}(x))^{2}\mathrm{d}x \\
 &-\int p_{\text{data}}(x) s_{\theta}(x) \nabla_{x}\log p_{\text{data}}(x)\mathrm{d}x &&\text{//平方展开}
@@ -455,7 +518,68 @@ Z_{\theta}=\int e^{-f_{\theta}(\mathbf{x})}\mathrm{d}\mathbf{x} \tag{1.3}</scrip
 \end{align*} \tag{1.14}</script><p>由于公式(1.14)需要计算向量函数$s_{\theta}$关于$x$的偏导数，即计算雅克比（Jocabian）矩阵，对$s_{\theta}$的每一维输出$s_{\theta,i}$都要计算一次导数($s_{\theta}$一般是个神经网络，可以用自动微分功能计算)，运算量比较大，限制了 score matching 对深度网络和高维数据的处理能力。</p>
 <p><img src="ff1.png" width="60%" /></p>
 <p>为了解决上述问题，可以使用<code>去噪分数匹配</code>或者<code>切片分数匹配</code>来规避雅克比矩阵的计算。本文使用<code>去噪分数匹配</code></p>
-<h4 id="去噪分数匹配（DSM-Denoising-Score-Matching）"><a href="#去噪分数匹配（DSM-Denoising-Score-Matching）" class="headerlink" title="去噪分数匹配（DSM: Denoising Score Matching）"></a>去噪分数匹配（DSM: Denoising Score Matching）</h4><h3 id="不足之处"><a href="#不足之处" class="headerlink" title="不足之处"></a>不足之处</h3>
+<h4 id="去噪分数匹配（DSM-Denoising-Score-Matching）"><a href="#去噪分数匹配（DSM-Denoising-Score-Matching）" class="headerlink" title="去噪分数匹配（DSM: Denoising Score Matching）"></a>去噪分数匹配（DSM: Denoising Score Matching）</h4><p>通过对原始数据$x$加入标准的高斯噪声$ \epsilon $，可以得到：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+&\tilde{x} = x + \sigma \epsilon, \quad \epsilon \sim \mathcal{N}(0,I)  \tag{1.15} \\
+&q_{\sigma}(\tilde{x} \mid x) \sim \mathcal{N}(\tilde{x};x,\sigma^{2}I) \tag{1.16}
+\end{align*}</script><p>当加入的噪声足够小时，即$\tilde{x} \approx x$，可以得到：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+&\nabla_{\tilde{x}} \log q_{\sigma}(\tilde{x}) \approx \nabla_{x} \log p_{\text{data}}(x) \tag{1.17} \\
+& \frac{1}{2}\mathbb{E}_{p_{\text{data}}}[\Vert(\nabla_{x} \log p_{\text{data}}(x) -  s_{\theta}(x)\Vert_{2}^{2} ]= \frac{1}{2}\mathbb{E}_{q_{\sigma}(\tilde{x})}[\Vert(\nabla_{\tilde{x}} \log q_{\sigma}(\tilde{x}) -  s_{\theta}(\tilde{x})\Vert_{2}^{2}] \tag{1.18}
+\end{align*}</script><p>接着对式(1.18)进行数学推导，结合$q_{\sigma}(\tilde{x}) \triangleq \int q_{\sigma}(\tilde{x} \mid x) p_{\text{data}}(x) \mathrm{d}x$可以得到：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+  &\frac{1}{2}\mathbb{E}_{q_{\sigma}(\tilde{x})}[\Vert\nabla_{\tilde{x}} \log q_{\sigma}(\tilde{x}) -  s_{\theta}(\tilde{x}) \Vert_{2}^{2}] \\
+  &= \frac{1}{2} E_{q_{\sigma}(\tilde{x}|x)p_{\text{data}}(x)} \left[ \left \Vert \nabla_{\tilde{x}} \log q_{\sigma}(\tilde{x} \mid x)-  s_{\theta}(\tilde{x})  \right\Vert_2^2 \right]\\
+  &= \frac{1}{2} E_{q_{\sigma}(\tilde{x}|x)p_{\text{data}}(x)} \left[ \left \Vert s_{\theta}(\tilde{x}) - \frac{\mathbf{x} - \tilde{\mathbf{x}}}{\sigma^2} \right \Vert_2^2 \right] \\
+  &=\frac{1}{2} E_{q_{\sigma}(\tilde{x}|x)p_{\text{data}}(x)} \left[ \left \Vert s_{\theta}(\tilde{x}) - \left(- \frac{\epsilon}{\sigma} \right) \right \Vert_2^2 \right]
+\end{align*} \tag{1.19}</script><p>为了推导公式(1.19)，我们首先对$\nabla_{\tilde{x}} \log q_{\sigma}(\tilde{x})$展开得到：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+\nabla_{\tilde{x}} \log q_{\sigma}(\tilde{x}) &= \frac{\nabla_{\tilde{x}} q_{\sigma}(\tilde{x})}{q_{\sigma}(\tilde{x})} && \text{//导数展开}\\
+&= \frac{\int p_{data}(x) \nabla_{\tilde{x}} q_{\sigma}(\tilde{x}|x) dx}{q_{\sigma}(\tilde{x})} && \text{//带入}q_{\sigma}(\tilde{x}) \triangleq \int q_{\sigma}(\tilde{x} \mid x) p_{\text{data}}(x) \mathrm{d}x\\
+&= \frac{\int p_{data}(x) q_{\sigma}(\tilde{x}|x) \nabla_{\tilde{x}} \log q_{\sigma}(\tilde{x}|x) dx}{q_{\sigma}(\tilde{x})} && \text{//带入}  \nabla_{\tilde{x}} q_{\sigma}(\tilde{x}|x) \triangleq  q_{\sigma}(\tilde{x}|x) \nabla_{\tilde{x}} \log q_{\sigma}(\tilde{x}|x) \\
+&= \int q_{\sigma}(x|\tilde{x}) \nabla_{\tilde{x}} \log q_{\sigma}(\tilde{x}|x) dx && \text{//贝叶斯展开结合} p_{data}(x) = q_{\sigma}(x) \\
+&= \mathbb{E}_{x \sim q_{\sigma}(x|\tilde{x})}[\nabla_{\tilde{x}} \log q_{\sigma}(\tilde{x}|x)] &&\text{//积分与期望的关系}
+\end{align*} \tag{1.20}</script><h5 id="条件得分匹配是得分匹配的一个上界"><a href="#条件得分匹配是得分匹配的一个上界" class="headerlink" title="条件得分匹配是得分匹配的一个上界"></a>条件得分匹配是得分匹配的一个上界</h5><p>将公式(1.20)的结果带入公式(1.19)，得到：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+ &\mathbb{E}_{q_{\sigma}(\tilde{x})}[\Vert\nabla_{\tilde{x}} \log q_{\sigma}(\tilde{x}) -  s_{\theta}(\tilde{x}) \Vert_{2}^{2}] \\
+ &= \mathbb{E}_{q_{\sigma}(\tilde{x})}[\Vert\mathbb{E}_{ q_{\sigma}(x|\tilde{x})}[\nabla_{\tilde{x}} \log q_{\sigma}(\tilde{x}|x)] -  s_{\theta}(\tilde{x}) \Vert_{2}^{2}]  && \text{//带入公式(1.20)的结果}\\
+ &\leq \mathbb{E}_{ q_{\sigma}(\tilde{x})} \mathbb{E}_{ q_{\sigma}(x|\tilde{x})} \left[ \left\|\nabla_{\tilde{x}} \log q_{\sigma}(\tilde{x}|x) - s_{\theta}(\tilde{x}) \right\|^2_2 \right] && \text{//平方平均不等式的推广或者詹森不等式}\\
+ &=\mathbb{E}_{p_{data}(x),  q_{\sigma}(\tilde{x}|x)} \left[ \left\|\nabla_{\tilde{x}} \log q_{\sigma}(\tilde{x}|x) - s_{\theta}(\tilde{x}) \right\|^2_2 \right] && \text{//贝叶斯公式}
+\end{align*} \tag{1.21}</script><p>公式(1.21)告诉我们：<font color="red" style="background-color: #FFF59D;"><strong>条件得分匹配是得分匹配的一个上界。</strong></font>这也就意味着最小化条件得分匹配，某种程度上也在最小化得分匹配</p>
+<h5 id="条件得分匹配就是得分匹配"><a href="#条件得分匹配就是得分匹配" class="headerlink" title="条件得分匹配就是得分匹配"></a>条件得分匹配就是得分匹配</h5><p>本节进一步探明条件得分匹配与得分匹配的关系，通过将得分匹配与条件得分匹配展开，得到：</p>
+<p>关于得分匹配，我们有：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+&\mathbb{E}_{ q_{\sigma}(\tilde{x})} \left[ \left\|\nabla_{\tilde{x}} \log q_{\sigma}(\tilde{x}) - s_{\theta}(\tilde{x}) \right\|^2 \right] \\
+=&\mathbb{E}_{ q_{\sigma}(\tilde{x})} \left[ \textcolor {\purple}{\left\|\nabla_{\tilde{x}} \log q_{\sigma}(\tilde{x}) \right\|^2_2}   +  \textcolor {\red} {\left\|s_{\theta}(\tilde{x}) \right\|^2_2}  - \textcolor {\green} {2s_{\theta}(\tilde{x}) \cdot \nabla_{\tilde{x}} \log q_{\sigma}(\tilde{x})} \right]
+\end{align*} \tag{1.22}</script><p>关于条件得分匹配，我们有：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+&\mathbb{E}_{p_{data}(x),q_{\sigma}(\tilde{x}|x)} \left[ \left\|\nabla_{\tilde{x}} \log q_{\sigma}(\tilde{x}|x) - s_{\theta}(\tilde{x}) \right\|^2_2 \right]\\
+=&\mathbb{E}_{p_{data}(x),q_{\sigma}(\tilde{x}|x)} \left[ \left\|\nabla_{\tilde{x}} \log q_{\sigma}(\tilde{x}|x) \right\|^2_2 + \left\|s_{\theta}(\tilde{x}) \right\|^2_2 - 2s_{\theta}(\tilde{x}) \cdot \nabla_{\tilde{x}} \log q_{\sigma}(\tilde{x}|x) \right] && \text{//展开平方项}\\
+=&\mathbb{E}_{ q_{\sigma}(\tilde{x}), q_{\sigma}(x|\tilde{x})} \left[ \left\|\nabla_{\tilde{x}} \log q_{\sigma}(\tilde{x}|x) \right\|^2_2 + \left\|s_{\theta}(\tilde{x}) \right\|^2_2 - 2s_{\theta}(\tilde{x}) \cdot \nabla_{\tilde{x}} \log q_{\sigma}(\tilde{x}|x) \right]  && \text{//贝叶斯公式}\\
+=&\mathbb{E}_{q_{\sigma}(\tilde{x})} \left[ \textcolor {\purple}{\mathbb{E}_{ q_{\sigma}(x|\tilde{x})} \left[ \left\|\nabla_{\tilde{x}} \log q_{\sigma}(\tilde{x}|x) \right\|^2_2 \right]} + \textcolor{red}{\left\|s_{\theta}(\tilde{x}) \right\|^2_2} \right.\\
+&\left. \textcolor{green}{- 2s_{\theta}(\tilde{x}) \cdot \mathbb{E}_{ q_{\sigma}(x|\tilde{x})} \left[ \nabla_{\tilde{x}} \log q_{\sigma}(\tilde{x}|x) \right]}  \right] && \text{//神经网络}s_{\theta}(\tilde{x})\text{的输出与}x\text{无关}\\
+=&\mathbb{E}_{q_{\sigma}(\tilde{x})} \left[  \textcolor {\purple}{\mathbb{E}_{ q_{\sigma}(x|\tilde{x})} \left[ \left\|\nabla_{\tilde{x}} \log q_{\sigma}(\tilde{x}|x) \right\|^2_2 \right]} + \textcolor{red} {\left\|s_{\theta}(\tilde{x}) \right\|^2_2} - \textcolor{green}{2s_{\theta}(\tilde{x}) \cdot \nabla_{\tilde{x}} \log q_{\sigma}(\tilde{x})}  \right] && \text{//期望转为积分形式化简}
+\end{align*} \tag{1.23}</script><p>两者做差。我们得到：</p>
+<script type="math/tex; mode=display">
+\mathbb{E}_{q_{\sigma}(\tilde{x})} \left[  \textcolor {\purple}{\mathbb{E}_{ q_{\sigma}(x|\tilde{x})} \left[ \left\|\nabla_{\tilde{x}} \log q_{\sigma}(\tilde{x}|x) \right\|^2_2 \right] - \left\|\nabla_{\tilde{x}} \log q_{\sigma}(\tilde{x}) \right\|^2_2}  \right] = const</script><p>它跟参数$\theta$无关。<font color="red" style="background-color: #FFF59D;"><strong>所以最小化得分匹配目标，跟最小化条件得分匹配，在理论上是等价的。至此，我们证明了在损失函数中使用条件得分匹配代替得分匹配的合理性。</strong></font>相关结果首次出现在文章《A Connection Between Score Matching and Denoising Autoencoders》中。</p>
+<h3 id="不足之处"><a href="#不足之处" class="headerlink" title="不足之处"></a>不足之处</h3><ul>
+<li>效果不如DDPM：朗之万采样公式的缺陷，方差转移的很突然，在Score-based SDE中有讨论</li>
+<li>采样效率低，上千步的采样。</li>
+</ul>
+<h3 id="疑问"><a href="#疑问" class="headerlink" title="疑问"></a>疑问</h3><h4 id="为什么退火朗之万采样可以解决朗之万采样“忽视”数据分布比例的问题？"><a href="#为什么退火朗之万采样可以解决朗之万采样“忽视”数据分布比例的问题？" class="headerlink" title="为什么退火朗之万采样可以解决朗之万采样“忽视”数据分布比例的问题？"></a>为什么退火朗之万采样可以解决朗之万采样“忽视”数据分布比例的问题？</h4><p>猜测：方差由大变小，逐渐逼近数据真实分布，会比普通朗之万更精确一点。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li>论文：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1907.05600">Generative Modeling by Estimating Gradients of the Data Distribution</a></li>
+<li>博客：<a target="_blank" rel="noopener" href="https://kexue.fm/archives/9509#mjx-eqn-eq%3Ascore-1">生成扩散模型漫谈（十八）：得分匹配 = 条件得分匹配</a></li>
+<li>知乎：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/670052757">DiffusionModel-NCSN原理与推导</a></li>
+</ul>
+
     </div>
 
     
@@ -540,7 +664,7 @@ Z_{\theta}=\int e^{-f_{\theta}(\mathbf{x})}\mathrm{d}\mathbf{x} \tag{1.3}</scrip
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%9F%BA%E4%BA%8E%E5%88%86%E6%95%B0%E7%9A%84%E7%94%9F%E6%88%90%E5%BB%BA%E6%A8%A1"><span class="nav-number">1.3.</span> <span class="nav-text">2 基于分数的生成建模</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E7%94%A8%E4%BA%8E%E5%88%86%E6%95%B0%E4%BC%B0%E8%AE%A1%E7%9A%84%E5%88%86%E6%95%B0%E5%8C%B9%E9%85%8D"><span class="nav-number">1.3.1.</span> <span class="nav-text">2.1 用于分数估计的分数匹配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E7%94%A8%E6%9C%97%E4%B9%8B%E4%B8%87%E5%8A%A8%E5%8A%9B%E5%AD%A6%E9%87%87%E6%A0%B7"><span class="nav-number">1.3.2.</span> <span class="nav-text">2.2 用朗之万动力学采样</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%9F%BA%E4%BA%8E%E5%88%86%E6%95%B0%E7%9A%84%E7%94%9F%E6%88%90%E5%BC%8F%E5%BB%BA%E6%A8%A1%E6%89%80%E9%9D%A2%E4%B8%B4%E7%9A%84%E6%8C%91%E6%88%98"><span class="nav-number">1.4.</span> <span class="nav-text">3 基于分数的生成式建模所面临的挑战</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E6%B5%81%E5%BD%A2%E5%81%87%E8%AE%BE"><span class="nav-number">1.4.1.</span> <span class="nav-text">3.1 流形假设</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E4%BD%8E%E6%95%B0%E6%8D%AE%E5%AF%86%E5%BA%A6%E5%8C%BA%E5%9F%9F"><span class="nav-number">1.4.2.</span> <span class="nav-text">3.2 低数据密度区域</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-1-%E5%88%86%E6%95%B0%E5%8C%B9%E9%85%8D%E4%B8%AD%E4%B8%8D%E5%87%86%E7%A1%AE%E7%9A%84%E5%88%86%E6%95%B0%E4%BC%B0%E8%AE%A1"><span class="nav-number">1.4.3.</span> <span class="nav-text">3.2.1 分数匹配中不准确的分数估计</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-2-%E6%9C%97%E4%B9%8B%E4%B8%87%E5%8A%A8%E5%8A%9B%E5%AD%A6%E7%9A%84%E6%B7%B7%E5%90%88%E7%BC%93%E6%85%A2"><span class="nav-number">1.4.4.</span> <span class="nav-text">3.2.2 朗之万动力学的混合缓慢</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%99%AA%E5%A3%B0%E6%9D%A1%E4%BB%B6%E5%88%86%E6%95%B0%E7%BD%91%E7%BB%9C%EF%BC%9A%E5%AD%A6%E4%B9%A0%E4%B8%8E%E6%8E%A8%E7%90%86"><span class="nav-number">1.5.</span> <span class="nav-text">4 噪声条件分数网络：学习与推理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E5%99%AA%E5%A3%B0%E6%9D%A1%E4%BB%B6%E5%88%86%E6%95%B0%E7%BD%91%E7%BB%9C"><span class="nav-number">1.5.1.</span> <span class="nav-text">4.1 噪声条件分数网络</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E9%80%9A%E8%BF%87%E5%88%86%E6%95%B0%E5%8C%B9%E9%85%8D%E5%AD%A6%E4%B9%A0%E5%99%AA%E5%A3%B0%E6%9D%A1%E4%BB%B6%E5%88%86%E6%95%B0%E7%BD%91%E7%BB%9C"><span class="nav-number">1.5.2.</span> <span class="nav-text">4.2 通过分数匹配学习噪声条件分数网络</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-%E9%80%9A%E8%BF%87%E9%80%80%E7%81%AB%E6%9C%97%E4%B9%8B%E4%B8%87%E5%8A%A8%E5%8A%9B%E5%AD%A6%E8%BF%9B%E8%A1%8C%E5%99%AA%E5%A3%B0%E6%9D%A1%E4%BB%B6%E5%88%86%E6%95%B0%E7%BD%91%E7%BB%9C%E6%8E%A8%E7%90%86"><span class="nav-number">1.5.3.</span> <span class="nav-text">4.3 通过退火朗之万动力学进行噪声条件分数网络推理</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.6.</span> <span class="nav-text">5 实验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E8%AE%BE%E7%BD%AE"><span class="nav-number">1.6.1.</span> <span class="nav-text">实验设置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9B%BE%E5%83%8F%E7%94%9F%E6%88%90"><span class="nav-number">1.6.2.</span> <span class="nav-text">图像生成</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9B%BE%E5%83%8F%E4%BF%AE%E5%A4%8D"><span class="nav-number">1.6.3.</span> <span class="nav-text">图像修复</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.7.</span> <span class="nav-text">6 相关工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E7%BB%93%E8%AE%BA"><span class="nav-number">1.8.</span> <span class="nav-text">7 结论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%B4%E8%B0%A2"><span class="nav-number">1.9.</span> <span class="nav-text">致谢</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E7%AB%A0%E6%80%BB%E7%BB%93"><span class="nav-number">2.</span> <span class="nav-text">文章总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E6%96%B0%E7%82%B9"><span class="nav-number">2.1.</span> <span class="nav-text">创新点</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%97%E4%B9%8B%E4%B8%87%E5%8A%A8%E5%8A%9B%E5%AD%A6%E9%87%87%E6%A0%B7"><span class="nav-number">2.1.1.</span> <span class="nav-text">朗之万动力学采样</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E6%95%B0%E5%8C%B9%E9%85%8D"><span class="nav-number">2.1.2.</span> <span class="nav-text">分数匹配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SMLD-Score-Matching-and-Langevin-Dynamics%EF%BC%8C%E5%88%86%E6%95%B0%E5%8C%B9%E9%85%8D%E5%92%8C%E6%9C%97%E4%B9%8B%E4%B8%87%E5%8A%A8%E5%8A%9B%E5%AD%A6%E9%87%87%E6%A0%B7"><span class="nav-number">2.1.3.</span> <span class="nav-text">SMLD (Score Matching and Langevin Dynamics，分数匹配和朗之万动力学采样)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E4%B8%8E%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83"><span class="nav-number">2.2.</span> <span class="nav-text">损失函数与模型训练</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8E%BB%E5%99%AA%E5%88%86%E6%95%B0%E5%8C%B9%E9%85%8D%EF%BC%88DSM-Denoising-Score-Matching%EF%BC%89"><span class="nav-number">2.2.1.</span> <span class="nav-text">去噪分数匹配（DSM: Denoising Score Matching）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8D%E8%B6%B3%E4%B9%8B%E5%A4%84"><span class="nav-number">2.3.</span> <span class="nav-text">不足之处</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%9F%BA%E4%BA%8E%E5%88%86%E6%95%B0%E7%9A%84%E7%94%9F%E6%88%90%E5%BB%BA%E6%A8%A1"><span class="nav-number">1.3.</span> <span class="nav-text">2 基于分数的生成建模</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E7%94%A8%E4%BA%8E%E5%88%86%E6%95%B0%E4%BC%B0%E8%AE%A1%E7%9A%84%E5%88%86%E6%95%B0%E5%8C%B9%E9%85%8D"><span class="nav-number">1.3.1.</span> <span class="nav-text">2.1 用于分数估计的分数匹配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E7%94%A8%E6%9C%97%E4%B9%8B%E4%B8%87%E5%8A%A8%E5%8A%9B%E5%AD%A6%E9%87%87%E6%A0%B7"><span class="nav-number">1.3.2.</span> <span class="nav-text">2.2 用朗之万动力学采样</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%9F%BA%E4%BA%8E%E5%88%86%E6%95%B0%E7%9A%84%E7%94%9F%E6%88%90%E5%BC%8F%E5%BB%BA%E6%A8%A1%E6%89%80%E9%9D%A2%E4%B8%B4%E7%9A%84%E6%8C%91%E6%88%98"><span class="nav-number">1.4.</span> <span class="nav-text">3 基于分数的生成式建模所面临的挑战</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E6%B5%81%E5%BD%A2%E5%81%87%E8%AE%BE"><span class="nav-number">1.4.1.</span> <span class="nav-text">3.1 流形假设</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E4%BD%8E%E6%95%B0%E6%8D%AE%E5%AF%86%E5%BA%A6%E5%8C%BA%E5%9F%9F"><span class="nav-number">1.4.2.</span> <span class="nav-text">3.2 低数据密度区域</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-1-%E5%88%86%E6%95%B0%E5%8C%B9%E9%85%8D%E4%B8%AD%E4%B8%8D%E5%87%86%E7%A1%AE%E7%9A%84%E5%88%86%E6%95%B0%E4%BC%B0%E8%AE%A1"><span class="nav-number">1.4.3.</span> <span class="nav-text">3.2.1 分数匹配中不准确的分数估计</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-2-%E6%9C%97%E4%B9%8B%E4%B8%87%E5%8A%A8%E5%8A%9B%E5%AD%A6%E7%9A%84%E6%B7%B7%E5%90%88%E7%BC%93%E6%85%A2"><span class="nav-number">1.4.4.</span> <span class="nav-text">3.2.2 朗之万动力学的混合缓慢</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%99%AA%E5%A3%B0%E6%9D%A1%E4%BB%B6%E5%88%86%E6%95%B0%E7%BD%91%E7%BB%9C%EF%BC%9A%E5%AD%A6%E4%B9%A0%E4%B8%8E%E6%8E%A8%E7%90%86"><span class="nav-number">1.5.</span> <span class="nav-text">4 噪声条件分数网络：学习与推理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E5%99%AA%E5%A3%B0%E6%9D%A1%E4%BB%B6%E5%88%86%E6%95%B0%E7%BD%91%E7%BB%9C"><span class="nav-number">1.5.1.</span> <span class="nav-text">4.1 噪声条件分数网络</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E9%80%9A%E8%BF%87%E5%88%86%E6%95%B0%E5%8C%B9%E9%85%8D%E5%AD%A6%E4%B9%A0%E5%99%AA%E5%A3%B0%E6%9D%A1%E4%BB%B6%E5%88%86%E6%95%B0%E7%BD%91%E7%BB%9C"><span class="nav-number">1.5.2.</span> <span class="nav-text">4.2 通过分数匹配学习噪声条件分数网络</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-%E9%80%9A%E8%BF%87%E9%80%80%E7%81%AB%E6%9C%97%E4%B9%8B%E4%B8%87%E5%8A%A8%E5%8A%9B%E5%AD%A6%E8%BF%9B%E8%A1%8C%E5%99%AA%E5%A3%B0%E6%9D%A1%E4%BB%B6%E5%88%86%E6%95%B0%E7%BD%91%E7%BB%9C%E6%8E%A8%E7%90%86"><span class="nav-number">1.5.3.</span> <span class="nav-text">4.3 通过退火朗之万动力学进行噪声条件分数网络推理</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.6.</span> <span class="nav-text">5 实验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E8%AE%BE%E7%BD%AE"><span class="nav-number">1.6.1.</span> <span class="nav-text">实验设置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9B%BE%E5%83%8F%E7%94%9F%E6%88%90"><span class="nav-number">1.6.2.</span> <span class="nav-text">图像生成</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9B%BE%E5%83%8F%E4%BF%AE%E5%A4%8D"><span class="nav-number">1.6.3.</span> <span class="nav-text">图像修复</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.7.</span> <span class="nav-text">6 相关工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E7%BB%93%E8%AE%BA"><span class="nav-number">1.8.</span> <span class="nav-text">7 结论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%B4%E8%B0%A2"><span class="nav-number">1.9.</span> <span class="nav-text">致谢</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E7%AB%A0%E6%80%BB%E7%BB%93"><span class="nav-number">2.</span> <span class="nav-text">文章总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E6%96%B0%E7%82%B9"><span class="nav-number">2.1.</span> <span class="nav-text">创新点</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%97%E4%B9%8B%E4%B8%87%E5%8A%A8%E5%8A%9B%E5%AD%A6%E9%87%87%E6%A0%B7"><span class="nav-number">2.1.1.</span> <span class="nav-text">朗之万动力学采样</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E6%95%B0%E5%8C%B9%E9%85%8D"><span class="nav-number">2.1.2.</span> <span class="nav-text">分数匹配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SMLD-Score-Matching-and-Langevin-Dynamics%EF%BC%8C%E5%88%86%E6%95%B0%E5%8C%B9%E9%85%8D%E5%92%8C%E6%9C%97%E4%B9%8B%E4%B8%87%E5%8A%A8%E5%8A%9B%E5%AD%A6%E9%87%87%E6%A0%B7"><span class="nav-number">2.1.3.</span> <span class="nav-text">SMLD (Score Matching and Langevin Dynamics，分数匹配和朗之万动力学采样)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%80%80%E7%81%AB%E6%9C%97%E4%B9%8B%E4%B8%87%E9%87%87%E6%A0%B7"><span class="nav-number">2.1.4.</span> <span class="nav-text">退火朗之万采样</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BD%8E%E6%A6%82%E7%8E%87%E5%AF%86%E5%BA%A6%E5%8C%BA%E5%9F%9F-score-%E4%BC%B0%E8%AE%A1%E4%B8%8D%E5%87%86%E7%A1%AE"><span class="nav-number">2.1.4.1.</span> <span class="nav-text">低概率密度区域 score 估计不准确</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E2%80%9C%E5%BF%BD%E8%A7%86%E2%80%9D%E6%95%B0%E6%8D%AE%E5%88%86%E5%B8%83%E7%9A%84%E6%AF%94%E4%BE%8B"><span class="nav-number">2.1.4.2.</span> <span class="nav-text">“忽视”数据分布的比例</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%80%80%E7%81%AB%E6%9C%97%E4%B9%8B%E4%B8%87%E9%87%87%E6%A0%B7%E7%9A%84%E5%85%B7%E4%BD%93%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.1.4.3.</span> <span class="nav-text">退火朗之万采样的具体实现</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E4%B8%8E%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83"><span class="nav-number">2.2.</span> <span class="nav-text">损失函数与模型训练</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8E%BB%E5%99%AA%E5%88%86%E6%95%B0%E5%8C%B9%E9%85%8D%EF%BC%88DSM-Denoising-Score-Matching%EF%BC%89"><span class="nav-number">2.2.1.</span> <span class="nav-text">去噪分数匹配（DSM: Denoising Score Matching）</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%9D%A1%E4%BB%B6%E5%BE%97%E5%88%86%E5%8C%B9%E9%85%8D%E6%98%AF%E5%BE%97%E5%88%86%E5%8C%B9%E9%85%8D%E7%9A%84%E4%B8%80%E4%B8%AA%E4%B8%8A%E7%95%8C"><span class="nav-number">2.2.1.1.</span> <span class="nav-text">条件得分匹配是得分匹配的一个上界</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%9D%A1%E4%BB%B6%E5%BE%97%E5%88%86%E5%8C%B9%E9%85%8D%E5%B0%B1%E6%98%AF%E5%BE%97%E5%88%86%E5%8C%B9%E9%85%8D"><span class="nav-number">2.2.1.2.</span> <span class="nav-text">条件得分匹配就是得分匹配</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8D%E8%B6%B3%E4%B9%8B%E5%A4%84"><span class="nav-number">2.3.</span> <span class="nav-text">不足之处</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%96%91%E9%97%AE"><span class="nav-number">2.4.</span> <span class="nav-text">疑问</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%80%80%E7%81%AB%E6%9C%97%E4%B9%8B%E4%B8%87%E9%87%87%E6%A0%B7%E5%8F%AF%E4%BB%A5%E8%A7%A3%E5%86%B3%E6%9C%97%E4%B9%8B%E4%B8%87%E9%87%87%E6%A0%B7%E2%80%9C%E5%BF%BD%E8%A7%86%E2%80%9D%E6%95%B0%E6%8D%AE%E5%88%86%E5%B8%83%E6%AF%94%E4%BE%8B%E7%9A%84%E9%97%AE%E9%A2%98%EF%BC%9F"><span class="nav-number">2.4.1.</span> <span class="nav-text">为什么退火朗之万采样可以解决朗之万采样“忽视”数据分布比例的问题？</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">3.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
