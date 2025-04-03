@@ -221,7 +221,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-04-02 23:48:36" itemprop="dateModified" datetime="2025-04-02T23:48:36+08:00">2025-04-02</time>
+                <time title="修改时间：2025-04-03 17:01:12" itemprop="dateModified" datetime="2025-04-03T17:01:12+08:00">2025-04-03</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -871,7 +871,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-03-08 09:55:56" itemprop="dateModified" datetime="2025-03-08T09:55:56+08:00">2025-03-08</time>
+                <time title="修改时间：2025-04-03 17:19:03" itemprop="dateModified" datetime="2025-04-03T17:19:03+08:00">2025-04-03</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -906,7 +906,7 @@ td {
 }
 </style>
 
-<h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h3><p>去噪扩散概率模型（DDPMs）在无需对抗训练的情况下实现了高质量的图像生成，但为了生成一个样本，它们需要模拟马尔可夫链的多个步骤。为了加速采样过程，我们提出了去噪扩散隐式模型（DDIMs），这是一类更高效的迭代隐式概率模型，其训练过程与DDPMs相同。在DDPMs中，生成过程被定义为特定马尔可夫扩散过程的逆过程。我们通过一类非马尔可夫扩散过程对DDPMs进行了扩展，这些非马尔可夫扩散过程能够产生与DDPMs相同的训练目标。这些非马尔可夫过程可以对应于确定性的生成过程，从而产生能够更快生成高质量样本的隐式模型。实验证明，与DDPMs相比，DDIMs生成高质量样本的速度在实际时间上快10到50倍，并且可以在计算量和样本质量之间进行权衡，能够直接在潜在空间中进行语义上有意义的图像插值，还能以极低的误差重建观测数据。<br>
+<h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h3><p>去噪扩散概率模型（DDPMs）在无需对抗训练的情况下实现了高质量的图像生成，但为了生成一个样本，它们需要模拟马尔可夫链的多个步骤。为了加速采样过程，我们提出了去噪扩散隐式模型（DDIMs），这是一类更高效的迭代隐式概率模型，<font style="background-color: #FFF59D;">其训练过程与DDPMs相同。</font>在DDPMs中，生成过程被定义为特定马尔可夫扩散过程的逆过程。<font style="background-color: #FFF59D;">我们通过一类非马尔可夫扩散过程对DDPMs进行了扩展，这些非马尔可夫扩散过程能够产生与DDPMs相同的训练目标。</font>这些非马尔可夫过程可以对应于确定性的生成过程，从而产生能够更快生成高质量样本的隐式模型。实验证明，与DDPMs相比，DDIMs生成高质量样本的速度在实际时间上<strong>快10到50倍</strong>，并且可以在计算量和样本质量之间进行权衡，能够<strong>直接在潜在空间中进行语义上有意义的图像插值，还能以极低的误差重建观测数据</strong>。<br>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2025/02/18/DDIM%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/#more" rel="contents">

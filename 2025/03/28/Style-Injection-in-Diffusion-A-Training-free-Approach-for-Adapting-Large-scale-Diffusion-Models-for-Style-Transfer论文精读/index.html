@@ -20,20 +20,21 @@
     var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="全文翻译尽管扩散模型具有令人印象深刻的生成能力，但现有的基于扩散模型的风格迁移方法要么需要耗时的推理阶段优化（如风格的微调或文本反转），要么未能充分利用大规模扩散模型的生成能力。为解决这些问题，我们提出了一种基于预训练大规模扩散模型的新型艺术风格迁移方法，无需任何优化过程。具体而言，我们通过模仿交叉注意力机制的工作方式，对自注意力层的特征进行操作：在生成过程中，将内容的键（key）和值（value">
+  <meta name="description" content="全文翻译尽管扩散模型具有令人印象深刻的生成能力，但现有的基于扩散模型的风格迁移方法要么需要耗时的推理阶段优化（如风格的微调或文本反转），要么未能充分利用大规模扩散模型的生成能力。为解决这些问题，我们提出了一种基于预训练大规模扩散模型的无需任何优化过程的新型艺术风格迁移方法。具体而言，我们通过模仿交叉注意力机制的工作方式，对自注意力层的特征进行操作：在生成过程中，将内容的键（key）和值（value">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Style Injection in Diffusion A Training-free Approach for Adapting Large-scale Diffusion Models for Style Transfer论文精读">
 <meta property="og:url" content="https://hqulzq.github.io/2025/03/28/Style-Injection-in-Diffusion-A-Training-free-Approach-for-Adapting-Large-scale-Diffusion-Models-for-Style-Transfer%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/index.html">
 <meta property="og:site_name" content="Lzq&#39;s blog">
-<meta property="og:description" content="全文翻译尽管扩散模型具有令人印象深刻的生成能力，但现有的基于扩散模型的风格迁移方法要么需要耗时的推理阶段优化（如风格的微调或文本反转），要么未能充分利用大规模扩散模型的生成能力。为解决这些问题，我们提出了一种基于预训练大规模扩散模型的新型艺术风格迁移方法，无需任何优化过程。具体而言，我们通过模仿交叉注意力机制的工作方式，对自注意力层的特征进行操作：在生成过程中，将内容的键（key）和值（value">
+<meta property="og:description" content="全文翻译尽管扩散模型具有令人印象深刻的生成能力，但现有的基于扩散模型的风格迁移方法要么需要耗时的推理阶段优化（如风格的微调或文本反转），要么未能充分利用大规模扩散模型的生成能力。为解决这些问题，我们提出了一种基于预训练大规模扩散模型的无需任何优化过程的新型艺术风格迁移方法。具体而言，我们通过模仿交叉注意力机制的工作方式，对自注意力层的特征进行操作：在生成过程中，将内容的键（key）和值（value">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/28/Style-Injection-in-Diffusion-A-Training-free-Approach-for-Adapting-Large-scale-Diffusion-Models-for-Style-Transfer%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/28/Style-Injection-in-Diffusion-A-Training-free-Approach-for-Adapting-Large-scale-Diffusion-Models-for-Style-Transfer%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f2.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/28/Style-Injection-in-Diffusion-A-Training-free-Approach-for-Adapting-Large-scale-Diffusion-Models-for-Style-Transfer%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f16.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/28/Style-Injection-in-Diffusion-A-Training-free-Approach-for-Adapting-Large-scale-Diffusion-Models-for-Style-Transfer%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f17.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/28/Style-Injection-in-Diffusion-A-Training-free-Approach-for-Adapting-Large-scale-Diffusion-Models-for-Style-Transfer%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f18.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/28/Style-Injection-in-Diffusion-A-Training-free-Approach-for-Adapting-Large-scale-Diffusion-Models-for-Style-Transfer%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f19.png">
 <meta property="article:published_time" content="2025-03-28T12:09:00.000Z">
-<meta property="article:modified_time" content="2025-03-29T08:00:34.326Z">
+<meta property="article:modified_time" content="2025-04-03T14:30:24.541Z">
 <meta property="article:author" content="Zongqing Li">
 <meta property="article:tag" content="diffusion">
 <meta property="article:tag" content="CVPR">
@@ -234,7 +235,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-03-29 16:00:34" itemprop="dateModified" datetime="2025-03-29T16:00:34+08:00">2025-03-29</time>
+                <time title="修改时间：2025-04-03 22:30:24" itemprop="dateModified" datetime="2025-04-03T22:30:24+08:00">2025-04-03</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -257,32 +258,36 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><p>尽管扩散模型具有令人印象深刻的生成能力，但现有的基于扩散模型的风格迁移方法要么需要耗时的推理阶段优化（如风格的微调或文本反转），要么未能充分利用大规模扩散模型的生成能力。为解决这些问题，我们提出了一种基于预训练大规模扩散模型的新型艺术风格迁移方法，无需任何优化过程。具体而言，我们通过模仿交叉注意力机制的工作方式，对自注意力层的特征进行操作：在生成过程中，将内容的键（key）和值（value）替换为风格图像的对应特征。这种方法为风格迁移提供了几个理想特性：1）通过将相似风格传递到相似图像块来保留内容结构；2）基于内容与风格图像之间局部纹理（如边缘）的相似性进行风格传递。此外，我们引入查询保留和注意力温度缩放来缓解原始内容结构被破坏的问题，并提出初始潜在自适应实例归一化（AdaIN）来处理颜色不和谐（风格颜色传递失败）的问题。实验结果表明，我们的方法在传统和基于扩散的风格迁移基准上均超越了现有技术。代码可在github.com/jiwoogit/StyleID获取。<br><span id="more"></span></p>
+        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><p>尽管扩散模型具有令人印象深刻的生成能力，但现有的基于扩散模型的风格迁移方法要么<strong>需要耗时的推理阶段优化</strong>（如风格的微调或文本反转），要么<strong>未能充分利用大规模扩散模型的生成能力</strong>。为解决这些问题，我们提出了一种<strong>基于预训练大规模扩散模型的无需任何优化过程的新型艺术风格迁移方法</strong>。具体而言，<strong>我们通过模仿交叉注意力机制的工作方式，对自注意力层的特征进行操作：在生成过程中，将内容的键（key）和值（value）替换为风格图像的对应特征</strong>。这种方法为风格迁移提供了几个理想特性：<strong>1）通过将相似风格传递到相似图像块来保留内容结构；2）基于内容与风格图像之间局部纹理（如边缘）的相似性进行风格传递。</strong>此外，我们<strong>引入查询保留和注意力温度缩放来缓解原始内容结构被破坏的问题，并提出初始潜在自适应实例归一化（AdaIN）来处理颜色不和谐（风格颜色传递失败）的问题</strong>。实验结果表明，我们的方法在传统和基于扩散的风格迁移基准上均超越了现有技术。代码可在<a target="_blank" rel="noopener" href="https://github.com/jiwoogit/StyleID">https://github.com/jiwoogit/StyleID</a> 获取。</p>
+<span id="more"></span>
 <h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1. 引言"></a>1. 引言</h3><p>扩散模型（DMs）的最新进展在各种生成应用领域取得了突破，如文本到图像合成、图像或视频编辑。其中的一些成果也应用于风格迁移任务，即给定风格图像和内容图像，将内容图像的风格修改为与给定风格一致。</p>
-<p>在本文中，我们专注于将无需训练的风格迁移方法扩展到大规模预训练扩散模型的应用中。我们从基于大规模扩散模型的图像到图像转换的最新进展中得到启发，这些研究揭示了注意力层在图像编辑中的能力。值得注意的是，“即插即用”方法表明，残差块和自注意力（SA）的注意力图决定了生成图像的空间布局。同时，“Prompt-to-Prompt”方法通过替换从文本提示中获得的交叉注意力（CA）的键和值，在保持原始注意力图的情况下对图像进行局部编辑。这些研究都表明，注意力图决定了空间布局，而交叉注意力的键和值调整了填充的内容。</p>
-<p>受上述方法的启发，我们提出操纵自注意力层是一种有效的风格迁移方式（见图1）。具体来说，与交叉注意力类似，我们替换自注意力的键和值，并观察到生成的图像在视觉上仍然合理，并且自然地将替换图像的元素融入到原始图像中。这一观察促使我们提出一种基于自注意力的风格迁移技术，该技术将特定图像的风格（纹理）与不同图像的内容（语义和空间布局）相结合。此外，我们强调自注意力层在风格迁移中具有理想的特性。首先，如图2（a）所示，在基于自注意力的风格迁移中，具有语义相似性的内容图像块（查询）会与相似的风格（键）相互作用，从而在迁移后保持这些内容图像块之间的关系。其次，由于大规模扩散模型强大的特征表示能力，查询的每个图像块与具有相似纹理和语义的键具有更高的相似性。例如，在图2（b）中，我们可以观察到蓝色框内的内容查询特征与具有相似边缘纹理的风格键特征具有很高的相似性。这使得模型能够基于内容和风格之间的局部纹理（如边缘）相似性进行风格迁移。</p>
+<p>在本文中，我们专注于将无需训练的风格迁移方法扩展到大规模预训练扩散模型的应用中。我们从基于大规模扩散模型的图像到图像转换的最新进展中得到启发，这些研究揭示了注意力层在图像编辑中的能力。<font style="background:yellow"> 值得注意的是，“即插即用”方法表明，残差块和自注意力（SA）的注意力图决定了生成图像的空间布局。同时，“Prompt-to-Prompt”方法通过替换从文本提示中获得的交叉注意力（CA）的键和值，在保持原始注意力图的情况下对图像进行局部编辑。这些研究都表明，注意力图决定了空间布局，而交叉注意力的键和值调整了填充的内容。</font></p>
+<font style="background:yellow">受上述方法的启发，我们提出操纵自注意力层是一种有效的风格迁移方式（见图1）。</font>具体来说，与交叉注意力类似，我们替换自注意力的键和值，并观察到生成的图像在视觉上仍然合理，并且自然地将替换图像的元素融入到原始图像中。这一观察促使我们提出一种基于自注意力的风格迁移技术，该技术将特定图像的风格（纹理）与不同图像的内容（语义和空间布局）相结合。此外，我们强调<font style="background:yellow">自注意力层在风格迁移中具有理想的特性。首先，如图2（a）所示，在基于自注意力的风格迁移中，具有语义相似性的内容图像块（查询）会与相似的风格（键）相互作用，从而在迁移后保持这些内容图像块之间的关系。其次，由于大规模扩散模型强大的特征表示能力，查询的每个图像块与具有相似纹理和语义的键具有更高的相似性。例如，在图2（b）中，我们可以观察到蓝色框内的内容查询特征与具有相似边缘纹理的风格键特征具有很高的相似性。这使得模型能够基于内容和风格之间的局部纹理（如边缘）相似性进行风格迁移。</font>
+
 <div class="table-container">
 <table>
 <thead>
 <tr>
-<th style="text-align:center"><img src="f1.png" width="600" /></th>
+<th style="text-align:center"><img src="f1.png" width="110%" /></th>
+<th style="text-align:center"><img src="f2.png" width="90%" /></th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align:center"><em>图 1：用于风格迁移的自注意力特征操作。(a) 一般的自注意力（SA）在训练和推理阶段都从单个图像中提取查询、键和值特征。(b) 在推理阶段，我们认为操纵预训练的大规模扩散模型（DM）的自注意力特征是一种有效的风格迁移方式；将风格的键和值注入到内容的自注意力中是进行风格迁移的恰当方法。结果，注入风格后的内容$z_{ t−1}^{c}$​在修改风格以接近目标风格的同时，会保留内容。</em></td>
+<td style="text-align:center"><em>图 2：自注意力机制（SA）在风格迁移中的理想属性（a）通过主成分分析（PCA）对查询进行可视化，结果表明查询特征能很好地反映图像块之间的相似性。也就是说，采用自注意力机制的风格迁移可以保留原始内容，因为相似的内容图像块往往会从相应的风格图像块中获得相似的注意力分数。（b）我们可视化了内容图像中蓝色框（边缘部分）的查询与风格图像的键之间的相似性图。由于大规模扩散模型的特征表示涵盖了纹理和语义信息，一个查询会对具有相似风格（如边缘）的键表现出更高的相似性。</em></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p>因此，我们的方法旨在通过操纵预训练大规模扩散模型的自注意力特征，在无需任何优化的情况下将风格图像的纹理转移到内容图像上。为此，我们首先提出一种基于注意力的风格注入方法。其基本思想是将自注意力中内容的键和值替换为风格图像的键和值，尤其是解码器后半部分与局部纹理相关的层。如上文所述，通过基于相似性的注意力机制，交换后的风格能够很好地与原始图像的内容和纹理对齐。通过我们提出的风格注入方法，我们观察到局部纹理模式能够成功转移，但仍然存在一些问题，如原始内容被破坏和颜色不和谐。为了解决这些问题，我们还提出了以下技术：查询保留、注意力温度缩放和初始潜在自适应实例归一化（AdaIN）。查询保留通过在自注意力中保留内容图像的查询，使反向扩散过程能够保留原始内容的空间结构。注意力温度缩放旨在通过处理因键替换而导致的模糊自注意力图，来保持内容结构。最后，初始潜在自适应实例归一化通过调整扩散模型中初始噪声的统计信息，来纠正颜色不和谐的问题，因为风格图像的颜色分布未能正确转移。我们的主要贡献总结如下：</p>
+<p>因此，<strong>我们的方法旨在通过操纵预训练大规模扩散模型的自注意力特征，在无需任何优化的情况下将风格图像的纹理转移到内容图像上</strong>。为此，<font style="background:yellow">我们首先提出一种基于注意力的风格注入方法。其基本思想是将自注意力中内容的键和值替换为风格图像的键和值，尤其是解码器后半部分与局部纹理相关的层。</font>如上文所述，通过基于相似性的注意力机制，交换后的风格能够很好地与原始图像的内容和纹理对齐。<strong>通过我们提出的风格注入方法，我们观察到局部纹理模式能够成功转移，但仍然存在一些问题，如原始内容被破坏和颜色不和谐。</strong>为了解决这些问题，我们还提出了以下技术：<strong>查询保留、注意力温度缩放和初始潜在自适应实例归一化（AdaIN）</strong>。<font style="background:yellow">查询保留通过在自注意力中保留内容图像的查询，使反向扩散过程能够保留原始内容的空间结构。注意力温度缩放旨在通过处理因键替换而导致的模糊自注意力图，来保持内容结构。最后，初始潜在自适应实例归一化通过调整扩散模型中初始噪声的统计信息，来纠正颜色不和谐的问题，因为风格图像的颜色分布未能正确转移。</font>我们的主要贡献总结如下：</p>
 <ul>
 <li>我们提出了一种风格迁移方法，通过简单操纵自注意力特征来利用大规模预训练扩散模型，在无需任何优化或监督（如文本）的情况下，将内容的键和值替换为风格的键和值。</li>
 <li>我们进一步改进了简单的风格迁移方法，通过提出查询保留、注意力温度缩放和初始潜在自适应实例归一化三个组件，使风格能够更好地适应。</li>
 <li>在风格迁移数据集上的广泛实验验证了我们提出的方法显著优于先前的方法，并达到了当前最优的性能。</li>
 </ul>
-<h3 id="2-相关工作"><a href="#2-相关工作" class="headerlink" title="2. 相关工作"></a>2. 相关工作</h3><h4 id="2-1-基于扩散模型的神经风格迁移"><a href="#2-1-基于扩散模型的神经风格迁移" class="headerlink" title="2.1 基于扩散模型的神经风格迁移"></a>2.1 基于扩散模型的神经风格迁移</h4><p>神经风格迁移是一种示例引导的图像生成任务，它将一幅图像的风格转移到另一幅图像上，同时保留原始图像的内容。在扩散模型领域，神经风格迁移通过利用预训练扩散模型的生成能力得到了发展。例如，InST引入了一种基于文本反转的方法，旨在将给定的风格映射到相应的文本嵌入中。StyleDiffusion旨在通过引入基于CLIP的风格解耦损失来微调扩散模型，从而实现风格和内容的解耦。此外，还有几种方法利用文本输入作为风格条件或用于确定要合成的内容。</p>
-<p>相反，DiffStyle提出了一种无需训练的风格迁移方法，该方法利用h空间并调整跳跃连接，以分别有效地传递风格和内容信息。然而，当DiffStyle应用于Stable Diffusion时，其表现与典型的风格迁移方法有很大不同；不仅纹理发生了变化，空间布局等语义信息也发生了改变。</p>
+<h3 id="2-相关工作"><a href="#2-相关工作" class="headerlink" title="2. 相关工作"></a>2. 相关工作</h3><h4 id="2-1-基于扩散模型的神经风格迁移"><a href="#2-1-基于扩散模型的神经风格迁移" class="headerlink" title="2.1 基于扩散模型的神经风格迁移"></a>2.1 基于扩散模型的神经风格迁移</h4><p>神经风格迁移是一种示例引导的图像生成任务，它将一幅图像的风格转移到另一幅图像上，同时保留原始图像的内容。在扩散模型领域，神经风格迁移通过利用预训练扩散模型的生成能力得到了发展。例如，<strong>InST引入了一种基于文本反转的方法，旨在将给定的风格映射到相应的文本嵌入中。StyleDiffusion旨在通过引入基于CLIP的风格解耦损失来微调扩散模型，从而实现风格和内容的解耦。</strong>此外，还有几种方法利用文本输入作为风格条件或用于确定要合成的内容。</p>
+<p>相反，<strong>DiffStyle提出了一种无需训练的风格迁移方法，该方法利用h空间并调整跳跃连接，以分别有效地传递风格和内容信息。</strong>然而，当DiffStyle应用于Stable Diffusion时，其表现与典型的风格迁移方法有很大不同；不仅纹理发生了变化，空间布局等语义信息也发生了改变。</p>
 <p>为了解决这些局限性，我们提出了一种新颖的算法，该算法在无需任何优化过程的情况下，在Stable Diffusion的自注意力层内和谐地融合风格和内容特征。</p>
 <h4 id="2-2-扩散模型中基于注意力的图像编辑"><a href="#2-2-扩散模型中基于注意力的图像编辑" class="headerlink" title="2.2 扩散模型中基于注意力的图像编辑"></a>2.2 扩散模型中基于注意力的图像编辑</h4><p>随着预训练的文本到图像扩散模型取得显著进展，出现了许多利用这些模型的图像编辑工作。值得注意的是，Prompt-to-Prompt提出了基于文本的局部图像编辑方法，通过操纵交叉注意力图来实现。具体来说，他们观察到交叉注意力在建模图像空间布局与提示中每个单词之间的关系方面起着重要作用。因此，他们用所需的单词和交叉注意力图替换原始的，从而获得符合文本条件的编辑图像。随后，Plug-and-play引入了文本引导的图像到图像转换方法。他们发现空间特征（即来自残差块的特征）和自注意力图决定了合成图像的空间布局。因此，在根据给定的文本条件生成新图像时，他们利用原始图像的特征和注意力图来引导扩散模型，以保留原始空间布局。最近，MasaCtrl提出了用于一致图像编辑的互自注意力控制方法，使用文本提示。详细来说，他们保留源图像自注意力层的键和值，同时用所需的文本提示对模型进行条件设置。</p>
 <p>与这些工作一样，我们认识到注意力图在表示空间信息方面的潜力。然而，与上述专注于利用文本条件的方法不同，我们专注于由来自不同风格的两幅图像组成的风格和内容图像进行条件设置。通过精确调整中间表示中的统计信息，将风格和内容图像的自注意力层中的特征相结合，我们将内容图像的纹理转移到给定的风格上。</p>

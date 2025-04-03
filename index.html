@@ -296,7 +296,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-03-29 16:00:34" itemprop="dateModified" datetime="2025-03-29T16:00:34+08:00">2025-03-29</time>
+                <time title="修改时间：2025-04-03 22:30:24" itemprop="dateModified" datetime="2025-04-03T22:30:24+08:00">2025-04-03</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -319,7 +319,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><p>尽管扩散模型具有令人印象深刻的生成能力，但现有的基于扩散模型的风格迁移方法要么需要耗时的推理阶段优化（如风格的微调或文本反转），要么未能充分利用大规模扩散模型的生成能力。为解决这些问题，我们提出了一种基于预训练大规模扩散模型的新型艺术风格迁移方法，无需任何优化过程。具体而言，我们通过模仿交叉注意力机制的工作方式，对自注意力层的特征进行操作：在生成过程中，将内容的键（key）和值（value）替换为风格图像的对应特征。这种方法为风格迁移提供了几个理想特性：1）通过将相似风格传递到相似图像块来保留内容结构；2）基于内容与风格图像之间局部纹理（如边缘）的相似性进行风格传递。此外，我们引入查询保留和注意力温度缩放来缓解原始内容结构被破坏的问题，并提出初始潜在自适应实例归一化（AdaIN）来处理颜色不和谐（风格颜色传递失败）的问题。实验结果表明，我们的方法在传统和基于扩散的风格迁移基准上均超越了现有技术。代码可在github.com/jiwoogit/StyleID获取。<br>
+          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><p>尽管扩散模型具有令人印象深刻的生成能力，但现有的基于扩散模型的风格迁移方法要么<strong>需要耗时的推理阶段优化</strong>（如风格的微调或文本反转），要么<strong>未能充分利用大规模扩散模型的生成能力</strong>。为解决这些问题，我们提出了一种<strong>基于预训练大规模扩散模型的无需任何优化过程的新型艺术风格迁移方法</strong>。具体而言，<strong>我们通过模仿交叉注意力机制的工作方式，对自注意力层的特征进行操作：在生成过程中，将内容的键（key）和值（value）替换为风格图像的对应特征</strong>。这种方法为风格迁移提供了几个理想特性：<strong>1）通过将相似风格传递到相似图像块来保留内容结构；2）基于内容与风格图像之间局部纹理（如边缘）的相似性进行风格传递。</strong>此外，我们<strong>引入查询保留和注意力温度缩放来缓解原始内容结构被破坏的问题，并提出初始潜在自适应实例归一化（AdaIN）来处理颜色不和谐（风格颜色传递失败）的问题</strong>。实验结果表明，我们的方法在传统和基于扩散的风格迁移基准上均超越了现有技术。代码可在<a target="_blank" rel="noopener" href="https://github.com/jiwoogit/StyleID">https://github.com/jiwoogit/StyleID</a> 获取。</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2025/03/28/Style-Injection-in-Diffusion-A-Training-free-Approach-for-Adapting-Large-scale-Diffusion-Models-for-Style-Transfer%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/#more" rel="contents">
