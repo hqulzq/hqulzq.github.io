@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="SCORE-BASED GENERATIVE MODELING THROUGH STOCHASTIC DIFFERENTIAL EQUATIONS论文精读全文翻译摘要从数据中生成噪声很容易；而从噪声中生成数据则是生成式建模。我们提出一种随机微分方程（SDE），通过缓慢注入噪声，将复杂的数据分布平滑地转换为已知的先验分布；同时提出一种相应的逆向时间SDE，通过逐渐去除噪声，将先验分布转换回数据分布。">
+  <meta name="description" content="全文翻译摘要从数据中生成噪声很容易；而从噪声中生成数据则是生成式建模。我们提出一种随机微分方程（SDE），通过缓慢注入噪声，将复杂的数据分布平滑地转换为已知的先验分布；同时提出一种相应的逆向时间SDE，通过逐渐去除噪声，将先验分布转换回数据分布。关键在于，逆向时间SDE仅依赖于受扰动数据分布的时变梯度场（即分数）。利用基于分数的生成式建模的进展，我们可以用神经网络精确估计这些分数，并使用数值SDE">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ScoreSDE论文精读">
 <meta property="og:url" content="https://hqulzq.github.io/2025/02/26/ScoreSDE%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/index.html">
 <meta property="og:site_name" content="Lzq&#39;s blog">
-<meta property="og:description" content="SCORE-BASED GENERATIVE MODELING THROUGH STOCHASTIC DIFFERENTIAL EQUATIONS论文精读全文翻译摘要从数据中生成噪声很容易；而从噪声中生成数据则是生成式建模。我们提出一种随机微分方程（SDE），通过缓慢注入噪声，将复杂的数据分布平滑地转换为已知的先验分布；同时提出一种相应的逆向时间SDE，通过逐渐去除噪声，将先验分布转换回数据分布。">
+<meta property="og:description" content="全文翻译摘要从数据中生成噪声很容易；而从噪声中生成数据则是生成式建模。我们提出一种随机微分方程（SDE），通过缓慢注入噪声，将复杂的数据分布平滑地转换为已知的先验分布；同时提出一种相应的逆向时间SDE，通过逐渐去除噪声，将先验分布转换回数据分布。关键在于，逆向时间SDE仅依赖于受扰动数据分布的时变梯度场（即分数）。利用基于分数的生成式建模的进展，我们可以用神经网络精确估计这些分数，并使用数值SDE">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://hqulzq.github.io/2025/02/26/ScoreSDE%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f1.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/02/26/ScoreSDE%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f2.png">
@@ -33,8 +33,10 @@
 <meta property="og:image" content="https://hqulzq.github.io/2025/02/26/ScoreSDE%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t2_3.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/02/26/ScoreSDE%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f3.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/02/26/ScoreSDE%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f4.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/26/ScoreSDE%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/ff1.gif">
+<meta property="og:image" content="https://hqulzq.github.io/2025/02/26/ScoreSDE%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/ff1.gif">
 <meta property="article:published_time" content="2025-02-26T03:20:27.000Z">
-<meta property="article:modified_time" content="2025-03-08T01:56:17.749Z">
+<meta property="article:modified_time" content="2025-04-08T15:36:46.070Z">
 <meta property="article:author" content="Zongqing Li">
 <meta property="article:tag" content="diffusion">
 <meta property="article:tag" content="2021">
@@ -235,7 +237,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-03-08 09:56:17" itemprop="dateModified" datetime="2025-03-08T09:56:17+08:00">2025-03-08</time>
+                <time title="修改时间：2025-04-08 23:36:46" itemprop="dateModified" datetime="2025-04-08T23:36:46+08:00">2025-04-08</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -258,10 +260,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="SCORE-BASED-GENERATIVE-MODELING-THROUGH-STOCHASTIC-DIFFERENTIAL-EQUATIONS论文精读"><a href="#SCORE-BASED-GENERATIVE-MODELING-THROUGH-STOCHASTIC-DIFFERENTIAL-EQUATIONS论文精读" class="headerlink" title="SCORE-BASED GENERATIVE MODELING THROUGH STOCHASTIC DIFFERENTIAL EQUATIONS论文精读"></a>SCORE-BASED GENERATIVE MODELING THROUGH STOCHASTIC DIFFERENTIAL EQUATIONS论文精读</h1><h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>从数据中生成噪声很容易；而从噪声中生成数据则是生成式建模。我们提出一种随机微分方程（SDE），通过缓慢注入噪声，将复杂的数据分布平滑地转换为已知的先验分布；同时提出一种相应的逆向时间SDE，通过逐渐去除噪声，将先验分布转换回数据分布。关键在于，逆向时间SDE仅依赖于受扰动数据分布的时变梯度场（即分数）。利用基于分数的生成式建模的进展，我们可以用神经网络精确估计这些分数，并使用数值SDE求解器生成样本。我们表明，这个框架涵盖了先前基于分数的生成式建模和扩散概率建模方法，为新的采样过程和建模能力提供了可能。具体而言，我们引入了一个预测 - 校正框架，以纠正离散化逆向时间SDE演化过程中的误差。我们还推导了一个等效的神经常微分方程（ODE），它与SDE从相同分布中采样，但还能实现精确的似然计算，并提高采样效率。此外，我们提供了一种使用基于分数的模型解决逆问题的新方法，并通过类条件生成、图像修复和上色实验进行了验证。结合多种架构改进，我们在CIFAR - 10上的无条件图像生成任务中取得了突破性的成果，Inception分数达到9.89，FID为2.20，以2.99比特/维度的似然性创造了新纪录，并且首次从基于分数的生成模型中生成了高保真的1024×1024图像。<br><span id="more"></span></p>
+        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>从数据中生成噪声很容易；而从噪声中生成数据则是生成式建模。我们提出一种随机微分方程（SDE），通过缓慢注入噪声，将复杂的数据分布平滑地转换为已知的先验分布；同时提出一种相应的逆向时间SDE，通过逐渐去除噪声，将先验分布转换回数据分布。关键在于，逆向时间SDE仅依赖于受扰动数据分布的时变梯度场（即分数）。利用基于分数的生成式建模的进展，我们可以用神经网络精确估计这些分数，并使用数值SDE求解器生成样本。我们表明，<strong>这个框架涵盖了先前基于分数的生成式建模和扩散概率建模方法，</strong>为新的采样过程和建模能力提供了可能。具体而言，我们<strong>引入了一个预测-校正框架，以纠正离散化逆向时间SDE演化过程中的误差。</strong>我们还<strong>推导了一个等效的神经常微分方程（ODE），它与SDE从相同分布中采样，但还能实现精确的似然计算，并提高采样效率。</strong>此外，我们提供了一种使用<code>基于分数的模型</code>解决逆问题的新方法，并通过类条件生成、图像修复和上色实验进行了验证。结合多种架构改进，我们在CIFAR - 10上的无条件图像生成任务中取得了突破性的成果，Inception分数达到9.89，FID为2.20，以2.99比特/维度的似然性创造了新纪录，并且首次从基于分数的生成模型中生成了高保真的1024×1024图像。<br><span id="more"></span></p>
 <h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1 引言"></a>1 引言</h3><p>两类成功的概率生成模型，一类是通过逐渐增加噪声来依次破坏训练数据，另一类是学习逆转这种破坏过程，从而构建数据的生成模型。基于朗之万动力学的分数匹配（SMLD）（Song &amp; Ermon, 2019）在每个噪声尺度上估计分数（即对数概率密度关于数据的梯度），然后在生成过程中使用朗之万动力学从一系列逐渐减小的噪声尺度中进行采样。去噪扩散概率模型（DDPM）（Sohl-Dickstein等人, 2015; Ho等人, 2020）训练一系列概率模型来逆转噪声破坏的每一步，利用逆向分布的函数形式使训练易于处理。对于连续状态空间，DDPM的训练目标会在每个噪声尺度上隐式地计算分数。因此，我们将这两类模型统称为基于分数的生成模型。</p>
-<p>基于分数的生成模型及相关技术（Bordes等人, 2017; Goyal等人, 2017; Du &amp; Mordatch, 2019）已被证明在图像生成（Song &amp; Ermon, 2019; 2020; Ho等人, 2020）、音频生成（Chen等人, 2020; Kong等人, 2020）、图生成（Niu等人, 2020）和形状生成（Cai等人, 2020）等方面是有效的。为了实现新的采样方法并进一步扩展基于分数的生成模型的能力，我们提出了一个统一的框架，通过随机微分方程（SDEs）对先前的方法进行了推广。</p>
-<p>具体来说，我们不再使用有限数量的噪声分布来扰动数据，而是考虑根据扩散过程随时间演化的连续分布。这个过程将一个数据点逐渐扩散为随机噪声，由一个预先设定的SDE给出，该SDE不依赖于数据且没有可训练参数。通过逆转这个过程，我们可以将随机噪声平滑地塑造为数据以进行样本生成。关键是，这个逆向过程满足一个逆向时间SDE（Anderson, 1982），在已知边际概率密度的分数作为时间的函数的情况下，可以从正向SDE推导得出。因此，我们可以通过训练一个依赖时间的神经网络来估计分数，从而近似逆向时间SDE，然后使用数值SDE求解器生成样本。我们的核心思想如图1所示。</p>
+<p>基于分数的生成模型及相关技术（Bordes等人, 2017; Goyal等人, 2017; Du &amp; Mordatch, 2019）已被证明在图像生成（Song &amp; Ermon, 2019; 2020; Ho等人, 2020）、音频生成（Chen等人, 2020; Kong等人, 2020）、图生成（Niu等人, 2020）和形状生成（Cai等人, 2020）等方面是有效的。<strong>为了实现新的采样方法并进一步扩展基于分数的生成模型的能力，我们提出了一个统一的框架，通过随机微分方程（SDEs）对先前的方法进行了推广。</strong></p>
+<p>具体来说，我们<strong>不再使用有限数量的噪声分布来扰动数据，而是考虑根据扩散过程随时间演化的连续分布。</strong>这个过程将一个数据点逐渐扩散为随机噪声，并且由一个预先设定的SDE给出，该SDE不依赖于数据且没有可训练参数。通过逆转这个过程，我们可以将随机噪声平滑地塑造为数据以进行样本生成。关键是，<strong>这个逆向过程满足一个逆向时间SDE（Anderson, 1982），在已知边际概率密度的分数作为时间的函数的情况下，可以从正向SDE推导得出。</strong>因此，我们可以通过训练一个依赖时间的神经网络来估计分数，从而近似逆向时间SDE，然后使用数值SDE求解器生成样本。我们的核心思想如图1所示。</p>
 <div class="table-container">
 <table>
 <thead>
@@ -288,8 +290,8 @@
 <h4 id="2-2-去噪扩散概率模型（DDPM）"><a href="#2-2-去噪扩散概率模型（DDPM）" class="headerlink" title="2.2 去噪扩散概率模型（DDPM）"></a>2.2 去噪扩散概率模型（DDPM）</h4><p>Sohl-Dickstein等人（2015）；Ho等人（2020）考虑一系列正的噪声尺度$0&lt;\beta_{1}, \beta_{2}, \cdots, \beta_{N}&lt;1$。对于每个训练数据点$x_{0} \sim p_{data }(x)$，构建一个离散马尔可夫链$\{x_{0}, x_{1}, \cdots, x_{N}\}$，使得$p(x_{i} | x_{i - 1})=N(x_{i} ; \sqrt{1-\beta_{i}} x_{i - 1}, \beta_{i} I)$，因此$p_{\alpha_{i}}(x_{i} | x_{0})=N(x_{i} ; \sqrt{\alpha_{i}} x_{0},(1-\alpha_{i}) I)$，其中$\alpha_{i}:=\prod_{j = 1}^{i}(1-\beta_{j})$。与SMLD类似，我们可以将受扰动的数据分布表示为$p_{\alpha_{i}}(\tilde{x}):=\int p_{data }(x) p_{\alpha_{i}}(\tilde{x} | x)dx$。噪声尺度的设置使得$x_{N}$近似服从$N(0, I)$分布。逆向的变分马尔可夫链由$p_{\theta}(x_{i - 1} | x_{i})=N(x_{i - 1} ; \frac{1}{\sqrt{1-\beta_{i}}}(x_{i}+\beta_{i} s_{\theta}(x_{i}, i)), \beta_{i} I)$参数化，并使用证据下界（ELBO）的加权变体进行训练：</p>
 <script type="math/tex; mode=display">\theta^{*}=\underset{\theta}{arg min } \sum_{i = 1}^{N}\left(1-\alpha_{i}\right) \mathbb{E}_{p_{data }(x)} \mathbb{E}_{p_{\alpha_{i}}(\tilde{x} | x)}\left[\left\| s_{\theta}(\tilde{x}, i)-\nabla_{\tilde{x}} log p_{\alpha_{i}}(\tilde{x} | x)\right\|_{2}^{2}\right] \tag{3}</script><p>求解上述方程得到最优模型<script type="math/tex">s_{\theta^{*}}(x, i)</script>后，可以从<script type="math/tex">x_{N} \sim N(0, I)</script>开始，按照估计的逆向马尔可夫链生成样本：</p>
 <script type="math/tex; mode=display">x_{i - 1}=\frac{1}{\sqrt{1-\beta_{i}}}\left(x_{i}+\beta_{i} s_{\theta^{*}}\left(x_{i}, i\right)\right)+\sqrt{\beta_{i}} z_{i}, i = N, N - 1, \cdots, 1 \tag{4}</script><p>我们将这种方法称为祖先采样（ancestral sampling），因为它相当于从图形模型$\prod_{i = 1}^{N} p_{\theta}(x_{i - 1} | x_{i})$进行祖先采样。这里描述的目标方程（3）是Ho等人（2020）中的$L_{simple }$，写成这种形式是为了更明显地展示它与方程（1）的相似性。与方程（1）一样，方程（3）也是去噪分数匹配目标的加权和，这意味着最优模型<script type="math/tex">s_{\theta^{*}}(\tilde{x}, i)</script>与受扰动数据分布的分数$\nabla_{x} log p_{\alpha_{i}}(x)$相匹配。值得注意的是，方程（1）和方程（3）中第$i$个求和项的权重，即$\sigma_{i}^{2}$和$(1-\alpha_{i})$，与相应的扰动核具有相同的函数形式：<script type="math/tex">\sigma_{i}^{2} \propto 1 / \mathbb{E}[\left\|\nabla_{x} log p_{\sigma_{i}}(\tilde{x} | x)\right\|_{2}^{2}]</script>和<script type="math/tex">(1-\alpha_{i}) \propto 1 / \mathbb{E}[\left\|\nabla_{x} log p_{\alpha_{i}}(\tilde{x} | x)\right\|_{2}^{2}]</script>。</p>
-<h3 id="3-基于随机微分方程的分数生成建模"><a href="#3-基于随机微分方程的分数生成建模" class="headerlink" title="3 基于随机微分方程的分数生成建模"></a>3 基于随机微分方程的分数生成建模</h3><p>在之前的方法中，用多个噪声尺度扰动数据是成功的关键。我们提议进一步将这个想法扩展到无穷多个噪声尺度，使得受扰动的数据分布会随着噪声增强，依据随机微分方程进行演化。图2展示了我们框架的概述。</p>
-<h4 id="3-1-用随机微分方程扰动数据"><a href="#3-1-用随机微分方程扰动数据" class="headerlink" title="3.1 用随机微分方程扰动数据"></a>3.1 用随机微分方程扰动数据</h4><p>我们的目标是构建一个由连续时间变量 $t \in [0, T]$ 索引的扩散过程 $\{x(t)\}_{t = 0}^{T}$，使得 $x(0) \sim p_{0}$（我们有来自该分布的独立同分布样本数据集），并且 $x(T) \sim p_{T}$（我们可以高效地从这个分布生成样本）。换句话说，$p_{0}$ 是数据分布，$p_{T}$ 是先验分布。这个扩散过程可以建模为一个伊藤随机微分方程的解：</p>
+<h3 id="3-基于随机微分方程的分数生成建模"><a href="#3-基于随机微分方程的分数生成建模" class="headerlink" title="3 基于随机微分方程的分数生成建模"></a>3 基于随机微分方程的分数生成建模</h3><p><strong>在之前的方法中，用多个噪声尺度扰动数据是成功的关键。我们提议进一步将这个想法扩展到无穷多个噪声尺度，使得受扰动的数据分布会随着噪声增强，依据随机微分方程进行演化。</strong>图2展示了我们框架的概述。</p>
+<h4 id="3-1-用随机微分方程扰动数据"><a href="#3-1-用随机微分方程扰动数据" class="headerlink" title="3.1 用随机微分方程扰动数据"></a>3.1 用随机微分方程扰动数据</h4><p>我们的目标是构建一个由连续时间变量 $t \in [0, T]$ 索引的扩散过程 $\{x(t)\}_{t = 0}^{T}$，使得 $x(0) \sim p_{0}$（我们有来自该分布的独立同分布样本数据集），并且 $x(T) \sim p_{T}$（我们可以高效地从这个分布生成样本）。换句话说，$p_{0}$ 是数据分布，$p_{T}$ 是先验分布。这个扩散过程可以建模为一个<code>伊藤随机微分方程</code>的解：</p>
 <script type="math/tex; mode=display">dx = f(x, t)dt + g(t)dw \tag{5}</script><div class="table-container">
 <table>
 <thead>
@@ -320,12 +322,12 @@
 <p>受VP随机微分方程的启发，我们提出了一种新型的随机微分方程，在似然性方面表现尤为出色（见4.3节），其表达式为：</p>
 <script type="math/tex; mode=display">dx = -\frac{1}{2}\beta(t)xdt + \sqrt{\beta(t)(1 - e^{-2\int_{0}^{t}\beta(s)ds})}dw \tag{12}</script><p>当使用相同的 $\beta(t)$ 并从相同的初始分布开始时，公式（12）所诱导的随机过程的方差在每个中间时间步都始终受到VP随机微分方程的限制（证明见附录B）。因此，我们将公式（12）命名为亚VP随机微分方程。</p>
 <p>由于VE、VP和亚VP随机微分方程都具有仿射漂移系数，它们的扰动核 $p_{0t}(x(t)|x(0))$ 都是高斯分布，可以使用Särkkä和Solin (2019) 中的公式（5.50）和（5.51）进行计算：</p>
-<script type="math/tex; mode=display">p_{0t}(x(t)|x(0)) = 
+<script type="math/tex; mode=display">p_{0t}(x(t)|x(0)) =
 \begin{cases}
 \mathcal{N}(x(t); x(0), [\sigma^{2}(t) - \sigma^{2}(0)]I), & \text{(VE随机微分方程)} \\
 \mathcal{N}(x(t); x(0)e^{-\frac{1}{2}\int_{0}^{t}\beta(s)ds}, I - Ie^{-\int_{0}^{t}\beta(s)ds}) & \text{(VP随机微分方程)} \\
 \mathcal{N}(x(t); x(0)e^{-\frac{1}{2}\int_{0}^{t}\beta(s)ds}, [1 - e^{-\int_{0}^{t}\beta(s)ds}]^{2}I) & \text{(亚VP随机微分方程)}
-\end{cases} \tag{29}</script><p>因此，这里介绍的所有随机微分方程都可以用公式（7）中的目标函数进行高效训练。 </p>
+\end{cases} \tag{29}</script><p>因此，这里介绍的所有随机微分方程都可以用公式（7）中的目标函数进行高效训练。</p>
 <h3 id="4-求解反向随机微分方程"><a href="#4-求解反向随机微分方程" class="headerlink" title="4 求解反向随机微分方程"></a>4 求解反向随机微分方程</h3><p>训练完一个依赖时间的基于分数的模型 $s_{\theta}$ 后，我们可以用它构建反向时间随机微分方程，然后用数值方法对其进行模拟，从 $p_{0}$ 中生成样本。</p>
 <div class="table-container">
 <table>
@@ -385,7 +387,7 @@
 </div>
 <h4 id="4-4-架构改进"><a href="#4-4-架构改进" class="headerlink" title="4.4 架构改进"></a>4.4 架构改进</h4><p>我们探索了几种适用于基于分数的模型的新架构设计，这些模型同时使用VE和VP随机微分方程（详见附录H），我们用与SMLD/DDPM中相同的离散目标训练这些模型。由于VP和亚VP随机微分方程的相似性，我们直接将适用于VP随机微分方程的架构应用于亚VP随机微分方程。我们为VE随机微分方程设计的最优架构名为NCSN++，在使用PC采样器的情况下，在CIFAR-10上达到了2.45的FID分数；而我们为VP随机微分方程设计的最优架构DDPM++，达到了2.78的FID分数。</p>
 <p>通过切换到公式(7)中的连续训练目标并增加网络深度，我们可以进一步提高所有模型的样本质量。得到的架构在表3中分别表示为NCSN++ cont.和DDPM++ cont.，分别对应于VE和VP/亚VP随机微分方程。表3中报告的结果是训练过程中FID分数最小的检查点的结果，样本由PC采样器生成。相比之下，表2中的FID分数和NLL值是最后一个训练检查点的结果，样本通过黑盒常微分方程求解器获得。如表3所示，VE随机微分方程通常能提供比VP/亚VP随机微分方程更好的样本质量，但我们也通过实验观察到，其似然比VP/亚VP随机微分方程对应的似然更差。这表明从业者可能需要针对不同的领域和架构尝试不同的随机微分方程。</p>
-<p>我们在样本质量方面表现最佳的模型NCSN++ cont. (deep, VE)，将网络深度翻倍，在CIFAR-10的无条件生成任务中，Inception分数和FID分数均创下新纪录。令人惊讶的是，我们在不需要标签数据的情况下，获得了比之前最好的条件生成模型更好的FID分数。通过所有改进，我们还首次从基于分数的模型中获得了CelebA-HQ 1024×1024的高保真样本（见附录H.3）。在似然方面表现最佳的模型DDPM++ cont. (deep, sub-VP)，同样将网络深度翻倍，使用公式(7)中的连续目标，达到了2.99比特/维度的对数似然。据我们所知，这是均匀去量化的CIFAR-10上的最高似然。 </p>
+<p>我们在样本质量方面表现最佳的模型NCSN++ cont. (deep, VE)，将网络深度翻倍，在CIFAR-10的无条件生成任务中，Inception分数和FID分数均创下新纪录。令人惊讶的是，我们在不需要标签数据的情况下，获得了比之前最好的条件生成模型更好的FID分数。通过所有改进，我们还首次从基于分数的模型中获得了CelebA-HQ 1024×1024的高保真样本（见附录H.3）。在似然方面表现最佳的模型DDPM++ cont. (deep, sub-VP)，同样将网络深度翻倍，使用公式(7)中的连续目标，达到了2.99比特/维度的对数似然。据我们所知，这是均匀去量化的CIFAR-10上的最高似然。</p>
 <h3 id="5-可控生成"><a href="#5-可控生成" class="headerlink" title="5 可控生成"></a>5 可控生成</h3><div class="table-container">
 <table>
 <thead>
@@ -403,8 +405,73 @@
 <p>我们的框架具有连续结构，这不仅使我们能够从 $p_0$ 中生成数据样本，而且在已知 $p_t(y|x(t))$ 时，还能从 $p_0(x(0)|y)$ 中生成样本。对于如公式（5）所示的正向随机微分方程，我们可以从 $p_T(x(T)|y)$ 出发，通过求解条件反向时间随机微分方程来从 $p_t(x(t)|y)$ 中采样：</p>
 <script type="math/tex; mode=display">dx = \left\{f(x, t) - g(t)^2\left[\nabla_x \log p_t(x) + \nabla_x \log p_t(y|x)\right]\right\}dt + g(t)d\overline{w} \tag{14}</script><p>一般来说，一旦我们得到正向过程的梯度估计 $\nabla_x \log p_t(y|x(t))$，就可以使用公式（14），基于分数的生成模型来求解一大类逆问题。在某些情况下，可以训练一个单独的模型来学习正向过程 $\log p_t(y|x(t))$ 并计算其梯度。否则，我们可以利用启发式方法和领域知识来估计梯度。在附录I.4中，我们提供了一种广泛适用的方法，无需训练辅助模型即可获得此类估计。</p>
 <p>我们考虑使用这种方法进行可控生成的三个应用：类别条件生成、图像修复和上色。当 $y$ 表示类别标签时，我们可以训练一个依赖时间的分类器 $p_t(y|x(t))$ 用于类别条件采样。由于正向随机微分方程易于处理，我们可以通过先从数据集中采样 $(x(0), y)$，然后采样 $x(t) \sim p_{0t}(x(t)|x(0))$，轻松为依赖时间的分类器创建训练数据 $(x(t), y)$ 。之后，我们可以像公式（7）那样，使用不同时间步的交叉熵损失的混合来训练依赖时间的分类器 $p_t(y|x(t))$ 。我们在图4（左）中展示了类别条件CIFAR-10样本，更多细节和结果见附录I。</p>
-<p>图像修复是条件采样的一个特殊情况。假设我们有一个不完整的数据点 $y$，其中只有某个子集 $\Omega(y)$ 是已知的。图像修复就相当于从 $p(x(0)|\Omega(y))$ 中采样，我们可以使用无条件模型来完成（见附录I.2）。上色是图像修复的一个特殊情况，只是已知的数据维度是相关联的。我们可以通过正交线性变换将这些数据维度解耦，在变换后的空间中进行修复，然后再将所有内容变换回原始图像空间（详见附录I.3）。图4（右）展示了使用无条件依赖时间的基于分数的模型实现的图像修复和上色结果。 </p>
-<h3 id="6-结论"><a href="#6-结论" class="headerlink" title="6 结论"></a>6 结论</h3><p>我们提出了一个基于随机微分方程（SDE）的分数生成建模框架。我们的工作有助于更好地理解现有方法，推动新采样算法的发展，实现精确的似然计算、唯一可识别的编码、潜在代码的操纵，并为分数生成模型家族带来新的条件生成能力。<br>虽然我们提出的采样方法改进了结果并实现了更高效的采样，但在相同数据集上，它们的采样速度仍比生成对抗网络（GANs，Goodfellow等人，2014）慢。探索如何将分数生成模型的稳定学习与GANs等隐式模型的快速采样相结合，仍然是一个重要的研究方向。此外，在使用分数函数时，可用的采样器种类繁多，会引入大量超参数。未来的工作可以探索更有效的方法来自动选择和调整这些超参数，并更深入地研究各种采样器的优缺点。 </p>
+<p>图像修复是条件采样的一个特殊情况。假设我们有一个不完整的数据点 $y$，其中只有某个子集 $\Omega(y)$ 是已知的。图像修复就相当于从 $p(x(0)|\Omega(y))$ 中采样，我们可以使用无条件模型来完成（见附录I.2）。上色是图像修复的一个特殊情况，只是已知的数据维度是相关联的。我们可以通过正交线性变换将这些数据维度解耦，在变换后的空间中进行修复，然后再将所有内容变换回原始图像空间（详见附录I.3）。图4（右）展示了使用无条件依赖时间的基于分数的模型实现的图像修复和上色结果。</p>
+<h3 id="6-结论"><a href="#6-结论" class="headerlink" title="6 结论"></a>6 结论</h3><p>我们提出了一个基于随机微分方程（SDE）的分数生成建模框架。我们的工作有助于更好地理解现有方法，推动新采样算法的发展，实现精确的似然计算、唯一可识别的编码、潜在代码的操纵，并为分数生成模型家族带来新的条件生成能力。<br>虽然我们提出的采样方法改进了结果并实现了更高效的采样，但在相同数据集上，它们的采样速度仍比生成对抗网络（GANs，Goodfellow等人，2014）慢。探索如何将分数生成模型的稳定学习与GANs等隐式模型的快速采样相结合，仍然是一个重要的研究方向。此外，在使用分数函数时，可用的采样器种类繁多，会引入大量超参数。未来的工作可以探索更有效的方法来自动选择和调整这些超参数，并更深入地研究各种采样器的优缺点。</p>
+<h2 id="文章总结"><a href="#文章总结" class="headerlink" title="文章总结"></a>文章总结</h2><p>本文发表于<code>ICLR-2021-Oral</code>，提出了用<code>随机微分方程(SDE)</code>表示连续的扩散过程，统一了DDPM与NCSN，并进一步扩展用到<code>常微分方程(ODE)</code>表示扩散过程。</p>
+<h3 id="创新点与主要思想"><a href="#创新点与主要思想" class="headerlink" title="创新点与主要思想"></a>创新点与主要思想</h3><h4 id="前向SDE"><a href="#前向SDE" class="headerlink" title="前向SDE"></a>前向SDE</h4><p>作者基于SDE建模使用连续的噪声平滑扰动数据：</p>
+<script type="math/tex; mode=display">
+\frac{dx}{dt}=\underbrace{f(x,t)}_{\text{漂移系数}} + \underbrace{g(t)}_{\text{扩散系数}}\omega\quad or \quad dx=f(x,t)dt+g(t)d\omega \tag{1.1}</script><p>其所对应的离散形式为：</p>
+<script type="math/tex; mode=display">
+x_{t+\Delta t} - x_t = f(x,t) \Delta t + g(t) \sqrt{\Delta t}\varepsilon, \quad \varepsilon\sim \mathcal{N}(0, I) \tag{1.2}</script><p>其中 $w$ 是标准维纳过程（也称为布朗运动），$f(\cdot, t): \mathbb{R}^{d} \to \mathbb{R}^{d}$ 是一个向量值函数，称为 $x(t)$ 的漂移系数，$g(\cdot): \mathbb{R} \to \mathbb{R}$ 是一个标量函数，称为 $x(t)$ 的扩散系数。</p>
+<p>对于式(1.1)，读为什么右端第一项是$O(\Delta t)$的，而第二项是$O(\sqrt{\Delta t})$的？简单来说，就是$\epsilon$一直服从标准正态分布，如果随机项的权重也是$O(\Delta t)$，那么由于标准正态分布的均值为0、协方差为$I$，临近的随机效应会相互抵消掉，要放大到$O(\sqrt{\Delta t})$才能在长期结果中体现出随机效应的作用。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="ff1.gif" width="60%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>连续的加噪过程</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="反向SDE"><a href="#反向SDE" class="headerlink" title="反向SDE"></a>反向SDE</h4><p>为了将噪声采样为真实图片，我们需要求出前向SDE的反向过程，具体如下：</p>
+<p>用概率的语言，式(1.2)意味着条件概率为</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+p(x_{t+\Delta t}|x_t) &= \mathcal{N}(x_{t+\Delta t}; x_t + f_t(x_t)\Delta t, g_t^2\Delta t I)\\
+&\propto \exp\left(-\frac{\|x_{t+\Delta t} - x_t - f_t(x_t)\Delta t\|^2}{2g_t^2\Delta t}\right) \tag{1.3}
+\end{align*}</script><p>这里没有写出无关紧要的归一化因子。按照DDPM的思想，我们最终是想要从“拆楼”的过程+中学会“建楼”，即利用贝叶斯定理得到$p(x_t|x_{t+\Delta t})$:</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+p(x_t|x_{t+\Delta t}) &= \frac{p(x_{t+\Delta t}|x_t)p(x_t)}{p(x_{t+\Delta t})}=p(x_{t+\Delta t}|x_t)\exp(\log p(x_t) - \log p(x_{t+\Delta t}))\\
+&\propto \exp\left(-\frac{\|x_{t+\Delta t} - x_t - f_t(x_t)\Delta t\|^2}{2g_t^2\Delta t}+\log p(x_t) - \log p(x_{t+\Delta t})\right) \tag{1.4}
+\end{align*}</script><p>不难发现，当$\Delta t$足够小时，只有当$x_{t+\Delta t}$与$x_t$足够接近时，$p(x_{t+\Delta t}|x_t)$才会明显不等于0，反过来也只有这种情况下$p(x_t|x_{t+\Delta t})$才会明显不等于0。因此，我们只需要对$x_{t+\Delta t}$与$x_t$足够接近时的情形做近似分析，为此，我们可以用<strong>泰勒展开</strong>:</p>
+<script type="math/tex; mode=display">\log p(x_{t+\Delta t}) \approx \log p(x_t)+(x_{t+\Delta t} - x_t)\cdot\nabla_{x_t}\log p(x_t)+\Delta t\frac{\partial}{\partial t}\log p(x_t) \tag{1.5}</script><p>注意不要忽略了$\frac{\partial}{\partial t}$项，因为$p(x_t)$实际上是“$t$时刻随机变量等于$x_t$的概率密度”，而$p(x_{t+\Delta t})$实际上是“$t + \Delta t$时刻随机变量等于$x_{t+\Delta t}$的概率密度”，也就是说$p(x_t)$实际上同时是$t$和$x_t$的函数，所以要多一项$t$的偏导数。代入到式(1.4)后，配方得到</p>
+<script type="math/tex; mode=display">p(x_t|x_{t+\Delta t}) \propto \exp\left(-\frac{\|x_{t+\Delta t} - x_t - [f_t(x_t) - g_t^2\nabla_{x_t}\log p(x_t)]\Delta t\|^2}{2g_t^2\Delta t}+\mathcal{O}(\Delta t)\right) \tag{1.6}</script><p>当$\Delta t \to 0$时，$\mathcal{O}(\Delta t) \to 0$不起作用，因此：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+p(\boldsymbol{x}_t|\boldsymbol{x}_{t + \Delta t}) &\propto \exp\left(-\frac{\|\boldsymbol{x}_{t+\Delta t}-\boldsymbol{x}_t - [\boldsymbol{f}_t(\boldsymbol{x}_t)-g_t^2\nabla_{\boldsymbol{x}_t}\log p(\boldsymbol{x}_t)]\Delta t\|^2}{2g_t^2\Delta t}\right)\\
+&\approx \exp\left(-\frac{\|\boldsymbol{x}_t-\boldsymbol{x}_{t+\Delta t}+[\boldsymbol{f}_{t+\Delta t}(\boldsymbol{x}_{t+\Delta t})-g_{t+\Delta t}^2\nabla_{\boldsymbol{x}_{t+\Delta t}}\log p(\boldsymbol{x}_{t+\Delta t})]\Delta t\|^2}{2g_{t+\Delta t}^2\Delta t}\right) \tag{1.7}
+\end{align*}</script><p>即$p(\boldsymbol{x}_t|\boldsymbol{x}_{t+\Delta t})$近似一个均值为$\boldsymbol{x}_{t+\Delta t}-[\boldsymbol{f}_{t+\Delta t}(\boldsymbol{x}_{t+\Delta t})-g_{t+\Delta t}^2\nabla_{\boldsymbol{x}_{t+\Delta t}}\log p(\boldsymbol{x}_{t+\Delta t})]\Delta t$、协方差为$g_{t+\Delta t}^2 \Delta t \boldsymbol{I}$的正态分布，取$\Delta t \to 0$的极限，那么对应于SDE：</p>
+<script type="math/tex; mode=display">
+d\boldsymbol{x} = [\boldsymbol{f}_t(\boldsymbol{x}) - g_t^2\nabla_{\boldsymbol{x}}\log p_t(\boldsymbol{x})]dt + g_t d\boldsymbol{w} \tag{1.8}</script><p>对应的离散形式为：</p>
+<script type="math/tex; mode=display">
+\begin{equation}\boldsymbol{x}_t - \boldsymbol{x}_{t+\Delta t} = - \left[\boldsymbol{f}_{t+\Delta t}(\boldsymbol{x}_{t+\Delta t}) - g_{t+\Delta t}^2\nabla_{\boldsymbol{x}_{t+\Delta t}}\log p(\boldsymbol{x}_{t+\Delta t}) \right]\Delta t - g_{t+\Delta t} \sqrt{\Delta t}\boldsymbol{\varepsilon}\label{eq:reverse-sde-discrete}\end{equation} \tag{1.9}</script><p>公式(1.7)是反向过程对应的SDE的<strong>不严谨的推导</strong>，只为了便于理解。这个结果最早出现在《Reverse-Time Diffusion Equation Models》中。这里我们特意在$p$处标注了下标$t$，以突出这是$t$时刻的分布。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="ff1.gif" width="60%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>通过反向扰动过程进行采样</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="损失函数与模型训练"><a href="#损失函数与模型训练" class="headerlink" title="损失函数与模型训练"></a>损失函数与模型训练</h3><p>这篇文章的损失函数与NCSN的类似，推导过程也类似，主要是利用$\boldsymbol{s}_{\boldsymbol{\theta}}(\boldsymbol{x}_t, t)$去学习$\nabla_{\boldsymbol{x}_t} \log p(\boldsymbol{x}_t|\boldsymbol{x}_0)$，而$\nabla_{\boldsymbol{x}_t} \log p(\boldsymbol{x}_t|\boldsymbol{x}_0)$可以完美的代替$\nabla_{\boldsymbol{x}}\log p_t(\boldsymbol{x})$，相关证明在<a href="https://hqulzq.github.io/2025/03/02/NCSN%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">NCSN论文精读</a>中已经有详细说明。</p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><ul>
+<li>论文 <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2011.13456">Score-Based Generative Modeling through Stochastic Differential Equations</a></li>
+<li>博客 <a target="_blank" rel="noopener" href="https://littlenyima.github.io/posts/17-score-based-modeling-with-sde">笔记｜Score-based Generative Models（二）：基于 SDE 的模型</a></li>
+<li>博客 <a target="_blank" rel="noopener" href="https://spaces.ac.cn/archives/9209">生成扩散模型漫谈（五）：一般框架之SDE篇</a></li>
+<li>博客 <a target="_blank" rel="noopener" href="https://spaces.ac.cn/archives/9228">生成扩散模型漫谈（六）：一般框架之ODE篇</a></li>
+</ul>
 
     </div>
 
@@ -490,7 +557,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#SCORE-BASED-GENERATIVE-MODELING-THROUGH-STOCHASTIC-DIFFERENTIAL-EQUATIONS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB"><span class="nav-number">1.</span> <span class="nav-text">SCORE-BASED GENERATIVE MODELING THROUGH STOCHASTIC DIFFERENTIAL EQUATIONS论文精读</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.1.2.</span> <span class="nav-text">1 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%83%8C%E6%99%AF"><span class="nav-number">1.1.3.</span> <span class="nav-text">2 背景</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E5%9F%BA%E4%BA%8E%E6%9C%97%E4%B9%8B%E4%B8%87%E5%8A%A8%E5%8A%9B%E5%AD%A6%E7%9A%84%E5%8E%BB%E5%99%AA%E5%88%86%E6%95%B0%E5%8C%B9%E9%85%8D%EF%BC%88SMLD%EF%BC%89"><span class="nav-number">1.1.3.1.</span> <span class="nav-text">2.1 基于朗之万动力学的去噪分数匹配（SMLD）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E5%8E%BB%E5%99%AA%E6%89%A9%E6%95%A3%E6%A6%82%E7%8E%87%E6%A8%A1%E5%9E%8B%EF%BC%88DDPM%EF%BC%89"><span class="nav-number">1.1.3.2.</span> <span class="nav-text">2.2 去噪扩散概率模型（DDPM）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%9F%BA%E4%BA%8E%E9%9A%8F%E6%9C%BA%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E7%9A%84%E5%88%86%E6%95%B0%E7%94%9F%E6%88%90%E5%BB%BA%E6%A8%A1"><span class="nav-number">1.1.4.</span> <span class="nav-text">3 基于随机微分方程的分数生成建模</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E7%94%A8%E9%9A%8F%E6%9C%BA%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E6%89%B0%E5%8A%A8%E6%95%B0%E6%8D%AE"><span class="nav-number">1.1.4.1.</span> <span class="nav-text">3.1 用随机微分方程扰动数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E9%80%9A%E8%BF%87%E5%8F%8D%E5%90%91%E9%9A%8F%E6%9C%BA%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E7%94%9F%E6%88%90%E6%A0%B7%E6%9C%AC"><span class="nav-number">1.1.4.2.</span> <span class="nav-text">3.2 通过反向随机微分方程生成样本</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-%E4%BC%B0%E8%AE%A1%E9%9A%8F%E6%9C%BA%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E7%9A%84%E5%88%86%E6%95%B0"><span class="nav-number">1.1.4.3.</span> <span class="nav-text">3.3 估计随机微分方程的分数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-%E7%A4%BA%E4%BE%8B%EF%BC%9AVE%E3%80%81VP%E9%9A%8F%E6%9C%BA%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E5%8F%8A%E5%85%B6%E4%BB%96"><span class="nav-number">1.1.4.4.</span> <span class="nav-text">3.4 示例：VE、VP随机微分方程及其他</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%B1%82%E8%A7%A3%E5%8F%8D%E5%90%91%E9%9A%8F%E6%9C%BA%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B"><span class="nav-number">1.1.5.</span> <span class="nav-text">4 求解反向随机微分方程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E9%80%9A%E7%94%A8%E6%95%B0%E5%80%BC%E9%9A%8F%E6%9C%BA%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E6%B1%82%E8%A7%A3%E5%99%A8"><span class="nav-number">1.1.5.1.</span> <span class="nav-text">4.1 通用数值随机微分方程求解器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E9%A2%84%E6%B5%8B-%E6%A0%A1%E6%AD%A3%E9%87%87%E6%A0%B7%E5%99%A8"><span class="nav-number">1.1.5.2.</span> <span class="nav-text">4.2 预测-校正采样器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-%E6%A6%82%E7%8E%87%E6%B5%81%E4%BB%A5%E5%8F%8A%E4%B8%8E%E7%A5%9E%E7%BB%8F%E5%B8%B8%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E7%9A%84%E8%81%94%E7%B3%BB"><span class="nav-number">1.1.5.3.</span> <span class="nav-text">4.3 概率流以及与神经常微分方程的联系</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-%E6%9E%B6%E6%9E%84%E6%94%B9%E8%BF%9B"><span class="nav-number">1.1.5.4.</span> <span class="nav-text">4.4 架构改进</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E5%8F%AF%E6%8E%A7%E7%94%9F%E6%88%90"><span class="nav-number">1.1.6.</span> <span class="nav-text">5 可控生成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E7%BB%93%E8%AE%BA"><span class="nav-number">1.1.7.</span> <span class="nav-text">6 结论</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%83%8C%E6%99%AF"><span class="nav-number">1.3.</span> <span class="nav-text">2 背景</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E5%9F%BA%E4%BA%8E%E6%9C%97%E4%B9%8B%E4%B8%87%E5%8A%A8%E5%8A%9B%E5%AD%A6%E7%9A%84%E5%8E%BB%E5%99%AA%E5%88%86%E6%95%B0%E5%8C%B9%E9%85%8D%EF%BC%88SMLD%EF%BC%89"><span class="nav-number">1.3.1.</span> <span class="nav-text">2.1 基于朗之万动力学的去噪分数匹配（SMLD）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E5%8E%BB%E5%99%AA%E6%89%A9%E6%95%A3%E6%A6%82%E7%8E%87%E6%A8%A1%E5%9E%8B%EF%BC%88DDPM%EF%BC%89"><span class="nav-number">1.3.2.</span> <span class="nav-text">2.2 去噪扩散概率模型（DDPM）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%9F%BA%E4%BA%8E%E9%9A%8F%E6%9C%BA%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E7%9A%84%E5%88%86%E6%95%B0%E7%94%9F%E6%88%90%E5%BB%BA%E6%A8%A1"><span class="nav-number">1.4.</span> <span class="nav-text">3 基于随机微分方程的分数生成建模</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E7%94%A8%E9%9A%8F%E6%9C%BA%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E6%89%B0%E5%8A%A8%E6%95%B0%E6%8D%AE"><span class="nav-number">1.4.1.</span> <span class="nav-text">3.1 用随机微分方程扰动数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E9%80%9A%E8%BF%87%E5%8F%8D%E5%90%91%E9%9A%8F%E6%9C%BA%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E7%94%9F%E6%88%90%E6%A0%B7%E6%9C%AC"><span class="nav-number">1.4.2.</span> <span class="nav-text">3.2 通过反向随机微分方程生成样本</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-%E4%BC%B0%E8%AE%A1%E9%9A%8F%E6%9C%BA%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E7%9A%84%E5%88%86%E6%95%B0"><span class="nav-number">1.4.3.</span> <span class="nav-text">3.3 估计随机微分方程的分数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-%E7%A4%BA%E4%BE%8B%EF%BC%9AVE%E3%80%81VP%E9%9A%8F%E6%9C%BA%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E5%8F%8A%E5%85%B6%E4%BB%96"><span class="nav-number">1.4.4.</span> <span class="nav-text">3.4 示例：VE、VP随机微分方程及其他</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%B1%82%E8%A7%A3%E5%8F%8D%E5%90%91%E9%9A%8F%E6%9C%BA%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B"><span class="nav-number">1.5.</span> <span class="nav-text">4 求解反向随机微分方程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E9%80%9A%E7%94%A8%E6%95%B0%E5%80%BC%E9%9A%8F%E6%9C%BA%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E6%B1%82%E8%A7%A3%E5%99%A8"><span class="nav-number">1.5.1.</span> <span class="nav-text">4.1 通用数值随机微分方程求解器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E9%A2%84%E6%B5%8B-%E6%A0%A1%E6%AD%A3%E9%87%87%E6%A0%B7%E5%99%A8"><span class="nav-number">1.5.2.</span> <span class="nav-text">4.2 预测-校正采样器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-%E6%A6%82%E7%8E%87%E6%B5%81%E4%BB%A5%E5%8F%8A%E4%B8%8E%E7%A5%9E%E7%BB%8F%E5%B8%B8%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E7%9A%84%E8%81%94%E7%B3%BB"><span class="nav-number">1.5.3.</span> <span class="nav-text">4.3 概率流以及与神经常微分方程的联系</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-%E6%9E%B6%E6%9E%84%E6%94%B9%E8%BF%9B"><span class="nav-number">1.5.4.</span> <span class="nav-text">4.4 架构改进</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E5%8F%AF%E6%8E%A7%E7%94%9F%E6%88%90"><span class="nav-number">1.6.</span> <span class="nav-text">5 可控生成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E7%BB%93%E8%AE%BA"><span class="nav-number">1.7.</span> <span class="nav-text">6 结论</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E7%AB%A0%E6%80%BB%E7%BB%93"><span class="nav-number">2.</span> <span class="nav-text">文章总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E6%96%B0%E7%82%B9%E4%B8%8E%E4%B8%BB%E8%A6%81%E6%80%9D%E6%83%B3"><span class="nav-number">2.1.</span> <span class="nav-text">创新点与主要思想</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%89%8D%E5%90%91SDE"><span class="nav-number">2.1.1.</span> <span class="nav-text">前向SDE</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%8D%E5%90%91SDE"><span class="nav-number">2.1.2.</span> <span class="nav-text">反向SDE</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E4%B8%8E%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83"><span class="nav-number">2.2.</span> <span class="nav-text">损失函数与模型训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">2.3.</span> <span class="nav-text">参考资料</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
