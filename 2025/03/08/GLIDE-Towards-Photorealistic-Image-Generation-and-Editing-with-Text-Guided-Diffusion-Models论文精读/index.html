@@ -31,7 +31,7 @@
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/08/GLIDE-Towards-Photorealistic-Image-Generation-and-Editing-with-Text-Guided-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f2.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/08/GLIDE-Towards-Photorealistic-Image-Generation-and-Editing-with-Text-Guided-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f3.png">
 <meta property="article:published_time" content="2025-03-08T03:08:14.000Z">
-<meta property="article:modified_time" content="2025-04-14T14:49:17.194Z">
+<meta property="article:modified_time" content="2025-04-14T15:06:42.657Z">
 <meta property="article:author" content="Zongqing Li">
 <meta property="article:tag" content="diffusion">
 <meta property="article:tag" content="2021">
@@ -231,7 +231,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-04-14 22:49:17" itemprop="dateModified" datetime="2025-04-14T22:49:17+08:00">2025-04-14</time>
+                <time title="修改时间：2025-04-14 23:06:42" itemprop="dateModified" datetime="2025-04-14T23:06:42+08:00">2025-04-14</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -456,21 +456,158 @@
 </table>
 </div>
 <p>我们未经优化的模型在单个A100 GPU上采样生成一张图像需要15秒。这比相关的GAN方法慢得多，GAN方法通过单次前向传递就能生成图像，因此更适合用于实时应用。</p>
-<h2 id="文章总结"><a href="#文章总结" class="headerlink" title="文章总结"></a>文章总结</h2><p>这篇论文发表于<strong>2021 CVPR</strong>，基于条件扩散模型开发了一个统一的<strong>图像到图像转换框架</strong>，并在<code>彩色化</code>、<code>图像修复</code>、<code>图像扩展</code>和<code>JPEG图像恢复</code>四项转换任务上对该框架进行了评估。本文<strong>揭示了去噪扩散目标中L2和L1损失对样本多样性的影响</strong>，并通过实证<strong>研究证明了自注意力机制在神经架构中的重要性</strong>，并且<strong>倡导基于ImageNet建立统一的评估协议</strong>，采用<code>人工评估</code>和<code>样本质量评分</code>（如FID、Inception Score、预训练ResNet50的分类准确率，以及与原始图像的感知距离）。最后本文<strong>展示了一个通用的多任务扩散模型，其性能与特定任务的专业模型相当，甚至更优。</strong></p>
+<h3 id="A-评估设置"><a href="#A-评估设置" class="headerlink" title="A. 评估设置"></a>A. 评估设置</h3><h4 id="A-1-人工评估"><a href="#A-1-人工评估" class="headerlink" title="A.1. 人工评估"></a>A.1. 人工评估</h4><p>在进行人工评估时，评估图像的真实感时，我们始终会收集1000对比较样本。评估图像与文本描述的相似度时，同样收集1000对比较样本，但在调整引导尺度的测试中，仅收集500对。</p>
+<p>在计算胜率和Elo分数时，平局的情况会被视为每个模型各得半次胜利。这样，平局实际上会稀释每个模型的胜利次数。</p>
+<p>计算Elo分数时，我们构建一个矩阵A，其中元素 $A_{ij}$ 表示模型i战胜模型j的次数。我们将所有N个模型的Elo分数初始化为 $\sigma_{i}=0$，$i \in[1, N]$。通过最小化以下目标函数来计算Elo分数：</p>
+<script type="math/tex; mode=display">L_{elo }:=-\sum_{i, j} A_{i j} \cdot log \left(\frac{1}{1+10^{\left(\sigma_{i}-\sigma_{j}\right) / 400}}\right)</script><h4 id="A-2-自动评估"><a href="#A-2-自动评估" class="headerlink" title="A.2. 自动评估"></a>A.2. 自动评估</h4><p>我们使用验证集中30000个样本的提示来计算MS-COCO的FID（Frechet Inception Distance）和其他评估指标。除非另有说明，我们将整个验证集作为参考批次，并对验证图像进行中心裁剪。这种裁剪方式与Ramesh等人（2021）的方法一致，但与大多数之前关于文本条件图像合成的文献有所不同，之前的文献大多是对图像进行缩放而不是中心裁剪。然而，中心裁剪在大多数无条件和类别条件图像合成的工作中是标准做法，我们希望它在未来也能成为文本条件图像合成的标准做法。</p>
+<p>对于CLIP分数，我们采用Radford等人（2021）发布的CLIP ViT-B/16模型，并将分数按CLIP的对数尺度（在本研究中为100）进行缩放。</p>
+<h3 id="B-超参数"><a href="#B-超参数" class="headerlink" title="B. 超参数"></a>B. 超参数</h3><h4 id="B-1-训练超参数"><a href="#B-1-训练超参数" class="headerlink" title="B.1. 训练超参数"></a>B.1. 训练超参数</h4><p>我们的噪声CLIP模型使用ViT（Dosovitskiy等人，2020）处理64×64的图像，其补丁大小为4×4。我们在Radford等人（2021）和Ramesh等人（2021）使用的数据集按50%-50%混合的数据集上，对CLIP模型进行了39万次迭代训练，批次大小为32K。对于最终的CLIP模型，我们训练了一个权重衰减为0.0125的ViT-L模型。训练完成后，我们在更广泛的互联网图像数据集上对最终的ViT-L模型进行了3万次迭代的微调。</p>
+<p>在针对无分类器引导和图像修复进行微调之前，我们对GLIDE（过滤版）进行了110万次迭代的预训练。此外，我们训练了一个小型过滤上采样模型，该模型具有192个基础通道和512个文本编码器通道，训练了40万次迭代。</p>
+<h4 id="B-2-采样超参数"><a href="#B-2-采样超参数" class="headerlink" title="B.2. 采样超参数"></a>B.2. 采样超参数</h4><p>在本文展示的样本中，除了图像修复样本使用100步外，基础模型的采样我们使用150步扩散步骤。在评估时，我们对基础模型使用250步扩散步骤进行采样，因为这能使FID（Frechet Inception Distance）略有提升。</p>
+<p>对于上采样器，我们采用一种特殊的跨步采样策略，仅用27步扩散就能获得高质量样本。具体来说，我们将采样过程分为五个阶段，在每个阶段内从以下数量的均匀间隔步骤中进行采样：10、10、3、2、2。这意味着我们在(800, 1000]范围内仅采样两个时间步，而在(0, 200]范围内采样10个时间步。这个采样策略是通过在内部验证集上扫描FID确定的。</p>
+<h3 id="C-与较小模型的比较"><a href="#C-与较小模型的比较" class="headerlink" title="C. 与较小模型的比较"></a>C. 与较小模型的比较</h3><p>训练我们的大型GLIDE模型是否值得？为了回答这个问题，我们使用与GLIDE（过滤版）相同的超参数，在完整数据集上训练了另一个3亿参数的模型（称为GLIDE（小型））。我们对比了大型、小型和安全模型的样本，以确定在大型多样的数据集上训练如此大型的模型能获得哪些能力提升。</p>
+<p>在图9中，我们观察到较小的模型往往难以将属性与对象（如柯基犬）进行关联，并且在组合任务（如积木）中表现较差。所有模型通常都能生成逼真的图像，但在完整数据集上训练的两个模型在组合不寻常概念（如使用计算器的刺猬）方面表现得更好。</p>
+<p>我们还进行了一项人工评估，对比了有和没有无分类器引导的小型和大型模型。我们首先通过人工评估为3亿参数的模型调整引导尺度，发现相比3.0，人们略倾向于为这个小型模型选择4.0的尺度。然后我们进行了一项人工评估，对比了有引导和无引导的两种模型（表4）。我们发现，无分类器引导带来的Elo分数提升幅度，比将模型规模扩大约10倍还要大。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "t4.png" width = "60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表4 对比小型和大型模型的人工评估Elo分数结果</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="D-与未添加噪声的CLIP引导方法对比"><a href="#D-与未添加噪声的CLIP引导方法对比" class="headerlink" title="D. 与未添加噪声的CLIP引导方法对比"></a>D. 与未添加噪声的CLIP引导方法对比</h3><p>已有研究利用公开可用的CLIP模型来引导扩散模型。但采用这种方法生成可识别的样本时，通常需要为生成过程设计一系列增强策略和辅助损失函数。我们推测，这主要是由于CLIP模型的训练方式导致的：它并未针对识别扩散采样过程中生成的噪声或模糊图像进行训练。</p>
+<p>为了验证这一假设，我们将一种广为人知的基于CLIP引导的扩散程序（Crowson, 2021a）与我们基于添加噪声的CLIP模型的方法进行对比（图10）。我们在64×64的图像上，使用与Radford等人（2021）相同的数据集训练了一个添加噪声的ViT-B CLIP模型。然后，我们利用这个添加噪声的CLIP模型，以固定的梯度尺度15.0引导预训练的ImageNet模型生成符合文本提示的图像。由于ImageNet模型是类别条件模型，我们在每个时间步选择不同的随机类别标签。之后，我们使用扩散上采样器将生成的64×64图像上采样到256×256。结果发现，我们的方法比上述笔记本中使用的方法简单得多，且生成图像的质量相当甚至更高，这表明使CLIP模型具备噪声感知能力确实有所帮助。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "f10.png" width = "60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图10 GLIDE与两种应用于预训练ImageNet扩散模型的CLIP引导策略对比。左边，我们使用普通CLIP模型，结合精心设计的感知损失和数据增强策略（Crowson, 2021a），引导Dhariwal和Nichol（2021）的256×256扩散模型。中间，我们使用添加噪声的ViT-B CLIP模型引导Dhariwal和Nichol（2021）的64×64 ImageNet扩散模型，然后进行扩散上采样。右边展示的是GLIDE在无分类器引导且引导尺度为3.0时的随机样本。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="E-与混合扩散模型的比较"><a href="#E-与混合扩散模型的比较" class="headerlink" title="E. 与混合扩散模型的比较"></a>E. 与混合扩散模型的比较</h3><p>虽然混合扩散模型（Avrahami等人，2021年）的代码尚未公开，但我们依据该论文中展示的一些提示对我们的模型进行了评估（图11）。我们发现，经过微调的模型有时会忽略给定的文本提示，生成的图像似乎仅受周围上下文的影响。为了缓解这种现象，我们还在完全屏蔽上下文的情况下对模型进行评估。这是Sohl-Dickstein等人（2015年）首次提出的图像修复技术，在该技术中，模型仅通过带噪声的掩码图像 (x_{t}) 来获取上下文信息。采用这种方法后，模型似乎能更稳定地遵循文本描述，但有时生成的对象与场景的融合不够自然。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "f11.png" width = "60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图11 在真实图像上的图像修复质量对比。(1) 局部CLIP引导扩散（Crowson，2021a）；(2) PaintByWord++（Bau等人，2021年；Avrahami等人，2021年）；(3) 混合扩散（Avrahami等人，2021年）。对于我们的结果，我们按照Avrahami等人（2021年）的方法，使用CLIP从64个样本中选择最佳样本。我们经过微调的样本具有更逼真的光照、阴影和纹理，但有时会偏离提示（例如金项链），而隐式样本则能更好地捕捉提示内容。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="F-GLIDE（过滤版）"><a href="#F-GLIDE（过滤版）" class="headerlink" title="F. GLIDE（过滤版）"></a>F. GLIDE（过滤版）</h3><h4 id="F-1-GLIDE（过滤版）的数据过滤"><a href="#F-1-GLIDE（过滤版）的数据过滤" class="headerlink" title="F.1. GLIDE（过滤版）的数据过滤"></a>F.1. GLIDE（过滤版）的数据过滤</h4><p>为了从数据集中去除包含人类及类人对象的图像，我们首先为训练集中的随机样本收集了数千个布尔标签。在训练分类器时，我们将每张图像的较小边调整为224像素，然后沿着较长边的两端和中间进行三次裁剪。我们将这三个裁剪后的图像输入到预训练的CLIP ViT-B/16模型中，并对得到的特征向量进行平均池化。最后，我们使用带有径向基函数（RBF）核的支持向量机（SVM）拟合这些特征向量，并调整偏差，使其误报率低于1%。我们在另一组1024个样本上测试了该模型，结果未出现误报情况（即我们手动检查模型判定为不包含人物的图像，确实未发现人物图像）。</p>
+<p>在开发人物过滤器时，我们旨在可靠地检测各种环境中的所有人，然而，对于现代面部检测系统而言，这通常是一项艰巨的任务，尤其是在处理各种人口统计特征的人群时（Buolamwini &amp; Gebru，2018；Santurkar等人，2019）。在最初的实验中，我们使用ViT-B/32而非ViT-B/16进行特征提取，观察到在低光照或遮挡条件下的人物有时会被分类器遗漏。不过，在切换为使用具有更高隐藏状态分辨率的ViT-B/16进行特征提取后，之前观察到的所有失败情况都得到了改善。</p>
+<p>为了去除包含暴力物品的图像，我们首先使用CLIP在数据集中搜索 “武器”“暴力” 等关键词和短语。在收集了几百个正例和反例后，我们训练了一个与上述类似的SVM。然后，我们对该SVM决策边界附近的样本进行标注，以获得另外几百个反例和正例。经过多次迭代这一过程，我们调整最终SVM的偏差，使其误报率低于1%。在另一组1024个样本上测试时，该分类器未产生误报。</p>
+<p>最初，我们采用与去除仇恨符号类似的方法，使用CLIP在数据集中搜索特定关键词。然而，我们发现这种方法找到的相关图像极少，这表明我们的数据源可能已经以某种方式对这类内容进行了过滤。尽管如此，我们还是使用搜索引擎收集了美国两种常见仇恨符号（卐字和邦联旗）的图像，并基于这些数据训练了一个SVM。我们采用上述主动学习过程在决策边界附近收集更多反例（但未找到正例），并调整所得SVM的偏差，使其在这个精选数据集上的误报率低于1% 。</p>
+<h4 id="F-2-GLIDE（过滤版）的偏差和CLIP引导"><a href="#F-2-GLIDE（过滤版）的偏差和CLIP引导" class="headerlink" title="F.2. GLIDE（过滤版）的偏差和CLIP引导"></a>F.2. GLIDE（过滤版）的偏差和CLIP引导</h4><p>GLIDE（过滤版）仍然存在偏差，这不仅表明图像数据集中的偏差超出了人物图像范畴，还反映出我们在数据过滤过程中所做选择存在的偏差。例如，当要求模型生成 “男孩的玩具” 和 “女孩的玩具” 时，会得到不同的输出（图12）。当要求生成 “宗教场所” 时，模型倾向于生成类似教堂的建筑，并且这种偏差会因无分类器引导而加剧（图13）。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "f12.png" ></th>
+<th style="text-align:center"><img src = "f13.png" ></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图12 GLIDE（过滤版）在提示中改变性别时，相同随机种子下的样本生成结果</em></td>
+<td style="text-align:center"><em>图13 GLIDE（过滤版）在提示为 “宗教场所” 时，使用相同随机种子但不同引导尺度的样本生成结果</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>我们预计仇恨符号分类器存在较强的美国和西方偏见，因为它仅在美国两种常见仇恨符号上进行训练。因此，训练数据中可能仍然保留了我们未主动过滤的仇恨符号图像。不过，我们确实发现过滤后的模型生成非仇恨符号图像的能力有所下降（图14）。我们推测这可能是由于GLIDE（过滤版）可用的数据集较小所致。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "f14.png" width = "80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图14. GLIDE（过滤版）和GLIDE（小型）针对“橙色三角形”（左）和“回收标志”（右）提示生成样本的对比。尽管这些符号并未从模型中过滤掉，但过滤版模型生成的图像还原度较低，这可能是由于其可用数据集较小。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>我们还将GLIDE（过滤版）集成到一个公开可用的CLIP引导扩散程序中（Crowson，2021a）。我们发现，这种组合能够生成一些类似人脸的对象（例如图15）。虽然使用公开扩散模型的原始CLIP引导扩散程序在我们的提示下通常能生成更易识别的图像，但这些发现凸显了我们过滤方法的局限性之一。我们还发现，GLIDE（过滤版）在某些情况下仍然表现出强烈的西方偏见，其程度往往超过现有的公开扩散模型（图16）。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "f15.png" ></th>
+<th style="text-align:center"><img src = "f16.png" ></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图15. 提示为“一个快乐的人”时的生成图像。(a)中展示的是引导尺度为3.0的无分类器引导的GLIDE（过滤版）生成的图像。(b)中我们使用公开可用的CLIP模型来引导GLIDE（过滤版）。(c)中我们使用公开可用的CLIP模型来引导公开可用的ImageNet扩散模型。</em></td>
+<td style="text-align:center"><em>图16. 提示为“一个礼拜场所”时的生成图像。在（a）中，展示的是引导尺度为3.0的无分类器引导的GLIDE（过滤版）生成的图像。在（b）中，我们使用公开可用的CLIP模型来引导GLIDE（过滤版）。在（c）中，我们使用公开可用的CLIP模型来引导公开可用的ImageNet扩散模型。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="G-更多样本"><a href="#G-更多样本" class="headerlink" title="G. 更多样本"></a>G. 更多样本</h3><p>在图17和图18中，我们展示了使用相同随机种子，在无引导、分类器自由引导和CLIP引导下，我们模型生成的4×4随机样本网格，以及DALL-E生成的样本。我们发现，分类器自由引导最可靠地生成了最高质量的图像。对于DALL-E，我们为每个提示采样512张图像，并使用CLIP重排选择前16张。对于所有其他样本网格，我们展示16个未经CLIP重排的随机样本。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "f17.png" width = "60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图17 DALL-E和GLIDE在“一只吃竹子的熊猫的彩色玻璃窗”提示下的随机样本。GLIDE未进行任何CLIP重排。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "f18.png" width = "60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图18 DALL-E和GLIDE在“一个舒适的客厅，沙发上方的墙上有一幅柯基的画，沙发前有一张圆形咖啡桌，咖啡桌上有一个花瓶”提示下的随机样本。GLIDE未进行任何CLIP重排。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="文章总结"><a href="#文章总结" class="headerlink" title="文章总结"></a>文章总结</h2><p>这篇论文</p>
 <h3 id="创新点与主要思想"><a href="#创新点与主要思想" class="headerlink" title="创新点与主要思想"></a>创新点与主要思想</h3><ol>
-<li>将条件扩散模型用于图像到图像的翻译领域，在彩色化、图像修复、图像扩展和JPEG图像恢复四项转换任务上对该框架进行了评估</li>
-<li>通过构造一个通用的多任务扩散模型，让其性能与特定任务的专业模型表现相当，甚至更优。</li>
+<li>将</li>
 </ol>
-<h3 id="损失函数与模型训练"><a href="#损失函数与模型训练" class="headerlink" title="损失函数与模型训练"></a>损失函数与模型训练</h3><p>给定训练输出图像$y$，我们生成一个带噪版本$\tilde{y}$，并训练神经网络$f_{\theta}$，在给定输入图片$x$（如灰度图，待修复图像等）和噪声水平指示符$\gamma$的情况下对$\tilde{y}$进行去噪，其损失函数为：</p>
-<script type="math/tex; mode=display">\mathbb{E}_{(x, y)} \mathbb{E}_{\epsilon \sim \mathcal{N}(0, I)} \mathbb{E}_{\gamma} \| f_{\theta}(x, \underbrace{\sqrt{\gamma} y+\sqrt{1-\gamma} \epsilon, \gamma)}_{\tilde{y}}-\epsilon\| _{p}^{p}, \tag{x}</script><p>本文选择$p=2$，即$L_2$损失。</p>
-<h3 id="不足之处"><a href="#不足之处" class="headerlink" title="不足之处"></a>不足之处</h3><ul>
-<li>模型设计复杂，对不同的分辨率选择不同的模型架构，影响泛化性。探索如微调或基于补丁的推理等技术，使模型能够适应任意分辨率，是一个有意义的研究方向。</li>
-<li>存在隐式偏差：与其他生成模型一样，Palette 也存在隐式偏差问题。在实际部署之前，需要对这些隐式偏差进行研究和缓解，以确保模型生成结果的公平性和可靠性，但目前这方面的研究还需要进一步开展。</li>
-<li>推理速度较慢：Palette 使用了 1000 个细化步骤。相较于基于GAN的模型明显更慢。虽然已有一些新技术被提出以减少细化步骤数量，但将这些技术应用于 Palette 仍有待未来研究。</li>
+<h3 id="损失函数与模型训练"><a href="#损失函数与模型训练" class="headerlink" title="损失函数与模型训练"></a>损失函数与模型训练</h3><h3 id="不足之处"><a href="#不足之处" class="headerlink" title="不足之处"></a>不足之处</h3><ul>
+<li><strong>复杂提示处理能力有限</strong>：模型虽能以复杂方式组合不同概念，但遇到描述高度不寻常物体或场景的提示时，有时无法准确呈现。比如生成 “有八条腿的猫”“用连续履带代替轮子的自行车” 等图像时会失败，这表明模型对极端或新颖概念的理解和生成能力有待提升。</li>
+<li><strong>生成速度较慢</strong>：未优化的模型在单个A100 GPU上采样生成一张图像需要15秒，相比相关GAN方法，后者能在单次前向传递中生成图像，更适用于实时应用场景。较慢的生成速度限制了模型在对时间要求较高的场景中的应用，如实时交互的图像生成场景。</li>
+<li><strong>存在偏差问题</strong>：模型生成结果存在偏差，会受到训练数据集的影响。在生成 “男孩的玩具” 和 “女孩的玩具” 时，会出现明显差异；被要求生成 “宗教场所” 时，倾向于生成类似西方教堂的建筑，且无分类器引导会放大这种偏差。这不仅反映了数据集中存在的偏见，也体现出研究在处理数据偏差、确保模型生成结果公平性方面的不足。</li>
+<li><strong>数据过滤的局限性</strong>：尽管对训练数据进行了过滤，以降低模型生成有害内容的风险，但仍存在问题。一方面，过滤后的模型在生成某些未被过滤的符号（如橙色三角形、回收标志）时，还原度较低；另一方面，将GLIDE（过滤版）与公开的CLIP引导扩散程序结合时，仍能生成类似人脸的物体，说明过滤方法未能完全消除模型生成敏感或不期望内容的可能性。</li>
 </ul>
 <h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><ul>
-<li>论文：<a href=""></a></li>
-<li>github: <a href=""></a></li>
+<li>论文：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2112.10741">GLIDE: Towards Photorealistic Image Generation and Editing with Text-Guided Diffusion Models</a></li>
+<li>github: <a target="_blank" rel="noopener" href="https://github.com/openai/glide-text2im">glide-text2im</a></li>
 <li>博客：<a href=""></a></li>
 </ul>
 
@@ -557,7 +694,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1. 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%83%8C%E6%99%AF"><span class="nav-number">1.3.</span> <span class="nav-text">2. 背景</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.3.1.</span> <span class="nav-text">2.1 扩散模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E5%BC%95%E5%AF%BC%E6%89%A9%E6%95%A3"><span class="nav-number">1.3.2.</span> <span class="nav-text">2.2 引导扩散</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-%E6%97%A0%E5%88%86%E7%B1%BB%E5%99%A8%E5%BC%95%E5%AF%BC"><span class="nav-number">1.3.3.</span> <span class="nav-text">2.3 无分类器引导</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-4-CLIP%E5%BC%95%E5%AF%BC"><span class="nav-number">1.3.4.</span> <span class="nav-text">2.4 CLIP引导</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.4.</span> <span class="nav-text">3. 相关工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E8%AE%AD%E7%BB%83"><span class="nav-number">1.5.</span> <span class="nav-text">4. 训练</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E6%96%87%E6%9C%AC%E6%9D%A1%E4%BB%B6%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.5.1.</span> <span class="nav-text">4.1 文本条件扩散模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E9%92%88%E5%AF%B9%E6%97%A0%E5%88%86%E7%B1%BB%E5%99%A8%E5%BC%95%E5%AF%BC%E7%9A%84%E5%BE%AE%E8%B0%83"><span class="nav-number">1.5.2.</span> <span class="nav-text">4.2 针对无分类器引导的微调</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-%E5%9B%BE%E5%83%8F%E4%BF%AE%E5%A4%8D"><span class="nav-number">1.5.3.</span> <span class="nav-text">4.3 图像修复</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-%E5%B8%A6%E5%99%AACLIP%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.5.4.</span> <span class="nav-text">4.4 带噪CLIP模型</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E7%BB%93%E6%9E%9C"><span class="nav-number">1.6.</span> <span class="nav-text">5. 结果</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#5-1-%E5%AE%9A%E6%80%A7%E7%BB%93%E6%9E%9C"><span class="nav-number">1.6.1.</span> <span class="nav-text">5.1 定性结果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-2-%E5%AE%9A%E9%87%8F%E7%BB%93%E6%9E%9C"><span class="nav-number">1.6.2.</span> <span class="nav-text">5.2 定量结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E5%AE%89%E5%85%A8%E8%80%83%E9%87%8F"><span class="nav-number">1.7.</span> <span class="nav-text">6. 安全考量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E5%B1%80%E9%99%90%E6%80%A7"><span class="nav-number">1.8.</span> <span class="nav-text">7. 局限性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E7%AB%A0%E6%80%BB%E7%BB%93"><span class="nav-number">2.</span> <span class="nav-text">文章总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E6%96%B0%E7%82%B9%E4%B8%8E%E4%B8%BB%E8%A6%81%E6%80%9D%E6%83%B3"><span class="nav-number">2.1.</span> <span class="nav-text">创新点与主要思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E4%B8%8E%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83"><span class="nav-number">2.2.</span> <span class="nav-text">损失函数与模型训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8D%E8%B6%B3%E4%B9%8B%E5%A4%84"><span class="nav-number">2.3.</span> <span class="nav-text">不足之处</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">2.4.</span> <span class="nav-text">参考资料</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1. 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%83%8C%E6%99%AF"><span class="nav-number">1.3.</span> <span class="nav-text">2. 背景</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.3.1.</span> <span class="nav-text">2.1 扩散模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E5%BC%95%E5%AF%BC%E6%89%A9%E6%95%A3"><span class="nav-number">1.3.2.</span> <span class="nav-text">2.2 引导扩散</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-%E6%97%A0%E5%88%86%E7%B1%BB%E5%99%A8%E5%BC%95%E5%AF%BC"><span class="nav-number">1.3.3.</span> <span class="nav-text">2.3 无分类器引导</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-4-CLIP%E5%BC%95%E5%AF%BC"><span class="nav-number">1.3.4.</span> <span class="nav-text">2.4 CLIP引导</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.4.</span> <span class="nav-text">3. 相关工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E8%AE%AD%E7%BB%83"><span class="nav-number">1.5.</span> <span class="nav-text">4. 训练</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E6%96%87%E6%9C%AC%E6%9D%A1%E4%BB%B6%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.5.1.</span> <span class="nav-text">4.1 文本条件扩散模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E9%92%88%E5%AF%B9%E6%97%A0%E5%88%86%E7%B1%BB%E5%99%A8%E5%BC%95%E5%AF%BC%E7%9A%84%E5%BE%AE%E8%B0%83"><span class="nav-number">1.5.2.</span> <span class="nav-text">4.2 针对无分类器引导的微调</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-%E5%9B%BE%E5%83%8F%E4%BF%AE%E5%A4%8D"><span class="nav-number">1.5.3.</span> <span class="nav-text">4.3 图像修复</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-%E5%B8%A6%E5%99%AACLIP%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.5.4.</span> <span class="nav-text">4.4 带噪CLIP模型</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E7%BB%93%E6%9E%9C"><span class="nav-number">1.6.</span> <span class="nav-text">5. 结果</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#5-1-%E5%AE%9A%E6%80%A7%E7%BB%93%E6%9E%9C"><span class="nav-number">1.6.1.</span> <span class="nav-text">5.1 定性结果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-2-%E5%AE%9A%E9%87%8F%E7%BB%93%E6%9E%9C"><span class="nav-number">1.6.2.</span> <span class="nav-text">5.2 定量结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E5%AE%89%E5%85%A8%E8%80%83%E9%87%8F"><span class="nav-number">1.7.</span> <span class="nav-text">6. 安全考量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E5%B1%80%E9%99%90%E6%80%A7"><span class="nav-number">1.8.</span> <span class="nav-text">7. 局限性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#A-%E8%AF%84%E4%BC%B0%E8%AE%BE%E7%BD%AE"><span class="nav-number">1.9.</span> <span class="nav-text">A. 评估设置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#A-1-%E4%BA%BA%E5%B7%A5%E8%AF%84%E4%BC%B0"><span class="nav-number">1.9.1.</span> <span class="nav-text">A.1. 人工评估</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#A-2-%E8%87%AA%E5%8A%A8%E8%AF%84%E4%BC%B0"><span class="nav-number">1.9.2.</span> <span class="nav-text">A.2. 自动评估</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#B-%E8%B6%85%E5%8F%82%E6%95%B0"><span class="nav-number">1.10.</span> <span class="nav-text">B. 超参数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#B-1-%E8%AE%AD%E7%BB%83%E8%B6%85%E5%8F%82%E6%95%B0"><span class="nav-number">1.10.1.</span> <span class="nav-text">B.1. 训练超参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B-2-%E9%87%87%E6%A0%B7%E8%B6%85%E5%8F%82%E6%95%B0"><span class="nav-number">1.10.2.</span> <span class="nav-text">B.2. 采样超参数</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#C-%E4%B8%8E%E8%BE%83%E5%B0%8F%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%AF%94%E8%BE%83"><span class="nav-number">1.11.</span> <span class="nav-text">C. 与较小模型的比较</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#D-%E4%B8%8E%E6%9C%AA%E6%B7%BB%E5%8A%A0%E5%99%AA%E5%A3%B0%E7%9A%84CLIP%E5%BC%95%E5%AF%BC%E6%96%B9%E6%B3%95%E5%AF%B9%E6%AF%94"><span class="nav-number">1.12.</span> <span class="nav-text">D. 与未添加噪声的CLIP引导方法对比</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#E-%E4%B8%8E%E6%B7%B7%E5%90%88%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%AF%94%E8%BE%83"><span class="nav-number">1.13.</span> <span class="nav-text">E. 与混合扩散模型的比较</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#F-GLIDE%EF%BC%88%E8%BF%87%E6%BB%A4%E7%89%88%EF%BC%89"><span class="nav-number">1.14.</span> <span class="nav-text">F. GLIDE（过滤版）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#F-1-GLIDE%EF%BC%88%E8%BF%87%E6%BB%A4%E7%89%88%EF%BC%89%E7%9A%84%E6%95%B0%E6%8D%AE%E8%BF%87%E6%BB%A4"><span class="nav-number">1.14.1.</span> <span class="nav-text">F.1. GLIDE（过滤版）的数据过滤</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#F-2-GLIDE%EF%BC%88%E8%BF%87%E6%BB%A4%E7%89%88%EF%BC%89%E7%9A%84%E5%81%8F%E5%B7%AE%E5%92%8CCLIP%E5%BC%95%E5%AF%BC"><span class="nav-number">1.14.2.</span> <span class="nav-text">F.2. GLIDE（过滤版）的偏差和CLIP引导</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#G-%E6%9B%B4%E5%A4%9A%E6%A0%B7%E6%9C%AC"><span class="nav-number">1.15.</span> <span class="nav-text">G. 更多样本</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E7%AB%A0%E6%80%BB%E7%BB%93"><span class="nav-number">2.</span> <span class="nav-text">文章总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E6%96%B0%E7%82%B9%E4%B8%8E%E4%B8%BB%E8%A6%81%E6%80%9D%E6%83%B3"><span class="nav-number">2.1.</span> <span class="nav-text">创新点与主要思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E4%B8%8E%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83"><span class="nav-number">2.2.</span> <span class="nav-text">损失函数与模型训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8D%E8%B6%B3%E4%B9%8B%E5%A4%84"><span class="nav-number">2.3.</span> <span class="nav-text">不足之处</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">2.4.</span> <span class="nav-text">参考资料</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
