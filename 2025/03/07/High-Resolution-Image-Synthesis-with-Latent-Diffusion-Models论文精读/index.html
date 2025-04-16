@@ -42,8 +42,15 @@
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/07/High-Resolution-Image-Synthesis-with-Latent-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t6.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/07/High-Resolution-Image-Synthesis-with-Latent-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f11.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/07/High-Resolution-Image-Synthesis-with-Latent-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t7.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/07/High-Resolution-Image-Synthesis-with-Latent-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f12.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/07/High-Resolution-Image-Synthesis-with-Latent-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f13.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/07/High-Resolution-Image-Synthesis-with-Latent-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f14.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/07/High-Resolution-Image-Synthesis-with-Latent-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f15.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/07/High-Resolution-Image-Synthesis-with-Latent-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t8.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/07/High-Resolution-Image-Synthesis-with-Latent-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t9.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/07/High-Resolution-Image-Synthesis-with-Latent-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f16.png">
 <meta property="article:published_time" content="2025-03-07T10:05:33.000Z">
-<meta property="article:modified_time" content="2025-04-15T08:40:09.724Z">
+<meta property="article:modified_time" content="2025-04-16T08:18:44.634Z">
 <meta property="article:author" content="Zongqing Li">
 <meta property="article:tag" content="diffusion">
 <meta property="article:tag" content="2022">
@@ -244,7 +251,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-04-15 16:40:09" itemprop="dateModified" datetime="2025-04-15T16:40:09+08:00">2025-04-15</time>
+                <time title="修改时间：2025-04-16 16:18:44" itemprop="dateModified" datetime="2025-04-16T16:18:44+08:00">2025-04-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -521,6 +528,429 @@
 <p>此外，我们证明了LDMs可以有效地应用于各种图像到图像的转换任务，如超分辨率和图像修复，并且可以泛化到比训练分辨率更高的分辨率。我们的结果强调了通过在感知压缩的潜在空间中学习，利用扩散模型的归纳偏差的潜力。</p>
 <p>尽管我们的方法取得了显著进展，但仍然存在一些局限性，如前面章节中讨论的潜在的恶意使用、计算资源需求以及对训练数据的依赖等。未来的工作可以集中在进一步提高模型的效率和可扩展性，减轻潜在的偏见和有害影响，以及探索LDMs在更多领域的应用，如视频合成和3D内容生成等。</p>
 <p>总的来说，我们相信潜在扩散模型为基于扩散的生成建模开辟了新的途径，并且有望在许多需要高质量图像合成的应用中发挥重要作用。</p>
+<h3 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f12.png"></th>
+<th style="text-align:center"><img src="f13.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图12. 来自4.3.2节语义风景模型的卷积样本，该模型在512×512图像上进行了微调。</em></td>
+<td style="text-align:center"><em>图13. 将无分类器扩散引导与4.3.2节中的卷积采样策略相结合，我们拥有14.5亿参数的文本到图像模型能够渲染尺寸大于其训练时原生256×256分辨率的图像。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="A-变更日志"><a href="#A-变更日志" class="headerlink" title="A. 变更日志"></a>A. 变更日志</h3><p>在此，我们列出本文当前版本（<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2112.10752v2">https://arxiv.org/abs/2112.10752v2</a> ）与上一版本（<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2112.10752v1">https://arxiv.org/abs/2112.10752v1</a> ）之间的变更。</p>
+<ul>
+<li>我们更新了4.3节中关于文本到图像合成的结果，这些结果是通过训练一个新的、参数更多的模型（14.5亿参数）获得的。这还包括与我们工作同时（[59,109]）或之后（[26]）在arXiv上发表的该任务最新竞争方法的新对比。</li>
+<li>我们更新了4.1节中ImageNet数据集上类别条件合成的结果（另见D.4节），这些结果是通过使用更大的批量重新训练模型得到的。图26和图27中的相应定性结果也进行了更新。更新后的文本到图像模型和类别条件模型现在都使用无分类器扩散引导（classifier-free diffusion guidance）[32]来提高视觉保真度。</li>
+<li>我们按照Saharia等人[72]建议的方案进行了用户研究，为我们的图像修复（4.5节）和超分辨率模型（4.4节）提供了额外的评估。</li>
+<li>在主论文中添加了图5，将图18移至附录，将图13添加到附录中。</li>
+</ul>
+<h3 id="B-去噪扩散模型的详细信息"><a href="#B-去噪扩散模型的详细信息" class="headerlink" title="B. 去噪扩散模型的详细信息"></a>B. 去噪扩散模型的详细信息</h3><p>扩散模型可以用信噪比 $SNR(t)=\frac{\alpha_{t}^{2}}{\sigma_{t}^{2}}$ 来描述，该信噪比由序列 $(\alpha_{t})_{t=1}^{T}$ 和 $(\sigma_{t})_{t=1}^{T}$ 组成。从数据样本 $x_{0}$ 开始，这些序列定义了一个正向扩散过程 $q$，如下所示：</p>
+<script type="math/tex; mode=display">q(x_{t}|x_{0})=\mathcal{N}(x_{t}|\alpha_{t}x_{0},\sigma_{t}^{2}\mathbb{I}) \tag{4}</script><p>对于 $s &lt; t$，该过程具有马尔可夫结构：</p>
+<script type="math/tex; mode=display">q(x_{t}|x_{s})=\mathcal{N}(x_{t}|\alpha_{t|s}x_{s},\sigma_{t|s}^{2}\mathbb{I}) \tag{5}</script><p>其中：</p>
+<script type="math/tex; mode=display">\alpha_{t|s}=\frac{\alpha_{t}}{\alpha_{s}} \tag{6}</script><script type="math/tex; mode=display">\sigma_{t|s}^{2}=\sigma_{t}^{2}-\alpha_{t|s}^{2}\sigma_{s}^{2} \tag{7}</script><p>去噪扩散模型是生成模型 $p(x_{0})$，它以类似的马尔可夫结构在时间上逆向还原这个过程，即：</p>
+<script type="math/tex; mode=display">p(x_{0})=\int_{z}p(x_{T})\prod_{t = 1}^{T}p(x_{t - 1}|x_{t}) \tag{8}</script><p>与该模型相关的证据下界（ELBO）在离散时间步上进行分解：</p>
+<script type="math/tex; mode=display">-\log p(x_{0})\leq \mathbb{KL}(q(x_{T}|x_{0})|p(x_{T}))+\sum_{t = 1}^{T}\mathbb{E}_{q(x_{t}|x_{0})}\mathbb{KL}(q(x_{t - 1}|x_{t},x_{0})|p(x_{t - 1}|x_{t})) \tag{9}</script><p>先验 $p(x_{T})$ 通常被选择为标准正态分布，因此ELBO的第一项仅取决于最终的信噪比 $SNR(T)$ 。为了最小化其余项，一种常见的参数化 $p(x_{t - 1}|x_{t})$ 的选择是根据真实后验 $q(x_{t - 1}|x_{t},x_{0})$ 来指定它，但未知的 $x_{0}$ 由基于当前步骤 $x_{t}$ 的估计值 $x_{\theta}(x_{t},t)$ 代替。这就得到了：</p>
+<script type="math/tex; mode=display">p(x_{t - 1}|x_{t}):=q(x_{t - 1}|x_{t},x_{\theta}(x_{t},t)) \tag{10}</script><script type="math/tex; mode=display">=\mathcal{N}(x_{t - 1}|\mu_{\theta}(x_{t},t),\sigma_{t|t - 1}^{2}\frac{\sigma_{t - 1}^{2}}{\sigma_{t}^{2}}\mathbb{I}) \tag{11}</script><p>其中均值可以表示为：</p>
+<script type="math/tex; mode=display">\mu_{\theta}(x_{t},t)=\frac{\alpha_{t|t - 1}\sigma_{t - 1}^{2}}{\sigma_{t}^{2}}x_{t}+\frac{\alpha_{t - 1}\sigma_{t|t - 1}^{2}}{\sigma_{t}^{2}}x_{\theta}(x_{t},t) \tag{12}</script><p>在这种情况下，ELBO的和简化为：</p>
+<script type="math/tex; mode=display">\sum_{t = 1}^{T}\mathbb{E}_{q(x_{t}|x_{0})}\mathbb{KL}(q(x_{t - 1}|x_{t},x_{0})|p(x_{t - 1}))=\sum_{t = 1}^{T}\mathbb{E}_{\mathcal{N}(\epsilon|0,\mathbb{I})}\frac{1}{2}(SNR(t - 1)-SNR(t))\left\|x_{0}-x_{\theta}(\alpha_{t}x_{0}+\sigma_{t}\epsilon,t)\right\|^{2} \tag{13}</script><p>根据文献[30]，我们使用重参数化：</p>
+<script type="math/tex; mode=display">\epsilon_{\theta}(x_{t},t)=\frac{x_{t}-\alpha_{t}x_{\theta}(x_{t},t)}{\sigma_{t}} \tag{14}</script><p>将重建项表示为去噪目标：</p>
+<script type="math/tex; mode=display">\left\|x_{0}-x_{\theta}(\alpha_{t}x_{0}+\sigma_{t}\epsilon,t)\right\|^{2}=\frac{\sigma_{t}^{2}}{\alpha_{t}^{2}}\left\|\epsilon-\epsilon_{\theta}(\alpha_{t}x_{0}+\sigma_{t}\epsilon,t)\right\|^{2} \tag{15}</script><p>并进行重新加权，使每一项具有相同的权重，从而得到公式(1)。</p>
+<h3 id="C-图像引导机制"><a href="#C-图像引导机制" class="headerlink" title="C. 图像引导机制"></a>C. 图像引导机制</h3><p>扩散模型一个有趣的特性是，无条件模型在测试时可以进行条件设定（参考[15, 82, 85]）。特别是文献[15]提出了一种算法，使用在ImageNet数据集上训练的分类器对数概率$log p_{\Phi}(y | x_{t})$ 来引导无条件模型和条件模型，其中分类器是针对扩散过程中的每个$x_{t}$ 进行训练的。我们直接基于这个公式，引入事后图像引导（post-hoc image-guiding）：</p>
+<p>对于具有固定方差的$\epsilon$参数化模型，文献[15]中引入的引导算法为：</p>
+<script type="math/tex; mode=display">\hat{\epsilon} \leftarrow \epsilon_{\theta}(z_{t}, t)+\sqrt{1-\alpha_{t}^{2}} \nabla_{z_{t}} log p_{\Phi}(y | z_{t}) \tag{16}</script><p>这可以理解为用条件分布$log p_{\Phi}(y | z_{t})$ 对 “分数”$\epsilon_{\theta}$ 进行更新校正。</p>
+<p>到目前为止，这种方法仅应用于单类分类模型。我们将引导分布$p_{\Phi}(y | T(D(z_{0}(z_{t}))))$ 重新解释为给定目标图像$y$ 时的通用图像到图像转换任务，其中$T$ 可以是适用于当前图像到图像转换任务的任何可微变换，例如恒等变换、下采样操作或类似的变换。</p>
+<p>例如，我们可以假设一个方差固定为$\sigma^{2}=1$ 的高斯引导器，这样：</p>
+<script type="math/tex; mode=display">log p_{\Phi}(y | z_{t})=-\frac{1}{2}\left\| y-T\left(\mathcal{D}\left(z_{0}\left(z_{t}\right)\right)\right)\right\| _{2}^{2} \tag{17}</script><p>就变成了一个$L_{2}$ 回归目标。</p>
+<p>图14展示了这个公式如何作为在$256\times256$ 图像上训练的无条件模型的上采样机制。大小为$256\times256$ 的无条件样本引导$512\times512$ 图像的卷积合成，这里$T$ 是2倍双三次下采样。基于这个思路，我们还尝试了感知相似性引导，用LPIPS[106] 度量替换$L_{2}$ 目标，具体见4.4节。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f14.png" width="60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图14. 在风景图像上，无条件模型的卷积采样可能会导致全局结构同质化和不连贯（见第2列）。使用低分辨率图像的$L_{2}$ 引导有助于重建连贯的全局结构</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="D-补充结果"><a href="#D-补充结果" class="headerlink" title="D. 补充结果"></a>D. 补充结果</h3><h4 id="D-1高分辨率合成中信噪比的选择"><a href="#D-1高分辨率合成中信噪比的选择" class="headerlink" title="D.1高分辨率合成中信噪比的选择"></a>D.1高分辨率合成中信噪比的选择</h4><p>如4.3.2节所述，由潜在空间方差（即$Var(z)/\sigma_{t}^{2}$ ）引起的信噪比会显著影响卷积采样的结果。例如，当直接在KL正则化模型的潜在空间中训练LDM时（见表8），该比率非常高，以至于模型在反向去噪过程的早期就分配了大量语义细节。相反，如G节所述，通过潜在变量的逐分量标准差对潜在空间进行重新缩放时，信噪比会降低。我们在图15中展示了潜在空间重新缩放对语义图像合成中卷积采样的影响。需要注意的是，VQ正则化空间的方差接近1，因此无需重新缩放。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f15.png" width="60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图15. 说明潜在空间重新缩放对卷积采样的影响，这里是在风景语义图像合成上的应用。见4.3.2节和D.1节</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="D-2所有第一阶段模型的完整列表"><a href="#D-2所有第一阶段模型的完整列表" class="headerlink" title="D.2所有第一阶段模型的完整列表"></a>D.2所有第一阶段模型的完整列表</h4><p>我们在表8中提供了在OpenImages数据集上训练的各种自动编码模型的完整列表。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t8.png" width="60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表8. 在 OpenImages 数据集上训练、在 ImageNet 验证集上评估的完整自动编码器集合。†表示无注意力机制的自动编码器。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="D-3布局到图像的合成"><a href="#D-3布局到图像的合成" class="headerlink" title="D.3布局到图像的合成"></a>D.3布局到图像的合成</h4><p>在此，我们为4.3.1节中的布局到图像模型提供定量评估和更多样本。我们在COCO数据集[4]和OpenImages数据集[49]上分别训练了一个模型，随后又在COCO数据集上对OpenImages数据集训练的模型进行了微调。表9展示了结果。当遵循近期布局到图像合成研究中的训练和评估协议时，我们的COCO模型达到了当前最先进模型的性能。从OpenImages模型微调后，我们的模型超越了这些研究成果。在FID指标上，我们的OpenImages模型比Jahn等人的研究结果[37]高出近11。在图16中，我们展示了在COCO数据集上微调后的模型的更多样本。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t9.png" width="60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表9. 我们的布局到图像模型在COCO [4]和OpenImages [49]数据集上的定量比较。†：在COCO上从头开始训练；∗：从OpenImages进行微调。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f16.png" width="60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图16. 更多来自我们用于布局到图像合成的最佳模型LDM-4的样本。该模型在OpenImages数据集上进行训练，并在COCO数据集上进行了微调。这些样本通过100步DDIM采样生成，$\eta = 0$。布局来自COCO验证集。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="D-4-ImageNet上的类别条件图像合成"><a href="#D-4-ImageNet上的类别条件图像合成" class="headerlink" title="D.4 ImageNet上的类别条件图像合成"></a>D.4 ImageNet上的类别条件图像合成</h4><p>表10包含了我们的类别条件LDM在FID和Inception分数（IS）方面的测量结果。LDM-8在参数数量和计算需求显著减少的情况下（见表18），仍取得了极具竞争力的性能。与先前研究类似，我们可以通过在每个噪声尺度上训练一个分类器并使用其引导来进一步提升性能，详见C节。与基于像素的方法不同，这个分类器在潜在空间中训练的成本非常低。更多定性结果见图26和图27。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "t10.png"  width="60%" ></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表10. 在ImageNet [12]数据集上，类别条件ImageNet潜在扩散模型（LDM）与近期用于类别条件图像生成的最先进方法的比较。∗：按照[67]中提出的方法，使用给定拒绝率进行分类器拒绝采样。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="D-5样本质量与V100天数的关系（续4-1节）"><a href="#D-5样本质量与V100天数的关系（续4-1节）" class="headerlink" title="D.5样本质量与V100天数的关系（续4.1节）"></a>D.5样本质量与V100天数的关系（续4.1节）</h4><p>在4.1节中评估样本质量随训练进程的变化时，我们报告了FID和IS分数随训练步数的变化情况。另一种评估方式是报告这些指标随V100天数（计算资源使用量）的变化。图17提供了这种分析，其结果在定性上与之前类似。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "f17.png"  width="60%" ></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图17. 为完整起见，我们还报告了在固定使用35个V100 GPU天的情况下，ImageNet数据集上类别条件LDM的训练进度。结果是通过100步DDIM采样[84]且$\kappa = 0$ 得到的。出于效率考虑，FID分数是在5000个样本上计算得出的。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="D-6超分辨率"><a href="#D-6超分辨率" class="headerlink" title="D.6超分辨率"></a>D.6超分辨率</h4><p>为了更好地比较LDM和基于像素空间的扩散模型，我们在表5的基础上进行扩展分析，将训练步数相同且参数数量可比的扩散模型与我们的LDM进行对比。对比结果显示在表11的最后两行，结果表明LDM在实现更好性能的同时，采样速度也显著更快。图20给出了定性对比，展示了LDM和基于像素空间的扩散模型的随机样本。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "t11.png"  width="60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表11. ImageNet验证集上4倍上采样的结果（256×256）；†：在验证集划分上计算的FID特征，‡：在训练集划分上计算的FID特征。我们还纳入了一个像素空间基线，其计算量与LDM - 4相同。最后两行与前面的结果相比，进行了额外15轮训练。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h5 id="D-6-1-LDM-BSR：通过多样化图像退化得到的通用超分辨率模型"><a href="#D-6-1-LDM-BSR：通过多样化图像退化得到的通用超分辨率模型" class="headerlink" title="D.6.1 LDM-BSR：通过多样化图像退化得到的通用超分辨率模型"></a>D.6.1 LDM-BSR：通过多样化图像退化得到的通用超分辨率模型</h5><p>为了评估我们的LDM-SR的泛化能力，我们将其应用于从类别条件ImageNet模型生成的合成LDM样本（见4.1节）以及从互联网上抓取的图像。有趣的是，我们发现仅使用如文献[72]中所述的双三次下采样作为条件进行训练的LDM-SR，对不符合这种预处理的图像泛化能力较差。因此，为了获得适用于各种真实世界图像（可能包含相机噪声、压缩伪影、模糊和插值的复杂叠加）的超分辨率模型，我们用文献[105]中的退化流程替换了LDM-SR中的双三次下采样操作。BSR退化流程是一种对图像随机应用JPEG压缩噪声、相机传感器噪声、不同的下采样图像插值方法、高斯模糊核和高斯噪声的退化流程。我们发现，使用文献[105]中原始参数的BSR退化流程会导致非常强烈的退化效果。鉴于更温和的退化流程似乎更适合我们的应用，我们调整了BSR退化流程的参数（我们调整后的退化流程可在代码库<a target="_blank" rel="noopener" href="https://github.com/CompVis/latent-diffusion">https://github.com/CompVis/latent-diffusion</a>中找到）。图18通过直接对比LDM-SR和LDM-BSR，展示了这种方法的有效性。LDM-BSR生成的图像比局限于固定预处理的模型生成的图像更清晰，使其适用于实际应用。图19展示了LDM-BSR在LSUN-cows数据集上的更多结果。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "f18.png"  width="60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图18. LDM-BSR能对任意输入进行泛化，可作为通用的上采样器，将类别条件LDM生成的样本（图像见图4）上采样到1024×1024分辨率。相比之下，使用固定的退化过程（见4.4节）会妨碍模型的泛化能力。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="E-实现细节和超参数"><a href="#E-实现细节和超参数" class="headerlink" title="E. 实现细节和超参数"></a>E. 实现细节和超参数</h3><h4 id="E-1超参数"><a href="#E-1超参数" class="headerlink" title="E.1超参数"></a>E.1超参数</h4><p>我们在表12、表13、表14和表15中概述了所有训练的LDM模型的超参数。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "t12.png"  width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表12. 生成表1中数据的无条件LDM的超参数。所有模型均在单个NVIDIA A100上进行训练。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "t13.png"  width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表13. 4.1节分析中在ImageNet数据集上训练的条件LDM的超参数。所有模型均在单个NVIDIA A100上进行训练。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "t14.png"  width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表14. 图7分析中在CelebA数据集上训练的无条件LDM的超参数。所有模型均在单个NVIDIA A100上进行训练，均训练500k次迭代。如果收敛较早，我们使用最佳检查点来评估提供的FID分数。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "t15.png"  width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表15. 4节中条件LDM的超参数。除在八个V100上训练的图像修复模型外，所有模型均在单个NVIDIA A100上进行训练。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="E-2实现细节"><a href="#E-2实现细节" class="headerlink" title="E.2实现细节"></a>E.2实现细节</h4><h4 id="E-2-1条件LDM中-tau-theta-的实现"><a href="#E-2-1条件LDM中-tau-theta-的实现" class="headerlink" title="E.2.1条件LDM中$\tau_{\theta}$的实现"></a>E.2.1条件LDM中$\tau_{\theta}$的实现</h4><p>在文本到图像和布局到图像合成实验（4.3.1节）中，我们将条件器$\tau_{\theta}$实现为一个无掩码变换器，它处理输入$y$的标记化版本并产生输出$\zeta:=\tau_{\theta}(y)$，其中$\zeta \in \mathbb{R}^{M ×d_{r}}$ 。更具体地说，该变换器由$N$个变换器块组成，这些块包含全局自注意力层、层归一化和逐位置多层感知器（MLP），如下所示：</p>
+<script type="math/tex; mode=display">\zeta \leftarrow TokEmb(y)+PosEmb(y) \tag{18}</script><script type="math/tex; mode=display">for\ i = 1, ..., N :</script><script type="math/tex; mode=display">\zeta_{1} \leftarrow LayerNorm (\zeta) \tag{19}</script><script type="math/tex; mode=display">\zeta_{2} \leftarrow MultiHeadSelfAttention (\zeta_{1})+\zeta \tag{20}</script><script type="math/tex; mode=display">\zeta_{3} \leftarrow LayerNorm(\zeta_{2}) \tag{21}</script><script type="math/tex; mode=display">\zeta \leftarrow MLP(\zeta_{3})+\zeta_{2} \tag{22}</script><script type="math/tex; mode=display">\zeta \leftarrow LayerNorm (\zeta) \tag{23}</script><p>有了$\zeta$后，通过图3所示的交叉注意力机制将条件映射到UNet中。我们修改了 “简化UNet” [15]架构，用一个浅（无掩码）变换器替换自注意力层，该变换器由$T$个块组成，块中交替包含（i）自注意力层、（ii）逐位置MLP和（iii）交叉注意力层；见表16。需要注意的是，如果没有（ii）和（iii），这个架构就等同于 “简化UNet”。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "t16.png"  width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表16. 如E.2.1节所述的变换器块架构，它替换了标准 “简化UNet” 架构[15]中的自注意力层。这里，$n_{h}$表示注意力头的数量，$d$表示每个头的维度。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>虽然通过额外根据时间步$t$进行条件设定可以提高$\tau_{\theta}$的表示能力，但我们没有选择这种方式，因为它会降低推理速度。我们将对这一修改的更详细分析留作未来的工作。</p>
+<p>对于文本到图像模型，我们依赖一个公开可用的标记器[99]。布局到图像模型将边界框的空间位置离散化，并将每个框编码为一个$(l, b, c)$元组，其中$l$表示（离散的）左上角位置，$b$表示右下角位置，类别信息包含在$c$中。</p>
+<p>$\tau_{\theta}$的超参数见表17，上述两个任务中UNet的超参数见表13。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "t17.png"  width="60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表17. 4.3节中变换器编码器实验的超参数。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>需要注意的是，4.1节中描述的类别条件模型也是通过交叉注意力实现的，其中$\tau_{\theta}$是一个可学习的嵌入层，维度为512，将类别$y$映射到$\zeta \in \mathbb{R}^{1 ×512}$ 。</p>
+<h4 id="E-2-2图像修复"><a href="#E-2-2图像修复" class="headerlink" title="E.2.2图像修复"></a>E.2.2图像修复</h4><p>在4.5节的图像修复实验中，我们使用[88]中的代码生成合成掩码。我们从Places [108]数据集中选取了固定的2k个验证样本和30k个测试样本。在训练过程中，我们使用大小为256×256的随机裁剪，并在大小为512×512的裁剪上进行评估。这遵循了[88]中的训练和测试协议，并重现了他们报告的指标（见表7中的†）。我们在图21中展示了LDM-4带注意力机制的更多定性结果，在图22中展示了LDM-4不带注意力机制、大模型且微调后的定性结果。</p>
+<h3 id="E-3评估细节"><a href="#E-3评估细节" class="headerlink" title="E.3评估细节"></a>E.3评估细节</h3><p>本节为4节中所述的实验提供了更多评估细节。</p>
+<h4 id="E-3-1无条件和类别条件图像合成的定量结果"><a href="#E-3-1无条件和类别条件图像合成的定量结果" class="headerlink" title="E.3.1无条件和类别条件图像合成的定量结果"></a>E.3.1无条件和类别条件图像合成的定量结果</h4><p>我们遵循常规做法，基于从我们模型生成的50,000个样本，以及每个展示数据集中的整个训练集，来估计计算FID、精度和召回率分数（参考文献[29,50]）所需的统计数据。计算FID分数时，我们使用torch-fidelity软件包[60]。然而，由于不同的数据处理流程可能会产生不同的结果（参考文献[64]），我们也使用Dhariwal和Nichol（参考文献[15]）提供的脚本对模型进行评估。我们发现，除了ImageNet和LSUN-Bedrooms数据集外，结果大多相符。在这两个数据集上，我们注意到分数略有差异，torch-fidelity计算的结果与Nichol和Dhariwal计算的结果相比，分别为7.76对7.77（在ImageNet数据集上）和2.95对3.0（在LSUN-Bedrooms数据集上）。未来，我们强调统一样本质量评估程序的重要性。精度和召回率同样使用Nichol和Dhariwal提供的脚本进行计算。</p>
+<h4 id="E-3-2文本到图像合成"><a href="#E-3-2文本到图像合成" class="headerlink" title="E.3.2文本到图像合成"></a>E.3.2文本到图像合成</h4><p>按照参考文献[66]中的评估协议，我们通过将生成的样本与MS-COCO数据集（参考文献[51]）验证集中的30,000个样本进行比较，来计算表2中文本到图像模型的FID和Inception分数。FID和Inception分数使用torch-fidelity进行计算。</p>
+<h4 id="E-3-3布局到图像合成"><a href="#E-3-3布局到图像合成" class="headerlink" title="E.3.3布局到图像合成"></a>E.3.3布局到图像合成</h4><p>为了评估表9中我们在COCO数据集上的布局到图像模型的样本质量，我们遵循常见做法（参考文献[37, 87, 89]），在COCO分割挑战拆分的2048个未增强示例上计算FID分数。为了获得更好的可比性，我们使用与参考文献[37]中完全相同的样本。对于OpenImages数据集，我们同样遵循其协议，使用验证集中2048个中心裁剪的测试图像。</p>
+<h4 id="E-3-4超分辨率"><a href="#E-3-4超分辨率" class="headerlink" title="E.3.4超分辨率"></a>E.3.4超分辨率</h4><p>我们按照参考文献[72]中建议的流程，在ImageNet上评估超分辨率模型，即移除短边小于256像素的图像（训练和评估时均如此）。在ImageNet上，低分辨率图像通过带抗锯齿的双三次插值生成。使用torch-fidelity[60]评估FID，并在验证分割上生成样本。对于FID分数，我们还与在训练分割上计算的参考特征进行比较，见表5和表11。</p>
+<h4 id="E-3-5效率分析"><a href="#E-3-5效率分析" class="headerlink" title="E.3.5效率分析"></a>E.3.5效率分析</h4><p>出于效率考虑，我们基于5,000个样本计算图6、图17和图7中绘制的样本质量指标。因此，这些结果可能与表1和表10中所示的结果有所不同。所有模型的参数数量在表13和表14中给出，且数量相近。我们尽可能提高各个模型的学习率，同时确保它们能够稳定训练。因此，不同运行中的学习率会略有差异，详见表13和表14。</p>
+<h4 id="E-3-6用户研究"><a href="#E-3-6用户研究" class="headerlink" title="E.3.6用户研究"></a>E.3.6用户研究</h4><p>对于表4中展示的用户研究结果，我们遵循参考文献[72]中的协议，采用二选一的迫选范式来评估人类对两个不同任务的偏好分数。在任务1中，向受试者展示一张低分辨率/掩码图像，其两侧分别是相应的高分辨率/无掩码的真实版本图像和合成图像，合成图像以中间的低分辨率/掩码图像作为条件生成。对于超分辨率任务，向受试者提问：“哪张图像是中间低分辨率图像更好的高质量版本？”；对于图像修复任务，提问：“哪张图像在中间图像的修复区域包含更逼真的内容？”。在任务2中，同样向受试者展示低分辨率/掩码图像，并让他们在两个由竞争方法生成的相应图像中选择偏好的图像。与参考文献[72]中一样，受试者在回答前需观看图像3秒钟。</p>
+<h3 id="F-计算需求"><a href="#F-计算需求" class="headerlink" title="F. 计算需求"></a>F. 计算需求</h3><p>在表18中，我们对使用的计算资源进行了更详细的分析，并将我们在CelebA-HQ、FFHQ、LSUN和ImageNet数据集上性能最佳的模型，与近期最先进的模型进行了比较（使用它们提供的数据，参见[15]）。由于他们报告的计算资源使用量是以V100 GPU天数为单位，而我们所有模型都是在单个NVIDIA A100 GPU上进行训练，因此我们根据A100相对于V100有2.2倍的加速比（参见[74]），将A100 GPU天数转换为V100 GPU天数。为了评估样本质量，我们还报告了相关数据集上的FID分数。我们在显著减少所需计算资源的同时，性能接近StyleGAN2[42]和ADM[15]等最先进的方法。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "t18.png"  width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表18. 与最先进的生成模型在训练期间的计算需求和推理吞吐量比较。训练期间的计算量以V100天数为单位，竞争方法的数据除非另有说明，均取自[15]；</em>：在单个NVIDIA A100上测量的吞吐量（样本/秒）；†：数据取自[15]；‡：假设在2500万个训练示例上进行训练；††：相对于ImageNet验证集的R-FID分数*</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="G-自动编码器模型的详细信息"><a href="#G-自动编码器模型的详细信息" class="headerlink" title="G. 自动编码器模型的详细信息"></a>G. 自动编码器模型的详细信息</h3><p>我们按照文献[23]中的方法，以对抗方式训练所有自动编码器模型。具体来说，通过优化基于补丁的判别器$D_{\psi}$，使其能够区分原始图像和重建图像$D(E(x))$。为避免潜在空间出现任意缩放的情况，我们对潜在变量$z$进行正则化，使其均值为零，并通过引入正则化损失项$L_{reg}$来获得较小的方差。</p>
+<p>我们研究了两种不同的正则化方法：（i）在$q_{E}(z | x)=\mathcal{N}(z ; E_{\mu}, E_{\sigma^{2}})$和标准正态分布$\mathcal{N}(z ; 0,1)$之间添加一个低权重的Kullback-Leibler项，这与标准变分自编码器[46,69]的做法类似；（ii）通过学习一个包含$|Z|$个不同范例的码本，使用向量量化层对潜在空间进行正则化[96]。</p>
+<p>为了获得高保真的重建结果，在这两种情况下我们都仅使用了非常小的正则化。具体而言，我们要么将KL项乘以一个约为$10^{-6}$的因子，要么选择较高的码本维度$|Z|$。</p>
+<p>训练自动编码模型$(E, D)$的完整目标函数为：</p>
+<script type="math/tex; mode=display">\text{自动编码器}=\min_{\mathcal{E},\mathcal{D}}\max_{\psi}\left(L_{rec}(x,\mathcal{D}(\mathcal{E}(x)))-L_{adv}(\mathcal{D}(\mathcal{E}(x)))+ \log D_{\psi}(x)+L_{reg}(x;\mathcal{E},\mathcal{D})\right)</script><h4 id="在潜在空间中训练扩散模型"><a href="#在潜在空间中训练扩散模型" class="headerlink" title="在潜在空间中训练扩散模型"></a>在潜在空间中训练扩散模型</h4><p>需要注意的是，在学习$p(z)$或$p(z | y)$（见4.3节）时，对于在学习到的潜在空间中训练扩散模型，我们再次区分两种情况：（i）对于KL正则化的潜在空间，我们采样$z = E_{\mu}(x)+E_{\sigma}(x) \cdot \varepsilon := E(x)$，其中$\varepsilon \sim \mathcal{N}(0,1)$ 。在对潜在变量进行重新缩放时，我们从数据的第一批样本中估计逐分量方差：</p>
+<script type="math/tex; mode=display">\hat{\sigma}^{2}=\frac{1}{bchw}\sum_{b,c,h,w}(z^{b,c,h,w}-\hat{\mu})^{2}</script><p>其中$\hat{\mu}=\frac{1}{bchw}\sum_{b,c,h,w}z^{b,c,h,w}$ 。对$\varepsilon$的输出进行缩放，使得重新缩放后的潜在变量具有单位标准差，即$z \leftarrow \frac{z}{\hat{\sigma}}=\frac{E(x)}{\hat{\sigma}}$ 。（ii）对于VQ正则化的潜在空间，我们在量化层之前提取$z$，并将量化操作整合到解码器中，即它可以被解释为解码器的第一层。</p>
+<h3 id="H-额外定性结果"><a href="#H-额外定性结果" class="headerlink" title="H. 额外定性结果"></a>H. 额外定性结果</h3><p>最后，我们为风景模型（图12、23、24和25）、类别条件ImageNet模型（图26 - 27）以及CelebA - HQ、FFHQ和LSUN数据集的无条件模型（图28 - 31）提供了额外的定性结果。与4.5节中的图像修复模型类似，我们还对4.3.2节中的语义风景模型直接在$512^2$图像上进行了微调，并在图12和图23中展示了定性结果。对于那些在相对较小数据集上训练的模型，我们在图32 - 34中展示了模型样本在VGG [79]特征空间中的最近邻。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "f19.png"  width="100%"></th>
+<th style="text-align:center"><img src = "f20.png"  width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图19. LDM-BSR可作为通用上采样器，将来自LSUN奶牛数据集的样本上采样到1024×1024分辨率</em></td>
+<td style="text-align:center"><em>图20. LDM-SR与像素空间基线扩散模型在随机样本上的定性超分辨率比较。在相同训练步数后，在ImageNet验证集上进行评估</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "f21.png"  width="100%"></th>
+<th style="text-align:center"><img src = "f22.png"  width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图21. 图像修复的定性结果。与[88]不同，我们的生成方法能够为给定输入生成多个不同的样本</em></td>
+<td style="text-align:center"><em>图22. 更多如图11所示的物体移除的定性结果</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "f23.png"  width="100%"></th>
+<th style="text-align:center"><img src = "f24.png"  width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图23. 4.3.2节中语义风景模型在512×512图像上微调后的卷积样本</em></td>
+<td style="text-align:center"><em>图24. 一个在256×256分辨率上训练的LDM可以推广到更大的分辨率，用于空间条件任务，如风景图像的语义合成。见4.3.2节</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "f25.png"  width="100%"></th>
+<th style="text-align:center"><img src = "f26.png"  width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图25. 当提供语义图作为条件时，我们的LDM可以推广到比训练期间看到的大得多的分辨率。尽管这个模型是在256×256大小的输入上训练的，但它可以用来创建这里显示的高分辨率样本，分辨率为1024×384</em></td>
+<td style="text-align:center"><em>图26. 在ImageNet数据集上训练的LDM-4的随机样本。使用无分类器扩散引导[32]，尺度s = 5.0，200步DDIM采样，η = 1.0</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "f27.png"  width="100%"></th>
+<th style="text-align:center"><img src = "f28.png"  width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图27. 在ImageNet数据集上训练的LDM-4的随机样本。使用无分类器扩散引导[32]，尺度s = 3.0，200步DDIM采样，η = 1.0</em></td>
+<td style="text-align:center"><em>图28. 我们在CelebA-HQ数据集上表现最佳的模型LDM-4的随机样本。使用500步DDIM采样，η = 0（FID = 5.15）</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "f29.png"  width="100%"></th>
+<th style="text-align:center"><img src = "f30.png"  width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图29. 我们在FFHQ数据集上表现最佳的模型LDM-4的随机样本。使用200步DDIM采样，η = 1（FID = 4.98）</em></td>
+<td style="text-align:center"><em>图30. 我们在LSUN-Churches数据集上表现最佳的模型LDM-8的随机样本。使用200步DDIM采样，η = 0（FID = 4.48）</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "f31.png"  width="100%"></th>
+<th style="text-align:center"><img src = "f32.png"  width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图31. 我们在LSUN-Bedrooms数据集上表现最佳的模型LDM-4的随机样本。使用200步DDIM采样，η = 1（FID = 2.95）</em></td>
+<td style="text-align:center"><em>图32. 我们在CelebA-HQ数据集上最佳模型的最近邻，在VGG-16 [79]特征空间中计算。最左边的样本来自我们的模型，每行其余样本是其10个最近邻</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "f33.png"  width="100%"></th>
+<th style="text-align:center"><img src = "f34.png"  width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图33. 我们在FFHQ数据集上最佳模型的最近邻，在VGG-16 [79]特征空间中计算。最左边的样本来自我们的模型，每行其余样本是其10个最近邻</em></td>
+<td style="text-align:center"><em>图34. 我们在LSUN-Churches数据集上最佳模型的最近邻，在VGG-16 [79]特征空间中计算。最左边的样本来自我们的模型，每行其余样本是其10个最近邻</em></td>
+</tr>
+</tbody>
+</table>
+</div>
 <h2 id="文章总结"><a href="#文章总结" class="headerlink" title="文章总结"></a>文章总结</h2><p>这篇论文</p>
 <h3 id="创新点与主要思想"><a href="#创新点与主要思想" class="headerlink" title="创新点与主要思想"></a>创新点与主要思想</h3><ol>
 <li>将</li>
@@ -618,7 +1048,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1. 引言</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-%E9%AB%98%E5%88%86%E8%BE%A8%E7%8E%87%E5%9B%BE%E5%83%8F%E5%90%88%E6%88%90%E7%9A%84%E6%99%AE%E5%8F%8A"><span class="nav-number">1.2.1.</span> <span class="nav-text">1.1 高分辨率图像合成的普及</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-%E8%BF%88%E5%90%91%E6%BD%9C%E5%9C%A8%E7%A9%BA%E9%97%B4"><span class="nav-number">1.2.2.</span> <span class="nav-text">1.2 迈向潜在空间</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.3.</span> <span class="nav-text">2. 相关工作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E5%9B%BE%E5%83%8F%E5%90%88%E6%88%90%E7%9A%84%E7%94%9F%E6%88%90%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.3.1.</span> <span class="nav-text">2.1 图像合成的生成模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E4%B8%A4%E9%98%B6%E6%AE%B5%E5%9B%BE%E5%83%8F%E5%90%88%E6%88%90"><span class="nav-number">1.3.2.</span> <span class="nav-text">2.2 两阶段图像合成</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.</span> <span class="nav-text">3. 方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E6%84%9F%E7%9F%A5%E5%9B%BE%E5%83%8F%E5%8E%8B%E7%BC%A9"><span class="nav-number">1.4.1.</span> <span class="nav-text">3.1 感知图像压缩</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E6%BD%9C%E5%9C%A8%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.4.2.</span> <span class="nav-text">3.2 潜在扩散模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-1-%E6%BD%9C%E5%9C%A8%E8%A1%A8%E7%A4%BA%E7%9A%84%E7%94%9F%E6%88%90%E5%BB%BA%E6%A8%A1"><span class="nav-number">1.4.3.</span> <span class="nav-text">3.2.1 潜在表示的生成建模</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-%E6%9D%A1%E4%BB%B6%E6%9C%BA%E5%88%B6"><span class="nav-number">1.4.4.</span> <span class="nav-text">3.3 条件机制</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.5.</span> <span class="nav-text">4. 实验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E6%84%9F%E7%9F%A5%E5%8E%8B%E7%BC%A9%E6%9D%83%E8%A1%A1%E5%88%86%E6%9E%90"><span class="nav-number">1.5.1.</span> <span class="nav-text">4.1 感知压缩权衡分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E6%BD%9C%E5%9C%A8%E6%89%A9%E6%95%A3%E5%9B%BE%E5%83%8F%E7%94%9F%E6%88%90"><span class="nav-number">1.5.2.</span> <span class="nav-text">4.2 潜在扩散图像生成</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-%E6%9D%A1%E4%BB%B6%E6%BD%9C%E5%9C%A8%E6%89%A9%E6%95%A3"><span class="nav-number">1.5.3.</span> <span class="nav-text">4.3 条件潜在扩散</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-1-%E6%BD%9C%E5%9C%A8%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B%E7%9A%84Transformer%E7%BC%96%E7%A0%81%E5%99%A8"><span class="nav-number">1.5.4.</span> <span class="nav-text">4.3.1 潜在扩散模型的Transformer编码器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-2-%E8%B6%85%E8%B6%8A-256-2-%E7%9A%84%E5%8D%B7%E7%A7%AF%E9%87%87%E6%A0%B7"><span class="nav-number">1.5.5.</span> <span class="nav-text">4.3.2 超越$256^2$的卷积采样</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-%E6%BD%9C%E5%9C%A8%E6%89%A9%E6%95%A3%E8%B6%85%E5%88%86%E8%BE%A8%E7%8E%87"><span class="nav-number">1.5.6.</span> <span class="nav-text">4.4 潜在扩散超分辨率</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-5-%E6%BD%9C%E5%9C%A8%E6%89%A9%E6%95%A3%E5%9B%BE%E5%83%8F%E4%BF%AE%E5%A4%8D"><span class="nav-number">1.5.7.</span> <span class="nav-text">4.5 潜在扩散图像修复</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E5%B1%80%E9%99%90%E6%80%A7%E4%B8%8E%E7%A4%BE%E4%BC%9A%E5%BD%B1%E5%93%8D"><span class="nav-number">1.6.</span> <span class="nav-text">5. 局限性与社会影响</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E7%BB%93%E8%AE%BA"><span class="nav-number">1.7.</span> <span class="nav-text">6. 结论</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E7%AB%A0%E6%80%BB%E7%BB%93"><span class="nav-number">2.</span> <span class="nav-text">文章总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E6%96%B0%E7%82%B9%E4%B8%8E%E4%B8%BB%E8%A6%81%E6%80%9D%E6%83%B3"><span class="nav-number">2.1.</span> <span class="nav-text">创新点与主要思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E4%B8%8E%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83"><span class="nav-number">2.2.</span> <span class="nav-text">损失函数与模型训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8D%E8%B6%B3%E4%B9%8B%E5%A4%84"><span class="nav-number">2.3.</span> <span class="nav-text">不足之处</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">2.4.</span> <span class="nav-text">参考资料</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1. 引言</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-%E9%AB%98%E5%88%86%E8%BE%A8%E7%8E%87%E5%9B%BE%E5%83%8F%E5%90%88%E6%88%90%E7%9A%84%E6%99%AE%E5%8F%8A"><span class="nav-number">1.2.1.</span> <span class="nav-text">1.1 高分辨率图像合成的普及</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-%E8%BF%88%E5%90%91%E6%BD%9C%E5%9C%A8%E7%A9%BA%E9%97%B4"><span class="nav-number">1.2.2.</span> <span class="nav-text">1.2 迈向潜在空间</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.3.</span> <span class="nav-text">2. 相关工作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E5%9B%BE%E5%83%8F%E5%90%88%E6%88%90%E7%9A%84%E7%94%9F%E6%88%90%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.3.1.</span> <span class="nav-text">2.1 图像合成的生成模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E4%B8%A4%E9%98%B6%E6%AE%B5%E5%9B%BE%E5%83%8F%E5%90%88%E6%88%90"><span class="nav-number">1.3.2.</span> <span class="nav-text">2.2 两阶段图像合成</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.</span> <span class="nav-text">3. 方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E6%84%9F%E7%9F%A5%E5%9B%BE%E5%83%8F%E5%8E%8B%E7%BC%A9"><span class="nav-number">1.4.1.</span> <span class="nav-text">3.1 感知图像压缩</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E6%BD%9C%E5%9C%A8%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.4.2.</span> <span class="nav-text">3.2 潜在扩散模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-1-%E6%BD%9C%E5%9C%A8%E8%A1%A8%E7%A4%BA%E7%9A%84%E7%94%9F%E6%88%90%E5%BB%BA%E6%A8%A1"><span class="nav-number">1.4.3.</span> <span class="nav-text">3.2.1 潜在表示的生成建模</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-%E6%9D%A1%E4%BB%B6%E6%9C%BA%E5%88%B6"><span class="nav-number">1.4.4.</span> <span class="nav-text">3.3 条件机制</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.5.</span> <span class="nav-text">4. 实验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E6%84%9F%E7%9F%A5%E5%8E%8B%E7%BC%A9%E6%9D%83%E8%A1%A1%E5%88%86%E6%9E%90"><span class="nav-number">1.5.1.</span> <span class="nav-text">4.1 感知压缩权衡分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E6%BD%9C%E5%9C%A8%E6%89%A9%E6%95%A3%E5%9B%BE%E5%83%8F%E7%94%9F%E6%88%90"><span class="nav-number">1.5.2.</span> <span class="nav-text">4.2 潜在扩散图像生成</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-%E6%9D%A1%E4%BB%B6%E6%BD%9C%E5%9C%A8%E6%89%A9%E6%95%A3"><span class="nav-number">1.5.3.</span> <span class="nav-text">4.3 条件潜在扩散</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-1-%E6%BD%9C%E5%9C%A8%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B%E7%9A%84Transformer%E7%BC%96%E7%A0%81%E5%99%A8"><span class="nav-number">1.5.4.</span> <span class="nav-text">4.3.1 潜在扩散模型的Transformer编码器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-2-%E8%B6%85%E8%B6%8A-256-2-%E7%9A%84%E5%8D%B7%E7%A7%AF%E9%87%87%E6%A0%B7"><span class="nav-number">1.5.5.</span> <span class="nav-text">4.3.2 超越$256^2$的卷积采样</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-%E6%BD%9C%E5%9C%A8%E6%89%A9%E6%95%A3%E8%B6%85%E5%88%86%E8%BE%A8%E7%8E%87"><span class="nav-number">1.5.6.</span> <span class="nav-text">4.4 潜在扩散超分辨率</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-5-%E6%BD%9C%E5%9C%A8%E6%89%A9%E6%95%A3%E5%9B%BE%E5%83%8F%E4%BF%AE%E5%A4%8D"><span class="nav-number">1.5.7.</span> <span class="nav-text">4.5 潜在扩散图像修复</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E5%B1%80%E9%99%90%E6%80%A7%E4%B8%8E%E7%A4%BE%E4%BC%9A%E5%BD%B1%E5%93%8D"><span class="nav-number">1.6.</span> <span class="nav-text">5. 局限性与社会影响</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E7%BB%93%E8%AE%BA"><span class="nav-number">1.7.</span> <span class="nav-text">6. 结论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%84%E5%BD%95"><span class="nav-number">1.8.</span> <span class="nav-text">附录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#A-%E5%8F%98%E6%9B%B4%E6%97%A5%E5%BF%97"><span class="nav-number">1.9.</span> <span class="nav-text">A. 变更日志</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#B-%E5%8E%BB%E5%99%AA%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%AF%A6%E7%BB%86%E4%BF%A1%E6%81%AF"><span class="nav-number">1.10.</span> <span class="nav-text">B. 去噪扩散模型的详细信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#C-%E5%9B%BE%E5%83%8F%E5%BC%95%E5%AF%BC%E6%9C%BA%E5%88%B6"><span class="nav-number">1.11.</span> <span class="nav-text">C. 图像引导机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#D-%E8%A1%A5%E5%85%85%E7%BB%93%E6%9E%9C"><span class="nav-number">1.12.</span> <span class="nav-text">D. 补充结果</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#D-1%E9%AB%98%E5%88%86%E8%BE%A8%E7%8E%87%E5%90%88%E6%88%90%E4%B8%AD%E4%BF%A1%E5%99%AA%E6%AF%94%E7%9A%84%E9%80%89%E6%8B%A9"><span class="nav-number">1.12.1.</span> <span class="nav-text">D.1高分辨率合成中信噪比的选择</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#D-2%E6%89%80%E6%9C%89%E7%AC%AC%E4%B8%80%E9%98%B6%E6%AE%B5%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%AE%8C%E6%95%B4%E5%88%97%E8%A1%A8"><span class="nav-number">1.12.2.</span> <span class="nav-text">D.2所有第一阶段模型的完整列表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#D-3%E5%B8%83%E5%B1%80%E5%88%B0%E5%9B%BE%E5%83%8F%E7%9A%84%E5%90%88%E6%88%90"><span class="nav-number">1.12.3.</span> <span class="nav-text">D.3布局到图像的合成</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#D-4-ImageNet%E4%B8%8A%E7%9A%84%E7%B1%BB%E5%88%AB%E6%9D%A1%E4%BB%B6%E5%9B%BE%E5%83%8F%E5%90%88%E6%88%90"><span class="nav-number">1.12.4.</span> <span class="nav-text">D.4 ImageNet上的类别条件图像合成</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#D-5%E6%A0%B7%E6%9C%AC%E8%B4%A8%E9%87%8F%E4%B8%8EV100%E5%A4%A9%E6%95%B0%E7%9A%84%E5%85%B3%E7%B3%BB%EF%BC%88%E7%BB%AD4-1%E8%8A%82%EF%BC%89"><span class="nav-number">1.12.5.</span> <span class="nav-text">D.5样本质量与V100天数的关系（续4.1节）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#D-6%E8%B6%85%E5%88%86%E8%BE%A8%E7%8E%87"><span class="nav-number">1.12.6.</span> <span class="nav-text">D.6超分辨率</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#D-6-1-LDM-BSR%EF%BC%9A%E9%80%9A%E8%BF%87%E5%A4%9A%E6%A0%B7%E5%8C%96%E5%9B%BE%E5%83%8F%E9%80%80%E5%8C%96%E5%BE%97%E5%88%B0%E7%9A%84%E9%80%9A%E7%94%A8%E8%B6%85%E5%88%86%E8%BE%A8%E7%8E%87%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.12.6.1.</span> <span class="nav-text">D.6.1 LDM-BSR：通过多样化图像退化得到的通用超分辨率模型</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#E-%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82%E5%92%8C%E8%B6%85%E5%8F%82%E6%95%B0"><span class="nav-number">1.13.</span> <span class="nav-text">E. 实现细节和超参数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#E-1%E8%B6%85%E5%8F%82%E6%95%B0"><span class="nav-number">1.13.1.</span> <span class="nav-text">E.1超参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#E-2%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82"><span class="nav-number">1.13.2.</span> <span class="nav-text">E.2实现细节</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#E-2-1%E6%9D%A1%E4%BB%B6LDM%E4%B8%AD-tau-theta-%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.13.3.</span> <span class="nav-text">E.2.1条件LDM中$\tau_{\theta}$的实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#E-2-2%E5%9B%BE%E5%83%8F%E4%BF%AE%E5%A4%8D"><span class="nav-number">1.13.4.</span> <span class="nav-text">E.2.2图像修复</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#E-3%E8%AF%84%E4%BC%B0%E7%BB%86%E8%8A%82"><span class="nav-number">1.14.</span> <span class="nav-text">E.3评估细节</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#E-3-1%E6%97%A0%E6%9D%A1%E4%BB%B6%E5%92%8C%E7%B1%BB%E5%88%AB%E6%9D%A1%E4%BB%B6%E5%9B%BE%E5%83%8F%E5%90%88%E6%88%90%E7%9A%84%E5%AE%9A%E9%87%8F%E7%BB%93%E6%9E%9C"><span class="nav-number">1.14.1.</span> <span class="nav-text">E.3.1无条件和类别条件图像合成的定量结果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#E-3-2%E6%96%87%E6%9C%AC%E5%88%B0%E5%9B%BE%E5%83%8F%E5%90%88%E6%88%90"><span class="nav-number">1.14.2.</span> <span class="nav-text">E.3.2文本到图像合成</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#E-3-3%E5%B8%83%E5%B1%80%E5%88%B0%E5%9B%BE%E5%83%8F%E5%90%88%E6%88%90"><span class="nav-number">1.14.3.</span> <span class="nav-text">E.3.3布局到图像合成</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#E-3-4%E8%B6%85%E5%88%86%E8%BE%A8%E7%8E%87"><span class="nav-number">1.14.4.</span> <span class="nav-text">E.3.4超分辨率</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#E-3-5%E6%95%88%E7%8E%87%E5%88%86%E6%9E%90"><span class="nav-number">1.14.5.</span> <span class="nav-text">E.3.5效率分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#E-3-6%E7%94%A8%E6%88%B7%E7%A0%94%E7%A9%B6"><span class="nav-number">1.14.6.</span> <span class="nav-text">E.3.6用户研究</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#F-%E8%AE%A1%E7%AE%97%E9%9C%80%E6%B1%82"><span class="nav-number">1.15.</span> <span class="nav-text">F. 计算需求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#G-%E8%87%AA%E5%8A%A8%E7%BC%96%E7%A0%81%E5%99%A8%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%AF%A6%E7%BB%86%E4%BF%A1%E6%81%AF"><span class="nav-number">1.16.</span> <span class="nav-text">G. 自动编码器模型的详细信息</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9C%A8%E6%BD%9C%E5%9C%A8%E7%A9%BA%E9%97%B4%E4%B8%AD%E8%AE%AD%E7%BB%83%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.16.1.</span> <span class="nav-text">在潜在空间中训练扩散模型</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#H-%E9%A2%9D%E5%A4%96%E5%AE%9A%E6%80%A7%E7%BB%93%E6%9E%9C"><span class="nav-number">1.17.</span> <span class="nav-text">H. 额外定性结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E7%AB%A0%E6%80%BB%E7%BB%93"><span class="nav-number">2.</span> <span class="nav-text">文章总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E6%96%B0%E7%82%B9%E4%B8%8E%E4%B8%BB%E8%A6%81%E6%80%9D%E6%83%B3"><span class="nav-number">2.1.</span> <span class="nav-text">创新点与主要思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E4%B8%8E%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83"><span class="nav-number">2.2.</span> <span class="nav-text">损失函数与模型训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8D%E8%B6%B3%E4%B9%8B%E5%A4%84"><span class="nav-number">2.3.</span> <span class="nav-text">不足之处</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">2.4.</span> <span class="nav-text">参考资料</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
