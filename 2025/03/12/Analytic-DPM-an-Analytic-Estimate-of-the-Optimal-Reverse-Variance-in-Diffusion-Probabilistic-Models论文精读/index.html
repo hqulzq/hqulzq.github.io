@@ -31,8 +31,20 @@
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/12/Analytic-DPM-an-Analytic-Estimate-of-the-Optimal-Reverse-Variance-in-Diffusion-Probabilistic-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t1.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/12/Analytic-DPM-an-Analytic-Estimate-of-the-Optimal-Reverse-Variance-in-Diffusion-Probabilistic-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t2.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/12/Analytic-DPM-an-Analytic-Estimate-of-the-Optimal-Reverse-Variance-in-Diffusion-Probabilistic-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t3.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/12/Analytic-DPM-an-Analytic-Estimate-of-the-Optimal-Reverse-Variance-in-Diffusion-Probabilistic-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/a1.png">
+<meta property="og:image" content="https://pic2.zhimg.com/v2-857675c89c867c86967675c89c867c86_r.jpg">
+<meta property="og:image" content="https://pic1.zhimg.com/v2-965c89c867c86967675c89c867c86_r.jpg">
+<meta property="og:image" content="https://pic4.zhimg.com/v2-8c867c86967675c89c867c86_r.jpg">
+<meta property="og:image" content="https://pic1.zhimg.com/v2-9c867c86967675c89c867c86_r.jpg">
+<meta property="og:image" content="https://pic4.zhimg.com/v2-8d867c86967675c89c867c86_r.jpg">
+<meta property="og:image" content="https://pic2.zhimg.com/v2-957675c89c867c86967675c89c867c86_r.jpg">
+<meta property="og:image" content="https://pic2.zhimg.com/v2-867c86967675c89c867c86_r.jpg">
+<meta property="og:image" content="https://pic2.zhimg.com/v2-97675c89c867c86967675c89c867c86_r.jpg">
+<meta property="og:image" content="https://pic2.zhimg.com/v2-8867c86967675c89c867c86_r.jpg">
+<meta property="og:image" content="https://pic1.zhimg.com/v2-9867c86967675c89c867c86_r.jpg">
+<meta property="og:image" content="https://pic4.zhimg.com/v2-8967c86967675c89c867c86_r.jpg">
 <meta property="article:published_time" content="2025-03-12T11:33:01.000Z">
-<meta property="article:modified_time" content="2025-03-16T13:35:12.459Z">
+<meta property="article:modified_time" content="2025-04-16T14:25:03.720Z">
 <meta property="article:author" content="Zongqing Li">
 <meta property="article:tag" content="diffusion">
 <meta property="article:tag" content="2022">
@@ -233,7 +245,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-03-16 21:35:12" itemprop="dateModified" datetime="2025-03-16T21:35:12+08:00">2025-03-16</time>
+                <time title="修改时间：2025-04-16 22:25:03" itemprop="dateModified" datetime="2025-04-16T22:25:03+08:00">2025-04-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -256,7 +268,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散概率模型（Diffusion Probabilistic Models, DPMs）是一类强大的生成模型。尽管它们取得了成功，但DPMs的推理成本很高，因为通常需要迭代数千个时间步。推理中的一个关键问题是估计反向过程中每个时间步的方差。在这项工作中，我们给出了一个令人惊讶的结果：DPM的最优反向方差和相应的最优KL散度都可以用其得分函数的解析形式表示。在此基础上，我们提出了Analytic-DPM，这是一个无需训练的推理框架，它使用蒙特卡罗方法和预训练的基于得分的模型来估计方差和KL散度的解析形式。此外，为了纠正基于得分的模型可能带来的偏差，我们推导了最优方差的上下界，并对估计值进行裁剪以获得更好的结果。在实验中，我们的Analytic-DPM提高了各种DPM的对数似然性，生成了高质量的样本，同时实现了20到80倍的加速。<br><span id="more"></span></p>
+        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散概率模型（Diffusion Probabilistic Models, DPMs）是一类强大的生成模型。尽管它们取得了成功，但DPMs的推理成本很高，因为通常需要迭代数千个时间步。推理中的一个关键问题是估计反向过程中每个时间步的方差。在这项工作中，我们给出了一个令人惊讶的结果：<strong>DPM的最优反向方差和相应的最优KL散度都可以用其得分函数的解析形式表示。</strong>在此基础上，我们提出了Analytic-DPM，这是一个<code>无需训练的推理框架</code>，它使用<code>蒙特卡罗方法</code>和<code>预训练的基于得分的模型</code>来估计方差和KL散度的解析形式。此外，<strong>为了纠正基于得分的模型可能带来的偏差，我们推导了最优方差的上下界，并对估计值进行裁剪以获得更好的结果。</strong>在实验中，我们的Analytic-DPM提高了各种DPM的对数似然性，生成了高质量的样本，同时实现了20到80倍的加速。<br><span id="more"></span></p>
 <h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1. 引言"></a>1. 引言</h3><p>扩散过程会在一系列时间步中逐渐向数据分布添加噪声。通过学习逆向操作，扩散概率模型（DPMs）（Sohl-Dickstein等人，2015；Ho等人，2020；Song等人，2020b）定义了一种数据生成过程。最近研究表明，DPMs能够生成高质量样本（Ho等人，2020；Nichol和Dhariwal，2021；Song等人，2020b；Dhariwal和Nichol，2021），这些样本与当前最先进的生成对抗网络（GAN）模型（Goodfellow等人，2014；Brock等人，2018；Wu等人，2019；Karras等人，2020b）相当，甚至更优。</p>
 <p>尽管取得了成功，但DPMs的推理（如采样和密度评估）通常需要迭代数千个时间步，这比其他生成模型（如GANs）慢两到三个数量级（Song等人，2020a）。推理中的一个关键问题是估计反向过程中每个时间步的方差。大多数先前的工作在所有时间步都使用手工设定的值，这通常需要运行很长的链才能获得合理的样本和密度值（Nichol和Dhariwal，2021）。Nichol和Dhariwal（2021）试图通过在反向过程中学习方差网络来提高采样效率。然而，它仍然需要相对较长的轨迹才能获得合理的对数似然（见Nichol和Dhariwal（2021）的附录E）。</p>
 <p>在这项工作中，我们给出了一个令人惊讶的结果：DPM的最优反向方差和相应的最优KL散度都可以用其得分函数（即对数密度的梯度）的解析形式表示。在此基础上，我们提出了Analytic-DPM，这是一个无需训练的推理框架，用于在实现可比甚至更优性能的同时提高预训练DPM的效率。Analytic-DPM使用蒙特卡罗方法和预训练DPM中的基于得分的模型来估计方差和KL散度的解析形式。相应的轨迹通过动态规划算法（Watson等人，2021）计算。此外，为了纠正基于得分的模型可能导致的潜在偏差，我们推导出最优方差的上下界，并对估计值进行裁剪以获得更好的结果。最后，我们揭示了得分函数与数据协方差矩阵之间的有趣关系。</p>
@@ -368,6 +380,544 @@
 <li><strong>DPMs中的方差学习</strong>：除了反向方差，也有研究致力于学习正向噪声调度（即正向方差）。Kingma等人（2021）提出了连续时间步上的变分扩散模型（VDMs），它使用信噪比函数对正向方差进行参数化，并直接优化变分下界目标以获得更好的对数似然。虽然我们主要将方法应用于DDPMs和DDIMs，但估计最优反向方差也可应用于VDMs（见附录E）。</li>
 </ul>
 <h3 id="8-结论"><a href="#8-结论" class="headerlink" title="8. 结论"></a>8. 结论</h3><p>我们证明了扩散概率模型的最优反向方差和相应的最优KL散度都可以用其得分函数的解析形式表示。在此基础上，我们提出了Analytic-DPM，这是一个无需训练的推理框架，它利用蒙特卡罗方法和预训练的基于得分的模型来估计方差和KL散度的解析形式。我们推导了最优方差的边界以纠正潜在偏差，并揭示了得分函数与数据协方差矩阵之间的关系。在实验中，我们的Analytic-DPM提高了多种扩散概率模型在似然结果方面的效率和性能，并且能高效生成高质量样本。</p>
+<h3 id="A-证明与推导"><a href="#A-证明与推导" class="headerlink" title="A 证明与推导"></a>A 证明与推导</h3><h4 id="A-1-引理"><a href="#A-1-引理" class="headerlink" title="A.1 引理"></a>A.1 引理</h4><ul>
+<li><strong>引理1</strong> （与高斯分布的交叉熵）：假设$q(x)$是一个概率密度函数，均值为$\mu_q$，协方差矩阵为$\sum_q$，$p(x)=\mathcal{N}(x|\mu,\sum)$是一个高斯分布，那么$q$和$p$之间的交叉熵等于$\mathcal{N}(x|\mu_q,\sum_q)$和$p$之间的交叉熵，即</li>
+</ul>
+<script type="math/tex; mode=display">\begin{align*}
+H(q,p)&=H(\mathcal{N}(x|\mu_q,\sum_q),p)\\
+&=\frac{1}{2}\log((2\pi)^d|\sum|)+\frac{1}{2}\text{tr}(\sum_q\sum^{-1})+\frac{1}{2}(\mu_q - \mu)^\top\sum^{-1}(\mu_q - \mu)
+\end{align*}</script><p><strong>证明</strong>：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+H(q,p)&=-\mathbb{E}_{q(x)}\log p(x)=-\mathbb{E}_{q(x)}\log\frac{1}{\sqrt{(2\pi)^d|\Sigma|}}\exp\left(-\frac{(x - \mu)^{\top}\Sigma^{-1}(x - \mu)}{2}\right)\\
+&=\frac{1}{2}\log((2\pi)^d|\Sigma|)+\frac{1}{2}\mathbb{E}_{q(x)}(x - \mu)^{\top}\Sigma^{-1}(x - \mu)\\
+&=\frac{1}{2}\log((2\pi)^d|\Sigma|)+\frac{1}{2}\mathbb{E}_{q(x)}\text{tr}((x - \mu)(x - \mu)^{\top}\Sigma^{-1})\\
+&=\frac{1}{2}\log((2\pi)^d|\Sigma|)+\frac{1}{2}\text{tr}(\mathbb{E}_{q(x)}[(x - \mu)(x - \mu)^{\top}]\Sigma^{-1})\\
+&=\frac{1}{2}\log((2\pi)^d|\Sigma|)+\frac{1}{2}\text{tr}(\mathbb{E}_{q(x)}[(x - \mu_q)(x - \mu_q)^{\top}+(\mu_q - \mu)(\mu_q - \mu)^{\top}]\Sigma^{-1})\\
+&=\frac{1}{2}\log((2\pi)^d|\Sigma|)+\frac{1}{2}\text{tr}(\Sigma_q\Sigma^{-1})+\frac{1}{2}\text{tr}((\mu_q - \mu)(\mu_q - \mu)^{\top}\Sigma^{-1})\\
+&=\frac{1}{2}\log((2\pi)^d|\Sigma|)+\frac{1}{2}\text{tr}(\Sigma_q\Sigma^{-1})+\frac{1}{2}(\mu_q - \mu)^{\top}\Sigma^{-1}(\mu_q - \mu)\\
+&=H(\mathcal{N}(x|\mu_q,\Sigma_q),p)
+\end{align*}</script><p>证毕。</p>
+<ul>
+<li><strong>引理2</strong> （与高斯分布的KL散度）：假设$q(x)$是一个概率密度函数，均值为$\mu_q$，协方差矩阵为$\sum_q$，$p(x)=\mathcal{N}(x|\mu,\sum)$是一个高斯分布，那么<script type="math/tex; mode=display">D_{KL}(q||p)=D_{KL}(\mathcal{N}(x|\mu_q,\sum_q)||p)+H(\mathcal{N}(x|\mu_q,\sum_q)) - H(q)</script>其中$H(\cdot)$表示分布的熵。</li>
+</ul>
+<p><strong>证明</strong>：根据引理1，我们有$H(q,p)=H(\mathcal{N}(x|\mu_q,\sum_q),p)$。因此，</p>
+<script type="math/tex; mode=display">\begin{align*}
+D_{KL}(q||p)&=H(q,p)-H(q)\\
+&=H(\mathcal{N}(x|\mu_q,\sum_q),p)-H(q)\\
+&=H(\mathcal{N}(x|\mu_q,\sum_q),p)-H(\mathcal{N}(x|\mu_q,\sum_q))+H(\mathcal{N}(x|\mu_q,\sum_q)) - H(q)\\
+&=D_{KL}(\mathcal{N}(x|\mu_q,\sum_q)||p)+H(\mathcal{N}(x|\mu_q,\sum_q)) - H(q)
+\end{align*}</script><p>证毕。</p>
+<ul>
+<li><strong>引理3</strong> （正向和反向马尔可夫性质的等价性）：假设$q(x_{0:N}) = q(x_0)\prod_{n = 1}^{N}q(x_n|x_{n - 1})$是一个马尔可夫链，那么$q$在反向也是一个马尔可夫链，即$q(x_{0:N}) = q(x_N)\prod_{n = 1}^{N}q(x_{n - 1}|x_n)$。</li>
+</ul>
+<p><strong>证明</strong>：</p>
+<script type="math/tex; mode=display">\begin{align*}
+q(x_{n - 1}|x_n,\cdots,x_N)&=\frac{q(x_{n - 1},x_n,\cdots,x_N)}{q(x_n,\cdots,x_N)}\\
+&=\frac{q(x_{n - 1},x_n)\prod_{i = n + 1}^{N}q(x_i|x_{i - 1})}{q(x_n)\prod_{i = n + 1}^{N}q(x_i|x_{i - 1})}\\
+&=q(x_{n - 1}|x_n)
+\end{align*}</script><p>因此，$q(x_{0:N}) = q(x_N)\prod_{n = 1}^{N}q(x_{n - 1}|x_n)$。证毕。</p>
+<ul>
+<li><strong>引理4</strong> （马尔可夫链的熵）：假设$q(x_{0:N})$是一个马尔可夫链，那么<script type="math/tex; mode=display">H(q(x_{0:N})) = H(q(x_N))+\sum_{n = 1}^{N}\mathbb{E}_qH(q(x_{n - 1}|x_n)) = H(q(x_0))+\sum_{n = 1}^{N}\mathbb{E}_qH(q(x_n|x_{n - 1}))</script></li>
+</ul>
+<p><strong>证明</strong>：根据引理3，我们有</p>
+<script type="math/tex; mode=display">\begin{align*}
+H(q(x_{0:N}))&=-\mathbb{E}_q\log q(x_N)\prod_{n = 1}^{N}q(x_{n - 1}|x_n)\\
+&=-\mathbb{E}_q\log q(x_N)-\sum_{n = 1}^{N}\mathbb{E}_q\log q(x_{n - 1}|x_n)\\
+&=H(q(x_N))+\sum_{n = 1}^{N}\mathbb{E}_qH(q(x_{n - 1}|x_n))
+\end{align*}</script><p>类似地，我们也有$H(q(x_{0:N})) = H(q(x_0))+\sum_{n = 1}^{N}\mathbb{E}_qH(q(x_n|x_{n - 1}))$。证毕。</p>
+<ul>
+<li><strong>引理5</strong> （DDPM正向过程的熵）：假设$q(x_{0:N})$是一个马尔可夫链，且$q(x_n|x_{n - 1})=\mathcal{N}(x_n|\sqrt{\alpha_n}x_{n - 1},\beta_nI)$，那么<script type="math/tex; mode=display">H(q(x_{0:N})) = H(q(x_0))+\frac{d}{2}\sum_{n = 1}^{N}\log(2\pi e\beta_n)</script></li>
+</ul>
+<p><strong>证明</strong>：根据引理4，我们有</p>
+<script type="math/tex; mode=display">H(q(x_{0:N})) = H(q(x_0))+\sum_{n = 1}^{N}\mathbb{E}_qH(q(x_n|x_{n - 1})) = H(q(x_0))+\sum_{n = 1}^{N}\frac{d}{2}\log(2\pi e\beta_n)</script><p>证毕。</p>
+<ul>
+<li><strong>引理6</strong> （条件马尔可夫链的熵）：假设$q(x_{1:N}|x_0)$是马尔可夫链，那么<script type="math/tex; mode=display">H(q(x_{0:N})) = H(q(x_0))+\mathbb{E}_qH(q(x_N|x_0))+\sum_{n = 2}^{N}\mathbb{E}_qH(q(x_{n - 1}|x_n,x_0))</script></li>
+</ul>
+<p><strong>证明</strong>：根据引理4，我们有</p>
+<script type="math/tex; mode=display">\begin{align*}
+H(q(x_{0:N}))&=H(q(x_0))+\mathbb{E}_qH(q(x_{1:N}|x_0))\\
+&=H(q(x_0))+\mathbb{E}_qH(q(x_N|x_0))+\sum_{n = 2}^{N}\mathbb{E}_qH(q(x_{n - 1}|x_n,x_0))
+\end{align*}</script><p>证毕。</p>
+<ul>
+<li><strong>引理7</strong> （广义DDPM正向过程的熵）：假设$q(x_{1:N}|x_0)$是马尔可夫链，$q(x_N|x_0)$是协方差为$\bar{\beta}_NI$的高斯分布，$q(x_{n - 1}|x_n,x_0)$是协方差为$\lambda_n^2I$的高斯分布，那么<script type="math/tex; mode=display">H(q(x_{0:N})) = H(q(x_0))+\frac{d}{2}\log(2\pi e\bar{\beta}_N)+\frac{d}{2}\sum_{n = 2}^{N}\log(2\pi e\lambda_n^2)</script></li>
+</ul>
+<p><strong>证明</strong>：直接由引理6推导得出。证毕。</p>
+<ul>
+<li><strong>引理8</strong> （与马尔可夫链的KL散度）：假设$q(x_{0:N})$是一个概率分布，$p(x_{0:N}) = p(x_N)\prod_{n = 1}^{N}p(x_{n - 1}|x_n)$是一个马尔可夫链，那么我们有<script type="math/tex; mode=display">\mathbb{E}_qD_{KL}(q(x_{0:N - 1}|x_N)||p(x_{0:N - 1}|x_N))=\sum_{n = 1}^{N}\mathbb{E}_qD_{KL}(q(x_{n - 1}|x_n)||p(x_{n - 1}|x_n)) + c</script>其中$c=\sum_{n = 1}^{N}\mathbb{E}_qH(q(x_{n - 1}|x_n))-\mathbb{E}_qH(q(x_{0:N - 1}|x_N))$仅与$q$有关。特别地，如果$q(x_{0:N})$也是一个马尔可夫链，那么$c = 0$。</li>
+</ul>
+<p><strong>证明</strong>：</p>
+<script type="math/tex; mode=display">\begin{align*}
+\mathbb{E}_qD_{KL}(q(x_{0:N - 1}|x_N)||p(x_{0:N - 1}|x_N))&=-\mathbb{E}_q\log p(x_{0:N - 1}|x_N)-\mathbb{E}_qH(q(x_{0:N - 1}|x_N))\\
+&=-\sum_{n = 1}^{N}\mathbb{E}_q\log p(x_{n - 1}|x_n)-\mathbb{E}_qH(q(x_{0:N - 1}|x_N))\\
+&=\sum_{n = 1}^{N}\mathbb{E}_qD_{KL}(q(x_{n - 1}|x_n)||p(x_{n - 1}|x_n))+\sum_{n = 1}^{N}\mathbb{E}_qH(q(x_{n - 1}|x_n))-\mathbb{E}_qH(q(x_{0:N - 1}|x_N))
+\end{align*}</script><p>令$c=\sum_{n = 1}^{N}\mathbb{E}_qH(q(x_{n - 1}|x_n))-\mathbb{E}_qH(q(x_{0:N - 1}|x_N))$，则</p>
+<script type="math/tex; mode=display">\mathbb{E}_qD_{KL}(q(x_{0:N - 1}|x_N)||p(x_{0:N - 1}|x_N))=\sum_{n = 1}^{N}\mathbb{E}_qD_{KL}(q(x_{n - 1}|x_n)||p(x_{n - 1}|x_n)) + c</script><p>如果$q(x_{0:N})$也是一个马尔可夫链，根据引理4，我们有$c = 0$。证毕。</p>
+<ul>
+<li><strong>引理9</strong> （具有高斯转移的最优马尔可夫反向过程等价于矩匹配）：假设$q(x_{0:N})$是概率密度函数，$p(x_{0:N})=\prod_{n = 1}^{N}p(x_{n - 1}|x_n)p(x_N)$是一个高斯马尔可夫链，且$p(x_{n - 1}|x_n)=\mathcal{N}(x_{n - 1}|\mu_n(x_n),\sigma_n^2I)$，那么联合KL散度优化问题<script type="math/tex; mode=display">\min_{\{\mu_n,\sigma_n^2\}_{n = 1}^{N}}D_{KL}(q(x_{0:N})||p(x_{0:N}))</script>的最优解为<script type="math/tex; mode=display">\mu_n^*(x_n)=\mathbb{E}_{q(x_{n - 1}|x_n)}[x_{n - 1}],\sigma_n^{*2}=\mathbb{E}_{q_n(x_n)}\frac{\text{tr}(Cov_{q(x_{n - 1}|x_n)}[x_{n - 1}])}{d}</script>这使得$p(x_{n - 1}|x_n)$与$q(x_{n - 1}|x_n)$的前两阶矩相匹配。相应的最优KL散度为<script type="math/tex; mode=display">D_{KL}(q(x_{0:N})||p^*(x_{0:N})) = H(q(x_N),p(x_N))+\frac{d}{2}\sum_{n = 1}^{N}\log(2\pi e\sigma_n^{*2})-H(q(x_{0:N}))</script></li>
+</ul>
+<p><strong>注</strong>：引理9没有假设$q(x_{0:N})$的形式，因此它可以应用于更一般的高斯模型，例如具有高斯解码器的多层变分自编码器（Rezende等人，2014；Burda等人，2015）。在这种情况下，$q(x_{1:N}|x_0)$是多层变分自编码器的分层编码器。</p>
+<p><strong>证明</strong>：根据引理8，我们有</p>
+<script type="math/tex; mode=display">D_{KL}(q(x_{0:N})||p(x_{0:N})) = D_{KL}(q(x_N)||p(x_N))+\sum_{n = 1}^{N}\mathbb{E}_qD_{KL}(q(x_{n - 1}|x_n)||p(x_{n - 1}|x_n)) + c</script><p>其中$c=\sum_{n = 1}^{N}\mathbb{E}_qH(q(x_{n - 1}|x_n))-\mathbb{E}_qH(q(x_{0:N - 1}|x_N))$。</p>
+<p>由于$\mathbb{E}_qD_{KL}(q(x_{n - 1}|x_n)||p(x_{n - 1}|x_n))$仅与$\mu_n(\cdot)$和$\sigma_n^2$有关，联合KL散度优化问题可以分解为$n$个独立的优化子问题：</p>
+<script type="math/tex; mode=display">\min_{\mu_n,\sigma_n^2}\mathbb{E}_qD_{KL}(q(x_{n - 1}|x_n)||p(x_{n - 1}|x_n)),1\leq n\leq N</script><script type="math/tex; mode=display">\mathcal{F}(\sigma_n^2)=\frac{1}{2}\left(\sigma_n^{-2}\mathbb{E}_q\text{tr}(Cov_{q(x_{n - 1}|x_n)}[x_{n - 1}])+d\log\sigma_n^2\right)</script><script type="math/tex; mode=display">\mathcal{G}(\sigma_n^2,\mu_n)=\frac{1}{2}\sigma_n^{-2}\mathbb{E}_q\|\mathbb{E}_{q(x_{n - 1}|x_n)}[x_{n - 1}]-\mu_n(x_n)\|^2</script><p>根据引理2，我们有</p>
+<script type="math/tex; mode=display">\begin{align*}
+\mathbb{E}_qD_{KL}(q(x_{n - 1}|x_n)||p(x_{n - 1}|x_n))&=\mathbb{E}_qD_{KL}(\mathcal{N}(x_{n - 1}|\mathbb{E}_{q(x_{n - 1}|x_n)}[x_{n - 1}],Cov_{q(x_{n - 1}|x_n)}[x_{n - 1}])||p(x_{n - 1}|x_n))\\
+&+\mathbb{E}_qH(\mathcal{N}(x_{n - 1}|\mathbb{E}_{q(x_{n - 1}|x_n)}[x_{n - 1}],Cov_{q(x_{n - 1}|x_n)}[x_{n - 1}]))-\mathbb{E}_qH(q(x_{n - 1}|x_n))\\
+&=\mathcal{F}(\sigma_n^2)+\mathcal{G}(\sigma_n^2,\mu_n)+c'
+\end{align*}</script><p>其中</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+  \mathcal{F}(\sigma_{n}^{2}) = \frac{1}{2}\sigma_{n}^{-2}\mathbb{E}_{q}\text{tr}(\text{Cov}_{q(x_{n - 1}|x_{n})}[x_{n - 1}]) + d\log\sigma_{n}^{2} \\
+ \mathcal{G}(\sigma_{n}^{2},\mu_{n}) = \frac{1}{2}\sigma_{n}^{-2}\mathbb{E}_{q}\|\mathbb{E}_{q(x_{n - 1}|x_{n})}[x_{n - 1}] - \mu_{n}(x_{n})\|^{2}
+\end{align*}</script><p>并且$c’=\frac{d}{2}\log(2\pi)-\mathbb{E}_qH(q(x_{n - 1}|x_n))$。当</p>
+<script type="math/tex; mode=display">\|\mathbb{E}_{q(x_{n - 1}|x_n)}[x_{n - 1}]-\mu_n(x_n)\|^2 = 0</script><p>时，可得到最优的$\mu_n^*(x_n)$。</p>
+<p>因此，<script type="math/tex">\mu_n^*(x_n)=\mathbb{E}_{q(x_{n - 1}|x_n)}[x_{n - 1}]</script>。在这种情况下，<script type="math/tex">\mathcal{G}(\sigma_n^2,\mu_n^*) = 0</script>，我们仅需考虑$\mathcal{F}(\sigma_n^2)$来求最优的$\sigma_n^{*2}$。通过计算$\mathcal{F}$的梯度可知，当</p>
+<script type="math/tex; mode=display">\sigma_n^{*2}=\mathbb{E}_q\frac{\text{tr}(Cov_{q(x_{n - 1}|x_n)}[x_{n - 1}])}{d}</script><p>时，$\mathcal{F}$取得最小值。</p>
+<p>在最优情况下，<script type="math/tex">\mathcal{F}(\sigma_n^{*2})=\frac{d}{2}(1+\log\sigma_n^{*2})</script>，且</p>
+<script type="math/tex; mode=display">\mathbb{E}_qD_{KL}(q(x_{n - 1}|x_n)||p^*(x_{n - 1}|x_n))=\frac{d}{2}\log(2\pi e\sigma_n^{*2})-\mathbb{E}_qH(q(x_{n - 1}|x_n))</script><p>因此，</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+&D_{KL}(q(x_{0:N})||p^*(x_{0:N})) \\
+=&D_{KL}(q(x_N)||p(x_N)) + \sum_{n = 1}^{N}\frac{d}{2}\log(2\pi e\sigma_{n}^{*2}) - \sum_{n = 1}^{N}\mathbb{E}_{q}H(q(x_{n - 1}|x_{n})) \\
+&+ \sum_{n = 1}^{N}\mathbb{E}_{q}H(q(x_{n - 1}|x_{n})) - (H(q(x_{0:N})) - H(q(x_N))) \\
+=&H(q(x_N),p(x_N)) + \sum_{n = 1}^{N}\frac{d}{2}\log(2\pi e\sigma_{n}^{*2}) - H(q(x_{0:N}))
+\end{align*}</script><p><strong>引理10（边际分数函数）：</strong>假设$q(v, w)$是一个概率分布，那么</p>
+<script type="math/tex; mode=display">\nabla_{w} \log q(w)=\mathbb{E}_{q(v | w)} \nabla_{w} \log q(w | v)</script><p><strong>证明：</strong>根据$\mathbb{E}_{q(v | w)} \nabla_{w} \log q(v | w)=\int \nabla_{w} q(v | w) \mathrm{d}v=\nabla_{w} \int q(v | w) \mathrm{d}v = 0$，我们有</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+\nabla_{w} \log q(w) &=\nabla_{w} \log q(w)+\mathbb{E}_{q(v | w)} \nabla_{w} \log q(v | w)\\
+&=\mathbb{E}_{q(v | w)} \nabla_{w} \log q(v, w)=\mathbb{E}_{q(v | w)} \nabla_{w} \log q(w | v)。
+\end{align*}</script><p>证毕。</p>
+<p><strong>引理11（条件期望和协方差的分数函数表示）：</strong>假设$q(v, w)=q(v)q(w|v)$，其中$q(w|v)=\mathcal{N}(w|\sqrt{\alpha}v, \beta I)$，那么</p>
+<script type="math/tex; mode=display">\mathbb{E}_{q(v|w)}[v]=\frac{1}{\sqrt{\alpha}}(w + \beta\nabla_{w}\log q(w))</script><script type="math/tex; mode=display">\mathbb{E}_{q(w)}Cov_{q(v|w)}[v]=\frac{\beta}{\alpha}\left(I - \beta\mathbb{E}_{q(w)}[\nabla_{w}\log q(w)\nabla_{w}\log q(w)^{\top}]\right)</script><script type="math/tex; mode=display">\mathbb{E}_{q(w)}\frac{\text{tr}(Cov_{q(v|w)}[v])}{d}=\frac{\beta}{\alpha}\left(1 - \beta\mathbb{E}_{q(w)}\frac{\|\nabla_{w}\log q(w)\|^{2}}{d}\right)</script><p><strong>证明：</strong>根据引理10，我们有</p>
+<script type="math/tex; mode=display">\nabla_{w}\log q(w)=\mathbb{E}_{q(v | w)}\nabla_{w}\log q(w | v)=-\mathbb{E}_{q(v | w)}\frac{w - \sqrt{\alpha}v}{\beta}</script><p>因此，$\mathbb{E}_{q(v | w)}[v]=\frac{1}{\sqrt{\alpha}}(w + \beta\nabla_{w}\log q(w))$ 。此外，我们有</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+&\mathbb{E}_{q(w)}\text{Cov}_{q(v|w)}[v]=\frac{\beta^{2}}{\alpha}\mathbb{E}_{q(w)}\text{Cov}_{q(v|w)}\left[\frac{\boldsymbol{w}-\sqrt{\alpha}\boldsymbol{v}}{\beta}\right]\\
+=&\frac{\beta^{2}}{\alpha}\mathbb{E}_{q(w)}\left(\mathbb{E}_{q(v|w)}\left(\frac{\boldsymbol{w}-\sqrt{\alpha}\boldsymbol{v}}{\beta}\right)\left(\frac{\boldsymbol{w}-\sqrt{\alpha}\boldsymbol{v}}{\beta}\right)^{\top}-\mathbb{E}_{q(v|w)}\left[\frac{\boldsymbol{w}-\sqrt{\alpha}\boldsymbol{v}}{\beta}\right]\mathbb{E}_{q(v|w)}\left[\frac{\boldsymbol{w}-\sqrt{\alpha}\boldsymbol{v}}{\beta}\right]^{\top}\right)\\
+=&\frac{\beta^{2}}{\alpha}\left(\frac{1}{\beta^{2}}\mathbb{E}_{q(v)}\mathbb{E}_{q(w|v)}(\boldsymbol{w}-\sqrt{\alpha}\boldsymbol{v})(\boldsymbol{w}-\sqrt{\alpha}\boldsymbol{v})^{\top}-\mathbb{E}_{q(w)}\nabla_{\boldsymbol{w}}\log q(\boldsymbol{w})\nabla_{\boldsymbol{w}}\log q(\boldsymbol{w})^{\top}\right)\\
+=&\frac{\beta^{2}}{\alpha}\left(\frac{1}{\beta^{2}}\mathbb{E}_{q(v)}\text{Cov}_{q(w|v)}\boldsymbol{w}-\mathbb{E}_{q(w)}\nabla_{\boldsymbol{w}}\log q(\boldsymbol{w})\nabla_{\boldsymbol{w}}\log q(\boldsymbol{w})^{\top}\right)\\
+=&\frac{\beta^{2}}{\alpha}\left(\frac{1}{\beta^{2}}\mathbb{E}_{q(v)}\beta\boldsymbol{I}-\mathbb{E}_{q(w)}\nabla_{\boldsymbol{w}}\log q(\boldsymbol{w})\nabla_{\boldsymbol{w}}\log q(\boldsymbol{w})^{\top}\right)\\
+=&\frac{\beta^{2}}{\alpha}\left(\frac{1}{\beta}\boldsymbol{I}-\mathbb{E}_{q(w)}\nabla_{\boldsymbol{w}}\log q(\boldsymbol{w})\nabla_{\boldsymbol{w}}\log q(\boldsymbol{w})^{\top}\right)=\frac{\beta}{\alpha}\left(\boldsymbol{I}-\beta\mathbb{E}_{q(w)}\nabla_{\boldsymbol{w}}\log q(\boldsymbol{w})\nabla_{\boldsymbol{w}}\log q(\boldsymbol{w})^{\top}\right)
+\end{align*}</script><p>对其取迹，我们有</p>
+<script type="math/tex; mode=display">\mathbb{E}_{q(w)}\frac{\text{tr}(\text{Cov}_{q(v | w)}[v])}{d}=\frac{\beta}{\alpha}\left(1 - \beta\mathbb{E}_{q(w)}\frac{\|\nabla_{w}\log q(w)\|^{2}}{d}\right)</script><p><strong>引理12（有界分布的有界协方差）：</strong>假设$q(\boldsymbol{x})$是在$[a,b]^d$上的有界分布，那么$\frac{\text{tr}(\text{Cov}_{q(\boldsymbol{x})}[\boldsymbol{x}])}{d}\leq(\frac{b - a}{2})^2$。</p>
+<p>证明：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+\frac{\text{tr}(\text{Cov}_{q(\boldsymbol{x})}[\boldsymbol{x}])}{d}&=\frac{\text{tr}(\text{Cov}_{q(\boldsymbol{x})}[\boldsymbol{x}-\frac{a + b}{2}])}{d}\\
+&=\frac{\mathbb{E}_{q(\boldsymbol{x})}[\|\boldsymbol{x}-\frac{a + b}{2}\|^2]-\|\mathbb{E}[\boldsymbol{x}]-\frac{a + b}{2}\|^2}{d}\\
+&\leq\frac{\mathbb{E}_{q(\boldsymbol{x})}[\|\boldsymbol{x}-\frac{a + b}{2}\|^2]}{d}\leq(\frac{b - a}{2})^2
+\end{align*}</script><p><strong>引理13（将$q(x_{n - 1}|x_{n})$的矩转换为$q(x_{0}|x_{n})$的矩）</strong>公式（4）的最优解$\mu_{n}^{<em>}(x_{n})$和$\sigma_{n}^{</em>2}$可以用$q(x_{0}|x_{n})$的前两阶矩来表示：</p>
+<script type="math/tex; mode=display">\mu_{n}^{*}(x_{n}) = \tilde{\mu}_{n}(x_{n},\mathbb{E}_{q(x_{0}|x_{n})}x_{0})</script><script type="math/tex; mode=display">\sigma_{n}^{*2}=\lambda_{n}^{2}+\left(\sqrt{\overline{\alpha}_{n - 1}}-\sqrt{\overline{\beta}_{n - 1}}-\lambda_{n}\cdot\sqrt{\frac{\overline{\alpha}_{n}}{\overline{\beta}_{n}}}\right)^{2}\mathbb{E}_{q_{n}(x_{n})}\frac{\text{tr}(\text{Cov}_{q(x_{0}|x_{n})}[x_{0}])}{d}</script><p>其中$q_{n}(x_{n})$是正向过程在时间步$n$的边缘分布，$d$是数据的维度。</p>
+<p><strong>证明</strong><br>根据引理9，在KL散度最小化下的最优$\mu_{n}^{<em>}$和$\sigma_{n}^{</em>2}$为：</p>
+<script type="math/tex; mode=display">\mu_{n}^{*}(x_{n})=\mathbb{E}_{q(x_{n - 1}|x_{n})}[x_{n - 1}],\quad \sigma_{n}^{*2}=\mathbb{E}_{q_{n}(x_{n})}\frac{\text{tr}(\text{Cov}_{q(x_{n - 1}|x_{n})}[x_{n - 1}])}{d}</script><p>我们进一步推导$\mu_{n}^{*}$。由于$\tilde{\mu}_{n}(x_{n},x_{0})$关于$x_{0}$是线性的，我们有：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+\mu_{n}^{*}(x_{n})&=\mathbb{E}_{q(x_{n - 1}|x_{n})}[x_{n - 1}]=\mathbb{E}_{q(x_{0}|x_{n})}\mathbb{E}_{q(x_{n - 1}|x_{n},x_{0})}[x_{n - 1}]\\
+&=\mathbb{E}_{q(x_{0}|x_{n})}\tilde{\mu}_{n}(x_{n},x_{0})=\tilde{\mu}_{n}(x_{n},\mathbb{E}_{q(x_{0}|x_{n})}x_{0})
+\end{align*}</script><p>然后我们考虑$\sigma_{n}^{*2}$。根据总方差定律，我们有：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+&\text{Cov}_{q(x_{n - 1}|x_{n})}[x_{n - 1}]=\mathbb{E}_{q(x_{0}|x_{n})}\text{Cov}_{q(x_{n - 1}|x_{n},x_{0})}[x_{n - 1}]+\text{Cov}_{q(x_{0}|x_{n})}\mathbb{E}_{q(x_{n - 1}|x_{n},x_{0})}[x_{n - 1}]\\
+&=\lambda_{n}^{2}I+\text{Cov}_{q(x_{0}|x_{n})}\tilde{\mu}_{n}(x_{n},x_{0})=\lambda_{n}^{2}I+\left(\sqrt{\overline{\alpha}_{n - 1}}-\sqrt{\overline{\beta}_{n - 1}}-\lambda_{n}\cdot\sqrt{\frac{\overline{\alpha}_{n}}{\overline{\beta}_{n}}}\right)^{2}\text{Cov}_{q(x_{0}|x_{n})}[x_{0}]
+\end{align*}</script><p>因此，</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+\sigma_{n}^{*2}&=\mathbb{E}_{q_{n}(x_{n})}\frac{\text{tr}(\text{Cov}_{q(x_{n - 1}|x_{n})}[x_{n - 1}])}{d}\\
+&=\lambda_{n}^{2}+\left(\sqrt{\overline{\alpha}_{n - 1}}-\sqrt{\overline{\beta}_{n - 1}}-\lambda_{n}\cdot\sqrt{\frac{\overline{\alpha}_{n}}{\overline{\beta}_{n}}}\right)^{2}\mathbb{E}_{q_{n}(x_{n})}\frac{\text{tr}(\text{Cov}_{q(x_{0}|x_{n})}[x_{0}])}{d}
+\end{align*}</script><h4 id="A-2-定理1的证明"><a href="#A-2-定理1的证明" class="headerlink" title="A.2 定理1的证明"></a>A.2 定理1的证明</h4><p><strong>定理1（最优反向均值和方差）：</strong>在公式（4）中的最优反向均值$\mu_{n}^{<em>}(x_{n})$和方差$\sigma_{n}^{</em>2}$ 为</p>
+<script type="math/tex; mode=display">\mu_{n}^{*}(x_{n})=\frac{1}{\sqrt{\alpha_{n}}}\left(x_{n}+\lambda_{n}^{2}\nabla_{x_{n}}\log q_{n}(x_{n})\right)</script><script type="math/tex; mode=display">\sigma_{n}^{*2}=\lambda_{n}^{2}+\left(\sqrt{\overline{\alpha}_{n - 1}}-\sqrt{\overline{\beta}_{n - 1}-\lambda_{n}^{2}}\cdot\sqrt{\frac{\overline{\alpha}_{n}}{\overline{\beta}_{n}}}\right)^{2}\mathbb{E}_{q_{n}(x_{n})}\frac{\text{tr}(\text{Cov}_{q(x_{0}|x_{n})}[x_{0}])}{d}</script><p>其中$q_{n}(x_{n})$是正向过程在时间步$n$的边缘分布。</p>
+<p><strong>证明</strong>：根据引理9，我们知道最优的$\mu_{n}^{<em>}$和$\sigma_{n}^{</em>2}$由下式给出</p>
+<script type="math/tex; mode=display">\mu_{n}^{*}(x_{n})=\mathbb{E}_{q(x_{n - 1}|x_{n})}[x_{n - 1}],\sigma_{n}^{*2}=\mathbb{E}_{q_{n}(x_{n})}\frac{\text{tr}(\text{Cov}_{q(x_{n - 1}|x_{n})}[x_{n - 1}])}{d}</script><p>我们首先推导$\mu_{n}^{*}$。根据贝叶斯定理，我们有</p>
+<script type="math/tex; mode=display">q(x_{n - 1}|x_{n})=\frac{q(x_{n}|x_{n - 1})q(x_{n - 1})}{q(x_{n})}</script><p>由于正向过程$q(x_{n}|x_{n - 1})=\mathcal{N}(x_{n}|\sqrt{\alpha_{n}}x_{n - 1},\beta_{n}I)$ 且$q(x_{n - 1})=\mathcal{N}(x_{n - 1}|\sqrt{\overline{\alpha}_{n - 1}}x_{0},\overline{\beta}_{n - 1}I)$，我们可以计算出$q(x_{n - 1}|x_{n})$也是高斯分布。</p>
+<p>我们可以将$q(x_{n - 1}|x_{n})$的均值$\mu_{n}^{*}(x_{n})$表示为</p>
+<script type="math/tex; mode=display">\mu_{n}^{*}(x_{n})=\frac{1}{\sqrt{\alpha_{n}}}\left(x_{n}+\lambda_{n}^{2}\nabla_{x_{n}}\log q_{n}(x_{n})\right)</script><p>这是通过使用高斯分布的性质和分数函数（如引理10和引理11中所推导的）得到的。</p>
+<p>接下来，我们推导$\sigma_{n}^{*2}$。根据总方差定律，我们有</p>
+<script type="math/tex; mode=display">\text{Cov}_{q(x_{n - 1}|x_{n})}[x_{n - 1}]=\mathbb{E}_{q(x_{0}|x_{n})}\text{Cov}_{q(x_{n - 1}|x_{n},x_{0})}[x_{n - 1}]+\text{Cov}_{q(x_{0}|x_{n})}\mathbb{E}_{q(x_{n - 1}|x_{n},x_{0})}[x_{n - 1}]</script><p>由于$q(x_{n - 1}|x_{n},x_{0})$是高斯分布，我们可以计算出</p>
+<script type="math/tex; mode=display">\text{Cov}_{q(x_{n - 1}|x_{n},x_{0})}[x_{n - 1}]=\lambda_{n}^{2}I</script><p>并且$\mathbb{E}_{q(x_{n - 1}|x_{n},x_{0})}[x_{n - 1}]$关于$x_{0}$是线性的。通过一些代数运算（如引理13中所示），我们得到</p>
+<script type="math/tex; mode=display">\sigma_{n}^{*2}=\lambda_{n}^{2}+\left(\sqrt{\overline{\alpha}_{n - 1}}-\sqrt{\overline{\beta}_{n - 1}-\lambda_{n}^{2}}\cdot\sqrt{\frac{\overline{\alpha}_{n}}{\overline{\beta}_{n}}}\right)^{2}\mathbb{E}_{q_{n}(x_{n})}\frac{\text{tr}(\text{Cov}_{q(x_{0}|x_{n})}[x_{0}])}{d}</script><p>证毕。</p>
+<h4 id="A-3-定理2的证明"><a href="#A-3-定理2的证明" class="headerlink" title="A.3 定理2的证明"></a>A.3 定理2的证明</h4><p><strong>定理2（最优反向方差的界限）：</strong>最优反向方差$\sigma_{n}^{*2}$具有以下上下界：</p>
+<script type="math/tex; mode=display">\lambda_{n}^{2}\leq\sigma_{n}^{*2}\leq\lambda_{n}^{2}+\left(\sqrt{\overline{\alpha}_{n}}-\sqrt{\overline{\beta}_{n}-\lambda_{n}^{2}}\right)^{2}</script><p>如果我们进一步假设$q(x_{0})$是在$[a,b]^{d}$上的有界分布（其中$d$是数据维度），那么$\sigma_{n}^{*2}$还可以进一步被上界约束为：</p>
+<script type="math/tex; mode=display">\sigma_{n}^{*2}\leq\lambda_{n}^{2}+\left(\sqrt{\overline{\alpha}_{n - 1}}-\sqrt{\overline{\beta}_{n - 1}-\lambda_{n}^{2}}\cdot\sqrt{\frac{\overline{\alpha}_{n}}{\overline{\beta}_{n}}}\right)^{2}\left(\frac{b - a}{2}\right)^{2}</script><p><strong>证明</strong>：根据引理13和定理1，我们有</p>
+<script type="math/tex; mode=display">\lambda_{n}^{2}\leq\sigma_{n}^{*2}\leq\lambda_{n}^{2}+\left(\sqrt{\frac{\overline{\beta}_{n}}{\alpha_{n}}}-\sqrt{\overline{\beta}_{n - 1}-\lambda_{n}^{2}}\right)^{2}</script><p>如果我们进一步假设$q(x_{0})$是在$[a,b]^d$上的有界分布，那么$q(x_{0}|x_{n})$ 也是在$[a,b]^d$上的有界分布。根据引理12，我们有</p>
+<script type="math/tex; mode=display">\mathbb{E}_{q(x_{n})}\frac{\text{tr}(\text{Cov}_{q(x_{0}|x_{n})}[x_{0}])}{d}\leq\left(\frac{b - a}{2}\right)^{2}</script><p>结合引理13，我们有</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+\sigma_{n}^{*2}&=\lambda_{n}^{2}+\left(\sqrt{\overline{\alpha}_{n - 1}}-\sqrt{\overline{\beta}_{n - 1}-\lambda_{n}^{2}}\cdot\sqrt{\frac{\overline{\alpha}_{n}}{\overline{\beta}_{n}}}\right)^{2}\mathbb{E}_{q(x_{n})}\frac{\text{tr}(\text{Cov}_{q(x_{0}|x_{n})}[x_{0}])}{d}\\
+&\leq\lambda_{n}^{2}+\left(\sqrt{\overline{\alpha}_{n - 1}}-\sqrt{\overline{\beta}_{n - 1}-\lambda_{n}^{2}}\cdot\sqrt{\frac{\overline{\alpha}_{n}}{\overline{\beta}_{n}}}\right)^{2}\left(\frac{b - a}{2}\right)^{2}
+\end{align*}</script><h4 id="A-4-分解后的最优库尔贝克-莱布勒散度（KL-散度）的证明"><a href="#A-4-分解后的最优库尔贝克-莱布勒散度（KL-散度）的证明" class="headerlink" title="A.4 分解后的最优库尔贝克 - 莱布勒散度（KL 散度）的证明"></a>A.4 分解后的最优库尔贝克 - 莱布勒散度（KL 散度）的证明</h4><p><strong>定理3（分解后的最优库尔贝克 - 莱布勒散度（KL散度），证明见附录A.4）</strong></p>
+<p>较短的正向过程与其最优反向过程之间的KL散度为</p>
+<script type="math/tex; mode=display">D_{KL}(q(x_{0},x_{\tau_1},\cdots,x_{\tau_K})||p^*(x_{0},x_{\tau_1},\cdots,x_{\tau_K})) = \frac{d}{2}\sum_{k = 2}^{K}J(\tau_{k - 1},\tau_{k})+c</script><p>其中$J(\tau_{k - 1},\tau_{k})=\log\frac{\sigma_{\tau_{k - 1}|\tau_{k}}^{*2}}{\lambda_{\tau_{k - 1}|\tau_{k}}^{2}}$，$c$是一个与轨迹$\tau$无关的常数。</p>
+<p><strong>证明：</strong>根据引理7和引理9，我们有：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+&D_{KL}(q(x_{0}, x_{\tau_1}, \cdots, x_{\tau_K})||p^*(x_{0}, x_{\tau_1}, \cdots, x_{\tau_K}))\\
+=&\mathbb{E}_q D_{KL}(q(x_{0}|x_{\tau_1}, \cdots, x_{\tau_K})||p^*(x_{0}|x_1)) + D_{KL}(q(x_{\tau_1}, \cdots, x_{\tau_K})||p^*(x_{\tau_1}, \cdots, x_{\tau_K}))\\
+=&\mathbb{E}_q D_{KL}(q(x_{0}|x_{\tau_1}, \cdots, x_{\tau_K})||p^*(x_{0}|x_1)) + H(q(x_N), p(x_N))\\
+&+\frac{d}{2}\sum_{k = 2}^{K}\log(2\pi e\sigma_{\tau_{k - 1}|\tau_{k}}^{*2}) - H(q(x_{\tau_1}, \cdots, x_{\tau_N}))\\
+=&-\mathbb{E}_q \log p^*(x_{0}|x_1) + H(q(x_N), p(x_N)) + \frac{d}{2}\sum_{k = 2}^{K}\log(2\pi e\sigma_{\tau_{k - 1}|\tau_{k}}^{*2}) - H(q(x_{0}, x_{\tau_1}, \cdots, x_{\tau_K}))\\
+=&-\mathbb{E}_q \log p^*(x_{0}|x_1) + H(q(x_N), p(x_N)) + \frac{d}{2}\sum_{k = 2}^{K}\log(2\pi e\sigma_{\tau_{k - 1}|\tau_{k}}^{*2})\\
+&- H(q(x_0)) - \frac{d}{2}\log(2\pi e\overline{\beta}_N) - \frac{d}{2}\sum_{k = 2}^{K}\log(2\pi e\lambda_{\tau_{k - 1}|\tau_{k}}^{2})\\
+=&-\mathbb{E}_q \log p^*(x_{0}|x_1) + H(q(x_N), p(x_N)) + \frac{d}{2}\sum_{k = 2}^{K}\log\frac{\sigma_{\tau_{k - 1}|\tau_{k}}^{*2}}{\lambda_{\tau_{k - 1}|\tau_{k}}^{2}} - H(q(x_0)) - \frac{d}{2}\log(2\pi e\overline{\beta}_N)
+\end{align*}</script><p>令<script type="math/tex">J(\tau_{k - 1}, \tau_{k}) = \log\frac{\sigma_{\tau_{k - 1}|\tau_{k}}^{*2}}{\lambda_{\tau_{k - 1}|\tau_{k}}^{2}}</script> ，且<script type="math/tex">c = -\mathbb{E}_q \log p^*(x_{0}|x_1) + H(q(x_N), p(x_N)) - H(q(x_0)) - \frac{d}{2}\log(2\pi e\overline{\beta}_N)</script>，那么$c$是一个与轨迹$\tau$无关的常数，并且</p>
+<script type="math/tex; mode=display">D_{KL}(q(x_{0}, x_{\tau_1}, \cdots, x_{\tau_K})||p^*(x_{0}, x_{\tau_1}, \cdots, x_{\tau_K})) = \frac{d}{2}\sum_{k = 2}^{K}J(\tau_{k - 1}, \tau_{k}) + c</script><h3 id="A-5-第5节的正式结果及其证明"><a href="#A-5-第5节的正式结果及其证明" class="headerlink" title="A.5 第5节的正式结果及其证明"></a>A.5 第5节的正式结果及其证明</h3><p>在这里，我们给出第5节中提到的分数函数与数据协方差矩阵之间关系的正式结果。</p>
+<p><strong>命题1</strong>（证明见附录A.5）：数据分布的期望条件协方差矩阵由分数函数$\nabla_{x_n} \log q_n(x_n)$ 确定，如下所示：</p>
+<script type="math/tex; mode=display">\mathbb{E}_{q(x_n)}\text{Cov}_{q(x_0|x_n)}[x_0] = \frac{\overline{\beta}_n}{\overline{\alpha}_n}\left(\boldsymbol{I}-\overline{\beta}_n\mathbb{E}_{q_n(x_n)}\left[\nabla_{x_n} \log q_n(x_n)\nabla_{x_n} \log q_n(x_n)^{\top}\right]\right)\quad(15)</script><p>根据总方差定律，它对数据协方差矩阵有贡献：</p>
+<script type="math/tex; mode=display">\text{Cov}_{q(x_0)}[x_0]=\mathbb{E}_{q(x_n)}\text{Cov}_{q(x_0|x_n)}[x_0]+\text{Cov}_{q(x_n)}\mathbb{E}_{q(x_0|x_n)}[x_0]\quad(16)</script><p><strong>证明</strong>：由于$q(x_n|x_0)=\mathcal{N}(x_n|\sqrt{\overline{\alpha}_n}x_0,\overline{\beta}_n\boldsymbol{I})$，根据引理11，我们有</p>
+<script type="math/tex; mode=display">\mathbb{E}_{q(x_n)}\text{Cov}_{q(x_0|x_n)}[x_0] = \frac{\overline{\beta}_n}{\overline{\alpha}_n}\left(\boldsymbol{I}-\overline{\beta}_n\mathbb{E}_{q_n(x_n)}\left[\nabla_{x_n} \log q_n(x_n)\nabla_{x_n} \log q_n(x_n)^{\top}\right]\right)</script><p>总方差定律是统计学中的经典结果。为了内容完整，我们在此给出证明：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+&\mathbb{E}_{q(x_n)}\text{Cov}_{q(x_0|x_n)}[x_0]+\text{Cov}_{q(x_n)}\mathbb{E}_{q(x_0|x_n)}[x_0]\\
+=&\mathbb{E}_{q(x_n)}\left(\mathbb{E}_{q(x_0|x_n)}[x_0x_0^{\top}]-\mathbb{E}_{q(x_0|x_n)}[x_0]\mathbb{E}_{q(x_0|x_n)}[x_0]^{\top}\right)\\
+&+\mathbb{E}_{q(x_n)}\left(\mathbb{E}_{q(x_0|x_n)}[x_0]\mathbb{E}_{q(x_0|x_n)}[x_0]^{\top}\right)-\left(\mathbb{E}_{q(x_n)}\mathbb{E}_{q(x_0|x_n)}[x_0]\right)\left(\mathbb{E}_{q(x_n)}\mathbb{E}_{q(x_0|x_n)}[x_0]\right)^{\top}\\
+=&\mathbb{E}_{q(x_0)}[x_0x_0^{\top}]-\mathbb{E}_{q(x_0)}[x_0]\mathbb{E}_{q(x_0)}[x_0]^{\top}=\text{Cov}_{q(x_0)}[x_0]
+\end{align*}</script><h3 id="B-求解最小成本路径问题的动态规划算法"><a href="#B-求解最小成本路径问题的动态规划算法" class="headerlink" title="B 求解最小成本路径问题的动态规划算法"></a>B 求解最小成本路径问题的动态规划算法</h3><p>给定一个成本函数$J(s, t)$，其中$1 \leq s &lt; t$且$k, n \geq 1$，我们希望找到一条从1开始、到$n$结束的包含$k$个节点的轨迹$1 = \tau_1 &lt; \cdots &lt; \tau_k = n$，使得总成本$J(\tau_1, \tau_2) + J(\tau_2, \tau_3) + \cdots + J(\tau_{k - 1}, \tau_k)$最小。这样的问题可以通过Watson等人（2021）提出的动态规划（DP）算法来解决。令$C[k, n]$为最优轨迹的最小成本，$D[k, n]$为最优轨迹中的$\tau_{k - 1}$。为简化起见，当$s \geq t \geq 1$时，我们令$J(s, t) = \infty$。</p>
+<p>那么对于$k = 1$，我们有$C[1, n] = \begin{cases} 0 &amp; n = 1 \\ \infty &amp; N \geq n &gt; 1 \end{cases}$且$D[1, n] = -1$（这里的$\infty$和$-1$为简化表示的未定义值）。对于$N \geq k \geq 2$，我们有：</p>
+<script type="math/tex; mode=display">C[k, n] = \begin{cases}
+\infty & 1 \leq n < k \\
+\min_{k - 1 \leq s \leq n - 1} C[k - 1, s] + J(s, n) = \min_{1 \leq s \leq N} C[k - 1, s] + J(s, n) & N \geq n \geq k
+\end{cases}</script><script type="math/tex; mode=display">D[k, n] = \begin{cases}
+-1 & 1 \leq n < k \\
+\arg\min_{k - 1 \leq s \leq n - 1} C[k - 1, s] + J(s, n) = \arg\min_{1 \leq s \leq N} C[k - 1, s] + J(s, n) & N \geq n \geq k
+\end{cases}</script><p>一旦计算出$D$，我们就可以通过$\tau_K = N$和$\tau_{k - 1} = D[k, \tau_k]$递归地得到最优轨迹。我们将该算法总结在算法1中。</p>
+<p><img src="a1.png"></p>
+<h3 id="C-轨迹约束下最优反向方差的界限"><a href="#C-轨迹约束下最优反向方差的界限" class="headerlink" title="C 轨迹约束下最优反向方差的界限"></a>C 轨迹约束下最优反向方差的界限</h3><p>在第4节中，我们推导了轨迹约束下的最优反向方差。实际上，最优反向方差也可以像定理2那样进行界定。我们在推论1中对其进行了形式化。</p>
+<ul>
+<li><strong>推论1</strong> （轨迹约束下最优反向方差的界限）：$\sigma_{\tau_{k - 1}|\tau_{k}}^{*2}$具有以下上下界：<script type="math/tex; mode=display">\lambda_{\tau_{k - 1}|\tau_{k}}^{2}\leq\sigma_{\tau_{k - 1}|\tau_{k}}^{*2}\leq\lambda_{\tau_{k - 1}|\tau_{k}}^{2}+\left(\sqrt{\frac{\overline{\beta}_{\tau_{k}}}{\alpha_{\tau_{k}|\tau_{k - 1}}}}-\sqrt{\overline{\beta}_{\tau_{k - 1}}-\lambda_{\tau_{k - 1}|\tau_{k}}^{2}}\right)^{2}</script>如果我们进一步假设$q(x_{0})$是在$[a,b]^{d}$上的有界分布，其中$d$是数据维度，那么$\sigma_{n}^{*2}$可以进一步被上界约束为：<script type="math/tex; mode=display">\sigma_{\tau_{k - 1}|\tau_{k}}^{*2}\leq\lambda_{\tau_{k - 1}|\tau_{k}}^{2}+\left(\sqrt{\overline{\alpha}_{\tau_{k - 1}}}-\sqrt{\overline{\beta}_{\tau_{k - 1}}-\lambda_{\tau_{k - 1}|\tau_{k}}^{2}}\cdot\sqrt{\frac{\overline{\alpha}_{\tau_{k}}}{\overline{\beta}_{\tau_{k}}}}\right)^{2}\left(\frac{b - a}{2}\right)^{2}</script></li>
+</ul>
+<h3 id="D-去噪扩散概率模型（DDPM）正向过程的简化结果"><a href="#D-去噪扩散概率模型（DDPM）正向过程的简化结果" class="headerlink" title="D 去噪扩散概率模型（DDPM）正向过程的简化结果"></a>D 去噪扩散概率模型（DDPM）正向过程的简化结果</h3><p>定理1中的最优解$\mu_{n}^{<em>}(x_{n})$和$\sigma_{n}^{</em> 2}$，以及定理2中$\sigma_{n}^{* 2}$的边界，都可以通过令$\lambda_{n}^{2}=\tilde{\beta}_{n}$，直接针对DDPM正向过程进行简化。我们在推论2和推论3中列出简化结果。</p>
+<ul>
+<li><strong>推论2</strong> （最优解的简化分数表示）：当$\lambda_{n}^{2}=\tilde{\beta}_{n}$时，公式（4）的最优解$\mu_{n}^{<em>}(x_{n})$和$\sigma_{n}^{</em> 2}$为：<script type="math/tex; mode=display">\mu_{n}^{*}(x_{n})=\frac{1}{\sqrt{\alpha_{n}}}(x_{n}+\beta_{n}\nabla_{x_{n}}\log q_{n}(x_{n}))</script><script type="math/tex; mode=display">\sigma_{n}^{* 2}=\frac{\beta_{n}}{\alpha_{n}}(1-\beta_{n}\mathbb{E}_{q_{n}(x_{n})}\frac{\|\nabla_{x_{n}}\log q_{n}(x_{n})\|^{2}}{d})</script></li>
+<li><strong>推论3</strong> （最优反向方差的简化边界）：当$\lambda_{n}^{2}=\tilde{\beta}_{n}$时，$\sigma_{n}^{* 2}$具有以下上下界：<script type="math/tex; mode=display">\tilde{\beta}_{n}\leq\sigma_{n}^{* 2}\leq\frac{\beta_{n}}{\alpha_{n}}</script>如果我们进一步假设$q(x_{0})$是在$[a,b]^{d}$上的有界分布，其中$d$是数据维度，那么$\sigma_{n}^{* 2}$还可以进一步被上界约束为：<script type="math/tex; mode=display">\sigma_{n}^{* 2}\leq\tilde{\beta}_{n}+\frac{\overline{\alpha}_{n - 1}\beta_{n}^{2}}{\overline{\beta}_{n}^{2}}(\frac{b - a}{2})^{2}</script></li>
+</ul>
+<p>对于公式（13）中定义的更短正向过程，当$\lambda_{\tau_{k - 1}|\tau_{k}}^{2}=\tilde{\beta}_{\tau_{k - 1}|\tau_{k}}$时，它也包含DDPM作为一个特殊情况，其中$\tilde{\beta}_{\tau_{k - 1}|\tau_{k}}:=\frac{\overline{\beta}_{\tau_{k - 1}}}{\overline{\beta}_{\tau_{k}}}\beta_{\tau_{k}|\tau_{k - 1}}$ 。与推论2类似，通过令$\lambda_{\tau_{k - 1}|\tau_{k}}^{2}=\tilde{\beta}_{\tau_{k - 1}|\tau_{k}}$，其反向过程的最优均值和方差也可以针对DDPM进行简化。形式上，简化后的最优均值和方差为：</p>
+<script type="math/tex; mode=display">\mu_{\tau_{k - 1}|\tau_{k}}^{*}(x_{\tau_{k}})=\frac{1}{\sqrt{\alpha_{\tau_{k}|\tau_{k - 1}}}}(x_{\tau_{k}}+\beta_{\tau_{k}|\tau_{k - 1}}\nabla_{x_{\tau_{k}}}\log q_{\tau_{k}}(x_{\tau_{k}}))</script><script type="math/tex; mode=display">\sigma_{\tau_{k - 1}|\tau_{k}}^{* 2}=\frac{\beta_{\tau_{k}|\tau_{k - 1}}}{\alpha_{\tau_{k}|\tau_{k - 1}}}(1-\beta_{\tau_{k}|\tau_{k - 1}}\mathbb{E}_{q_{\tau_{k}}(x_{\tau_{k}})}\frac{\|\nabla_{x_{\tau_{k}}}\log q_{\tau_{k}}(x_{\tau_{k}})\|^{2}}{d})</script><p>此外，定理3也可以针对DDPM进行简化。我们在推论4中列出简化结果。</p>
+<ul>
+<li><strong>推论4</strong> （简化的分解最优KL散度）：当$\lambda_{n}^{2}=\tilde{\beta}_{n}$时，子过程与其最优反向过程之间的KL散度为：<script type="math/tex; mode=display">D_{KL}(q(x_{0},x_{\tau_{1}},\cdots,x_{\tau_{K}})\|p^{*}(x_{0},x_{\tau_{1}},\cdots,x_{\tau_{K}}))=\frac{d}{2}\sum_{k = 2}^{K}J(\tau_{k - 1},\tau_{k})+c</script>其中$J(\tau_{k - 1},\tau_{k})=\log(1-\beta_{\tau_{k}|\tau_{k - 1}}\mathbb{E}_{q_{\tau_{k}}(x_{\tau_{k}})}\frac{|\nabla_{x_{\tau_{k}}}\log q_{\tau_{k}}(x_{\tau_{k}})|^{2}}{d})$，$c$是与轨迹$T$无关的常数。</li>
+</ul>
+<h3 id="E-对连续时间步扩散过程的扩展"><a href="#E-对连续时间步扩散过程的扩展" class="headerlink" title="E 对连续时间步扩散过程的扩展"></a>E 对连续时间步扩散过程的扩展</h3><p>Song等人（2020b）通过引入随机微分方程（SDE）$dz = \bar{f}(t)zdt + g(t)dw$将扩散过程推广到连续时间步。不失一般性，我们考虑Kingma等人（2021）引入的$f(t)$和$g(t)$的参数化形式：</p>
+<script type="math/tex; mode=display">f(t)=\frac{1}{2}\frac{d\log\overline{\alpha}*{t}}{dt},g(t)^{2}=\frac{d\overline{\beta}*{t}}{dt}-\frac{d\log\overline{\alpha}*{t}}{dt}\overline{\beta}*{t}</script><p>其中，$\overline{\alpha}_{t}$和$\overline{\beta}_{t}$是满足一些正则条件（Kingma等人，2021）的标量值函数，定义域为$t\in[0,1]$。这样的参数化诱导了一个连续时间步的扩散过程$q(x_{0},z_{[0,1]})$，使得：</p>
+<script type="math/tex; mode=display">q(z_{t}|x_{0})=\mathcal{N}(z_{t}|\sqrt{\overline{\alpha}*{t}}x*{0},\overline{\beta}*{t}I),\forall t\in[0,1]</script><script type="math/tex; mode=display">q(z*{t}|z_{s})=\mathcal{N}(z_{t}|\sqrt{\alpha_{t|s}}z_{s},\beta_{t|s}I),\forall 0\leq s<t\leq 1</script><p>其中$\alpha_{t|s}:=\overline{\alpha}_{t}/\overline{\alpha}_{s}$，$\beta_{t|s}:=\overline{\beta}_{t}-\alpha_{t|s}\overline{\beta}_{s}$。</p>
+<h4 id="E-1-最优反向方差的解析估计"><a href="#E-1-最优反向方差的解析估计" class="headerlink" title="E.1 最优反向方差的解析估计"></a>E.1 最优反向方差的解析估计</h4><p>Kingma等人（2021）引入$p(z_{s}|z_{t}) = N(z_{s}|\mu_{s|t}(z_{t}),\sigma_{s|t}^{2})(s &lt; t)$来从时间步$t$反向到时间步$s$，其中$\sigma_{s|t}^{2}$被固定为$\frac{\overline{\beta}<em>{s}}{\overline{\beta}</em>{t}}\beta_{s|t}$。相比之下，我们表明在KL散度最小化的意义下，$\sigma_{s|t}^{2}$也具有关于分数函数的解析形式的最优解。根据引理9和引理11，我们有：</p>
+<script type="math/tex; mode=display">\mu_{s|t}^{*}(z_{t})=\mathbb{E}*{q(z*{s}|z_{t})}[z_{s}]=\frac{1}{\sqrt{\alpha_{t|s}}}(z_{t}+\beta_{t|s}\nabla_{z_{t}}\log q(z_{t}))</script><script type="math/tex; mode=display">\sigma_{s|t}^{* 2}=\mathbb{E}*{q}\frac{tr(Cov*{q(z_{s}|z_{t})}[z_{s}])}{d}=\frac{\beta_{t|s}}{\alpha_{t|s}}(1 - \beta_{t|s}\mathbb{E}*{q(z*{t})}\frac{\|\nabla_{z_{t}}\log q(z_{t})\|^{2}}{d})</script><p>因此，最优均值和方差都具有关于分数函数的封闭形式表达式。在这种情况下，我们首先对$t\in[0,1]$通过$\Gamma_{t}$估计分数函数的期望均方范数，其中：</p>
+<script type="math/tex; mode=display">\Gamma_{t}=\mathbb{E}*{q(z*{t})}\frac{\|s_{t}(z_{t})\|^{2}}{d}</script><p>注意到在$[0,1]$中有无限个时间步。在实践中，我们只能选择有限个时间步$0 = t_{1}&lt;\cdots&lt;t_{N}=1$并计算$\Gamma_{t_{n}}$。对于$t_{n - 1}$和$t_{n}$之间的时间步$t$，我们可以在$\Gamma_{t_{n - 1}}$和$\Gamma_{t_{n}}$之间进行线性插值。然后，我们可以通过下式估计$\sigma_{s|t}^{* 2}$：</p>
+<script type="math/tex; mode=display">\hat{\sigma}*{s|t}^{2}=\frac{\beta*{t|s}}{\alpha_{t|s}}(1 - \beta_{t|s}\Gamma_{t})</script><h4 id="E-2-最优反向轨迹的解析估计"><a href="#E-2-最优反向轨迹的解析估计" class="headerlink" title="E.2 最优反向轨迹的解析估计"></a>E.2 最优反向轨迹的解析估计</h4><p>现在我们考虑在KL散度最小化的意义下优化轨迹$0=\tau_{1}&lt;\cdots&lt;\tau_{K}=1$：</p>
+<script type="math/tex; mode=display">\min_{\tau_{1},\cdots,\tau_{K}}D_{KL}(q(x_{0},z_{\tau_{1}},\cdots,z_{\tau_{K}})\|p^{*}(x_{0},z_{\tau_{1}},\cdots,z_{\tau_{K}}))</script><p>与定理3类似，最优KL散度为：</p>
+<script type="math/tex; mode=display">D_{KL}(q(x_{0},z_{\tau_{1}},\cdots,z_{\tau_{K}})\|p^{*}(x_{0},z_{\tau_{1}},\cdots,z_{\tau_{K}}))=\frac{d}{2}\sum_{k = 2}^{K}J(\tau_{k - 1},\tau_{k})+c</script><p>其中，$J(\tau_{k - 1},\tau_{k})=\log(1 - \beta_{\tau_{k}|\tau_{k - 1}}\mathbb{E}<em>{q}\frac{|\nabla</em>{z_{\tau_{k}}}\log q(z_{\tau_{k}})|^{2}}{d})$，$c$与$\tau$无关。不同之处在于$J(s,t)$定义在连续区间$0\leq s&lt;t\leq 1$上，动态规划（DP）算法不能直接应用。然而，我们可以将$J(s,t)$限制在有限个时间步$0 = t_{1}&lt;\cdots&lt;t_{N}=1$上。然后我们可以将DP算法（见算法1）应用于受限的$J(s,t)$。</p>
+<h3 id="F实验细节"><a href="#F实验细节" class="headerlink" title="F实验细节"></a>F实验细节</h3><h4 id="F-1基于分数模型的细节"><a href="#F-1基于分数模型的细节" class="headerlink" title="F.1基于分数模型的细节"></a>F.1基于分数模型的细节</h4><p>CelebA 64x64的预训练分数模型由Song等人（2020a）的官方代码（<a target="_blank" rel="noopener" href="https://github.com/ermongroup/ddim）提供。LSUN">https://github.com/ermongroup/ddim）提供。LSUN</a> Bedroom的预训练分数模型由Ho等人（2020）的官方代码（<a target="_blank" rel="noopener" href="https://github.com/hojonathanho/diffusion）提供。这两个模型都有总共$N">https://github.com/hojonathanho/diffusion）提供。这两个模型都有总共$N</a> = 1000$个时间步，并且使用线性调度（Ho等人，2020）作为正向噪声调度。</p>
+<p>ImageNet 64x64的预训练分数模型是Nichol和Dhariwal（2021）官方代码（<a target="_blank" rel="noopener" href="https://github.com/openai/improved-diffusion）中提供的无条件$L_{hybrid}$模型。该模型包括均值网络和方差网络，其中均值网络按照标准的去噪扩散概率模型（DDPM）（Ho等人，2020）使用公式（5）进行训练，方差网络则使用$L_{vh}$目标进行训练。我们仅使用均值网络。该模型总共有$N">https://github.com/openai/improved-diffusion）中提供的无条件$L_{hybrid}$模型。该模型包括均值网络和方差网络，其中均值网络按照标准的去噪扩散概率模型（DDPM）（Ho等人，2020）使用公式（5）进行训练，方差网络则使用$L_{vh}$目标进行训练。我们仅使用均值网络。该模型总共有$N</a> = 4000$个时间步，其正向噪声调度是余弦调度（Nichol和Dhariwal，2021）。</p>
+<p>CIFAR10的分数模型由我们自己训练。它们总共有$N = 1000$个时间步，分别使用线性正向噪声调度和余弦正向噪声调度进行训练。我们采用与Nichol和Dhariwal（2021）相同的U - Net模型架构。按照Nichol和Dhariwal（2021）的方法，我们使用批量大小为128，训练500K次迭代，使用AdamW优化器（Loshchilov和Hutter，2017），学习率为0.0001，并使用指数移动平均（EMA），速率为0.9999。我们每10K次迭代保存一次检查点，并根据在反向方差$\sigma_{n}^{2}=\beta_{n}$和完整时间步下生成的1000个样本的FID结果选择检查点。</p>
+<h4 id="F-2对数似然和采样"><a href="#F-2对数似然和采样" class="headerlink" title="F.2对数似然和采样"></a>F.2对数似然和采样</h4><p>按照Ho等人（2020）的方法，我们将由整数{0, 1, · · ·, 255}组成的图像数据进行线性缩放至[-1, 1]，并对最后的反向马尔可夫转移$p(x_{0}|x_{1})$进行离散化，以获得图像数据的离散对数似然。</p>
+<p>按照Ho等人（2020）的方法，在采样结束时，我们仅展示$p(x_{0}|x_{1})$的均值，并舍弃噪声。这相当于将噪声尺度$\sigma_{1}$的裁剪阈值设置为零。受此启发，在采样时，我们也对$p(x_{1}|x_{2})$的噪声尺度$\sigma_{2}$进行裁剪，使得$E|\sigma_{2}\epsilon|\leq\frac{2}{255}y$，其中$\epsilon$是标准高斯噪声，$y$是一个通道可容忍的最大扰动。这提高了样本质量，特别是对于我们的解析估计（见附录G.4）。我们对表2中比较的所有方法都裁剪$\sigma_{2}$，并根据FID分数选择$y\in\{1, 2\}$。我们发现$y = 2$在使用Analytic - DDPM的CIFAR10 (LS)和CelebA 64x64上效果更好。在其他情况下，我们发现$y = 1$效果更好。</p>
+<p>我们使用pytorch的FID官方实现（<a target="_blank" rel="noopener" href="https://github.com/mseitzer/pytorch-fid）。我们在所有数据集上对50K个生成样本计算FID分数。按照Nichol和Dhariwal（2021）的方法，CIFAR10和ImageNet">https://github.com/mseitzer/pytorch-fid）。我们在所有数据集上对50K个生成样本计算FID分数。按照Nichol和Dhariwal（2021）的方法，CIFAR10和ImageNet</a> 64x64的参考分布统计量是在完整训练集上计算的。对于CelebA 64x64和LSUN Bedroom，参考分布统计量是在50K个训练样本上计算的。</p>
+<h4 id="F-3蒙特卡罗样本数量的选择和Γ的计算"><a href="#F-3蒙特卡罗样本数量的选择和Γ的计算" class="headerlink" title="F.3蒙特卡罗样本数量的选择和Γ的计算"></a>F.3蒙特卡罗样本数量的选择和Γ的计算</h4><p>我们在不引入过多计算量的情况下使用最大的$M$。具体来说，默认情况下，我们在CIFAR10上设置$M = 50000$，在CelebA 64x64和ImageNet 64x64上设置$M = 10000$，在LSUN Bedroom上设置$M = 1000$，且不进行搜索。所有样本均来自训练数据集。表1、表2和表3中的所有结果均使用$M$的默认设置。</p>
+<p>对于预训练模型，我们仅计算一次公式（8）中的$\Gamma$，并且在表1、表2和表3中不同设置（例如，较小$K$的轨迹）的推理过程中重复使用$\Gamma$。</p>
+<h4 id="F-4均匀轨迹的实现"><a href="#F-4均匀轨迹的实现" class="headerlink" title="F.4均匀轨迹的实现"></a>F.4均匀轨迹的实现</h4><p>我们按照Nichol和Dhariwal（2021）的方法实现均匀轨迹。给定轨迹的时间步数$K$，我们首先确定步长$a=\frac{N - 1}{K - 1}$。然后第$k$个时间步确定为$round(1 + a(k - 1))$。</p>
+<h4 id="F-5表3的实验细节"><a href="#F-5表3的实验细节" class="headerlink" title="F.5表3的实验细节"></a>F.5表3的实验细节</h4><p>在表3中，DDPM、DDIM和Analytic - DPM的结果基于相同的分数模型（即F.1节中列出的模型）。我们通过运行改进的DDPM的官方代码和无条件$L_{hybrid}$模型（<a target="_blank" rel="noopener" href="https://github.com/openai/improved">https://github.com/openai/improved</a> - diffusion）获得其结果。如表4所示，在相同数据集上，这些模型的大小以及在单个GeForce RTX 2080 Ti上进行一次模型函数评估的平均时间几乎相同。<br>表4：在单个GeForce RTX 2080 Ti上，批量大小为10时，模型大小和运行模型函数评估的平均时间</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>CIFAR10</th>
+<th>CelebA 64x64</th>
+<th>LSUN Bedroom</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DDPM, DDIM, Analytic - DPM</td>
+<td>200.44 MB / 29 ms</td>
+<td>300.22 MB / 50 ms</td>
+<td>433.63 MB / 438 ms</td>
+</tr>
+<tr>
+<td>改进的DDPM</td>
+<td>200.45 MB / 30 ms</td>
+<td>缺失模型</td>
+<td>433.64 MB / 439 ms</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>CIFAR10上的DDPM和DDIM结果基于Song等人（2020a）的二次轨迹，该轨迹比均匀轨迹具有更好的FID。Analytic - DPM在LSUN Bedroom上的结果基于DDPM正向过程，在其他数据集上基于DDIM正向过程。这些选择比其他选择实现了更高的效率。</p>
+<h3 id="G-补充结果"><a href="#G-补充结果" class="headerlink" title="G 补充结果"></a>G 补充结果</h3><h4 id="G-1-反向方差和变分边界项的可视化"><a href="#G-1-反向方差和变分边界项的可视化" class="headerlink" title="G.1 反向方差和变分边界项的可视化"></a>G.1 反向方差和变分边界项的可视化</h4><p>图1展示了在CIFAR10数据集上，使用线性前向噪声调度（LS）时反向方差和 $L_{vb}$ 项的可视化结果。在图2中，我们展示了更多在CIFAR10数据集上使用余弦前向噪声调度（CS）、在CelebA 64x64数据集以及在ImageNet 64x64数据集上的去噪扩散概率模型（DDPM）结果。<br><img src="https://pic2.zhimg.com/v2-857675c89c867c86967675c89c867c86_r.jpg" alt="图2"><br>图2：比较我们的解析估计值 $\hat{\sigma}_{n}^{2}$ 与先前工作中手工设定的方差 $\beta_{n}$ 和 $\bar{\beta}_{n}$ 。(a-c)比较不同时间步的方差值。(d-f)比较 $L_{vb}$ 中每个时间步对应的项。$L_{vb}$ 的值是相应曲线下的面积。</p>
+<h4 id="G-2-蒙特卡罗样本数量的消融研究"><a href="#G-2-蒙特卡罗样本数量的消融研究" class="headerlink" title="G.2 蒙特卡罗样本数量的消融研究"></a>G.2 蒙特卡罗样本数量的消融研究</h4><p>我们证明了在公式(8)中，少量的蒙特卡罗（MC）样本 $M$ 就足以实现较小的蒙特卡罗方差。如图3所示，在单次试验中，使用 $M = 100$ 和 $M = 50000$ 个蒙特卡罗样本得到的 $\Gamma_{n}$ 值几乎相同。为了更直观地观察方差，在图4和图5中，我们分别绘制了在CIFAR10 (LS)数据集上，单个蒙特卡罗样本 $\frac{\left|s_{n}(x_{n})\right|^{2}}{d}$（$x_{n} \sim q_{n}(x_{n})$）和 $\Gamma_{n}$ 在不同 $M$ 值下的均值、标准差和相对标准差（RSD，即标准差与均值的比值）。在所有情况下，随着 $n$ 的增加，RSD迅速下降。当 $n$ 较小时（例如，$n = 1$ ），使用 $M = 10$ 个蒙特卡罗样本可以确保 $\Gamma_{n}$ 的RSD低于0.1，使用 $M = 100$ 个蒙特卡罗样本可以确保 $\Gamma_{n}$ 的RSD约为0.025。当 $n &gt; 100$ 时，单个蒙特卡罗样本的RSD低于0.05，仅使用 $M = 1$ 个蒙特卡罗样本就可以确保 $\Gamma_{n}$ 的RSD低于0.05。总体而言，像 $M = 10$ 和 $M = 100$ 这样较小的 $M$ 值，对于实现较小的蒙特卡罗方差就已经足够。<br><img src="https://pic1.zhimg.com/v2-965c89c867c86967675c89c867c86_r.jpg" alt="图3"><br>图3：在单次试验中，不同蒙特卡罗样本数量 $M$ 下的 $\Gamma_{n}$ 值。<br><img src="https://pic4.zhimg.com/v2-8c867c86967675c89c867c86_r.jpg" alt="图4"><br>图4：在CIFAR10 (LS)数据集上，不同 $n$ 时，单个蒙特卡罗样本 $\frac{\left|s_{n}(x_{n})\right|^{2}}{d}$（$x_{n} \sim q_{n}(x_{n})$）的均值、标准差和相对标准差（RSD）。这些值由50000个样本估计得出。<br><img src="https://pic1.zhimg.com/v2-9c867c86967675c89c867c86_r.jpg" alt="图5"><br>图5：在CIFAR10 (LS)数据集上，不同蒙特卡罗样本数量 $M$ 和不同 $n$ 时，$\Gamma_{n}$ 的均值、标准差和相对标准差（RSD）。这些值直接根据图4中 $\frac{\left|s_{n}(x_{n})\right|^{2}}{d}$（$x_{n} \sim q_{n}(x_{n})$）的均值、标准差和RSD计算得出。</p>
+<p>此外，我们发现使用像 $M = 10$ 和 $M = 100$ 这样较小的 $M$ 值的Analytic-DPM，与使用较大 $M$ 值的模型性能相似。如图6 (a)所示，在CIFAR10 (LS)数据集上，使用 $M = 100$ 或 $M = 50000$ 对似然结果几乎没有影响。在表5 (a)中，我们展示了使用更小的 $M$（例如 $M = 1, 3, 10$ ）时的结果。在负对数似然（NLL）和弗雷歇 inception距离（FID）指标下，$M = 10$ 时的结果与 $M = 50000$ 时相似。在ImageNet 64x64数据集上也有类似的结果，如图6 (b)和表5 (b)所示。值得注意的是，FID的预期性能几乎不受 $M$ 选择的影响。</p>
+<p>因此，使用小得多的 $M$（例如，$M = 10$ ）时，Analytic-DPM也始终优于基线模型，如表6所示。<br><img src="https://pic4.zhimg.com/v2-8d867c86967675c89c867c86_r.jpg" alt="图6"><br>图6：在不同蒙特卡罗样本数量 $M$ 下，轨迹中负对数似然（NLL）随时间步数 $K$ 变化的曲线。在 $\sigma_{n}^{2}=\hat{\sigma}_{n}^{2}$ 和均匀轨迹下评估。<br>表5：不同蒙特卡罗样本数量 $M$ 下，Analytic-DPM的负对数似然（NLL）和FID结果。$M = 1, 3, 10, 100$ 的结果是5次运行的平均值。所有结果均在DDPM前向过程和均匀轨迹下评估。对于CIFAR10 (LS)数据集，我们使用 $K = 10$；对于ImageNet 64x64数据集，我们使用 $K = 25$ 。<br>(a) CIFAR10 (LS)</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>NLL</th>
+<th>FID</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$M = 1$</td>
+<td>$6.220\pm1.126$</td>
+<td>$34.05\pm4.97$</td>
+</tr>
+<tr>
+<td>$M = 3$</td>
+<td>$5.689\pm0.424$</td>
+<td>$34.29\pm2.88$</td>
+</tr>
+<tr>
+<td>$M = 10$</td>
+<td>$5.469\pm0.005$</td>
+<td>$33.69\pm2.10$</td>
+</tr>
+<tr>
+<td>$M = 100$</td>
+<td>$5.468\pm0.004$</td>
+<td>$34.63\pm0.68$</td>
+</tr>
+<tr>
+<td>$M = 50000$</td>
+<td>$5.471$</td>
+<td>$34.26$</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>(b) ImageNet 64x64</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>NLL</th>
+<th>FID</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$M = 1$</td>
+<td>$4.943\pm0.162$</td>
+<td>$31.59\pm5.11$</td>
+</tr>
+<tr>
+<td>$M = 3$</td>
+<td>$4.821\pm0.055$</td>
+<td>$31.98\pm1.19$</td>
+</tr>
+<tr>
+<td>$M = 10$</td>
+<td>$4.791\pm0.017$</td>
+<td>$31.93\pm1.02$</td>
+</tr>
+<tr>
+<td>$M = 100$</td>
+<td>$4.785\pm0.003$</td>
+<td>$31.93\pm0.69$</td>
+</tr>
+<tr>
+<td>$M = 10000$</td>
+<td>$4.783$</td>
+<td>$32.56$</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>表6：使用 $M = 10$ 个蒙特卡罗样本的Analytic-DDPM与DDPM之间的NLL和FID比较。结果在CIFAR10 (LS)数据集的均匀轨迹下评估。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>时间步数 $K$</th>
+<th>10</th>
+<th>25</th>
+<th>50</th>
+<th>100</th>
+<th>200</th>
+<th>400</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NLL</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Analytic-DDPM ($M = 10$ )</td>
+<td>5.47</td>
+<td>4.80</td>
+<td>4.38</td>
+<td>4.07</td>
+<td>3.85</td>
+<td>3.71</td>
+</tr>
+<tr>
+<td>DDPM</td>
+<td>6.99</td>
+<td>6.11</td>
+<td>5.44</td>
+<td>4.86</td>
+<td>4.39</td>
+<td>4.07</td>
+</tr>
+<tr>
+<td>FID</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Analytic-DDPM ($M = 10$ )</td>
+<td>33.69</td>
+<td>11.99</td>
+<td>7.24</td>
+<td>5.39</td>
+<td>4.19</td>
+<td>3.58</td>
+</tr>
+<tr>
+<td>DDPM</td>
+<td>44.45</td>
+<td>21.83</td>
+<td>15.21</td>
+<td>10.94</td>
+<td>8.23</td>
+<td>4.86</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="G-3-边界的紧性"><a href="#G-3-边界的紧性" class="headerlink" title="G.3 边界的紧性"></a>G.3 边界的紧性</h4><p>在3.1节和附录C中，我们推导了最优反向方差的上下界。在本节中，我们通过数值实验表明，这些边界在实际应用中是紧密的。在图7中，我们绘制了CIFAR10数据集上的组合上界（即公式(11)和公式(12)中的上界的最小值）和下界。如图7 (a,c)所示，在全时间步（$K = N$ ）轨迹下，这两个边界几乎重叠。当轨迹的时间步数较少（例如，$K = 100$ ）时，在时间步 $\tau_{k}$ 较大时，这两个边界也会重叠。这些结果从经验上验证了我们的边界是紧密的，尤其是在时间步较大时。<br><img src="https://pic2.zhimg.com/v2-957675c89c867c86967675c89c867c86_r.jpg" alt="图7"><br>图7：CIFAR10(LS)和CIFAR10 (CS)数据集上，全时间步（$K = N$ ）和100个时间步（$K = 100$ ）轨迹下的组合上界（UB）和下界（LB）。<br><img src="https://pic2.zhimg.com/v2-867c86967675c89c867c86_r.jpg" alt="图8"><br>图8：CIFAR10 (LS)和CIFAR10 (CS)数据集上，全时间步（$K = N$ ）和100个时间步（$K = 100$ ）轨迹下，公式(11)和公式(12)中的上界（UB）。</p>
+<p>在图8中，我们还分别绘制了公式(11)和公式(12)中的两个上界。可以看出，公式(11)中的上界在时间步较小时更紧密，而另一个上界在时间步较大时更紧密。因此，这两个上界都对组合上界有贡献。</p>
+<p>为了观察这些边界在实际中的作用，在图9中，我们绘制了在CIFAR10 (LS)数据集上，不同蒙特卡罗样本数量 $M$ 下，$\hat{\sigma}_{n}^{2}$ 被定理2中的边界裁剪的概率。对于所有的 $M$ ，概率随 $n$ 变化的曲线相似，并且当 $n$ 较大时，估计值被裁剪的频率更高。这是预期的结果，因为当 $n$ 较大时，公式(12)中的上界和公式(11)中的下界之间的差距趋于零。这些结果也与图7中边界的绘制结果一致。此外，不同 $M$ 下结果的相似性表明，边界裁剪主要是由于基于分数的模型 $s_{n}(x_{n})$ 的误差，而不是蒙特卡罗方法的随机性。<br><img src="https://pic2.zhimg.com/v2-97675c89c867c86967675c89c867c86_r.jpg" alt="图9"><br>图9：在CIFAR10 (LS)数据集上，不同蒙特卡罗样本数量 $M$ 下，$\hat{\sigma}_{n}^{2}$ 被定理2中的边界裁剪的概率。概率通过100次独立试验中 $\hat{\sigma}_{n}^{2}$ 被裁剪的比例来估计。结果在全时间步 $K = N$ 下评估。</p>
+<h4 id="G-4-对采样时裁剪-sigma-2-的消融研究"><a href="#G-4-对采样时裁剪-sigma-2-的消融研究" class="headerlink" title="G.4 对采样时裁剪 $\sigma_{2}$ 的消融研究"></a>G.4 对采样时裁剪 $\sigma_{2}$ 的消融研究</h4><p>本节验证了附录F.2中的观点，即适当裁剪 $p(x_{1} | x_{2})$ 中的噪声尺度 $\sigma_{2}$ 可以提高样本质量。如图10和图11所示，这极大地提高了我们解析估计的样本质量。随着 $K$ 的增加，裁剪和未裁剪的曲线会重叠，因为对于较大的 $K$ ，$\sigma_{2}$ 会低于阈值。</p>
+<p>实际上，如表7所示，当 $K$ 较小时，附录F.2中为采样设计的裁剪阈值，比定理2中的组合上界（即公式(11)和公式(12)中的上界的最小值）小1到3个数量级。<br><img src="https://pic2.zhimg.com/v2-8867c86967675c89c867c86_r.jpg" alt="图10"><br>图10：在Analytic-DDPM下，对裁剪 $\sigma_{2}$ 的消融研究。<br><img src="https://pic1.zhimg.com/v2-9867c86967675c89c867c86_r.jpg" alt="图11"><br>图11：在Analytic-DDIM下，对裁剪 $\sigma_{2}$ 的消融研究。<br><img src="https://pic4.zhimg.com/v2-8967c86967675c89c867c86_r.jpg" alt="图12"><br>图12：在 $\sigma_{n}^{2}=\beta_{n}$ 的DDPM下，对裁剪 $\sigma_{2}$ 的消融研究。</p>
+<p>表7：比较(i)附录F.2中用于裁剪采样时的 $\sigma_{2}^{2}$ 的阈值，(ii)定理2中 $n = 2$ 时的组合上界，(iii)定理2中 $n = 2$ 时的下界，以及(iv)我们的解析估计值 $\hat{\sigma}_{2}^{2}$ 。我们展示了在不同数据集和不同前向过程下，当 $K$ 较小时的比较结果。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>模型 \ 时间步数 $K$</th>
+<th>10</th>
+<th>25</th>
+<th>50</th>
+<th>100</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CIFAR10 (LS)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>阈值 ($y = 2$)</td>
+<td>$3.87×10^{-4}$</td>
+<td>$3.87×10^{-4}$</td>
+<td>$3.87×10^{-4}$</td>
+<td>$3.87×10^{-4}$</td>
+</tr>
+<tr>
+<td>DDPM</td>
+<td>上界</td>
+<td>$1.45×10^{-1}$</td>
+<td>$2.24×10^{-2}$</td>
+<td>$6.20×10^{-3}$</td>
+<td>$2.10×10^{-3}$</td>
+</tr>
+<tr>
+<td></td>
+<td>下界</td>
+<td>$9.99×10^{-5}$</td>
+<td>$9.96×10^{-5}$</td>
+<td>$9.84×10^{-5}$</td>
+<td>$9.55×10^{-5}$</td>
+</tr>
+<tr>
+<td></td>
+<td>$\hat{\sigma}_{2}^{2}$</td>
+<td>$8.70×10^{-3}$</td>
+<td>$2.99×10^{-3}$</td>
+<td>$1.32×10^{-3}$</td>
+<td>$6.54×10^{-4}$</td>
+</tr>
+<tr>
+<td>DDIM</td>
+<td>阈值 ($y = 1$)</td>
+<td>$9.66×10^{-5}$</td>
+<td>$9.66×10^{-5}$</td>
+<td>$9.66×10^{-5}$</td>
+<td>$9.66×10^{-5}$</td>
+</tr>
+<tr>
+<td>上界</td>
+<td>$1.37×10^{-1}$</td>
+<td>$1.96×10^{-2}$</td>
+<td>$4.82×10^{-3}$</td>
+<td>$1.36×10^{-3}$</td>
+</tr>
+<tr>
+<td>下界 $\hat{\sigma}_{2}$</td>
+<td>0 $8.17×10^{-3}$</td>
+<td>0 $2.54×10^{-3}$</td>
+<td>0 $9.66×10^{-4}$</td>
+<td>0 $3.73×10^{-4}$</td>
+</tr>
+<tr>
+<td>CIFAR10 (CS)</td>
+<td>2</td>
+<td>×</td>
+<td>×</td>
+<td>×</td>
+<td>×</td>
+</tr>
+<tr>
+<td>DDPM</td>
+<td>阈值 ($y = 1$)</td>
+<td>$9.66×10^{-5}$</td>
+<td>$9.66×10^{-5}$</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="H-附加讨论"><a href="#H-附加讨论" class="headerlink" title="H 附加讨论"></a>H 附加讨论</h3><h4 id="H-1-蒙特卡罗估计的额外成本"><a href="#H-1-蒙特卡罗估计的额外成本" class="headerlink" title="H.1 蒙特卡罗估计的额外成本"></a>H.1 蒙特卡罗估计的额外成本</h4><p>与整个推理成本相比，蒙特卡罗估计 $\Gamma$ 的额外成本较小。实际上，蒙特卡罗估计需要额外进行 $MN$ 次模型函数评估。在推理过程中，假设我们生成 $M_1$ 个样本，或计算 $M_1$ 个具有 $K$ 个时间步长的样本的对数似然。扩散概率模型（DPM）和解析扩散概率模型（Analytic-DPM）都需要进行 $M_1K$ 次模型函数评估。使用相同的基于分数的模型，Analytic-DPM 的相对额外成本为 $\frac{MN}{M_1K}$ 。如附录G.2所示，一个非常小的 $M$（例如，$M = 10, 100$ ）对Analytic-DPM 来说就足够了，这使得相对额外成本即便不可忽略，也很小。例如，在CIFAR10数据集上，设 $M = 10$，$N = 1000$，$M_1 = 50000$ 且 $K≥10$ ，我们得到 $\frac{MN}{M_1K}≤0.02$ ，并且Analytic-DPM 仍然如表格6所示，持续改进基线模型的效果。</p>
+<p>此外，鉴于预训练模型和训练数据集，蒙特卡罗估计的额外计算仅进行一次，因为我们可以保存公式(8) 中 $\Gamma = (\Gamma_1, \cdots, \Gamma_N)$ 的结果，并在不同的推理设置（例如，各种 $K$ 的轨迹）中重复使用。这种重复使用是有效的，因为较短的前向过程 $q(x_0, x_{\tau_1}, \cdots, x_{\tau_K})$ 在时间步长 $\tau_k$ 的边际分布，与全时间步长前向过程 $q(x_{0:N})$ 在时间步长 $n = \tau_k$ 时的边际分布相同。实际上，在我们的实验（例如，表格1、2）中，$\Gamma$ 在不同的 $K$ 选择、轨迹和前向过程中是共享的。而且，在实际应用中，$\Gamma$ 可以离线计算，并与预训练模型一起部署，Analytic-DPM 的在线推理成本与DPM 完全相同。</p>
+<h4 id="H-2-插入解析估计后的变分下界的随机性"><a href="#H-2-插入解析估计后的变分下界的随机性" class="headerlink" title="H.2 插入解析估计后的变分下界的随机性"></a>H.2 插入解析估计后的变分下界的随机性</h4><p>在本部分中，我们将 $L_{vb}$ 写为 $L_{vb}(\sigma_n^2)$ ，以强调它对反向方差 $\sigma_n^2$ 的依赖性。在计算Analytic-DPM的变分下界 $L_{vb}(\sigma_n^2)$ （即负的证据下界）时，我们会将 $\hat{\sigma}_n^2$ 代入变分下界，得到 $\ddot{L}_{vb}(\hat{\sigma}_n^2)$ 。由于 $\hat{\sigma}_n^2$ 是通过蒙特卡罗方法计算得出的，所以 $L_{vb}(\hat{\sigma}_n^2)$ 是一个随机变量。一个自然的问题是，$L_{vb}(\hat{\sigma}_n^2)$ 是否是 $L_{vb}(\mathbb{E}[\hat{\sigma}_n^2])$ 的随机边界，如果 $L_{vb}$ 是凸函数或凹函数，则可以通过詹森不等式来判断。然而，一般来说，这并不能得到保证，如命题2所述。</p>
+<p><strong>命题2</strong>：$L_{vb}(\sigma_n^2)$ 关于 $\sigma_n^2$ 既不是凸函数也不是凹函数。</p>
+<p><strong>证明</strong>：由于 $\sigma_n^2$ 仅影响变分下界 $L_{vb}$ 中的第 $n$ 项 $L_n$ ，其中</p>
+<script type="math/tex; mode=display">L_{n}=\begin{cases}
+\mathbb{E}*{q} D*{KL}\left(q\left(x_{n - 1} | x_{n}, x_{0}\right) \| p\left(x_{n - 1} | x_{n}\right)\right) & 2 \leq n \leq N\\
+-\mathbb{E}*{q} \log p\left(x*{0} | x_{1}\right) & n = 1
+\end{cases}</script><p>我们只需要研究 $L_n$ 关于 $\sigma_n^2$ 的凸性。当 $2 \leq n \leq N$ 时，</p>
+<script type="math/tex; mode=display">L_{n}=\frac{d}{2}\left(\frac{\lambda_{n}^{2}}{\sigma_{n}^{2}} - 1 + \log \frac{\sigma_{n}^{2}}{\lambda_{n}^{2}} + \frac{1}{\sigma_{n}^{2}} \mathbb{E}*{q} \frac{\left\|\tilde{\mu}\left(x*{n}, x_{0}\right) - \mu_{n}\left(x_{n}\right)\right\|^{2}}{d}\right)</script><p>令 $A = \lambda_{n}^{2} + \mathbb{E}_{q} \frac{\left|\tilde{\mu}\left(x_{n}, x_{0}\right) - \mu_{n}\left(x_{n}\right)\right|^{2}}{d}$ ，那么 $L_n$ 作为 $\sigma_n^2$ 的函数，在 $0 &lt; \sigma_n^2 &lt; 2A$ 时是凸函数，在 $2A &lt; \sigma_n^2$ 时是凹函数。因此，$L_{vb}(\sigma_n^2)$ 关于 $\sigma_n^2$ 既不是凸函数也不是凹函数。</p>
+<p>尽管如此，在本文中，$L_{vb}(\hat{\sigma}_n^2)$ 是 $L_{vb}(\sigma_n^{<em>2})$ 的随机上界，因为 $L_{vb}(\sigma_n^{</em>2})$ 是最优的。$L_{vb}(\hat{\sigma}_n^2)$ 相对于 $L_{vb}(\sigma_n^{*2})$ 的偏差，是由于蒙特卡罗方法以及基于分数的模型的误差造成的。前者可以通过增加蒙特卡罗样本的数量来减小，而如果预训练模型固定，后者则无法消除，这促使我们如3.1节所讨论的那样，对估计值进行裁剪。</p>
+<h4 id="H-3-与其他高斯模型及其结果的比较"><a href="#H-3-与其他高斯模型及其结果的比较" class="headerlink" title="H.3 与其他高斯模型及其结果的比较"></a>H.3 与其他高斯模型及其结果的比较</h4><p>扩散概率模型的反向过程是一个具有高斯转移的马尔可夫过程。因此，将其与其他高斯模型进行比较是很有趣的，例如，具有高斯过程（GP）的期望传播（EP）模型（Kim和Ghahramani，2006）。</p>
+<p>期望传播（EP）和Analytic-DPM都使用矩匹配作为关键步骤，来找到 $D_{KL}(p_{target}||p_{opt})$ 项的解析解。然而，据我们所知，在以往的文献中，矩匹配和扩散概率模型之间的关系尚未被揭示。此外，与期望传播相比，我们强调在扩散概率模型中计算 $p_{target}$ 的二阶矩是非常困难的，因为 $p_{target}$ 涉及一个未知且可能很复杂的数据分布。</p>
+<p>在具有高斯过程的期望传播（Kim和Ghahramani，2006）中，为了便于处理，$p_{target}$ 是单个似然因子与所有其他近似因子的乘积。实际上，选择似然因子的形式，是为了使 $p_{target}$ 的前两阶矩能够很容易地计算或近似。例如，原始的期望传播（Minka，2001）考虑高斯混合似然（或用于分类的伯努利似然），并且可以通过高斯的性质（或分部积分）直接得到矩。此外，以可处理性为代价，期望传播通常没有收敛保证。</p>
+<p>相比之下，本文中的 $p_{target}$ 是由前向过程定义的相应联合分布 $q(x_{0:N})$ 的条件分布 $q(x_{n - 1} | x_{n})$ 。注意，$q(x_{n - 1} | x_{n})$ 的矩计算起来并不容易，因为它涉及一个未知且可能很复杂的数据分布。从技术上讲，在引理13中，我们仔细地使用了以 $x_0$ 为条件的总方差定律，将 $q(x_{n - 1} | x_{n})$ 的二阶矩转换为 $q(x_{0} | x_{n})$ 的二阶矩，正如引理11所证明的，后者可以用分数函数来表示，这令人惊讶。</p>
+<h4 id="H-4-未来工作"><a href="#H-4-未来工作" class="headerlink" title="H.4 未来工作"></a>H.4 未来工作</h4><p>在我们的工作中，主要关注图像数据。将Analytic-DPM应用于其他数据模态，如语音数据（Chen等人，2020），会是很有趣的研究方向。如附录E所述，我们的方法可以应用于连续的扩散概率模型，例如学习前向噪声调度的变分扩散模型（Kingma等人，2021）。研究Analytic-DPM在这些连续扩散概率模型上的表现，是很有吸引力的。最后，将最优反向方差纳入扩散概率模型的训练过程，也是一个有趣的研究方向。</p>
+<h2 id="文章总结"><a href="#文章总结" class="headerlink" title="文章总结"></a>文章总结</h2><p>这篇论文</p>
+<h3 id="创新点与主要思想"><a href="#创新点与主要思想" class="headerlink" title="创新点与主要思想"></a>创新点与主要思想</h3><ol>
+<li>加入</li>
+</ol>
+<h3 id="损失函数与模型训练"><a href="#损失函数与模型训练" class="headerlink" title="损失函数与模型训练"></a>损失函数与模型训练</h3><h3 id="不足之处"><a href="#不足之处" class="headerlink" title="不足之处"></a>不足之处</h3><ul>
+<li>1</li>
+</ul>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><ul>
+<li>论文：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2201.06503">Analytic-DPM: an Analytic Estimate of the Optimal Reverse Variance in Diffusion Probabilistic Models</a></li>
+<li>github: <a href=""></a></li>
+<li>博客：<a href=""></a></li>
+</ul>
 
     </div>
 
@@ -453,7 +1003,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1. 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%83%8C%E6%99%AF"><span class="nav-number">1.3.</span> <span class="nav-text">2. 背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%9C%80%E4%BC%98%E5%8F%8D%E5%90%91%E6%96%B9%E5%B7%AE%E7%9A%84%E8%A7%A3%E6%9E%90%E4%BC%B0%E8%AE%A1"><span class="nav-number">1.4.</span> <span class="nav-text">3. 最优反向方差的解析估计</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E7%95%8C%E5%AE%9A%E6%9C%80%E4%BC%98%E5%8F%8D%E5%90%91%E6%96%B9%E5%B7%AE%E4%BB%A5%E5%87%8F%E5%B0%91%E5%81%8F%E5%B7%AE"><span class="nav-number">1.4.1.</span> <span class="nav-text">3.1 界定最优反向方差以减少偏差</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%9C%80%E4%BC%98%E8%BD%A8%E8%BF%B9%E7%9A%84%E8%A7%A3%E6%9E%90%E4%BC%B0%E8%AE%A1"><span class="nav-number">1.5.</span> <span class="nav-text">4. 最优轨迹的解析估计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E5%BE%97%E5%88%86%E5%87%BD%E6%95%B0%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%8D%8F%E6%96%B9%E5%B7%AE%E7%9F%A9%E9%98%B5%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">1.6.</span> <span class="nav-text">5. 得分函数与数据协方差矩阵之间的关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.7.</span> <span class="nav-text">6. 实验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#6-1-%E4%BC%BC%E7%84%B6%E6%80%A7%E7%BB%93%E6%9E%9C"><span class="nav-number">1.7.1.</span> <span class="nav-text">6.1 似然性结果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-2-%E6%A0%B7%E6%9C%AC%E8%B4%A8%E9%87%8F"><span class="nav-number">1.7.2.</span> <span class="nav-text">6.2 样本质量</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.8.</span> <span class="nav-text">7. 相关工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-%E7%BB%93%E8%AE%BA"><span class="nav-number">1.9.</span> <span class="nav-text">8. 结论</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1. 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%83%8C%E6%99%AF"><span class="nav-number">1.3.</span> <span class="nav-text">2. 背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%9C%80%E4%BC%98%E5%8F%8D%E5%90%91%E6%96%B9%E5%B7%AE%E7%9A%84%E8%A7%A3%E6%9E%90%E4%BC%B0%E8%AE%A1"><span class="nav-number">1.4.</span> <span class="nav-text">3. 最优反向方差的解析估计</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E7%95%8C%E5%AE%9A%E6%9C%80%E4%BC%98%E5%8F%8D%E5%90%91%E6%96%B9%E5%B7%AE%E4%BB%A5%E5%87%8F%E5%B0%91%E5%81%8F%E5%B7%AE"><span class="nav-number">1.4.1.</span> <span class="nav-text">3.1 界定最优反向方差以减少偏差</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%9C%80%E4%BC%98%E8%BD%A8%E8%BF%B9%E7%9A%84%E8%A7%A3%E6%9E%90%E4%BC%B0%E8%AE%A1"><span class="nav-number">1.5.</span> <span class="nav-text">4. 最优轨迹的解析估计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E5%BE%97%E5%88%86%E5%87%BD%E6%95%B0%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%8D%8F%E6%96%B9%E5%B7%AE%E7%9F%A9%E9%98%B5%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">1.6.</span> <span class="nav-text">5. 得分函数与数据协方差矩阵之间的关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.7.</span> <span class="nav-text">6. 实验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#6-1-%E4%BC%BC%E7%84%B6%E6%80%A7%E7%BB%93%E6%9E%9C"><span class="nav-number">1.7.1.</span> <span class="nav-text">6.1 似然性结果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-2-%E6%A0%B7%E6%9C%AC%E8%B4%A8%E9%87%8F"><span class="nav-number">1.7.2.</span> <span class="nav-text">6.2 样本质量</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.8.</span> <span class="nav-text">7. 相关工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-%E7%BB%93%E8%AE%BA"><span class="nav-number">1.9.</span> <span class="nav-text">8. 结论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#A-%E8%AF%81%E6%98%8E%E4%B8%8E%E6%8E%A8%E5%AF%BC"><span class="nav-number">1.10.</span> <span class="nav-text">A 证明与推导</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#A-1-%E5%BC%95%E7%90%86"><span class="nav-number">1.10.1.</span> <span class="nav-text">A.1 引理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#A-2-%E5%AE%9A%E7%90%861%E7%9A%84%E8%AF%81%E6%98%8E"><span class="nav-number">1.10.2.</span> <span class="nav-text">A.2 定理1的证明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#A-3-%E5%AE%9A%E7%90%862%E7%9A%84%E8%AF%81%E6%98%8E"><span class="nav-number">1.10.3.</span> <span class="nav-text">A.3 定理2的证明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#A-4-%E5%88%86%E8%A7%A3%E5%90%8E%E7%9A%84%E6%9C%80%E4%BC%98%E5%BA%93%E5%B0%94%E8%B4%9D%E5%85%8B-%E8%8E%B1%E5%B8%83%E5%8B%92%E6%95%A3%E5%BA%A6%EF%BC%88KL-%E6%95%A3%E5%BA%A6%EF%BC%89%E7%9A%84%E8%AF%81%E6%98%8E"><span class="nav-number">1.10.4.</span> <span class="nav-text">A.4 分解后的最优库尔贝克 - 莱布勒散度（KL 散度）的证明</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#A-5-%E7%AC%AC5%E8%8A%82%E7%9A%84%E6%AD%A3%E5%BC%8F%E7%BB%93%E6%9E%9C%E5%8F%8A%E5%85%B6%E8%AF%81%E6%98%8E"><span class="nav-number">1.11.</span> <span class="nav-text">A.5 第5节的正式结果及其证明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#B-%E6%B1%82%E8%A7%A3%E6%9C%80%E5%B0%8F%E6%88%90%E6%9C%AC%E8%B7%AF%E5%BE%84%E9%97%AE%E9%A2%98%E7%9A%84%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95"><span class="nav-number">1.12.</span> <span class="nav-text">B 求解最小成本路径问题的动态规划算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#C-%E8%BD%A8%E8%BF%B9%E7%BA%A6%E6%9D%9F%E4%B8%8B%E6%9C%80%E4%BC%98%E5%8F%8D%E5%90%91%E6%96%B9%E5%B7%AE%E7%9A%84%E7%95%8C%E9%99%90"><span class="nav-number">1.13.</span> <span class="nav-text">C 轨迹约束下最优反向方差的界限</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#D-%E5%8E%BB%E5%99%AA%E6%89%A9%E6%95%A3%E6%A6%82%E7%8E%87%E6%A8%A1%E5%9E%8B%EF%BC%88DDPM%EF%BC%89%E6%AD%A3%E5%90%91%E8%BF%87%E7%A8%8B%E7%9A%84%E7%AE%80%E5%8C%96%E7%BB%93%E6%9E%9C"><span class="nav-number">1.14.</span> <span class="nav-text">D 去噪扩散概率模型（DDPM）正向过程的简化结果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#E-%E5%AF%B9%E8%BF%9E%E7%BB%AD%E6%97%B6%E9%97%B4%E6%AD%A5%E6%89%A9%E6%95%A3%E8%BF%87%E7%A8%8B%E7%9A%84%E6%89%A9%E5%B1%95"><span class="nav-number">1.15.</span> <span class="nav-text">E 对连续时间步扩散过程的扩展</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#E-1-%E6%9C%80%E4%BC%98%E5%8F%8D%E5%90%91%E6%96%B9%E5%B7%AE%E7%9A%84%E8%A7%A3%E6%9E%90%E4%BC%B0%E8%AE%A1"><span class="nav-number">1.15.1.</span> <span class="nav-text">E.1 最优反向方差的解析估计</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#E-2-%E6%9C%80%E4%BC%98%E5%8F%8D%E5%90%91%E8%BD%A8%E8%BF%B9%E7%9A%84%E8%A7%A3%E6%9E%90%E4%BC%B0%E8%AE%A1"><span class="nav-number">1.15.2.</span> <span class="nav-text">E.2 最优反向轨迹的解析估计</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#F%E5%AE%9E%E9%AA%8C%E7%BB%86%E8%8A%82"><span class="nav-number">1.16.</span> <span class="nav-text">F实验细节</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#F-1%E5%9F%BA%E4%BA%8E%E5%88%86%E6%95%B0%E6%A8%A1%E5%9E%8B%E7%9A%84%E7%BB%86%E8%8A%82"><span class="nav-number">1.16.1.</span> <span class="nav-text">F.1基于分数模型的细节</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#F-2%E5%AF%B9%E6%95%B0%E4%BC%BC%E7%84%B6%E5%92%8C%E9%87%87%E6%A0%B7"><span class="nav-number">1.16.2.</span> <span class="nav-text">F.2对数似然和采样</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#F-3%E8%92%99%E7%89%B9%E5%8D%A1%E7%BD%97%E6%A0%B7%E6%9C%AC%E6%95%B0%E9%87%8F%E7%9A%84%E9%80%89%E6%8B%A9%E5%92%8C%CE%93%E7%9A%84%E8%AE%A1%E7%AE%97"><span class="nav-number">1.16.3.</span> <span class="nav-text">F.3蒙特卡罗样本数量的选择和Γ的计算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#F-4%E5%9D%87%E5%8C%80%E8%BD%A8%E8%BF%B9%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.16.4.</span> <span class="nav-text">F.4均匀轨迹的实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#F-5%E8%A1%A83%E7%9A%84%E5%AE%9E%E9%AA%8C%E7%BB%86%E8%8A%82"><span class="nav-number">1.16.5.</span> <span class="nav-text">F.5表3的实验细节</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#G-%E8%A1%A5%E5%85%85%E7%BB%93%E6%9E%9C"><span class="nav-number">1.17.</span> <span class="nav-text">G 补充结果</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#G-1-%E5%8F%8D%E5%90%91%E6%96%B9%E5%B7%AE%E5%92%8C%E5%8F%98%E5%88%86%E8%BE%B9%E7%95%8C%E9%A1%B9%E7%9A%84%E5%8F%AF%E8%A7%86%E5%8C%96"><span class="nav-number">1.17.1.</span> <span class="nav-text">G.1 反向方差和变分边界项的可视化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#G-2-%E8%92%99%E7%89%B9%E5%8D%A1%E7%BD%97%E6%A0%B7%E6%9C%AC%E6%95%B0%E9%87%8F%E7%9A%84%E6%B6%88%E8%9E%8D%E7%A0%94%E7%A9%B6"><span class="nav-number">1.17.2.</span> <span class="nav-text">G.2 蒙特卡罗样本数量的消融研究</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#G-3-%E8%BE%B9%E7%95%8C%E7%9A%84%E7%B4%A7%E6%80%A7"><span class="nav-number">1.17.3.</span> <span class="nav-text">G.3 边界的紧性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#G-4-%E5%AF%B9%E9%87%87%E6%A0%B7%E6%97%B6%E8%A3%81%E5%89%AA-sigma-2-%E7%9A%84%E6%B6%88%E8%9E%8D%E7%A0%94%E7%A9%B6"><span class="nav-number">1.17.4.</span> <span class="nav-text">G.4 对采样时裁剪 $\sigma_{2}$ 的消融研究</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#H-%E9%99%84%E5%8A%A0%E8%AE%A8%E8%AE%BA"><span class="nav-number">1.18.</span> <span class="nav-text">H 附加讨论</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#H-1-%E8%92%99%E7%89%B9%E5%8D%A1%E7%BD%97%E4%BC%B0%E8%AE%A1%E7%9A%84%E9%A2%9D%E5%A4%96%E6%88%90%E6%9C%AC"><span class="nav-number">1.18.1.</span> <span class="nav-text">H.1 蒙特卡罗估计的额外成本</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#H-2-%E6%8F%92%E5%85%A5%E8%A7%A3%E6%9E%90%E4%BC%B0%E8%AE%A1%E5%90%8E%E7%9A%84%E5%8F%98%E5%88%86%E4%B8%8B%E7%95%8C%E7%9A%84%E9%9A%8F%E6%9C%BA%E6%80%A7"><span class="nav-number">1.18.2.</span> <span class="nav-text">H.2 插入解析估计后的变分下界的随机性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#H-3-%E4%B8%8E%E5%85%B6%E4%BB%96%E9%AB%98%E6%96%AF%E6%A8%A1%E5%9E%8B%E5%8F%8A%E5%85%B6%E7%BB%93%E6%9E%9C%E7%9A%84%E6%AF%94%E8%BE%83"><span class="nav-number">1.18.3.</span> <span class="nav-text">H.3 与其他高斯模型及其结果的比较</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#H-4-%E6%9C%AA%E6%9D%A5%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.18.4.</span> <span class="nav-text">H.4 未来工作</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E7%AB%A0%E6%80%BB%E7%BB%93"><span class="nav-number">2.</span> <span class="nav-text">文章总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E6%96%B0%E7%82%B9%E4%B8%8E%E4%B8%BB%E8%A6%81%E6%80%9D%E6%83%B3"><span class="nav-number">2.1.</span> <span class="nav-text">创新点与主要思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E4%B8%8E%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83"><span class="nav-number">2.2.</span> <span class="nav-text">损失函数与模型训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8D%E8%B6%B3%E4%B9%8B%E5%A4%84"><span class="nav-number">2.3.</span> <span class="nav-text">不足之处</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">2.4.</span> <span class="nav-text">参考资料</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
