@@ -36,8 +36,15 @@
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/18/Elucidating-the-Design-Space-of-Diffusion-Based-Generative-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f4.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/18/Elucidating-the-Design-Space-of-Diffusion-Based-Generative-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f5.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/18/Elucidating-the-Design-Space-of-Diffusion-Based-Generative-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t2.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/18/Elucidating-the-Design-Space-of-Diffusion-Based-Generative-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f6.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/18/Elucidating-the-Design-Space-of-Diffusion-Based-Generative-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f7.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/18/Elucidating-the-Design-Space-of-Diffusion-Based-Generative-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f8.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/18/Elucidating-the-Design-Space-of-Diffusion-Based-Generative-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f9.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/18/Elucidating-the-Design-Space-of-Diffusion-Based-Generative-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f10.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/18/Elucidating-the-Design-Space-of-Diffusion-Based-Generative-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f11.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/18/Elucidating-the-Design-Space-of-Diffusion-Based-Generative-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f12.png">
 <meta property="article:published_time" content="2025-03-18T02:50:30.000Z">
-<meta property="article:modified_time" content="2025-04-21T09:17:18.808Z">
+<meta property="article:modified_time" content="2025-04-21T14:24:18.740Z">
 <meta property="article:author" content="Zongqing Li">
 <meta property="article:tag" content="diffusion">
 <meta property="article:tag" content="2022">
@@ -238,7 +245,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-04-21 17:17:18" itemprop="dateModified" datetime="2025-04-21T17:17:18+08:00">2025-04-21</time>
+                <time title="修改时间：2025-04-21 22:24:18" itemprop="dateModified" datetime="2025-04-21T22:24:18+08:00">2025-04-21</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -438,7 +445,516 @@
 <p><strong>社会影响</strong>：我们在样本质量方面的进展如果在像DALL·E 2这样的大规模系统中使用，可能会放大负面社会影响，包括各种虚假信息，以及强化刻板印象和有害偏见等问题<script type="math/tex">34</script>。扩散模型的训练和采样需要消耗大量电力，我们的项目在内部的NVIDIA V100集群上消耗了约250兆瓦时的电量。</p>
 <h3 id="A-更多结果"><a href="#A-更多结果" class="headerlink" title="A. 更多结果"></a>A. 更多结果</h3><p>图6展示了使用Dhariwal和Nichol预训练的ADM模型生成的64×64分辨率的类条件ImageNet图像。将原始的DDIM和iDDPM采样器与我们在确定性和随机设置下（第3和第4节）的采样器进行了比较。图7展示了我们使用改进的训练配置（第5节）从头开始训练模型时获得的相应结果。</p>
 <p>在图8和图9（无条件CIFAR-10）、图10（类条件CIFAR-10）以及图11（FFHQ和AFHQv2）中，将Song等人的原始采样器和训练配置与我们的进行了比较。为便于比较，在不同的训练配置和ODE选择下，每个数据集/场景都使用相同的潜在代码$x_0$。图12展示了使用确定性采样时，不同神经网络函数评估次数（NFE）下生成的图像质量。</p>
-<p>表3和表4总结了在各种数据集上确定性和随机采样方法的数值结果，之前在图2和图4中以NFE的函数形式展示过。 </p>
+<p>表3和表4总结了在各种数据集上确定性和随机采样方法的数值结果，之前在图2和图4中以NFE的函数形式展示过。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f6.png"></th>
+<th style="text-align:center"><img src="f7.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">**</td>
+<td style="text-align:center">**</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f8.png"></th>
+<th style="text-align:center"><img src="f9.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">**</td>
+<td style="text-align:center">**</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f10.png"></th>
+<th style="text-align:center"><img src="f11.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">**</td>
+<td style="text-align:center">**</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f12.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">**</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="B-公式推导"><a href="#B-公式推导" class="headerlink" title="B. 公式推导"></a>B. 公式推导</h3><h4 id="B-1-先前工作中的原始ODE-SDE公式"><a href="#B-1-先前工作中的原始ODE-SDE公式" class="headerlink" title="B.1 先前工作中的原始ODE/SDE公式"></a>B.1 先前工作中的原始ODE/SDE公式</h4><p>Song等人将他们的正向随机微分方程（SDE，论文[49]中的公式5）定义为：</p>
+<script type="math/tex; mode=display">dx = f(x, t)dt + g(t)d\omega_t \tag{9}</script><p>其中，$\omega_t$是标准维纳过程，$f(\cdot, t): \mathbb{R}^{d} \to \mathbb{R}^{d}$和$g(\cdot): \mathbb{R} \to \mathbb{R}$分别是漂移系数和扩散系数，这里$d$是数据集的维度。这些系数在方差保持（VP）和方差爆炸（VE）公式中的选择有所不同，并且$f(\cdot)$始终具有$f(x, t) = f(t)x$的形式，其中$f(\cdot): \mathbb{R} \to \mathbb{R}$。因此，该SDE可以等效地写为：</p>
+<script type="math/tex; mode=display">dx = f(t)xdt + g(t)d\omega_t \tag{10}</script><p>这个SDE的扰动核（论文[49]中的公式29）具有一般形式：</p>
+<script type="math/tex; mode=display">p_{0t}(x(t)|x(0)) = \mathcal{N}(x(t); s(t)x(0), s(t)^2\sigma(t)^2I) \tag{11}</script><p>其中，$\mathcal{N}(x; \mu, \sum)$表示在$x$处评估的$\mathcal{N}(\mu, \sum)$的概率密度函数</p>
+<script type="math/tex; mode=display">s(t) = \exp(\int_{0}^{t}f(\xi)d\xi), \quad and \quad \sigma(t) = \sqrt{\int_{0}^{t}\frac{g(\xi)^2}{s(\xi)^2}d\xi} \tag{12}</script><p>边缘分布$p_t(x)$是通过对$x(0)$上的扰动核进行积分得到的：</p>
+<script type="math/tex; mode=display">p_t(x) = \int_{\mathbb{R}^{d}}p_{0t}(x|x_0)p_{data}(x_0)dx_0 \tag{13}</script><p>Song等人定义了概率流常微分方程（ODE，论文[49]中的公式13），使其遵循相同的$p_t(x)$：</p>
+<script type="math/tex; mode=display">dx = \left[f(t)x - \frac{1}{2}g(t)^2\nabla_x \log p_t(x)\right]dt \tag{14}</script><h4 id="B-2-我们的ODE公式（公式1和公式4）"><a href="#B-2-我们的ODE公式（公式1和公式4）" class="headerlink" title="B.2 我们的ODE公式（公式1和公式4）"></a>B.2 我们的ODE公式（公式1和公式4）</h4><p>原始的ODE公式（公式14）是围绕函数$f$和$g$构建的，这些函数直接对应于公式中出现的特定项；边缘分布的性质（公式12）只能基于这些函数间接推导出来。然而，$f$和$g$本身在实际中并没有太大的意义，而边缘分布在首先训练模型、启动采样过程以及理解ODE在实践中的行为方面至关重要。鉴于概率流ODE的思想是匹配特定的一组边缘分布，将边缘分布视为头等重要的对象并直接基于$\sigma(t)$和$s(t)$定义ODE是有意义的，这样就无需$f(t)$和$g(t)$了。</p>
+<p>让我们首先以封闭形式表达公式13中的边缘分布：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+p_t(x) &= \int_{\mathbb{R}^{d}}p_{0t}(x|x_0)p_{data}(x_0)dx_0 \tag{15}\\
+&= \int_{\mathbb{R}^{d}}p_{data}(x_0)[\mathcal{N}(x; s(t)x_0, s(t)^2\sigma(t)^2I)]dx_0 \tag{16}\\
+&= \int_{\mathbb{R}^{d}}p_{data}(x_0)[s(t)^{-d}\mathcal{N}(x/s(t); x_0, \sigma(t)^2I)]dx_0 \tag{17}\\
+&= s(t)^{-d}\int_{\mathbb{R}^{d}}p_{data}(x_0)\mathcal{N}(x/s(t); x_0, \sigma(t)^2I)dx_0 \tag{18}\\
+&= s(t)^{-d}[p_{data} * \mathcal{N}(0, \sigma(t)^2I)](x/s(t))\tag{19}
+\end{align*}</script><p>其中，$p_a * p_b$表示概率密度函数$p_a$和$p_b$的卷积。括号内的表达式对应于通过向样本中添加独立同分布的高斯噪声得到的$p_{data}$的平滑版本。我们将这个分布表示为$p(x; \sigma)$：</p>
+<script type="math/tex; mode=display">p(x; \sigma) = p_{data} * \mathcal{N}(0, \sigma(t)^2I) \quad 且 \quad p_t(x) = s(t)^{-d}p(x/s(t); \sigma(t)) \tag{20}</script><p>现在，我们可以使用$p(x; \sigma)$而不是$p_t(x)$来表达概率流ODE（公式14）：</p>
+<script type="math/tex; mode=display">\begin{align*}
+dx &= \left[f(t)x - \frac{1}{2}g(t)^2\nabla_x \log [p_t(x)]\right]dt \tag{21}\\
+&= \left[f(t)x - \frac{1}{2}g(t)^2\nabla_x \log [s(t)^{-d}p(x/s(t); \sigma(t))]\right]dt \tag{22}\\
+&= \left[f(t)x - \frac{1}{2}g(t)^2\left[\nabla_x \log s(t)^{-d} + \nabla_x \log p(x/s(t); \sigma(t))\right]\right]dt \tag{23}\\
+&= \left[f(t)x - \frac{1}{2}g(t)^2\nabla_x \log p(x/s(t); \sigma(t))\right]dt \tag{24}
+\end{align*}</script><p>接下来，根据公式12，我们用$s(t)$来重写$f(t)$：</p>
+<script type="math/tex; mode=display">\exp\left(\int_{0}^{t}f(\xi)d\xi\right) = s(t) \tag{25}</script><script type="math/tex; mode=display">\int_{0}^{t}f(\xi)d\xi = \log s(t) \tag{26}</script><script type="math/tex; mode=display">\frac{d}{dt}\left[\int_{0}^{t}f(\xi)d\xi\right] = \frac{d}{dt}[\log s(t)] \tag{27}</script><script type="math/tex; mode=display">f(t) = \frac{\dot{s}(t)}{s(t)} \tag{28}</script><p>类似地，我们也可以用$\sigma(t)$来重写$g(t)$：</p>
+<script type="math/tex; mode=display">\sqrt{\int_{0}^{t}\frac{g(\xi)^2}{s(\xi)^2}d\xi} = \sigma(t) \tag{29}</script><script type="math/tex; mode=display">\int_{0}^{t}\frac{g(\xi)^2}{s(\xi)^2}d\xi = \sigma(t)^2 \tag{30}</script><script type="math/tex; mode=display">\frac{d}{dt}\left[\int_{0}^{t}\frac{g(\xi)^2}{s(\xi)^2}d\xi\right] = \frac{d}{dt}[\sigma(t)^2] \tag{31}</script><script type="math/tex; mode=display">\frac{g(t)^2}{s(t)^2} = 2\dot{\sigma}(t)\sigma(t) \tag{32}</script><script type="math/tex; mode=display">\frac{g(t)}{s(t)} = \sqrt{2\dot{\sigma}(t)\sigma(t) \tag{33}}</script><script type="math/tex; mode=display">g(t) = s(t)\sqrt{2\dot{\sigma}(t)\sigma(t)} \tag{34}</script><p>最后，将$f$（公式28）和$g$（公式34）代入公式24中的ODE：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+dx &= \left[[f(t)]x - \frac{1}{2}[g(t)]^2\nabla_x \log p(x/s(t); \sigma(t))\right]dt \tag{35} \\
+&= \left[\left[\frac{\dot{s}(t)}{s(t)}\right]x - \frac{1}{2}[s(t)\sqrt{2\dot{\sigma}(t)\sigma(t)}]^2\nabla_x \log p(x/s(t); \sigma(t))\right]dt \tag{36}\\
+&= \left[\left[\frac{\dot{s}(t)}{s(t)}\right]x - \frac{1}{2}\left[2s(t)^2\dot{\sigma}(t)\sigma(t)\right]\nabla_x \log p(x/s(t); \sigma(t))\right]dt \tag{37}\\
+&= \left[\frac{\dot{s}(t)}{s(t)}x - s(t)^2\dot{\sigma}(t)\sigma(t)\nabla_x \log p\left(\frac{x}{s(t)}; \sigma(t)\right)\right]dt\tag{38}
+\end{align*}</script><p>这样我们就得到了论文主体中的公式4，当设置$s(t) = 1$时，就恢复到公式1：</p>
+<script type="math/tex; mode=display">dx = -\dot{\sigma}(t)\sigma(t)\nabla_x \log p(x; \sigma(t))dt \tag{39}</script><p>我们的公式（公式4）强调了一个事实，即概率流ODE的每一个实现都只是同一个规范ODE的重新参数化；改变$\sigma(t)$对应于对$t$进行重新参数化，而改变$s(t)$对应于对$x$进行重新参数化。</p>
+<h4 id="B-3-去噪分数匹配（公式2和公式3）"><a href="#B-3-去噪分数匹配（公式2和公式3）" class="headerlink" title="B.3 去噪分数匹配（公式2和公式3）"></a>B.3 去噪分数匹配（公式2和公式3）</h4><p>为了完整性，我们推导有限数据集下分数匹配和去噪之间的联系。关于这个主题的更一般处理和进一步背景，请参见Hyvärinen和Vincent的研究。</p>
+<p>假设我们的训练集由有限数量的样本$\{y_1, …, y_Y\}$组成。这意味着$p_{data}(x)$由狄拉克δ分布的混合表示：</p>
+<script type="math/tex; mode=display">p_{data}(x) = \frac{1}{Y}\sum_{i = 1}^{Y}\delta(x - y_i) \tag{40}</script><p>这使得我们也可以基于公式20以封闭形式表达$p(x; \sigma)$：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+p(x; \sigma) &= p_{data} * \mathcal{N}(0, \sigma(t)^2I) \tag{41}\\
+&= \int_{\mathbb{R}^{d}}p_{data}(x_0)\mathcal{N}(x; x_0, \sigma^2I)dx_0 \tag{42}\\
+&= \int_{\mathbb{R}^{d}}\left[\frac{1}{Y}\sum_{i = 1}^{Y}\delta(x_0 - y_i)\right]\mathcal{N}(x; x_0, \sigma^2I)dx_0 \tag{43}\\
+&= \frac{1}{Y}\sum_{i = 1}^{Y}\int_{\mathbb{R}^{d}}\mathcal{N}(x; x_0, \sigma^2I)\delta(x_0 - y_i)dx_0 \tag{44}\\
+&= \frac{1}{Y}\sum_{i = 1}^{Y}\mathcal{N}(x; y_i, \sigma^2I) \tag{45}
+\end{align*}</script><p>现在考虑公式2中的去噪分数匹配损失。通过展开期望，我们可以将公式重写为对噪声样本$x$的积分：</p>
+<script type="math/tex; mode=display">\begin{align*}
+\mathcal{L}(D; \sigma) &= \mathbb{E}_{y \sim p_{data}}\mathbb{E}_{n \sim \mathcal{N}(0, \sigma^2I)}\|D(y + n; \sigma) - y\|_2^2 \tag{46}\\
+&= \mathbb{E}_{y \sim p_{data}}\mathbb{E}_{x \sim \mathcal{N}(y, \sigma^2I)}\|D(x; \sigma) - y\|_2^2 \tag{47}\\
+&= \mathbb{E}_{y \sim p_{data}}\int_{\mathbb{R}^{d}}\mathcal{N}(x; y, \sigma^2I)\|D(x; \sigma) - y\|_2^2dx \tag{48}\\
+&= \frac{1}{Y}\sum_{i = 1}^{Y}\int_{\mathbb{R}^{d}}\mathcal{N}(x; y_i, \sigma^2I)\|D(x; \sigma) - y_i\|_2^2dx \tag{49}\\
+&= \int_{\mathbb{R}^{d}}\frac{1}{Y}\sum_{i = 1}^{Y}\mathcal{N}(x; y_i, \sigma^2I)\|D(x; \sigma) - y_i\|_2^2dx \tag{50}
+\end{align*}</script><p>公式50意味着我们可以通过独立地对每个$x$最小化$\mathcal{L}(D; x, \sigma)$来最小化$\mathcal{L}(D; \sigma)$：</p>
+<script type="math/tex; mode=display">D(x; \sigma) = \arg\min_{D(x; \sigma)}\mathcal{L}(D; x, \sigma) \tag{51}</script><p>这是一个凸优化问题；通过将关于$D(x; \sigma)$的梯度设为零，可以唯一确定其解：</p>
+<script type="math/tex; mode=display">\begin{align*}
+0 &= \nabla_{D(x; \sigma)}[\mathcal{L}(D; x, \sigma)] \tag{52}\\
+0 &= \nabla_{D(x; \sigma)}\left[\frac{1}{Y}\sum_{i = 1}^{Y}\mathcal{N}(x; y_i, \sigma^2I)\|D(x; \sigma) - y_i\|_2^2\right] \tag{53}\\
+0 &= \sum_{i = 1}^{Y}\mathcal{N}(x; y_i, \sigma^2I)\nabla_{D(x; \sigma)}\left[\|D(x; \sigma) - y_i\|_2^2\right] \tag{54}\\
+0 &= \sum_{i = 1}^{Y}\mathcal{N}(x; y_i, \sigma^2I)[2D(x; \sigma) - 2y_i] \tag{55}\\
+0 &=  \left[\sum_{i = 1}^{Y}\mathcal{N}(x; y_i, \sigma^2I)\right]D(x; \sigma) - \sum_{i = 1}^{Y}\mathcal{N}(x; y_i, \sigma^2I)y_i \tag{56}\\
+D(x; \sigma) &=  \frac{\sum_{i}\mathcal{N}(x; y_i, \sigma^2I)y_i}{\sum_{i}\mathcal{N}(x; y_i, \sigma^2I)} \tag{57}
+\end{align*}</script><p>这给出了理想去噪器$D(x; \sigma)$的封闭形式解。注意，对于小数据集，公式57在实践中是可计算的——我们在图1b中展示了CIFAR-10的结果。<br>接下来，考虑公式45中定义的分布$p(x; \sigma)$的分数：</p>
+<script type="math/tex; mode=display">\begin{align*}
+\nabla_x \log p(x; \sigma) &= \frac{\nabla_x p(x; \sigma)}{p(x; \sigma)} \tag{58}\\
+&= \frac{\nabla_x\left[\frac{1}{Y}\sum_{i}\mathcal{N}(x; y_i, \sigma^2I)\right]}{\left[\frac{1}{Y}\sum_{i}\mathcal{N}(x; y_i, \sigma^2I)\right]} \tag{59}\\
+&= \frac{\sum_{i}\nabla_x \mathcal{N}(x; y_i, \sigma^2I)}{\sum_{i}\mathcal{N}(x; y_i, \sigma^2I)} \tag{60}
+\end{align*}</script><p>我们可以进一步简化公式60的分子：</p>
+<script type="math/tex; mode=display">\begin{align*}
+\nabla_x \mathcal{N}(x; y_i, \sigma^2I) &= \nabla_x\left[\left(2\pi\sigma^2\right)^{-\frac{d}{2}}\exp\frac{\|x - y_i\|_2^2}{-2\sigma^2}\right] \tag{61}\\
+&= \left(2\pi\sigma^2\right)^{-\frac{d}{2}}\nabla_x\left[\exp\frac{\|x - y_i\|_2^2}{-2\sigma^2}\right]\tag{62}\\
+&= \left[\left(2\pi\sigma^2\right)^{-\frac{d}{2}}\exp\frac{\|x - y_i\|_2^2}{-2\sigma^2}\right]\nabla_x\left[\frac{\|x - y_i\|_2^2}{-2\sigma^2}\right]\tag{63}\\
+&= \mathcal{N}(x; y_i, \sigma^2I)\nabla_x\left[\frac{\|x - y_i\|_2^2}{-2\sigma^2}\right]\tag{64}\\
+&= \mathcal{N}(x; y_i, \sigma^2I)\left[\frac{y_i - x}{\sigma^2}\right]\tag{65}
+\end{align*}</script><p>将结果代回公式60：</p>
+<script type="math/tex; mode=display">\begin{align*}
+\nabla_x \log p(x; \sigma) &= \frac{\sum_{i}\nabla_x \mathcal{N}(x; y_i, \sigma^2I)}{\sum_{i}\mathcal{N}(x; y_i, \sigma^2I)} \tag{66}\\
+&= \frac{\sum_{i}\mathcal{N}(x; y_i, \sigma^2I)\left[\frac{y_i - x}{\sigma^2}\right]}{\sum_{i}\mathcal{N}(x; y_i, \sigma^2I)} \tag{67}\\
+&= \left(\frac{\sum_{i}\mathcal{N}(x; y_i, \sigma^2I)y_i}{\sum_{i}\mathcal{N}(x; y_i, \sigma^2I)} - x\right)/\sigma^2 \tag{68}
+\end{align*}</script><p>注意，公式68中的分数与公式57相同。因此，我们可以等效地将公式68写为：</p>
+<script type="math/tex; mode=display">\nabla_x \log p(x; \sigma) = (D(x; \sigma) - x)/\sigma^2 \tag{69}</script><p>这与论文主体中的公式3一致。</p>
+<h4 id="B-4-在实践中评估我们的ODE（算法1）"><a href="#B-4-在实践中评估我们的ODE（算法1）" class="headerlink" title="B.4 在实践中评估我们的ODE（算法1）"></a>B.4 在实践中评估我们的ODE（算法1）</h4><p>我们将$x$视为原始非缩放变量$\hat{x}$的缩放版本，并将$x = s(t)\hat{x}$代入我们缩放后的ODE（公式4）中出现的分数项：</p>
+<script type="math/tex; mode=display">\begin{align*}
+&\quad\nabla_{x}\log p(x / s(t); \sigma(t)) \tag{70}\\
+&= \nabla_{[s(t)\hat{x}]}\log p([s(t)\hat{x}] / s(t); \sigma(t)) \tag{71} \\
+&= \nabla_{s(t)\hat{x}}\log p(\hat{x}; \sigma(t)) \tag{72}\\
+&= \frac{1}{s(t)}\nabla_{\hat{x}}\log p(\hat{x}; \sigma(t)) \tag{73}
+\end{align*}</script><p>我们可以使用公式3，根据$D(\cdot)$进一步改写这个式子：</p>
+<script type="math/tex; mode=display">\nabla_{x}\log p(x / s(t); \sigma(t)) = \frac{1}{s(t)\sigma(t)^2}(D(\hat{x}; \sigma(t)) - \hat{x}) \tag{74}</script><p>现在，我们将公式74代入公式4中，用我们训练的模型$D_{\theta}(\cdot)$近似理想去噪器$D(\cdot)$：</p>
+<script type="math/tex; mode=display">\begin{align*}
+dx&=\left[\frac{\dot{s}(t)}{s(t)}x - s(t)^2\dot{\sigma}(t)\sigma(t)\left[\frac{1}{s(t)\sigma(t)^2}(D_{\theta}(\hat{x}; \sigma(t)) - \hat{x})\right]\right]dt \tag{75}\\
+&=\left[\frac{\dot{s}(t)}{s(t)}x - \frac{\dot{\sigma}(t)s(t)}{\sigma(t)}(D_{\theta}(\hat{x}; \sigma(t)) - \hat{x})\right]dt \tag{76}
+\end{align*}</script><p>最后，代回$\hat{x} = x / s(t)$：</p>
+<script type="math/tex; mode=display">\begin{align*}
+dx&=\left[\frac{\dot{s}(t)}{s(t)}x - \frac{\dot{\sigma}(t)s(t)}{\sigma(t)}(D_{\theta}([\hat{x}]; \sigma(t)) - [\hat{x}])\right]dt \tag{77}\\
+&=\left[\frac{\dot{s}(t)}{s(t)}x - \frac{\dot{\sigma}(t)s(t)}{\sigma(t)}(D_{\theta}([x / s(t)]; \sigma(t)) - [x / s(t)])\right]dt \tag{78}\\
+&=\left[\frac{\dot{s}(t)}{s(t)}x - \frac{\dot{\sigma}(t)s(t)}{\sigma(t)}D_{\theta}(x / s(t); \sigma(t)) + \frac{\dot{\sigma}(t)}{\sigma(t)}x\right]dt \tag{79}\\
+&=\left[\left(\frac{\dot{\sigma}(t)}{\sigma(t)} + \frac{\dot{s}(t)}{s(t)}\right)x - \frac{\dot{\sigma}(t)s(t)}{\sigma(t)}D_{\theta}(x / s(t); \sigma(t))\right]dt \tag{80}
+\end{align*}</script><p>我们可以将公式80等效地写为：</p>
+<script type="math/tex; mode=display">\frac{dx}{dt} = \left(\frac{\dot{\sigma}(t)}{\sigma(t)} + \frac{\dot{s}(t)}{s(t)}\right)x - \frac{\dot{\sigma}(t)s(t)}{\sigma(t)}D_{\theta}\left(\frac{x}{s(t)}; \sigma(t)\right) \tag{81}</script><p>这与算法1的第4行和第7行一致。</p>
+<h4 id="B-5-我们的SDE公式（公式6）"><a href="#B-5-我们的SDE公式（公式6）" class="headerlink" title="B.5 我们的SDE公式（公式6）"></a>B.5 我们的SDE公式（公式6）</h4><p>我们通过以下策略推导公式6中的SDE：</p>
+<ul>
+<li>期望的边际密度$p(x;\sigma(t))$是数据密度$p_{data}$与标准差为$\sigma(t)$的各向同性高斯密度的卷积（见公式20）。因此，作为时间$t$的函数，该密度根据具有时变扩散率的热扩散偏微分方程演化。第一步，我们找到这个偏微分方程。</li>
+<li>然后，我们使用福克 - 普朗克方程来恢复一族SDE，其密度根据这个偏微分方程演化。公式6是通过对这族方程进行适当的参数化得到的。</li>
+</ul>
+<h5 id="B-5-1-通过热扩散生成边际分布"><a href="#B-5-1-通过热扩散生成边际分布" class="headerlink" title="B.5.1 通过热扩散生成边际分布"></a>B.5.1 通过热扩散生成边际分布</h5><p>我们考虑概率密度$q(x,t)$的时间演化。我们的目标是找到一个偏微分方程，其初始值$q(x,0) := p_{data}(x)$的解为$q(x,t)=p(x,\sigma(t))$。也就是说，这个偏微分方程应该再现我们在公式20中假设的边际分布。</p>
+<p>期望的边际分布是$p_{data}$与具有时变标准差$\sigma(t)$的各向同性正态分布的卷积，因此，可以由具有时变扩散率$\kappa(t)$的热方程生成。在傅里叶域中分析这种情况最为方便，在傅里叶域中，边际密度只是高斯函数与变换后的数据密度的逐点乘积。为了找到能产生正确标准差的扩散率，我们首先写出热方程偏微分方程：</p>
+<script type="math/tex; mode=display">\frac{\partial q(x,t)}{\partial t}=\kappa(t)\Delta_xq(x,t)\tag{82}</script><p>公式82在$x$维度上进行傅里叶变换后的对应方程为：</p>
+<script type="math/tex; mode=display">\frac{\partial \hat{q}(\nu,t)}{\partial t}=-\kappa(t)|\nu|^2\hat{q}(\nu,t) \tag{83}</script><p>目标解$q(x,t)$及其傅里叶变换$\hat{q}(\nu,t)$由公式20给出：</p>
+<script type="math/tex; mode=display">q(x,t)=p(x;\sigma(t)) = p_{data}(x)*\mathcal{N}(0,\sigma(t)^2I) \tag{84}</script><script type="math/tex; mode=display">\hat{q}(\nu,t)=\hat{p}_{data}(\nu)\exp\left(-\frac{1}{2}|\nu|^2\sigma(t)^2\right) \tag{85}</script><p>对目标解沿时间轴求导，我们得到：</p>
+<script type="math/tex; mode=display">\begin{align*}
+\frac{\partial \hat{q}(\nu,t)}{\partial t}&=-\dot{\sigma}(t)\sigma(t)|\nu|^2\hat{p}_{data}(\nu)\exp\left(-\frac{1}{2}|\nu|^2\sigma(t)^2\right) \tag{86 }\\
+&=-\dot{\sigma}(t)\sigma(t)|\nu|^2\hat{q}(\nu,t) \tag{87}
+\end{align*}</script><p>公式83和87的左边是相同的。使它们相等，我们可以求解出产生期望演化的$\kappa(t)$：</p>
+<script type="math/tex; mode=display">-\kappa(t)|\nu|^2\hat{q}(\nu,t)=-\dot{\sigma}(t)\sigma(t)|\nu|^2\hat{q}(\nu,t) \tag{88}</script><script type="math/tex; mode=display">\kappa(t)=\dot{\sigma}(t)\sigma(t) \tag{89}</script><p>总之，对应于噪声水平$\sigma(t)$的期望边际密度由偏微分方程</p>
+<script type="math/tex; mode=display">\frac{\partial q(x,t)}{\partial t}=\dot{\sigma}(t)\sigma(t)\Delta_xq(x,t) \tag{90}</script><p>从初始密度$q(x,0)=p_{data}(x)$生成。</p>
+<h5 id="B-5-2-我们的SDE推导"><a href="#B-5-2-我们的SDE推导" class="headerlink" title="B.5.2 我们的SDE推导"></a>B.5.2 我们的SDE推导</h5><p>给定一个SDE</p>
+<script type="math/tex; mode=display">dx = f(x,t)dt+g(x,t)d\omega_t \tag{91}</script><p>福克 - 普朗克偏微分方程描述了其解概率密度$r(x,t)$的时间演化：</p>
+<script type="math/tex; mode=display">\frac{\partial r(x,t)}{\partial t}=-\nabla_x\cdot(f(x,t)r(x,t))+\frac{1}{2}\nabla_x\nabla_x:(D(x,t)r(x,t)) \tag{92}</script><p>其中$D_{ij}=\sum_{k}g_{ik}g_{jk}$是扩散张量。我们考虑$g(x,t)=g(t)I$这种与$x$无关的白噪声添加的特殊情况，此时方程简化为：</p>
+<script type="math/tex; mode=display">\frac{\partial r(x,t)}{\partial t}=-\nabla_x\cdot(f(x,t)r(x,t))+\frac{1}{2}g(t)^2\Delta_xr(x,t) \tag{93}</script><p>我们正在寻找一个SDE，其解密度由公式90中的偏微分方程描述。令$r(x,t)=q(x,t)$，并使公式93和90相等，我们发现SDE必须满足的充分条件：</p>
+<script type="math/tex; mode=display">-\nabla_x\cdot(f(x,t)q(x,t))+\frac{1}{2}g(t)^2\Delta_xq(x,t)=\dot{\sigma}(t)\sigma(t)\Delta_xq(x,t) \tag{94}</script><script type="math/tex; mode=display">\nabla_x\cdot(f(x,t)q(x,t))=\left(\frac{1}{2}g(t)^2-\dot{\sigma}(t)\sigma(t)\right)\Delta_xq(x,t)\tag{95}</script><p>任何满足此方程的函数$f(x,t)$和$g(t)$的选择都构成一个我们所寻找的SDE。现在让我们找到这样一组特定的解。关键思想是利用恒等式$\nabla_x\cdot\nabla_x=\Delta_x$。实际上，如果我们对于任何$v(t)$的选择，设置$f(x,t)q(x,t)=v(t)\nabla_xq(x,t)$，那么$\Delta_xq(x,t)$项会出现在等式两边并消去：</p>
+<script type="math/tex; mode=display">\nabla_x\cdot(v(t)\nabla_xq(x,t))=\left(\frac{1}{2}g(t)^2-\dot{\sigma}(t)\sigma(t)\right)\Delta_xq(x,t) \tag{96}</script><script type="math/tex; mode=display">v(t)\Delta_xq(x,t)=\left(\frac{1}{2}g(t)^2-\dot{\sigma}(t)\sigma(t)\right)\Delta_xq(x,t)\tag{97}</script><script type="math/tex; mode=display">v(t)=\frac{1}{2}g(t)^2-\dot{\sigma}(t)\sigma(t) \tag{98}</script><p>上述$f(x,t)$实际上与分数函数成比例，因为该公式与密度对数的梯度相匹配：</p>
+<script type="math/tex; mode=display">\begin{align*}
+f(x,t)&=v(t)\frac{\nabla_xq(x,t)}{q(x,t)} \tag{99}\\
+&=v(t)\nabla_x\log q(x,t) \tag{100}\\
+&=\left(\frac{1}{2}g(t)^2-\dot{\sigma}(t)\sigma(t)\right)\nabla_x\log q(x,t)\tag{101}
+\end{align*}</script><p>将其代回公式91，并将$q(x,t)$替换为$p(x;\sigma(t))$，我们恢复了一族SDE，对于任何$g(t)$的选择，其解密度都具有期望的噪声水平为$\sigma(t)$的边际分布：</p>
+<script type="math/tex; mode=display">dx=\left(\frac{1}{2}g(t)^2-\dot{\sigma}(t)\sigma(t)\right)\nabla_x\log p(x;\sigma(t))dt+g(t)d\omega_t\tag{102}</script><p>自由参数$g(t)$有效地指定了在任何给定时刻的噪声替换率。$g(t)=0$的特殊情况对应于概率流ODE。然而，由$g(t)$进行的参数化并不是特别直观。为了获得更具可解释性的参数化，我们设置$g(t)=\sqrt{2\beta(t)}\sigma(t)$，这就得到了论文主体中公式6的（正向）SDE：</p>
+<script type="math/tex; mode=display">dx_+=-\dot{\sigma}(t)\sigma(t)\nabla_x\log p(x;\sigma(t))dt+\beta(t)\sigma(t)^2\nabla_x\log p(x;\sigma(t))dt+\sqrt{2\beta(t)}\sigma(t)d\omega_t \tag{103}</script><p>现在噪声替换与噪声的标准差$\sigma(t)$成比例，比例因子为$\beta(t)$。实际上，根据公式3展开中间项中的分数函数，得到$\beta(t)[D(x;\sigma(t)) - x]dt$，这使得$x$与负噪声分量成比例地变化；随机项以相同的速率注入新的噪声。直观地说，根据当前噪声标准差缩放朗之万探索的幅度是一个合理的基线，因为由于密度的模糊，数据流形实际上被“扩展”了这个量。</p>
+<p>在去噪扩散中使用的反向SDE，只需对公式103应用Anderson的时间反转公式（如Song等人的论文[49]中的公式6所述）即可得到；反转的全部效果是中间项的符号变化。</p>
+<p>SDE的缩放推广可以使用与前面推导ODE类似的方法得到。因此，这里省略其推导过程。</p>
+<h4 id="B-6-我们的预处理和训练（公式8）"><a href="#B-6-我们的预处理和训练（公式8）" class="headerlink" title="B.6 我们的预处理和训练（公式8）"></a>B.6 我们的预处理和训练（公式8）</h4><p>根据公式2，给定去噪器 $D_{\theta}$ 在给定噪声水平 $\sigma$ 下的去噪分数匹配损失为：</p>
+<script type="math/tex; mode=display">\mathcal{L}(D_{\theta};\sigma)=\mathbb{E}_{y \sim p_{data}}\mathbb{E}_{n \sim \mathcal{N}(0, \sigma^{2}I)}\left\|D_{\theta}(y + n;\sigma)-y\right\|_{2}^{2} \tag{104}</script><p>我们通过对噪声水平求$L(D_{\theta} ; \sigma)$的加权期望，得到整体训练损失：</p>
+<script type="math/tex; mode=display">\begin{align}
+\mathcal{L}(D_{\theta})&=\mathbb{E}_{\sigma \sim p_{train}}[\lambda(\sigma)\mathcal{L}(D_{\theta};\sigma)] \tag{105}\\
+&=\mathbb{E}_{\sigma \sim p_{train}}[\lambda(\sigma)\mathbb{E}_{y \sim p_{data}}\mathbb{E}_{n \sim \mathcal{N}(0, \sigma^{2}I)}\left\|D_{\theta}(y + n;\sigma)-y\right\|_{2}^{2}] \tag{106}\\
+&=\mathbb{E}_{\sigma \sim p_{train}}\mathbb{E}_{y \sim p_{data}}\mathbb{E}_{n \sim \mathcal{N}(0,\sigma ^{2}I)}[\lambda (\sigma)\left\|D_{\theta}(y + n;\sigma)-y\right\|_{2}^{2}] \tag{107}\\
+&=\mathbb{E}_{\sigma, y, n}[\lambda(\sigma)\left\|D_{\theta}(y + n;\sigma)-y\right\|_{2}^{2}] \tag{108}
+\end{align}</script><p>其中，噪声水平根据$\sigma \sim p_{train}$分布，并由$\lambda(\sigma)$加权。</p>
+<p>使用我们在公式7中对 $D_{\theta}(\cdot)$ 的定义，我们可以进一步将 $\mathcal{L}(D_{\theta})$ 重写为：</p>
+<script type="math/tex; mode=display">\begin{align*}
+\mathcal{L}(D_{\theta})
+&= \mathbb{E}_{\sigma \sim p_{\text{train}}} [\lambda(\sigma) \mathcal{L}(D_{\theta}; \sigma)] \tag{105} \\
+&= \mathbb{E}_{\sigma \sim p_{\text{train}}} \left[ \lambda(\sigma) \mathbb{E}_{\boldsymbol{y} \sim p_{\text{data}}} \mathbb{E}_{\boldsymbol{n} \sim \mathcal{N}(\mathbf{0}, \sigma^2 \mathbf{I})} \left\lVert D_{\theta}(\boldsymbol{y} + \boldsymbol{n}; \sigma) - \boldsymbol{y} \right\rVert_2^2 \right] \tag{106} \\
+&= \mathbb{E}_{\sigma \sim p_{\text{train}}} \mathbb{E}_{\boldsymbol{y} \sim p_{\text{data}}} \mathbb{E}_{\boldsymbol{n} \sim \mathcal{N}(\mathbf{0}, \sigma^2 \mathbf{I})} \left[ \lambda(\sigma) \left\lVert D_{\theta}(\boldsymbol{y} + \boldsymbol{n}; \sigma) - \boldsymbol{y} \right\rVert_2^2 \right] \tag{107}\\
+&= \mathbb{E}_{\sigma, \boldsymbol{y}, \boldsymbol{n}} \left[ \lambda(\sigma) \left\lVert D_{\theta}(\boldsymbol{y} + \boldsymbol{n}; \sigma) - \boldsymbol{y} \right\rVert_2^2 \right] \tag{108}
+\end{align*}</script><p>其中噪声水平根据 $\sigma \sim p_{\text{train}}$ 分布，并由 $\lambda(\sigma)$ 加权。</p>
+<p>利用我们在公式（7）中对 $D_{\theta}(\cdot)$ 的定义，我们可以进一步将 $\mathcal{L}(D_{\theta})$ 改写为：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+&\mathbb{E}_{\sigma, \boldsymbol{y}, \boldsymbol{n}} \left[ \lambda(\sigma) \left\lVert c_{\text{skip}}(\sigma)(\boldsymbol{y} + \boldsymbol{n}) + c_{\text{out}}(\sigma) F_{\theta}(c_{\text{in}}(\sigma)(\boldsymbol{y} + \boldsymbol{n}); c_{\text{noise}}(\sigma)) - \boldsymbol{y} \right\rVert_2^2 \right] \tag{109} \\
+=&\mathbb{E}_{\sigma, \boldsymbol{y}, \boldsymbol{n}} \left[ \lambda(\sigma) \left\lVert c_{\text{out}}(\sigma) F_{\theta}(c_{\text{in}}(\sigma)(\boldsymbol{y} + \boldsymbol{n}); c_{\text{noise}}(\sigma)) - (\boldsymbol{y} - c_{\text{skip}}(\sigma)(\boldsymbol{y} + \boldsymbol{n})) \right\rVert_2^2 \right] \tag{110}  \\
+=&\mathbb{E}_{\sigma, \boldsymbol{y}, \boldsymbol{n}} \left[ \lambda(\sigma) c_{\text{out}}(\sigma)^2 \left\lVert F_{\theta}(c_{\text{in}}(\sigma)(\boldsymbol{y} + \boldsymbol{n}); c_{\text{noise}}(\sigma)) - \frac{1}{c_{\text{out}}(\sigma)} (\boldsymbol{y} - c_{\text{skip}}(\sigma)(\boldsymbol{y} + \boldsymbol{n})) \right\rVert_2^2 \right] &\tag{111}\\
+=&\mathbb{E}_{\sigma, \boldsymbol{y}, \boldsymbol{n}} \left[ w(\sigma) \left\lVert F_{\theta}(c_{\text{in}}(\sigma)(\boldsymbol{y} + \boldsymbol{n}); c_{\text{noise}}(\sigma)) - F_{\text{target}}(\boldsymbol{y}, \boldsymbol{n}; \sigma) \right\rVert_2^2 \right] \tag{112}
+\end{align*}</script><p>这与公式8一致，并且对应于使用标准 $L_{2}$ 损失对 $F_{\theta}$ 进行传统监督训练，有效权重为 $w(·)$ ，目标为 $F_{target}(·)$ ，其中：</p>
+<script type="math/tex; mode=display">w(\sigma)=\lambda(\sigma)c_{out}(\sigma)^{2} \quad 且 \quad F_{target}(y, n;\sigma)=\frac{1}{c_{out}(\sigma)}(y - c_{skip}(\sigma)(y + n)) \tag{113}</script><p>现在，我们可以从第一性原理推导出 $c_{in}(\sigma)$、$c_{out}(\sigma)$、$c_{skip}(\sigma)$ 和 $\lambda(\sigma)$ 的公式，如 表1 “我们的方法” 一列所示。</p>
+<p>首先，我们要求 $F_{\theta}(\cdot)$ 的训练输入具有单位方差：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+\text{Var}_{y, n}[c_{in}(\sigma)(y + n)] &= 1 \tag{114}\\
+c_{in}(\sigma)^{2}\text{Var}_{y, n}[y + n] &= 1 \tag{115}\\
+c_{in}(\sigma)^{2}(\sigma_{data}^{2}+\sigma^{2}) &= 1 \tag{116}\\
+c_{in}(\sigma)&=\frac{1}{\sqrt{\sigma^{2}+\sigma_{data}^{2}}} \tag{117}\\
+\end{align*}</script><p>其次，我们要求有效训练目标 $F_{target}$ 具有单位方差：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+\text{Var}_{y, n}[F_{target}(y, n;\sigma)] &= 1 \tag{118}\\
+\text{Var}_{y,n}\left[\frac{1}{c_{out}(\sigma)}(y - c_{skip}(\sigma)(y + n))\right] &= 1 \tag{119}\\
+\frac{1}{c_{out}(\sigma)^{2}}\text{Var}_{y, n}[y - c_{skip}(\sigma)(y + n)] &= 1 \tag{120}\\
+c_{out}(\sigma)^{2}&=\text{Var}_{y, n}[y - c_{skip}(\sigma)(y + n)] \tag{121}\\
+c_{out}(\sigma)^{2}&=\text{Var}_{y, n}[(1 - c_{skip}(\sigma))y + c_{skip}(\sigma)n] \tag{122}\\
+c_{out}(\sigma)^{2}&=(1 - c_{skip}(\sigma))^{2}\sigma_{data}^{2}+c_{skip}(\sigma)^{2}\sigma^{2} \tag{123}\\
+\end{align*}</script><p>第三，我们选择 $c_{skip}(\sigma)$ 来最小化 $c_{out}(\sigma)$，以便尽可能减少 $F_{\theta}$ 的误差放大：</p>
+<script type="math/tex; mode=display">c_{skip}(\sigma)=\arg\min_{c_{skip}(\sigma)}c_{out}(\sigma) \tag{124}</script><p>由于 $c_{out}(\sigma) \geq 0$，我们可以等效地写为：</p>
+<script type="math/tex; mode=display">c_{skip}(\sigma)=\arg\min_{c_{skip}(\sigma)}c_{out}(\sigma)^{2} \tag{125}</script><p>这是一个凸优化问题；通过将关于 $c_{skip}(\sigma)$ 的导数设为零，可以唯一确定其解：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+0&=\frac{d[c_{out}(\sigma)^{2}]}{dc_{skip}(\sigma)} \tag{126}\\
+0&=\frac{d[(1 - c_{skip}(\sigma))^{2}\sigma_{data}^{2}+c_{skip}(\sigma)^{2}\sigma^{2}]}{dc_{skip}(\sigma)} \tag{127}\\
+0&=\sigma_{data}^{2}\frac{d[(1 - c_{skip}(\sigma))^{2}]}{dc_{skip}(\sigma)}+\sigma^{2}\frac{d[c_{skip}(\sigma)^{2}]}{dc_{skip}(\sigma)} \tag{128}\\
+0&=\sigma_{data}^{2}[2c_{skip}(\sigma)-2]+\sigma^{2}[2c_{skip}(\sigma)] \tag{129}\\
+0&=(\sigma^{2}+\sigma_{data}^{2})c_{skip}(\sigma)-\sigma_{data}^{2} \tag{130}\\
+c_{skip}(\sigma)&=\frac{\sigma_{data}^{2}}{\sigma^{2}+\sigma_{data}^{2}} \tag{131}
+\end{align*}</script><p>现在，我们将公式131代入公式123，完成 $c_{out}(\sigma)$ 的公式：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+c_{out}(\sigma)^{2}&=(1 - [c_{skip}(\sigma)])^{2}\sigma_{data}^{2}+[c_{skip}(\sigma)]^{2}\sigma^{2} \tag{132}\\
+c_{out}(\sigma)^{2}&=(1 - [\frac{\sigma_{data}^{2}}{\sigma^{2}+\sigma_{data}^{2}}])^{2}\sigma_{data}^{2}+[\frac{\sigma_{data}^{2}}{\sigma^{2}+\sigma_{data}^{2}}]^{2}\sigma^{2} \tag{133}\\
+c_{out}(\sigma)^{2}&=[\frac{\sigma^{2}\sigma_{data}}{\sigma^{2}+\sigma_{data}^{2}}]^{2}+[\frac{\sigma_{data}^{2}\sigma}{\sigma^{2}+\sigma_{data}^{2}}]^{2} \tag{134}\\
+c_{out}(\sigma)^{2}&=\frac{(\sigma^{2}\sigma_{data})^{2}+(\sigma_{data}^{2}\sigma)^{2}}{(\sigma^{2}+\sigma_{data}^{2})^{2}}\tag{135}\\
+c_{out}(\sigma)^{2}&=\frac{(\sigma\cdot\sigma_{data})^{2}(\sigma^{2}+\sigma_{data}^{2})}{(\sigma^{2}+\sigma_{data}^{2})^{2}} \tag{136}\\
+c_{out}(\sigma)^{2}&=\frac{(\sigma\cdot\sigma_{data})^{2}}{\sigma^{2}+\sigma_{data}^{2}} \tag{137}\\
+c_{out}(\sigma)&=\frac{\sigma\cdot\sigma_{data}}{\sqrt{\sigma^{2}+\sigma_{data}^{2}}} \tag{138}\\
+\end{align*}</script><p>第四，我们要求有效权重 $w(\sigma)$ 在所有噪声水平上是均匀的：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+w(\sigma)&=1\tag{139}\\
+\lambda(\sigma)c_{out}(\sigma)^{2}&=1 \tag{140}\\
+\lambda(\sigma)&=\frac{1}{c_{out}(\sigma)^{2}} \tag{141}\\
+\lambda(\sigma)&=\frac{1}{[\frac{\sigma\cdot\sigma_{data}}{\sqrt{\sigma^{2}+\sigma_{data}^{2}}}]^{2}} \tag{142}\\
+\lambda(\sigma)&=\frac{1}{[\frac{(\sigma\cdot\sigma_{data})^{2}}{\sigma^{2}+\sigma_{data}^{2}}]} \tag{143}\\
+\lambda(\sigma)&=\frac{\sigma^{2}+\sigma_{data}^{2}}{(\sigma\cdot\sigma_{data})^{2}} \tag{144}
+\end{align*}</script><p>我们遵循先前的工作，将输出层权重初始化为零。因此，在初始化时 $F_{\theta}(\cdot)=0$ ，并且在每个噪声水平下损失的期望值为1。通过将 $\lambda(\sigma)$ 和 $c_{skip}(\sigma)$ 的选择代入公式109，并在固定的 $\sigma$ 下考虑，可以看出这一点：</p>
+<script type="math/tex; mode=display">
+
+\begin{align*}
+&\mathbb{E}_{\boldsymbol{y}, \boldsymbol{n}} \left[ \lambda(\sigma) \left\lVert c_{\text{skip}}(\sigma)(\boldsymbol{y} + \boldsymbol{n}) + c_{\text{out}}(\sigma) F_{\theta}(c_{\text{in}}(\sigma)(\boldsymbol{y} + \boldsymbol{n}); c_{\text{noise}}(\sigma)) - \boldsymbol{y} \right\rVert_2^2 \right] \tag{145}\\
+=&\mathbb{E}_{\boldsymbol{y}, \boldsymbol{n}} \left[ \frac{\sigma^2 + \sigma_{\text{data}}^2}{(\sigma \cdot \sigma_{\text{data}})^2} \left\lVert \frac{\sigma_{\text{data}}^2}{\sigma^2 + \sigma_{\text{data}}^2} (\boldsymbol{y} + \boldsymbol{n}) - \boldsymbol{y} \right\rVert_2^2 \right]\tag{146}\\
+=&\mathbb{E}_{\boldsymbol{y}, \boldsymbol{n}} \left[ \frac{\sigma^2 + \sigma_{\text{data}}^2}{(\sigma \cdot \sigma_{\text{data}})^2} \left\lVert \frac{\sigma_{\text{data}}^2 \boldsymbol{n} - \sigma^2 \boldsymbol{y}}{\sigma^2 + \sigma_{\text{data}}^2} \right\rVert_2^2 \right]\tag{147}\\
+=&\mathbb{E}_{\boldsymbol{y}, \boldsymbol{n}} \left[ \frac{1}{\sigma^2 + \sigma_{\text{data}}^2} \left\lVert \frac{\sigma_{\text{data}}}{\sigma} \boldsymbol{n} - \frac{\sigma}{\sigma_{\text{data}}} \boldsymbol{y} \right\rVert_2^2 \right] \tag{148}\\
+=&\frac{1}{\sigma^2 + \sigma_{\text{data}}^2} \mathbb{E}_{\boldsymbol{y}, \boldsymbol{n}} \left[ \frac{\sigma_{\text{data}}^2}{\sigma^2} \langle \boldsymbol{n}, \boldsymbol{n} \rangle + \frac{\sigma^2}{\sigma_{\text{data}}^2} \langle \boldsymbol{y}, \boldsymbol{y} \rangle - 2 \langle \boldsymbol{y}, \boldsymbol{n} \rangle \right] \tag{149}\\
+=&\frac{1}{\sigma^2 + \sigma_{\text{data}}^2} \left[ \frac{\sigma_{\text{data}}^2}{\sigma^2} \underbrace{\text{Var}(\boldsymbol{n})}_{=\sigma^2} + \frac{\sigma^2}{\sigma_{\text{data}}^2} \underbrace{\text{Var}(\boldsymbol{y})}_{=\sigma_{\text{data}}^2} - 2 \underbrace{\text{Cov}(\boldsymbol{y}, \boldsymbol{n})}_{=0} \right] \tag{150} \\
+=& 1\tag{151}
+\end{align*}</script><h3 id="C-在我们的框架中重新构建先前的方法"><a href="#C-在我们的框架中重新构建先前的方法" class="headerlink" title="C. 在我们的框架中重新构建先前的方法"></a>C. 在我们的框架中重新构建先前的方法</h3><p>在本节中，我们推导表1中先前方法的公式，讨论相应的原始采样器和预训练模型，并详细说明在我们的框架中使用它们时的实际注意事项。</p>
+<p>在实践中，这些方法的原始实现在模型输入和输出的定义、图像数据的动态范围、$x$的缩放以及$\sigma$的解释等方面存在很大差异。我们通过标准化统一设置来消除这些差异，在该设置中模型始终符合我们对$F_{\theta}$的定义，图像数据始终在连续范围$[-1, 1]$内表示，并且$x$和$\sigma$的细节始终与公式4一致。</p>
+<p>我们通过始终以双精度执行算法1和算法2来最小化浮点舍入误差的累积。然而，为了最小化运行时间并在网络架构方面与先前的工作保持一致，我们仍然以单精度（float32）执行网络$F_{\theta}(\cdot)$。</p>
+<h4 id="C-1-方差保持公式"><a href="#C-1-方差保持公式" class="headerlink" title="C.1 方差保持公式"></a>C.1 方差保持公式</h4><h5 id="C-1-1-VP采样"><a href="#C-1-1-VP采样" class="headerlink" title="C.1.1 VP采样"></a>C.1.1 VP采样</h5><p>Song等人将VP随机微分方程（SDE，论文[49]中的公式32）定义为：</p>
+<script type="math/tex; mode=display">dx = -\frac{1}{2}(\beta_{min} + t(\beta_{max} - \beta_{min}))xdt + \sqrt{\beta_{min} + t(\beta_{max} - \beta_{min})}d\omega_t \tag{152}</script><p>这与公式10相匹配，其中$f$和$g$的选择如下：</p>
+<script type="math/tex; mode=display">f(t) = -\frac{1}{2}\beta(t), g(t) = \sqrt{\beta(t)}, 且\beta(t) = (\beta_{max} - \beta_{min})t + \beta_{min} \tag{153}</script><p>令$\alpha(t)$表示$\beta(t)$的积分：</p>
+<script type="math/tex; mode=display">\begin{align*}
+\alpha(t) &= \int_{0}^{t}\beta(\xi)d\xi \tag{154}\\
+&= \int_{0}^{t}[(\beta_{max} - \beta_{min})\xi + \beta_{min}]d\xi \tag{155}\\
+&= \frac{1}{2}(\beta_{max} - \beta_{min})t^2 + \beta_{min}t \tag{156}\\
+&= \frac{1}{2}\beta_{d}t^2 + \beta_{min}t \tag{157}
+\end{align*}</script><p>其中$\beta_{d} = \beta_{max} - \beta_{min}$。现在，我们通过将公式153代入公式12来获得$\sigma(t)$的公式：</p>
+<script type="math/tex; mode=display">\begin{align*}
+\sigma(t) &= \sqrt{\int_{0}^{t}\frac{[g(\xi)]^2}{[s(\xi)]^2}d\xi} \tag{158}\\
+&= \sqrt{\int_{0}^{t}\frac{[\sqrt{\beta(\xi)}]^2}{[1 / \sqrt{e^{\alpha(\xi)}}]^2}d\xi} \tag{159}\\
+&= \sqrt{\int_{0}^{t}\frac{\beta(\xi)}{1 / e^{\alpha(\xi)}}d\xi} \tag{160}\\
+&= \sqrt{\int_{0}^{t}\dot{\alpha}(\xi)e^{\alpha(\xi)}d\xi} \tag{161}\\
+&= \sqrt{e^{\alpha(t)} - e^{\alpha(0)}} \tag{162}\\
+&= \sqrt{e^{\frac{1}{2}\beta_{d}t^2 + \beta_{min}t} - 1} \tag{163}
+\end{align*}</script><p>这与表1中“Schedule（调度）”一行相匹配。类似地，对于$s(t)$：</p>
+<script type="math/tex; mode=display">\begin{align*}
+s(t) &= \exp(\int_{0}^{t}[f(\xi)]d\xi) \tag{164}\\
+&= \exp(\int_{0}^{t}[-\frac{1}{2}\beta(\xi)]d\xi) \tag{165}\\
+&= \exp(-\frac{1}{2}[\int_{0}^{t}\beta(\xi)d\xi]) \tag{166}\\
+&= \exp(-\frac{1}{2}\alpha(t)) \tag{167}\\
+&= 1 / \sqrt{e^{\alpha(t)}} \tag{168}\\
+&= 1 / \sqrt{e^{\frac{1}{2}\beta_{d}t^2 + \beta_{min}t}} \tag{169}
+\end{align*}</script><p>这与表1中“Scaling（缩放）”一行相匹配。利用公式163，我们可以将公式169以更简单的形式等效地写为：</p>
+<script type="math/tex; mode=display">s(t) = 1 / \sqrt{\sigma(t)^2 + 1} \tag{170}</script><p>Song等人选择在$[\epsilon_{s}, 1]$内均匀分布采样时间步$\{t_{0}, …, t_{N - 1}\}$。这对应于设置：</p>
+<script type="math/tex; mode=display">t_{i < N} = 1 + \frac{i}{N - 1}(\epsilon_{s} - 1) \tag{171}</script><p>这与表1中“Time steps（时间步）”一行相匹配。</p>
+<p>最后，Song等人设置$\beta_{min} = 0.1$，$\beta_{max} = 20$，$\epsilon_{s} = 10^{-3}$（论文[49]的附录C），并选择将图像表示在范围$[-1, 1]$内。这些选择很容易与我们的公式兼容，并反映在表1的“Parameters（参数）”部分。</p>
+<h5 id="C-1-2-VP预处理"><a href="#C-1-2-VP预处理" class="headerlink" title="C.1.2 VP预处理"></a>C.1.2 VP预处理</h5><p>在VP的情况下，Song等人将公式13中$p_{t}(x)$的分数近似为：</p>
+<script type="math/tex; mode=display">\nabla_{x}\log p_{t}(x) \approx \underbrace{-\frac{1}{\overline{\sigma}(t)}F_{\theta}(x;(M - 1)t)}_{score(x;F_{\theta},t)} \tag{172}</script><p>其中 $M = 1000$，$F_{\theta}$ 表示网络，$\bar{\sigma}(t)$ 对应公式（11）中扰动核的标准差。</p>
+<p>让我们分别展开公式（20）和（11）中 $p_t(\boldsymbol{x})$ 和 $\bar{\sigma}(t)$ 的定义，并代入 $\boldsymbol{x} = s(t)\hat{\boldsymbol{x}}$，以得到关于未缩放变量 $\hat{\boldsymbol{x}}$ 的相应公式：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+\nabla_{\boldsymbol{x}} \log [p(\boldsymbol{x}/s(t); \sigma(t))] &\approx - \frac{1}{[s(t)\sigma(t)]} F_{\theta}(\boldsymbol{x}; (M - 1)t) & (173) \\
+\nabla_{[s(t)\hat{\boldsymbol{x}}]} \log p([s(t)\hat{\boldsymbol{x}}]/s(t); \sigma(t)) &\approx - \frac{1}{s(t)\sigma(t)} F_{\theta}([s(t)\hat{\boldsymbol{x}}]; (M - 1)t) & (174) \\
+\frac{1}{s(t)} \nabla_{\hat{\boldsymbol{x}}} \log p(\hat{\boldsymbol{x}}; \sigma(t)) &\approx - \frac{1}{s(t)\sigma(t)} F_{\theta}(s(t)\hat{\boldsymbol{x}}; (M - 1)t) & (175) \\
+\nabla_{\hat{\boldsymbol{x}}} \log p(\hat{\boldsymbol{x}}; \sigma(t)) &\approx - \frac{1}{\sigma(t)} F_{\theta}(s(t)\hat{\boldsymbol{x}}; (M - 1)t) & (176)
+\end{align*}</script><p>我们现在可以用公式（3）替换等式左边，并展开公式（170）中 $s(t)$ 的定义：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+\left[ \frac{(D(\hat{\boldsymbol{x}}; \sigma(t)) - \hat{\boldsymbol{x}})}{\sigma(t)^2} \right] &\approx - \frac{1}{\sigma(t)} F_{\theta}(s(t)\hat{\boldsymbol{x}}; (M - 1)t) & (177) \\
+D(\hat{\boldsymbol{x}}; \sigma(t)) &\approx \hat{\boldsymbol{x}} - \sigma(t) F_{\theta}(s(t)\hat{\boldsymbol{x}}; (M - 1)t) & (178) \\
+D(\hat{\boldsymbol{x}}; \sigma(t)) &\approx \hat{\boldsymbol{x}} - \sigma(t) F_{\theta} \left( \left[ \frac{1}{\sqrt{\sigma(t)^2 + 1}} \right] \hat{\boldsymbol{x}}; (M - 1)t \right) & (179)
+\end{align*}</script><p>通过将$\sigma(t) \to \sigma$和$t \to \sigma^{-1}(\sigma)$替换，可以进一步用$\sigma$表示该式：</p>
+<script type="math/tex; mode=display">D(\hat{x}; \sigma) \approx \hat{x} - \sigma F_{\theta}\left(\frac{1}{\sqrt{\sigma^{2} + 1}}\hat{x};(M - 1)\sigma^{-1}(\sigma)\right)</script><p>我们采用公式180的右边作为$D_{\theta}$的定义，得到：</p>
+<script type="math/tex; mode=display">D_{\theta}(\hat{x}; \sigma)=\underbrace{1}_{c_{skip}}\hat{x}\underbrace{-\sigma}_{c_{out}}\cdot F_{\theta}(\underbrace{\frac{1}{\sqrt{\sigma^{2} + 1}}}_{c_{in}}\cdot \hat{x};\underbrace{(M - 1)\sigma^{-1}(\sigma)}_{c_{noise}})</script><p>其中$c_{skip}$、$c_{out}$、$c_{in}$和$c_{noise}$与表1中“Network and preconditioning（网络和预处理）”部分相匹配。</p>
+<h5 id="C-1-3-VP训练"><a href="#C-1-3-VP训练" class="headerlink" title="C.1.3 VP训练"></a>C.1.3 VP训练</h5><p>Song等人将他们的训练损失定义为：</p>
+<script type="math/tex; mode=display">\mathbb{E}_{t \sim \mathcal{U}(\epsilon_{t}, 1), y \sim p_{data}, \overline{n} \sim \mathcal{N}(0, I)}\left[\left\| \overline{\sigma}(t)score\left(s(t)y + \overline{\sigma}(t)\overline{n}; F_{\theta}, t\right)+\overline{n}\right\| _{2}^{2}\right] \tag{182}</script><p>其中$score(·)$的定义与公式172中的相同。让我们通过代入$\overline{\sigma}(t) = s(t)\sigma(t)$和$\overline{n} = n / \sigma(t)$（其中$n \sim \mathcal{N}(0, \sigma(t)^2I)$）来简化该公式：</p>
+<script type="math/tex; mode=display">\begin{align*}
+&\mathbb{E}_{t, y, \overline{n}}\left[\left\| s(t)\sigma(t)score\left(s(t)y + [s(t)\sigma(t)]\overline{n}; F_{\theta}, t\right)+\overline{n}\right\| _{2}^{2}\right] \tag{183}\\
+=&\mathbb{E}_{t, y, n}\left[\| s(t)\sigma(t)score\left(s(t)y + s(t)\sigma(t)[n / \sigma(t)]; F_{\theta}, t\right)+[n / \sigma(t)]\| _{2}^{2}\right] \tag{184}\\
+=&\mathbb{E}_{t, y, n}\left[\| s(t)\sigma(t)score\left(s(t)(y + n); F_{\theta}, t\right)+n / \sigma(t)\| _{2}^{2}\right] \tag{185}
+\end{align*}</script><p>我们可以通过结合公式172、公式170和公式74，用$D_{\theta}(\cdot)$来表示$score()$：</p>
+<script type="math/tex; mode=display">score \left(s(t)x; F_{\theta}, t\right)=\frac{1}{s(t)\sigma(t)^2}\left(D_{\theta}(x; \sigma(t)) - x\right) \tag{186}</script><p>将其代回公式185得到：</p>
+<script type="math/tex; mode=display">\begin{align*}
+&\mathbb{E}_{t, y, n}\left[\left\| s(t)\sigma(t)\left[\frac{1}{s(t)\sigma(t)^2}\left(D_{\theta}(y + n; \sigma(t)) - (y + n)\right)\right]+\frac{1}{\sigma(t)}n\right\| _{2}^{2}\right] \tag{187}\\
+=&\mathbb{E}_{t, y, n}\left[\left\| \frac{1}{\sigma(t)}\left(D_{\theta}(y + n; \sigma(t)) - (y + n)\right)+\frac{1}{\sigma(t)}n\right\| _{2}^{2}\right] \tag{188}\\
+=&\mathbb{E}_{t, y, n}\left[\frac{1}{\sigma(t)^2}\left\| D_{\theta}(y + n; \sigma(t)) - y\right\| _{2}^{2}\right] \tag{189}
+\end{align*}</script><p>通过将$\sigma(t) \to \sigma$和$t \to \sigma^{-1}(\sigma)$替换，我们可以进一步用$\sigma$来表示该式：</p>
+<script type="math/tex; mode=display">\underbrace{\mathbb{E}_{\sigma^{-1}(\sigma) \sim \mathcal{U}(\epsilon_{t}, 1)}}_{p_{train}} \mathbb{E}_{y, n}[\underbrace{\frac{1}{\sigma^{2}}}_{\lambda}\left\| D_{\theta}(y + n; \sigma)-y\right\| _{2}^{2}]</script><p>这与公式108相匹配，其中$p_{train}$和$\lambda$的选择如表1中“Training（训练）”部分所示。</p>
+<h5 id="C-1-4-VP实际注意事项"><a href="#C-1-4-VP实际注意事项" class="headerlink" title="C.1.4 VP实际注意事项"></a>C.1.4 VP实际注意事项</h5><p>我们在CIFAR-10上使用的预训练VP模型对应于Song等人提供的“DDPM++ cont. (VP)”检查点。它包含总共6200万个可训练参数，并支持连续的噪声水平范围$\sigma \in[\sigma(\epsilon_{t}), \sigma(1)] \approx[0.001, 152]$，即比我们首选的采样范围$[0.002, 80]$更宽。我们直接将该模型导入为$F_{\theta}(\cdot)$，并使用表1中的定义运行算法1和算法2。</p>
+<p>在图2a中，原始采样器（蓝色）和我们的重新实现（橙色）之间的差异是由Song等人实现中的疏忽造成的，Jolicoeur-Martineau等人也指出了这一点（论文[24]的附录D）。首先，原始采样器在欧拉步中使用了错误的乘数：它将$dx / dt$乘以$-1/N$，而不是$(\epsilon_{s} - 1) / (N - 1)$。其次，在最后一步，它从$t_{N - 1} = \epsilon_{s}$到$t_{N} = \epsilon_{s} - 1 / N$时会出现过冲或下冲的情况，当$N &lt; 1000$时，$t_{N} &lt; 0$。在实践中，这意味着生成的图像包含明显的噪声，例如当$N = 128$时，噪声会变得相当严重。我们的公式避免了这些问题，因为算法1中的步长是根据$\{t\}$一致计算的，并且$t_{N} = 0$。</p>
+<h4 id="C-2-方差爆炸公式"><a href="#C-2-方差爆炸公式" class="headerlink" title="C.2 方差爆炸公式"></a>C.2 方差爆炸公式</h4><h5 id="C-2-1-理论上的VE采样"><a href="#C-2-1-理论上的VE采样" class="headerlink" title="C.2.1 理论上的VE采样"></a>C.2.1 理论上的VE采样</h5><p>Song等人将VE随机微分方程（论文[49]中的公式30）定义为：</p>
+<script type="math/tex; mode=display">dx=\sigma_{min}\left(\frac{\sigma_{max}}{\sigma_{min}}\right)^{t}\sqrt{2\log\frac{\sigma_{max}}{\sigma_{min}}}d\omega_{t} \tag{191}</script><p>这与公式10相匹配，其中：</p>
+<script type="math/tex; mode=display">f(t)=0, g(t)=\sigma_{min}\sqrt{2\log\sigma_{d}}\sigma_{d}^{t}, 且\sigma_{d}=\frac{\sigma_{max}}{\sigma_{min}} \tag{192}</script><p>VE公式不采用缩放，从公式12中很容易看出这一点：</p>
+<script type="math/tex; mode=display">s(t)=\exp\left(\int_{0}^{t}[f(\xi)]d\xi\right)=\exp\left(\int_{0}^{t}[0]d\xi\right)=\exp(0)=1 \tag{193}</script><p>将公式192代入公式12，可得到$\sigma(t)$的如下形式：</p>
+<script type="math/tex; mode=display">\begin{align*}
+\sigma(t)&=\sqrt{\int_{0}^{t}\frac{[g(\xi)]^{2}}{[s(\xi)]^{2}}d\xi} \tag{194}\\
+&=\sqrt{\int_{0}^{t}\frac{[\sigma_{min}\sqrt{2\log\sigma_{d}}\sigma_{d}^{\xi}]^{2}}{[1]^{2}}d\xi} \tag{195}\\
+&=\sqrt{\int_{0}^{t}\sigma_{min}^{2}[2\log\sigma_{d}][\sigma_{d}^{2\xi}]d\xi} \tag{196}\\
+&=\sigma_{min}\sqrt{\int_{0}^{t}[\log(\sigma_{d}^{2})][(\sigma_{d}^{2})^{\xi}]d\xi} \tag{197}\\
+&=\sigma_{min}\sqrt{(\sigma_{d}^{2})^{t}-(\sigma_{d}^{2})^{0}} \tag{198}\\
+&=\sigma_{min}\sqrt{\sigma_{d}^{2t}-1} \tag{199}
+\end{align*}</script><p>公式199与Song等人报告的扰动核（论文[49]中的公式29）一致。然而，我们注意到这并不符合他们对$\sigma(t)=\sigma_{min}(\frac{\sigma_{max}}{\sigma_{min}})^{t}$的预期定义（论文[49]的附录C）。</p>
+<h5 id="C-2-2-实践中的VE采样"><a href="#C-2-2-实践中的VE采样" class="headerlink" title="C.2.2 实践中的VE采样"></a>C.2.2 实践中的VE采样</h5><p>Song等人的原始实现使用反向扩散预测器对离散化的VE随机微分方程的离散化反向概率流进行积分。综合起来，这些为$x_{i + 1}$产生了以下更新规则：</p>
+<script type="math/tex; mode=display">x_{i + 1}=x_{i}+\frac{1}{2}(\overline{\sigma}_{i}^{2}-\overline{\sigma}_{i + 1}^{2})\nabla_{x}\log\overline{p}_{i}(x) \tag{200}</script><p>其中：</p>
+<script type="math/tex; mode=display">\overline{\sigma}_{i < N}=\sigma_{min}\left(\frac{\sigma_{max}}{\sigma_{min}}\right)^{1 - i/(N - 1)} 且\overline{\sigma}_{N}=0 \tag{201}</script><p>有趣的是，公式200与我们的常微分方程（ODE）的欧拉迭代相同，对应的选择如下：</p>
+<script type="math/tex; mode=display">s(t)=1, \sigma(t)=\sqrt{t}, 且t_{i}=\overline{\sigma}_{i}^{2} \tag{202}</script><p>这些公式与表1中“采样”部分相匹配，通过将它们代入算法1的第5行可以验证其正确性：</p>
+<script type="math/tex; mode=display">\begin{align*}
+\boldsymbol{x}_{i + 1} &= \boldsymbol{x}_i + (t_{i + 1} - t_i) \boldsymbol{d}_i & (203) \\
+&= \boldsymbol{x}_i + (t_{i + 1} - t_i) \left[ \left( \frac{\dot{\sigma}(t)}{\sigma(t)} + \frac{\dot{s}(t)}{s(t)} \right) \boldsymbol{x} - \frac{\dot{\sigma}(t)s(t)}{\sigma(t)} D \left( \frac{\boldsymbol{x}}{s(t)}; \sigma(t) \right) \right] & (204) \\
+&= \boldsymbol{x}_i + (t_{i + 1} - t_i) \left[ \frac{\dot{\sigma}(t)}{\sigma(t)} \boldsymbol{x} - \frac{\dot{\sigma}(t)}{\sigma(t)} D(\boldsymbol{x}; \sigma(t)) \right] & (205) \\
+&= \boldsymbol{x}_i - (t_{i + 1} - t_i) \dot{\sigma}(t) \sigma(t) \left[ \frac{D(\boldsymbol{x}; \sigma(t)) - \boldsymbol{x}}{\sigma(t)^2} \right] & (206) \\
+&= \boldsymbol{x}_i - (t_{i + 1} - t_i) \dot{\sigma}(t) \sigma(t) \nabla_{\boldsymbol{x}} \log p(\boldsymbol{x}; \sigma(t)) & (207) \\
+&= \boldsymbol{x}_i - (t_{i + 1} - t_i) \left[ \frac{1}{2\sqrt{t}} \right] [\sqrt{t}] \nabla_{\boldsymbol{x}} \log p(\boldsymbol{x}; \sigma(t)) & (208) \\
+&= \boldsymbol{x}_i + \frac{1}{2} (t_i - t_{i + 1}) \nabla_{\boldsymbol{x}} \log p(\boldsymbol{x}; \sigma(t)) & (209) \\
+&= \boldsymbol{x}_i + \frac{1}{2} (\bar{\sigma}_i^2 - \bar{\sigma}_{i + 1}^2) \nabla_{\boldsymbol{x}} \log p(\boldsymbol{x}; \sigma(t)) & (210)
+\end{align*}</script><p>通过选择$\overline{p}_{i}(x)=p(x;\sigma(t_{i}))$，可使该式与公式200完全相同。</p>
+<p>最后，Song等人在CIFAR - 10实验中设置$\sigma_{min}=0.01$，$\sigma_{max}=50$（论文[49]的附录C），并选择将图像表示在范围$[0, 1]$内，以匹配先前的SMLD模型。由于我们标准化的范围$[-1, 1]$是其两倍大，因此我们必须将$\sigma_{min}$和$\sigma_{max}$乘以2来进行补偿。表1的“参数”部分反映了这些调整后的值。</p>
+<h5 id="C-2-3-VE预处理"><a href="#C-2-3-VE预处理" class="headerlink" title="C.2.3 VE预处理"></a>C.2.3 VE预处理</h5><p>在VE的情况下，Song等人将公式13中$p_{t}(x)$的分数直接近似为：</p>
+<script type="math/tex; mode=display">\nabla_{x}\log p_{t}(x)\approx\overline{F}_{\theta}(x;\sigma(t)) \tag{211}</script><p>其中网络$\overline{F}_{\theta}$设计为包含额外的预处理和后处理步骤：</p>
+<script type="math/tex; mode=display">\overline{F}_{\theta}(x;\sigma)=\frac{1}{\sigma}F_{\theta}(2x - 1;\log(\sigma)) \tag{212}</script><p>为保持一致性，我们使用$\{c_{skip}, c_{out}, c_{in}, c_{noise}\}$来处理这些预处理和后处理步骤，而不是将它们融入网络本身。</p>
+<p>然而，我们不能直接在我们的框架中使用公式211和公式212，因为它们假设图像表示在范围$[0, 1]$内。为了使用$[-1, 1]$的范围，我们将$p_{t}(x)$替换为$p_{t}(2x - 1)$，$x$替换为$\frac{1}{2}x+\frac{1}{2}$，$\sigma$替换为$\frac{1}{2}\sigma$：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+\nabla_{[\frac{1}{2}\boldsymbol{x} + \frac{1}{2}]} \log p_t \left( 2 [\frac{1}{2}\boldsymbol{x} + \frac{1}{2}] - 1 \right) &\approx \frac{1}{[\frac{1}{2}\sigma]} F_{\theta} \left( 2 [\frac{1}{2}\boldsymbol{x} + \frac{1}{2}] - 1; \log [\frac{1}{2}\sigma] \right) & (213) \\
+2 \nabla_{\boldsymbol{x}} \log p_t(\boldsymbol{x}) &\approx \frac{2}{\sigma} F_{\theta} \left( \boldsymbol{x}; \log (\frac{1}{2}\sigma) \right) & (214) \\
+\nabla_{\boldsymbol{x}} \log p(\boldsymbol{x}; \sigma) &\approx \frac{1}{\sigma} F_{\theta} \left( \boldsymbol{x}; \log (\frac{1}{2}\sigma) \right) & (215)
+\end{align*}</script><p>我们现在可以用公式（3）替换公式（215）的左边，从而用 $D_{\theta}(\cdot)$ 来表示该模型：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+\frac{(D_{\theta}(\boldsymbol{x}; \sigma) - \boldsymbol{x})}{\sigma^2} &= \frac{1}{\sigma} F_{\theta} \left( \boldsymbol{x}; \log (\frac{1}{2}\sigma) \right) & (216) \\
+D_{\theta}(\boldsymbol{x}; \sigma) &= \underbrace{1}_{c_{\text{skip}}} \cdot \boldsymbol{x} + \underbrace{\sigma}_{c_{\text{out}}} \cdot F_{\theta} \left( \underbrace{1 \cdot \boldsymbol{x}}_{c_{\text{in}}}; \underbrace{\log (\frac{1}{2}\sigma)}_{c_{\text{noise}}} \right) & (217)
+\end{align*}</script><p>其中 $c_{\text{skip}}$、$c_{\text{out}}$、$c_{\text{in}}$ 和 $c_{\text{noise}}$ 与表（1）中“网络与预处理”部分一致。</p>
+<h5 id="C-2-4-VE训练"><a href="#C-2-4-VE训练" class="headerlink" title="C.2.4 VE训练"></a>C.2.4 VE训练</h5><p>Song等人对VP和VE的训练损失定义类似，因此我们可以借用公式216中$score(·)$的定义，复用公式185：</p>
+<script type="math/tex; mode=display">\begin{align*}
+&\mathbb{E}_{t, y, n}\left[\left\| s(t)\sigma(t)score\left(s(t)(y + n); F_{\theta}, t\right)+n / \sigma(t)\right\| _{2}^{2}\right] \tag{218}\\
+=&\mathbb{E}_{t, y, n}\left[\left\| \sigma(t)score\left(y + n; F_{\theta}, t\right)+n / \sigma(t)\right\| _{2}^{2}\right] \tag{219}\\
+=&\mathbb{E}_{t, y, n}\left[\left\| \sigma(t)\left[\left(D_{\theta}(y + n; \sigma(t))-(y + n)\right)/\sigma(t)^{2}\right]+n / \sigma(t)\right\| _{2}^{2}\right] \tag{220}\\
+=&\mathbb{E}_{t, y, n}\left[\frac{1}{\sigma(t)^{2}}\left\| D_{\theta}(y + n; \sigma(t))-y\right\| _{2}^{2}\right] \tag{221}
+\end{align*}</script><p>对于VE训练，原始实现定义$\sigma(t)=\sigma_{min}(\frac{\sigma_{max}}{\sigma_{min}})^{t}$。因此，我们可以将公式221重写为：</p>
+<script type="math/tex; mode=display">\underbrace{\mathbb{E}_{\ln (\sigma) \sim \mathcal{U}\left(\ln \left(\sigma_{min }\right), \ln \left(\sigma_{max }\right)\right)}}_{p_{train}} \mathbb{E}_{y, n}[\underbrace{\frac{1}{\sigma^{2}}}_{\lambda}\left\| D_{\theta}(y+n ; \sigma)-y\right\| _{2}^{2}]</script><p>这与公式108相匹配，其中$p_{train}$和$\lambda$的选择如表1中“训练”部分所示。</p>
+<h5 id="C-2-5-VE实际注意事项"><a href="#C-2-5-VE实际注意事项" class="headerlink" title="C.2.5 VE实际注意事项"></a>C.2.5 VE实际注意事项</h5><p>我们在CIFAR-10上使用的预训练VE模型对应于Song等人提供的“NCSN++ cont. (VE)”检查点。它包含总共6300万个可训练参数，并支持连续的噪声水平范围$\sigma \in[\sigma(\epsilon_{t}), \sigma(1)] \approx[0.02, 100]$。这比我们首选的采样范围$[0.002, 80]$更窄，所以在所有相关实验中我们将$\sigma_{min}$设置为$0.02$。请注意，通过我们在配置E中的训练改进，这个限制被解除了，所以在表2的配置E和F中，我们又将$\sigma_{min}$改回为$0.002$。在导入模型时，我们去除了公式212中显示的预处理和后处理步骤，以与公式217中$F_{\theta}(\cdot)$的定义保持一致。通过这些更改，我们可以使用表1中的定义运行算法1和算法2。</p>
+<p>在图2b中，原始采样器（蓝色）和我们的重新实现（橙色）之间的差异是由原始实现在高步数时遭受的浮点舍入误差造成的。在这些情况下，我们的结果更准确，因为在算法1中我们以双精度表示$x_{i}$。</p>
+<h3 id="C-3-改进的DDPM和DDIM"><a href="#C-3-改进的DDPM和DDIM" class="headerlink" title="C.3 改进的DDPM和DDIM"></a>C.3 改进的DDPM和DDIM</h3><h4 id="C-3-1-DDIM的ODE公式"><a href="#C-3-1-DDIM的ODE公式" class="headerlink" title="C.3.1 DDIM的ODE公式"></a>C.3.1 DDIM的ODE公式</h4><p>Song等人发现，他们的确定性DDIM采样器可以表示为以下常微分方程（ODE，论文[47]中的公式14）的欧拉积分：</p>
+<script type="math/tex; mode=display">dx(t)=\epsilon_{\theta}^{(t)}\left(\frac{x(t)}{\sqrt{\sigma(t)^{2}+1}}\right)d\sigma(t) \tag{223}</script><p>其中，$x(t)$是其离散更新公式（论文[47]中的公式10）中出现的迭代值的缩放版本，$\epsilon_{\theta}$是一个经过训练的模型，用于预测归一化噪声向量，即对于$x(t)=y(t)+n(t)$，有$\epsilon_{\theta}^{(t)}(x(t)/\sqrt{\sigma(t)^{2}+1})\approx n(t)/\sigma(t)$。在我们的公式中，$D_{\theta}$被训练用于逼近干净信号，即$D_{\theta}(x(t);\sigma(t))\approx y$，因此我们可以根据$D_{\theta}$重新解释$\epsilon_{\theta}$如下：</p>
+<script type="math/tex; mode=display">n(t)=x(t)-y(t) \tag{224}</script><script type="math/tex; mode=display">[n(t)/\sigma(t)]=(x(t)-[y(t)])/\sigma(t) \tag{225}</script><script type="math/tex; mode=display">\epsilon_{\theta}^{(t)}\left(x(t)/\sqrt{\sigma(t)^{2}+1}\right)=(x(t)-D_{\theta}(x(t);\sigma(t)))/\sigma(t) \tag{226}</script><p>假设在$L_{2}$意义下$\epsilon(\cdot)$和$D(\cdot)$是理想的，我们可以使用公式3进一步简化上述公式：</p>
+<script type="math/tex; mode=display">\begin{align*}
+\epsilon^{(t)}\left(x(t)/\sqrt{\sigma(t)^{2}+1}\right)&=(x(t)-D(x(t);\sigma(t)))/\sigma(t) \tag{227}\\
+&=-\sigma(t)\left[(D(x(t);\sigma(t))-x(t))/\sigma(t)^{2}\right] \tag{228}\\
+&=-\sigma(t)\nabla_{x(t)}\log p(x(t);\sigma(t)) \tag{229}
+\end{align*}</script><p>将公式229代回公式223，得到：</p>
+<script type="math/tex; mode=display">dx(t)=-\sigma(t)\nabla_{x(t)}\log p(x(t);\sigma(t))d\sigma(t) \tag{230}</script><p>通过设置$\sigma(t)=t$，我们可以进一步简化该式：</p>
+<script type="math/tex; mode=display">dx=-t\nabla_{x}\log p(x;\sigma(t))dt \tag{231}</script><p>这与我们的公式4相匹配（其中$s(t)=1$且$\sigma(t)=t$），反映在表1的“采样”部分。</p>
+<h4 id="C-3-2-iDDPM的时间步离散化"><a href="#C-3-2-iDDPM的时间步离散化" class="headerlink" title="C.3.2 iDDPM的时间步离散化"></a>C.3.2 iDDPM的时间步离散化</h4><p>Ho等人提出的原始DDPM公式（论文[16]）将正向过程（公式2）定义为一个马尔可夫链，它根据离散方差调度$\{\beta_{1},…,\beta_{T}\}$逐渐向$\overline{x}_{0}\sim p_{data}$添加高斯噪声：</p>
+<script type="math/tex; mode=display">q(\overline{x}_{t}|\overline{x}_{t - 1})=\mathcal{N}(\overline{x}_{t};\sqrt{1-\beta_{t}}\overline{x}_{t - 1},\beta_{t}I) \tag{232}</script><p>从$\overline{x}_{0}$到$\overline{x}_{t}$的相应转移概率（论文[16]中的公式4）为：</p>
+<script type="math/tex; mode=display">q(\overline{x}_{t}|\overline{x}_{0})=\mathcal{N}(\overline{x}_{t};\sqrt{\overline{\alpha}_{t}}\overline{x}_{0},(1-\overline{\alpha}_{t})I), 其中\overline{\alpha}_{t}=\prod_{s = 1}^{t}(1-\beta_{s}) \tag{233}</script><p>Ho等人基于线性调度定义$\{\beta_{t}\}$，然后根据公式233计算相应的$\{\overline{\alpha}_{t}\}$。或者，也可以先定义$\{\overline{\alpha}_{t}\}$，然后求解$\{\beta_{t}\}$：</p>
+<script type="math/tex; mode=display">\overline{\alpha}_{t}=\prod_{s = 1}^{t}(1-\beta_{s}) \tag{234}</script><script type="math/tex; mode=display">\overline{\alpha}_{t}=\overline{\alpha}_{t - 1}(1-\beta_{t}) \tag{235}</script><script type="math/tex; mode=display">\beta_{t}=1-\frac{\overline{\alpha}_{t}}{\overline{\alpha}_{t - 1}} \tag{236}</script><p>Nichol和Dhariwal提出的改进DDPM公式（论文[37]）对$\overline{\alpha}_{t}$采用余弦调度（公式17），定义为：</p>
+<script type="math/tex; mode=display">\overline{\alpha}_{t}=\frac{f(t)}{f(0)}, 其中f(t)=\cos^{2}\left(\frac{t/T + s}{1 + s}\cdot\frac{\pi}{2}\right) \tag{237}</script><p>其中$s = 0.008$。然而，在他们的实现中，Nichol等人省略了除以$f(0)$的步骤，简单地定义为：</p>
+<script type="math/tex; mode=display">\overline{\alpha}_{t}=\cos^{2}\left(\frac{t/T + s}{1 + s}\cdot\frac{\pi}{2}\right) \tag{238}</script><p>为了避免在$t = T$附近出现奇点，他们还将$\beta_{t}$限制为0.999。我们可以利用公式233和公式234，用$\overline{\alpha}_{t}$来表示这种限制：</p>
+<script type="math/tex; mode=display">\begin{align*}
+\overline{\alpha}_{t}'&=\prod_{s = 1}^{t}(1 - [\beta_{s}']) \tag{239}\\
+&=\prod_{s = 1}^{t}(1-\min([\beta_{s}],0.999)) \tag{240}\\
+&=\prod_{s = 1}^{t}(1-\min(1-\frac{\overline{\alpha}_{s}}{\overline{\alpha}_{s - 1}},0.999)) \tag{241}\\
+&=\prod_{s = 1}^{t}\max\left(\frac{\overline{\alpha}_{s}}{\overline{\alpha}_{s - 1}},0.001\right) \tag{242}
+\end{align*}</script><p>现在，我们在统一框架中重新解释上述公式。回顾表1，我们按照噪声水平$\sigma(u_{j})$从高到低的顺序，用$\{u_{j}\}$表示原始iDDPM的采样步，其中$j\in\{0,…,M\}$。为了协调公式233、公式238和公式239的符号，我们将$T$替换为$M$，$t$替换为$M - j$：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+  q(\overline{x}_{j}|\overline{x}_{M})&=\mathcal{N}(\overline{x}_{j};\sqrt{\overline{\alpha}_{j}'}\overline{x}_{M},(1-\overline{\alpha}_{j}')I) \tag{243} \\
+  \overline{\alpha}_{j}&=\cos^{2}\left(\frac{(M - j)/M + C_{2}}{1 + C_{2}}\cdot\frac{\pi}{2}\right) \tag{244}\\
+  \overline{\alpha}_{j}'&=\prod_{s = M - 1}^{j}\max\left(\frac{\overline{\alpha}_{j}}{\overline{\alpha}_{j + 1}},C_{1}\right)=\overline{\alpha}_{j + 1}'\max\left(\frac{\overline{\alpha}_{j}}{\overline{\alpha}_{j + 1}},C_{1}\right) \tag{245}
+\end{align*}</script><p>其中常数$C_{1}=0.001$，$C_{2}=0.008$。</p>
+<p>我们可以进一步简化公式244：</p>
+<script type="math/tex; mode=display">\begin{align*}
+\overline{\alpha}_{j}&=\cos^{2}\left(\frac{(M - j)/M + C_{2}}{1 + C_{2}}\cdot\frac{\pi}{2}\right) \tag{246}\\
+&=\cos^{2}\left(\frac{\pi}{2}\frac{(1 + C_{2})-j/M}{1 + C_{2}}\right) \tag{247}\\
+&=\cos^{2}\left(\frac{\pi}{2}-\frac{\pi}{2}\frac{j}{M(1 + C_{2})}\right) \tag{248}\\
+&=\sin^{2}\left(\frac{\pi}{2}\frac{j}{M(1 + C_{2})}\right) \tag{249}
+\end{align*}</script><p>这就是表1“参数”部分所示的公式。</p>
+<p>为了协调$x$和$\overline{x}$的定义，我们必须使公式11中的扰动核与公式243中每个时间步$t = u_{j}$的转移概率相匹配：</p>
+<script type="math/tex; mode=display">p_{0t}(x(u_{j})|x(0))=q(\overline{x}_{j}|\overline{x}_{M}) \tag{250}</script><script type="math/tex; mode=display">\mathcal{N}(x(u_{j});s(t)x(0),s(u_{j})^{2}\sigma(u_{j})^{2}I)=\mathcal{N}(\overline{x}_{j};\sqrt{\overline{\alpha}_{j}'}\overline{x}_{M},(1-\overline{\alpha}_{j}')I) \tag{251}</script><p>代入$s(t)=1$，$\sigma(t)=t$（来自附录C.3.1），以及$\overline{x}_{M}=x(0)$：</p>
+<script type="math/tex; mode=display">\mathcal{N}(x(u_{j});x(0),u_{j}^{2}I)=\mathcal{N}(\overline{x}_{j};\sqrt{\overline{\alpha}_{j}'}x(0),(1-\overline{\alpha}_{j}')I) \tag{252}</script><p>我们可以通过定义$\overline{x}_{j}=\sqrt{\overline{\alpha}_{j}’}x(u_{j})$来匹配这两个分布的均值：</p>
+<script type="math/tex; mode=display">\begin{align*}
+\mathcal{N}(x(u_{j});x(0),u_{j}^{2}I)&=\mathcal{N}(\sqrt{\overline{\alpha}_{j}'}x(u_{j});\sqrt{\overline{\alpha}_{j}'}x(0),(1-\overline{\alpha}_{j}')I) \tag{253}\\
+&=\mathcal{N}(x(u_{j});x(0),\frac{1-\overline{\alpha}_{j}'}{\overline{\alpha}_{j}'}I) \tag{254}
+\end{align*}</script><p>匹配方差并求解 $\bar{\alpha}’_j$ 可得：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+u_j^2 &= (1 - \bar{\alpha}'_j) / \bar{\alpha}'_j & (255)\\
+u_j^2 \bar{\alpha}'_j &= 1 - \bar{\alpha}'_j & (256)\\
+u_j^2 \bar{\alpha}'_j + \bar{\alpha}'_j &= 1 & (257)\\
+(u_j^2 + 1) \bar{\alpha}'_j &= 1 & (258)\\
+\bar{\alpha}'_j &= 1 / (u_j^2 + 1). & (259)
+\end{align*}</script><p>最后，我们可以使用公式（245）展开等式左边并求解 $u_{j - 1}$：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+\bar{\alpha}'_{j + 1} \max(\bar{\alpha}_j / \bar{\alpha}_{j + 1}, C_1) &= 1 / (u_j^2 + 1) & (260)\\
+\bar{\alpha}'_j \max(\bar{\alpha}_{j - 1} / \bar{\alpha}_j, C_1) &= 1 / (u_{j - 1}^2 + 1) & (261)\\
+[1 / (u_j^2 + 1)] \max(\bar{\alpha}_{j - 1} / \bar{\alpha}_j, C_1) &= 1 / (u_{j - 1}^2 + 1) & (262)\\
+\max(\bar{\alpha}_{j - 1} / \bar{\alpha}_j, C_1) (u_{j - 1}^2 + 1) &= u_j^2 + 1 & (263)\\
+u_{j - 1}^2 + 1 &= (u_j^2 + 1) / \max(\bar{\alpha}_{j - 1} / \bar{\alpha}_j, C_1) & (264)\\
+u_{j - 1} &= \sqrt{\frac{u_j^2 + 1}{\max(\bar{\alpha}_{j - 1} / \bar{\alpha}_j, C_1)}} - 1, & (265)
+\end{align*}</script><p>由此得到一个以 $u_M = 0$ 为起始条件的关于 $\{u_j\}$ 的递推公式，该公式与表（1）中“时间步长”一行相匹配。</p>
+<h4 id="C-3-3-iDDPM的预处理和训练"><a href="#C-3-3-iDDPM的预处理和训练" class="headerlink" title="C.3.3 iDDPM的预处理和训练"></a>C.3.3 iDDPM的预处理和训练</h4><p>我们可以通过将附录C.3.1中的$\sigma(t)=t$代入公式227来求解$D_{\theta}(\cdot)$：</p>
+<script type="math/tex; mode=display">\epsilon_{\theta}^{(j)}\left(x/\sqrt{\sigma^{2}+1}\right)=(x - D_{\theta}(x;\sigma))/\sigma \tag{266}</script><script type="math/tex; mode=display">D_{\theta}(x;\sigma)=x-\sigma\epsilon_{\theta}^{(j)}\left(x/\sqrt{\sigma^{2}+1}\right) \tag{267}</script><p>我们选择定义$F_{\theta}(\cdot ;j)=\epsilon_{\theta}^{(j)}(\cdot)$，并通过找到最接近的$u_{j}$从$\sigma$求解$j$：</p>
+<script type="math/tex; mode=display">D_{\theta}(x;\sigma)=\underbrace{1\cdot}_{c_{skip}}x\underbrace{-\sigma}_{c_{out}}\cdot F_{\theta}(\underbrace{\frac{1}{\sqrt{\sigma^{2}+1}}}_{c_{in}}\cdot x;\underbrace{\arg\min_{j}|u_{j}-\sigma|}_{c_{noise}}) \tag{268}</script><p>其中$c_{skip}$、$c_{out}$、$c_{in}$和$c_{noise}$与表1中“网络和预处理”部分相匹配。</p>
+<p>注意，公式268与公式181中的VP预处理公式相同。此外，Nichol和Dhariwal定义他们的主要训练损失$L_{simple}$（论文[37]中的公式14）与Song等人的定义方式相同，其中$\sigma$从$\{u_{j}\}$中均匀抽取。因此，我们可以复用公式190，令$\sigma = u_{j}$，$j\sim U(0,M - 1)$，$\lambda(\sigma)=1/\sigma^{2}$，这与表1中“训练”部分相匹配。除了$L_{simple}$，Nichol和Dhariwal还采用了一个辅助损失项$L_{vlb}$；有关详细信息，请读者参考论文[37]的3.1节。</p>
+<h4 id="C-3-4-iDDPM实际注意事项"><a href="#C-3-4-iDDPM实际注意事项" class="headerlink" title="C.3.4 iDDPM实际注意事项"></a>C.3.4 iDDPM实际注意事项</h4><p>我们在ImageNet-64上使用的预训练iDDPM模型对应于Dhariwal和Nichol提供的“ADM (dropout)”检查点。它包含2.96亿个可训练参数，并支持$M = 1000$个离散的噪声水平$\sigma\in\{u_{j}\}\approx\{20291,642,321,214,160,128,106,92,80,71,…,0.0064\}$。我们只能在这些特定的$\sigma$值上评估$F_{\theta}$，这带来了三个实际挑战：</p>
+<ol>
+<li>在DDIM的背景下，当$N\neq M$时，我们必须选择如何对$\{u_{j}\}$进行重采样以得到$\{t\}$。Song等人采用了一种简单的重采样方案，即对于重采样因子$k\in\mathbb{Z}^{+}$，有$t_{i}=u_{k - i}$。然而，这个方案要求$1000\equiv0\ (\text{mod}\ N)$，这极大地限制了$N$的可能选择。另一方面，Nichol和Dhariwal采用了一种更灵活的方案，即$t_{i}=u_{j}$，其中$j=\lfloor(M - 1)/(N - 1)\cdot i\rfloor$。然而，在实践中，我们注意到$j&lt;8$时$u_{j}$的值比我们首选的$\sigma_{max}=80$大得多。我们通过定义$j=\lfloor j_{0}+(M - 1 - j_{0})/(N - 1)\cdot i\rfloor$（其中$j_{0}=8$）来跳过这些值，这与表1中“时间步”一行相匹配。在图2c中，原始采样器（蓝色）和我们的重新实现（橙色）之间的差异就是由这个选择造成的。</li>
+<li>在我们的时间步离散化（公式5）的背景下，我们必须确保$\sigma_{i}\in\{u_{j}\}$。我们通过将每个$\sigma_{i}$四舍五入到最接近的支持值来实现这一点，即$\sigma_{i}\leftarrow u_{\arg\min_{j}|u_{j}-\sigma_{i}|}$，并设置$\sigma_{min}=0.0064\approx u_{N - 1}$。这就足够了，因为算法1仅在$\sigma\in\{\sigma_{i&lt;N}\}$时评估$D_{\theta}(\cdot ;\sigma)$。</li>
+<li>在我们的随机采样器的情境中，我们必须确保 $\hat{t}_i \in \{u_j\}$。我们通过将算法（2）的第 5 行替换为 $\hat{t}_i \leftarrow \underset{j}{\text{arg min}} \, |u_j - (t_i + \gamma_i t_i)|$ 来实现这一点。</li>
+</ol>
+<p>通过这些更改，我们能够直接将预训练模型导入为$F_{\theta}(\cdot)$，并使用表1中的定义运行算法1和算法2。请注意，如文献[37]第3.1节所述，该模型会输出$\epsilon_{\theta}(\cdot)$和$\sum _{\theta}(\cdot)$；我们仅使用前者，忽略后者。</p>
+<h3 id="D-确定性采样的进一步分析"><a href="#D-确定性采样的进一步分析" class="headerlink" title="D. 确定性采样的进一步分析"></a>D. 确定性采样的进一步分析</h3><h4 id="D-1-截断误差分析和离散化参数的选择"><a href="#D-1-截断误差分析和离散化参数的选择" class="headerlink" title="D.1 截断误差分析和离散化参数的选择"></a>D.1 截断误差分析和离散化参数的选择</h4><p>如第3节所述，扩散模型往往需要大量采样步骤的根本原因在于，任何数值常微分方程（ODE）求解器都必然是一种近似；步长越大，每一步与真实解的偏差就越大。具体来说，给定时间步$i - 1$时的$x_{i - 1}$值，求解器将真实的$x_{i}^{<em>}$近似为$x_{i}$，从而产生局部截断误差$\tau_{i} = x_{i}^{</em>} - x_{i}$ 。这些局部误差在$N$个步骤中累积，最终导致全局截断误差$e_{N}$。</p>
+<p>欧拉方法是一种一阶ODE求解器，这意味着对于任何足够光滑的$x(t)$，$\tau_{i} = O(h_{i}^{2})$，其中$h_{i} = |t_{i} - t_{i - 1}|$是局部步长。换句话说，存在一些常数$c$和$H$，使得对于每个$h_{i} &lt; H$，都有$|\tau_{i}| &lt; Ch_{i}^{2}$，即步长$h_{i}$减半，$\tau_{i}$会减小为原来的四分之一。此外，如果我们假设$D_{\theta}$是利普希茨连续的（本文所考虑的所有网络架构都满足这一条件），那么全局截断误差有界，即$|e_{N}| \leq E\max_{i}|\tau_{i}|$，其中$E$的值取决于$N$、$t_{0}$、$t_{N}$以及利普希茨常数。因此，对于给定的$N$，要减小全局误差（这反过来又能够减少$N$本身），关键在于选择合适的求解器和$\{t\}$，以使$\max_{i}|\tau_{i}|$最小化。</p>
+<p>为了深入了解局部截断误差在实际中的表现，我们使用基于VE的CIFAR-10模型在不同噪声水平下测量$\tau_{i}$的值。对于给定的噪声水平，我们设置$t_{i} = \sigma^{-1}(\sigma_{i})$，并根据具体情况选择某个$t_{i - 1} &gt; t_{i}$。然后，我们从$p(x ; \sigma_{i - 1})$中采样$x_{i - 1}$，并通过在$t_{i - 1}$和$t_{i}$之间均匀选择的子区间上执行200次欧拉步来估计真实的$x_{i}^{*}$。最后，我们绘制均方根误差（RMSE）的均值和标准差，即$|\tau_{i}| / \sqrt{\dim \tau}$，作为$\sigma_{i}$的函数，对200个随机采样的$x_{i - 1}$求平均。欧拉方法的结果如图13a所示，其中蓝色曲线对应于相对于$\sigma$的均匀步长$h_{\sigma} = 1.25$，即$\sigma_{i - 1} = \sigma_{i} + h_{\sigma}$且$t_{i - 1} = \sigma^{-1}(\sigma_{i - 1})$。我们可以看到，在低噪声水平（$\sigma_{i} \leq 0.5$）下，误差非常大（RMSE约为0.56），而在高噪声水平下则小得多。这与常见的直觉相符，即为了减小$e_{N}$，步长应随着噪声水平的降低而单调减小。每条曲线周围的阴影区域表示标准差，在低$\sigma$值时几乎不可见。这表明$\tau_{i}$相对于$x_{i - 1}$几乎是恒定的，因此在每个样本的基础上改变$\{t\}$调度并不会带来好处。</p>
+<p>一种根据噪声水平改变局部步长的简便方法是将$\{\sigma_{i}\}$定义为某个单调递增、无界的变换函数$w(z)$的线性重采样。换句话说，$\sigma_{i &lt; N} = w(Ai + B)$且$\sigma_{N} = 0$，其中常数$A$和$B$的选择使得$\sigma_{0} = \sigma_{max}$且$\sigma_{N - 1} = \sigma_{min}$。在实践中，我们设置$\sigma_{min} = \max(\sigma_{lo}, 0.002)$和$\sigma_{max} = \min(\sigma_{hi}, 80)$，其中$\sigma_{lo}$和$\sigma_{hi}$分别是给定模型支持的最低和最高噪声水平；我们发现这些选择在实际中表现相当不错。现在，为了平衡低噪声水平和高噪声水平下的$\tau_{i}$，例如，我们可以使用由指数$\rho$参数化的多项式变换函数$w(z) = z^{\rho}$ 。这种选择会得到关于$\{\sigma_{i}\}$的以下公式：</p>
+<script type="math/tex; mode=display">\sigma_{i<N}=\left(\sigma_{max}^{\frac{1}{\rho}}+\frac{i}{N - 1}\left(\sigma_{min}^{\frac{1}{\rho}}-\sigma_{max}^{\frac{1}{\rho}}\right)\right)^{\rho}, \sigma_{N}=0 \tag{269}</script><p>当$\rho = 1$时，该公式简化为均匀离散化，并且随着$\rho$的增加，越来越强调低噪声水平。</p>
+<p>基于$\sigma_{i}$的值，我们现在可以计算$\sigma_{i - 1} = (\sigma_{i}^{1 / \rho} - A)^{\rho}$，这使我们能够在图13a中可视化不同$\rho$选择下的$\tau_{i}$。我们看到，增加$\rho$会减小低噪声水平（$\sigma &lt; 10$）下的误差，同时增加高噪声水平（$\sigma &gt; 10$）下的误差。在$\rho = 2$时实现了近似平衡，但RMSE仍然相对较高（0.03），这意味着欧拉方法在每一步都会与正确结果产生几个单位的偏差。虽然可以通过增加$N$来减小误差，但我们理想的情况是即使在低步数下RMSE也远低于0.01。</p>
+<p>休恩（Heun）方法为$x_{i + 1}$引入了一个额外的校正步骤，以考虑$dx/dt$在$t_{i}$和$t_{i + 1}$之间可能发生的变化；而欧拉方法则假设它是恒定的。这个校正步骤使得局部截断误差具有三次收敛性，即$\tau_{i} = O(h_{i}^{3})$ ，代价是每步额外进行一次$D_{\theta}$评估。我们将在附录D.2中讨论休恩类方法的一般族。图13b展示了使用与图13a相同设置的休恩方法的局部截断误差。我们可以看到，$|\tau_{i}|$的差异通常更为明显，考虑到两种方法的二次收敛和三次收敛特性，这是预期的结果。欧拉方法RMSE较低的情况，在休恩方法下RMSE往往更低，反之亦然。最值得注意的是，红色曲线显示RMSE几乎恒定在$[0.0030, 0.0045]$之间。这意味着公式269和休恩方法的组合在$\rho = 3$时实际上非常接近最优。</p>
+<p>到目前为止，我们只考虑了原始数值误差，即在RGB空间中与真实结果的逐分量偏差。原始数值误差对于某些应用场景是相关的，例如图像操作，在这种情况下，ODE首先在$t$增加的方向上进行评估，然后再回到$t = 0$；在这种情况下，$|e_{N}|$直接告诉我们原始图像在这个过程中退化了多少，我们可以使用$\rho = 3$来最小化它。然而，考虑从无到有生成新图像时，不同的噪声水平可能会引入不同类型的误差，从感知重要性的角度来看，这些误差不一定是等价的。我们在图13c中对此进行了研究，其中我们绘制了不同模型和不同$N$选择下FID随$\rho$的变化。请注意，ImageNet-64模型仅针对一组离散的噪声水平进行了训练；为了在公式269中使用它，我们将每个$t_{i}$四舍五入到最接近的支持值，即$t_{i}’ = u_{\arg\min_{j}|u_{j}-t_{i}|}$。</p>
+<p>从图中可以看出，即使$\rho = 3$能带来相对较好的FID，但选择$\rho &gt; 3$可以进一步降低FID。这相当于有意在高噪声水平引入误差以减小低噪声水平的误差，这在直觉上是有意义的，因为$\sigma_{max}$的值在一定程度上是任意的——增加$\sigma_{max}$可能对$|e_{N}|$有很大影响，但对最终的图像分布影响却小得多。一般来说，我们发现在所有情况下$\rho = 7$的表现都相当不错，因此在所有其他实验中都使用这个值。</p>
+<h4 id="D-2二阶龙格-库塔变体的一般族"><a href="#D-2二阶龙格-库塔变体的一般族" class="headerlink" title="D.2二阶龙格 - 库塔变体的一般族"></a>D.2二阶龙格 - 库塔变体的一般族</h4><p>算法1中所示的休恩方法属于一类显式两阶段二阶龙格 - 库塔方法，这类方法的计算成本相同。这类方法的一个常见参数化形式为：</p>
+<script type="math/tex; mode=display">d_{i}=f\left(x_{i} ; t_{i}\right) ; x_{i + 1}=x_{i}+h \left[\left(1-\frac{1}{2\alpha }\right)d_{i}+\frac{1}{2\alpha }f(x_{i}+\alpha h d_{i};t_{i}+\alpha h)\right] \tag{270}</script><p>其中$h = t_{i + 1} - t_{i}$，$\alpha$是一个参数，用于控制额外梯度的评估位置以及它对所采取步骤的影响程度。设置$\alpha = 1$对应于休恩方法，$\alpha = \frac{1}{2}$和$\alpha = \frac{2}{3}$分别产生所谓的中点法和拉尔森法。由于底层函数$f$的几何形状不同，所有这些变体产生的近似误差也不同。</p>
+<p>为了确定在我们的应用场景中最优的$\alpha$值，我们进行了一系列单独的实验。根据结果，$\alpha = 1$似乎非常接近最优值。尽管如此，实验中得到的最佳选择是$\alpha = 1.1$，它的表现略好一些，尽管从理论上讲，大于1的值很难解释，因为它们会使计算超出目标$t_{i + 1}$ 。由于我们无法很好地解释这一现象，也不确定它是否具有一般性，所以我们没有将$\alpha$作为一个新的超参数，而是将其固定为1，这恰好对应于休恩方法。进一步的分析留作未来的工作，包括在采样过程中让$\alpha$变化的可能性。</p>
+<p>将$\alpha$设置为1的另一个好处是，它使得可以使用仅针对特定$\sigma$值进行训练的预训练神经网络$D_{\theta}(x ; \sigma)$。这是因为休恩步在恰好$t_{i + 1}$处评估额外梯度，这与其他二阶变体不同。因此，确保每个$t_{i}$对应于网络所训练的$\sigma$值就足够了。</p>
+<p>算法3展示了由$\alpha$参数化的一般二阶求解器的伪代码。为了清晰起见，伪代码假设采用了我们在第3节中倡导的$\sigma(t) = t$和$s(t) = 1$的特定选择。请注意，只有当$\alpha \geq 1$时，才会执行回退到欧拉步的操作（第11行）。</p>
+<h3 id="E随机采样的更多结果"><a href="#E随机采样的更多结果" class="headerlink" title="E随机采样的更多结果"></a>E随机采样的更多结果</h3><h4 id="E-1过度随机迭代导致的图像退化"><a href="#E-1过度随机迭代导致的图像退化" class="headerlink" title="E.1过度随机迭代导致的图像退化"></a>E.1过度随机迭代导致的图像退化</h4><p>图14展示了过度的朗之万迭代（第4节 “实际考虑”）所导致的图像退化情况。这些图像是通过在固定的噪声水平σ下进行指定次数的迭代生成的，每次迭代时添加和去除等量的噪声。理论上，朗之万动力学应使分布趋向于理想分布 $p(x;\sigma)$ ，但正如第4节所指出的，只有当去噪器 $D_{\theta}(x;\sigma)$ 在公式3中诱导出保守向量场时，这种情况才会发生。</p>
+<p>从图中可以明显看出，在所有情况下，图像分布都会因重复迭代而受到影响，尽管具体的失效模式取决于数据集和噪声水平。对于低噪声水平（约0.2以下），图像在2000次迭代后往往会出现过饱和现象，之后会完全损坏。我们设置 $S_{tmin}&gt;0$ 这一启发式方法，旨在在极低噪声水平下完全避免随机采样，以防止这种影响。</p>
+<p>对于高噪声水平，我们可以看到，在不进行标准差校正（即 $S_{noise}=1.000$ ）的情况下进行迭代，图像在高迭代次数时往往会变得更加抽象且缺乏色彩；这在CIFAR-10的10000次迭代列中尤为明显，图像大多变成黑白的，且没有可辨别的背景。通过设置 $S_{noise}&gt;1$ 来启发式地增大标准差，能有效地抵消这种趋势，如图中右侧的相应图像所示。值得注意的是，这仍然无法解决低噪声水平下的过饱和和损坏问题，这表明过度迭代的有害影响可能有多种来源。需要进一步研究，以更好地理解这些观察到的影响的根本原因。</p>
+<p>图15展示了使用Song等人 [49] 以及Dhariwal和Nichol [9] 的预训练网络时，我们的随机采样器在固定的神经网络评估次数（NFE）下，以弗雷歇初始距离（FID）衡量的输出质量随 $S_{churn}$ 的变化情况。一般来说，对于每种情况以及我们的启发式校正的每种组合，都存在一个最优的随机程度，超过这个程度，结果就会开始变差。还可以看出，无论 $S_{churn}$ 的值是多少，通过启用所有校正都能得到最佳结果，尽管 $S_{noise}$ 或 $S_{tmin,tmax}$ 哪个更重要取决于具体情况。</p>
+<h4 id="E-2随机采样参数"><a href="#E-2随机采样参数" class="headerlink" title="E.2随机采样参数"></a>E.2随机采样参数</h4><p>表5列出了我们在随机采样实验中使用的 $S_{churn}$ 、$S_{tmin}$ 、$S_{tmax}$ 和 $S_{noise}$ 的值。这些值是通过对最右列列出的组合进行网格搜索确定的。可以看出，最优参数取决于具体情况；希望对退化现象的更好理解，能在未来带来更直接的方法来处理这个问题。</p>
+<h3 id="F实施细节"><a href="#F实施细节" class="headerlink" title="F实施细节"></a>F实施细节</h3><p>我们在一个新编写的代码库中实现了我们的技术，该代码库大致基于Song等人[49]、Dhariwal和Nichol[9]以及Karras等人[26]的原始实现。我们进行了广泛的测试，以验证我们的实现产生的结果与之前的工作完全相同，包括采样器、预训练模型、网络架构、训练配置和评估。我们使用PyTorch 1.10.0、CUDA 11.4和CuDNN 8.2.0，在配备8个Tesla V100 GPU的NVIDIA DGX-1上运行所有实验。</p>
+<p>我们的实现和预训练模型可在<a target="_blank" rel="noopener" href="https://github.com/NVlabs/edm上获取。">https://github.com/NVlabs/edm上获取。</a></p>
+<h4 id="F-1-FID计算"><a href="#F-1-FID计算" class="headerlink" title="F.1 FID计算"></a>F.1 FID计算</h4><p>我们计算50,000张生成图像与所有可用真实图像之间的FID[15]，不进行任何如水平翻转之类的增强操作。我们使用StyleGAN3[26]提供的预训练Inception-v3模型，该模型是基于TensorFlow的原始模型的直接PyTorch转换版本。我们已经验证，与Dhariwal和Nichol[9]以及Karras等人[26]相比，我们的FID实现产生的结果相同。为了减少通常在±2% 左右的随机变化的影响，我们在每个实验中计算三次FID并报告最小值。我们还在图4、图5b、图13c和图15中突出显示了所达到的最高和最低FID之间的差异。</p>
+<h4 id="F-2增强正则化"><a href="#F-2增强正则化" class="headerlink" title="F.2增强正则化"></a>F.2增强正则化</h4><p>在第5节中，我们提出使用条件增强来应对$D_{\theta}$的过拟合问题。我们围绕Karras等人[25]最初在GAN背景下提出的相同概念构建我们的增强管道。在实践中，我们采用一组6种几何变换；我们发现其他类型的增强，如颜色失真和图像空间滤波，对基于扩散的模型始终有害。</p>
+<p>我们的增强管道的详细信息如表6所示。在添加噪声$n \sim N(0, \sigma^{2} I)$之前，我们对每个训练图像$y \sim p_{data}$独立应用增强操作。首先，我们通过加权抛硬币的方式决定是否启用每种增强。启用给定增强的概率（“Prob.”列）在CIFAR-10中固定为12%，在FFHQ和AFHQv2中固定为15%，除了水平翻转总是启用。然后，我们从相应的分布中抽取8个随机参数（“Parameters”列）；如果给定的增强被禁用，我们将相关参数覆盖为零。基于这些参数，我们根据参数构建一个齐次2D变换矩阵（“Transformation”列）。使用[25]中的实现，通过2倍超采样高质量小波滤波器将此变换应用于图像。最后，我们构建一个9维的条件输入向量（“Conditioning”列），并将其与图像和噪声水平输入一起馈送到去噪器网络。</p>
+<p>条件输入的作用是为网络提供一组辅助任务；除了对$p(x; \sigma)$进行建模的主要任务之外，我们实际上要求网络为增强参数$a$的每个可能选择对无限组分布$p(x; \sigma, a)$进行建模。这些辅助任务为网络提供了各种各样独特的训练样本，防止其对任何单个样本过拟合。不过，辅助任务似乎对主要任务有益；我们推测这是因为对于$a$的每一个选择，去噪操作本身都是相似的。</p>
+<p>我们设计的条件输入使得零对应于未应用任何增强的情况。在采样期间，我们只需将$a = 0$，即可获得与主要任务一致的结果。我们没有观察到辅助任务和主要任务之间有任何泄漏；即使$A_{prob}=100\%$，生成的图像也没有显示出任何域外几何变换的痕迹。在实践中，这意味着只要结果有所改进，我们可以随意选择常数${A_{prob}, A_{scale}, A_{aniso}, A_{trans}}$。水平翻转就是一个有趣的例子。大多数先前的工作通过随机水平翻转来增强训练集，这对大多数数据集是有益的，但缺点是生成图像中的任何文本或标志可能会镜像显示。使用我们的非泄漏增强，通过以100% 的概率执行水平翻转增强，我们可以在避免缺点的同时获得相同的好处。因此，我们完全依赖于我们的增强方案，并禁用数据集的水平翻转，以确保生成的图像符合原始分布。</p>
+<h4 id="F-3训练配置"><a href="#F-3训练配置" class="headerlink" title="F.3训练配置"></a>F.3训练配置</h4><p>表7展示了我们在第5节中报告的训练实验中使用的具体超参数集。我们将首先详细介绍CIFAR-10、FFHQ和AFHQv2使用的配置，然后讨论改进的ImageNet模型的训练。</p>
+<p>表2中的配置A（“Baseline”）对应于Song等人[49]针对两种情况（VP和VE）的原始设置，配置F（“Ours”）对应于我们改进后的设置。我们训练每个模型，直到从训练集中抽取总共2亿张图像，在表7中缩写为“200 Mimg”；这相当于使用512的批量大小进行约40万次训练迭代。我们每250万张图像保存一次模型快照，并报告使用确定性采样器（NFE = 35或NFE = 79，具体取决于分辨率）获得最低FID的快照结果。</p>
+<p>在配置B中，我们重新调整基本超参数，以实现更快的训练并获得更有意义的比较点。具体来说，我们将并行度从4个GPU增加到8个，批量大小根据分辨率从128增加到512或256。我们还禁用了梯度裁剪（即强制$\left|d L(D_{\theta}) / d \theta\right|_{2} ≤1$），因为我们发现在实践中它没有益处。此外，我们将CIFAR-10的学习率从0.0002提高到0.001，并在前1000万张图像训练期间进行升温，同时将θ的指数移动平均半衰期标准化为50万张图像。最后，我们通过以1% 的增量进行全面网格搜索，调整每个数据集的随机失活概率，如表7所示。我们在32×32分辨率下训练CIFAR-10的总时间约为2天，在64×64分辨率下训练FFHQ和AFHQv2的总时间约为4天。</p>
+<p>在配置C中，我们通过删除4×4层并将16×16层的容量加倍来提高模型的表达能力；我们发现前者主要导致过拟合，而后者对于获得高质量结果至关重要。Song等人[49]的原始模型在64×64（适用时）和32×32分辨率下采用128个通道，在16×16、8×8和4×4分辨率下采用256个通道。我们将这些数字更改为在64×64（适用时）分辨率下为128个通道，在32×32、16×16和8×8分辨率下为256个通道。在表7中，我们将这些计数缩写为128的倍数，从最高分辨率到最低分辨率列出。在实践中，这种重新平衡略微减少了可训练参数的总数，使得每个32×32分辨率的模型约有5600万个参数，每个64×64分辨率的模型约有6200万个参数。</p>
+<p>在配置D中，我们用改进后的公式（表1中的“Network and preconditioning”部分）替换原始的预处理。在配置E中，我们对噪声分布和损失加权（表1中的“Training”部分）进行了同样的操作。最后，在配置F中，我们启用附录F.2中讨论的增强正则化。其他超参数与配置C保持相同。</p>
+<p>对于ImageNet-64，与其他数据集相比，需要训练更长的时间才能达到最先进的结果。为了减少训练时间，我们使用32个NVIDIA Ampere GPU（4个节点），批量大小为4096（每个GPU 128），并通过混合精度FP16/FP32训练利用高性能张量核心。在实践中，我们将可训练参数存储为FP32，但在评估$F_{\theta}$时将它们转换为FP16，不过嵌入层和自注意力层除外，因为我们发现FP16有限的指数范围偶尔会导致稳定性问题。我们训练该模型两周，相当于从训练集中抽取约25亿张图像和约60万次训练迭代，使用0.0001的学习率、5000万张图像的指数移动平均，以及与Dhariwal和Nichol[9]相同的模型架构和随机失活概率。我们没有发现过拟合是一个问题，因此选择不采用增强正则化。</p>
+<h4 id="F-4网络架构"><a href="#F-4网络架构" class="headerlink" title="F.4网络架构"></a>F.4网络架构</h4><p>由于我们的训练改进，在配置F中，除了网络架构之外，VP和VE的情况在其他方面变得相同；VP采用DDPM++架构，而VE采用NCSN++架构，这两种架构最初均由Song等人[49]提出。这些架构对应于相同U型网络骨干的相对简单的变体，有三个不同之处，如表8所示。首先，DDPM++在上下采样层使用盒式滤波器[1, 1]，而NCSN++使用双线性滤波器[1, 3, 3, 1]。其次，DDPM++直接继承自DDPM[16]的噪声水平位置编码方案，而NCSN++用随机傅里叶特征[52]取代了它。第三，NCSN++在编码器中从输入图像到每个块都引入了额外的残差跳跃连接，如[49]附录H（“渐进式增长架构”）中所解释的那样。</p>
+<p>对于类别条件和增强正则化，我们通过在噪声水平输入旁边引入两个可选的条件输入来扩展原始的DDPM++和NCSN++架构。我们将类别标签表示为独热编码向量，首先将其缩放$\sqrt{C}$（其中$C$是类别总数），然后通过全连接层。对于增强参数，我们将附录F.2中的条件输入直接通过全连接层。然后，我们通过元素相加将得到的特征向量与原始噪声水平条件向量组合起来。</p>
+<p>对于类别条件ImageNet-64，我们使用Dhariwal和Nichol[9]的ADM架构，不做任何更改。该模型总共有约2.96亿个可训练参数。如表7和表8中所详细说明的，与DDPM++最显著的区别包括使用稍微更浅的模型（每个分辨率3个残差块而不是4个），但有更多的通道（例如，最低分辨率下为768个而不是256个），在整个网络中散布更多的自注意力层（22个而不是6个），以及使用多头注意力（例如，最低分辨率下有12个头）。我们认为架构选择的确切影响仍然是一个有趣的未来研究问题。</p>
+<h4 id="F-5许可证"><a href="#F-5许可证" class="headerlink" title="F.5许可证"></a>F.5许可证</h4><ul>
+<li><strong>数据集</strong><ul>
+<li>CIFAR-10[29]：MIT许可证</li>
+<li>FFHQ[27]：知识共享署名 - 非商业性使用 - 相同方式共享4.0许可证</li>
+<li>AFHQv2[7]：知识共享署名 - 非商业性使用4.0许可证</li>
+<li>ImageNet[8]：许可证状态不明确</li>
+</ul>
+</li>
+<li><strong>预训练模型</strong><ul>
+<li>Song等人[49]的CIFAR-10模型：Apache V2.0许可证</li>
+<li>Dhariwal和Nichol[9]的ImageNet-64模型：MIT许可证</li>
+<li>Szegedy等人[51]的Inception-v3模型：Apache V2.0许可证 </li>
+</ul>
+</li>
+</ul>
 <h2 id="疑问"><a href="#疑问" class="headerlink" title="疑问"></a>疑问</h2><h3 id="公式17-s-t-d-怎么得来的？"><a href="#公式17-s-t-d-怎么得来的？" class="headerlink" title="公式17$s_{t}^{-d}$怎么得来的？"></a>公式17$s_{t}^{-d}$怎么得来的？</h3><p>为了使概率密度函数的积分为1，例如：</p>
 <script type="math/tex; mode=display">
 \begin{align*}
@@ -455,8 +971,8 @@
 <li>因为</li>
 </ul>
 <h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><ul>
-<li>论文：<a href=""></a></li>
-<li>github: <a href=""></a></li>
+<li>论文：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2206.00364">Elucidating the Design Space of Diffusion-Based Generative Models</a></li>
+<li>github: <a target="_blank" rel="noopener" href="https://github.com/NVlabs/edm">edm</a></li>
 </ul>
 
     </div>
@@ -543,7 +1059,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%9C%A8%E9%80%9A%E7%94%A8%E6%A1%86%E6%9E%B6%E4%B8%AD%E8%A1%A8%E8%BE%BE%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.3.</span> <span class="nav-text">2 在通用框架中表达扩散模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E7%A1%AE%E5%AE%9A%E6%80%A7%E9%87%87%E6%A0%B7%E7%9A%84%E6%94%B9%E8%BF%9B"><span class="nav-number">1.4.</span> <span class="nav-text">3 确定性采样的改进</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E9%9A%8F%E6%9C%BA%E9%87%87%E6%A0%B7"><span class="nav-number">1.5.</span> <span class="nav-text">4 随机采样</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E9%A2%84%E5%A4%84%E7%90%86%E4%B8%8E%E8%AE%AD%E7%BB%83"><span class="nav-number">1.6.</span> <span class="nav-text">5 预处理与训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E7%BB%93%E8%AE%BA"><span class="nav-number">1.7.</span> <span class="nav-text">6 结论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#A-%E6%9B%B4%E5%A4%9A%E7%BB%93%E6%9E%9C"><span class="nav-number">1.8.</span> <span class="nav-text">A. 更多结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%96%91%E9%97%AE"><span class="nav-number">2.</span> <span class="nav-text">疑问</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AC%E5%BC%8F17-s-t-d-%E6%80%8E%E4%B9%88%E5%BE%97%E6%9D%A5%E7%9A%84%EF%BC%9F"><span class="nav-number">2.1.</span> <span class="nav-text">公式17$s_{t}^{-d}$怎么得来的？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E7%AB%A0%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">文章总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E6%96%B0%E7%82%B9%E4%B8%8E%E4%B8%BB%E8%A6%81%E6%80%9D%E6%83%B3"><span class="nav-number">3.1.</span> <span class="nav-text">创新点与主要思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E4%B8%8E%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83"><span class="nav-number">3.2.</span> <span class="nav-text">损失函数与模型训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8D%E8%B6%B3%E4%B9%8B%E5%A4%84"><span class="nav-number">3.3.</span> <span class="nav-text">不足之处</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">3.4.</span> <span class="nav-text">参考资料</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%9C%A8%E9%80%9A%E7%94%A8%E6%A1%86%E6%9E%B6%E4%B8%AD%E8%A1%A8%E8%BE%BE%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.3.</span> <span class="nav-text">2 在通用框架中表达扩散模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E7%A1%AE%E5%AE%9A%E6%80%A7%E9%87%87%E6%A0%B7%E7%9A%84%E6%94%B9%E8%BF%9B"><span class="nav-number">1.4.</span> <span class="nav-text">3 确定性采样的改进</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E9%9A%8F%E6%9C%BA%E9%87%87%E6%A0%B7"><span class="nav-number">1.5.</span> <span class="nav-text">4 随机采样</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E9%A2%84%E5%A4%84%E7%90%86%E4%B8%8E%E8%AE%AD%E7%BB%83"><span class="nav-number">1.6.</span> <span class="nav-text">5 预处理与训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E7%BB%93%E8%AE%BA"><span class="nav-number">1.7.</span> <span class="nav-text">6 结论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#A-%E6%9B%B4%E5%A4%9A%E7%BB%93%E6%9E%9C"><span class="nav-number">1.8.</span> <span class="nav-text">A. 更多结果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#B-%E5%85%AC%E5%BC%8F%E6%8E%A8%E5%AF%BC"><span class="nav-number">1.9.</span> <span class="nav-text">B. 公式推导</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#B-1-%E5%85%88%E5%89%8D%E5%B7%A5%E4%BD%9C%E4%B8%AD%E7%9A%84%E5%8E%9F%E5%A7%8BODE-SDE%E5%85%AC%E5%BC%8F"><span class="nav-number">1.9.1.</span> <span class="nav-text">B.1 先前工作中的原始ODE&#x2F;SDE公式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B-2-%E6%88%91%E4%BB%AC%E7%9A%84ODE%E5%85%AC%E5%BC%8F%EF%BC%88%E5%85%AC%E5%BC%8F1%E5%92%8C%E5%85%AC%E5%BC%8F4%EF%BC%89"><span class="nav-number">1.9.2.</span> <span class="nav-text">B.2 我们的ODE公式（公式1和公式4）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B-3-%E5%8E%BB%E5%99%AA%E5%88%86%E6%95%B0%E5%8C%B9%E9%85%8D%EF%BC%88%E5%85%AC%E5%BC%8F2%E5%92%8C%E5%85%AC%E5%BC%8F3%EF%BC%89"><span class="nav-number">1.9.3.</span> <span class="nav-text">B.3 去噪分数匹配（公式2和公式3）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B-4-%E5%9C%A8%E5%AE%9E%E8%B7%B5%E4%B8%AD%E8%AF%84%E4%BC%B0%E6%88%91%E4%BB%AC%E7%9A%84ODE%EF%BC%88%E7%AE%97%E6%B3%951%EF%BC%89"><span class="nav-number">1.9.4.</span> <span class="nav-text">B.4 在实践中评估我们的ODE（算法1）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B-5-%E6%88%91%E4%BB%AC%E7%9A%84SDE%E5%85%AC%E5%BC%8F%EF%BC%88%E5%85%AC%E5%BC%8F6%EF%BC%89"><span class="nav-number">1.9.5.</span> <span class="nav-text">B.5 我们的SDE公式（公式6）</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#B-5-1-%E9%80%9A%E8%BF%87%E7%83%AD%E6%89%A9%E6%95%A3%E7%94%9F%E6%88%90%E8%BE%B9%E9%99%85%E5%88%86%E5%B8%83"><span class="nav-number">1.9.5.1.</span> <span class="nav-text">B.5.1 通过热扩散生成边际分布</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#B-5-2-%E6%88%91%E4%BB%AC%E7%9A%84SDE%E6%8E%A8%E5%AF%BC"><span class="nav-number">1.9.5.2.</span> <span class="nav-text">B.5.2 我们的SDE推导</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B-6-%E6%88%91%E4%BB%AC%E7%9A%84%E9%A2%84%E5%A4%84%E7%90%86%E5%92%8C%E8%AE%AD%E7%BB%83%EF%BC%88%E5%85%AC%E5%BC%8F8%EF%BC%89"><span class="nav-number">1.9.6.</span> <span class="nav-text">B.6 我们的预处理和训练（公式8）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#C-%E5%9C%A8%E6%88%91%E4%BB%AC%E7%9A%84%E6%A1%86%E6%9E%B6%E4%B8%AD%E9%87%8D%E6%96%B0%E6%9E%84%E5%BB%BA%E5%85%88%E5%89%8D%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">1.10.</span> <span class="nav-text">C. 在我们的框架中重新构建先前的方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#C-1-%E6%96%B9%E5%B7%AE%E4%BF%9D%E6%8C%81%E5%85%AC%E5%BC%8F"><span class="nav-number">1.10.1.</span> <span class="nav-text">C.1 方差保持公式</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#C-1-1-VP%E9%87%87%E6%A0%B7"><span class="nav-number">1.10.1.1.</span> <span class="nav-text">C.1.1 VP采样</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#C-1-2-VP%E9%A2%84%E5%A4%84%E7%90%86"><span class="nav-number">1.10.1.2.</span> <span class="nav-text">C.1.2 VP预处理</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#C-1-3-VP%E8%AE%AD%E7%BB%83"><span class="nav-number">1.10.1.3.</span> <span class="nav-text">C.1.3 VP训练</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#C-1-4-VP%E5%AE%9E%E9%99%85%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">1.10.1.4.</span> <span class="nav-text">C.1.4 VP实际注意事项</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#C-2-%E6%96%B9%E5%B7%AE%E7%88%86%E7%82%B8%E5%85%AC%E5%BC%8F"><span class="nav-number">1.10.2.</span> <span class="nav-text">C.2 方差爆炸公式</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#C-2-1-%E7%90%86%E8%AE%BA%E4%B8%8A%E7%9A%84VE%E9%87%87%E6%A0%B7"><span class="nav-number">1.10.2.1.</span> <span class="nav-text">C.2.1 理论上的VE采样</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#C-2-2-%E5%AE%9E%E8%B7%B5%E4%B8%AD%E7%9A%84VE%E9%87%87%E6%A0%B7"><span class="nav-number">1.10.2.2.</span> <span class="nav-text">C.2.2 实践中的VE采样</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#C-2-3-VE%E9%A2%84%E5%A4%84%E7%90%86"><span class="nav-number">1.10.2.3.</span> <span class="nav-text">C.2.3 VE预处理</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#C-2-4-VE%E8%AE%AD%E7%BB%83"><span class="nav-number">1.10.2.4.</span> <span class="nav-text">C.2.4 VE训练</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#C-2-5-VE%E5%AE%9E%E9%99%85%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">1.10.2.5.</span> <span class="nav-text">C.2.5 VE实际注意事项</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#C-3-%E6%94%B9%E8%BF%9B%E7%9A%84DDPM%E5%92%8CDDIM"><span class="nav-number">1.11.</span> <span class="nav-text">C.3 改进的DDPM和DDIM</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#C-3-1-DDIM%E7%9A%84ODE%E5%85%AC%E5%BC%8F"><span class="nav-number">1.11.1.</span> <span class="nav-text">C.3.1 DDIM的ODE公式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#C-3-2-iDDPM%E7%9A%84%E6%97%B6%E9%97%B4%E6%AD%A5%E7%A6%BB%E6%95%A3%E5%8C%96"><span class="nav-number">1.11.2.</span> <span class="nav-text">C.3.2 iDDPM的时间步离散化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#C-3-3-iDDPM%E7%9A%84%E9%A2%84%E5%A4%84%E7%90%86%E5%92%8C%E8%AE%AD%E7%BB%83"><span class="nav-number">1.11.3.</span> <span class="nav-text">C.3.3 iDDPM的预处理和训练</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#C-3-4-iDDPM%E5%AE%9E%E9%99%85%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">1.11.4.</span> <span class="nav-text">C.3.4 iDDPM实际注意事项</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#D-%E7%A1%AE%E5%AE%9A%E6%80%A7%E9%87%87%E6%A0%B7%E7%9A%84%E8%BF%9B%E4%B8%80%E6%AD%A5%E5%88%86%E6%9E%90"><span class="nav-number">1.12.</span> <span class="nav-text">D. 确定性采样的进一步分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#D-1-%E6%88%AA%E6%96%AD%E8%AF%AF%E5%B7%AE%E5%88%86%E6%9E%90%E5%92%8C%E7%A6%BB%E6%95%A3%E5%8C%96%E5%8F%82%E6%95%B0%E7%9A%84%E9%80%89%E6%8B%A9"><span class="nav-number">1.12.1.</span> <span class="nav-text">D.1 截断误差分析和离散化参数的选择</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#D-2%E4%BA%8C%E9%98%B6%E9%BE%99%E6%A0%BC-%E5%BA%93%E5%A1%94%E5%8F%98%E4%BD%93%E7%9A%84%E4%B8%80%E8%88%AC%E6%97%8F"><span class="nav-number">1.12.2.</span> <span class="nav-text">D.2二阶龙格 - 库塔变体的一般族</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#E%E9%9A%8F%E6%9C%BA%E9%87%87%E6%A0%B7%E7%9A%84%E6%9B%B4%E5%A4%9A%E7%BB%93%E6%9E%9C"><span class="nav-number">1.13.</span> <span class="nav-text">E随机采样的更多结果</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#E-1%E8%BF%87%E5%BA%A6%E9%9A%8F%E6%9C%BA%E8%BF%AD%E4%BB%A3%E5%AF%BC%E8%87%B4%E7%9A%84%E5%9B%BE%E5%83%8F%E9%80%80%E5%8C%96"><span class="nav-number">1.13.1.</span> <span class="nav-text">E.1过度随机迭代导致的图像退化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#E-2%E9%9A%8F%E6%9C%BA%E9%87%87%E6%A0%B7%E5%8F%82%E6%95%B0"><span class="nav-number">1.13.2.</span> <span class="nav-text">E.2随机采样参数</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#F%E5%AE%9E%E6%96%BD%E7%BB%86%E8%8A%82"><span class="nav-number">1.14.</span> <span class="nav-text">F实施细节</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#F-1-FID%E8%AE%A1%E7%AE%97"><span class="nav-number">1.14.1.</span> <span class="nav-text">F.1 FID计算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#F-2%E5%A2%9E%E5%BC%BA%E6%AD%A3%E5%88%99%E5%8C%96"><span class="nav-number">1.14.2.</span> <span class="nav-text">F.2增强正则化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#F-3%E8%AE%AD%E7%BB%83%E9%85%8D%E7%BD%AE"><span class="nav-number">1.14.3.</span> <span class="nav-text">F.3训练配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#F-4%E7%BD%91%E7%BB%9C%E6%9E%B6%E6%9E%84"><span class="nav-number">1.14.4.</span> <span class="nav-text">F.4网络架构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#F-5%E8%AE%B8%E5%8F%AF%E8%AF%81"><span class="nav-number">1.14.5.</span> <span class="nav-text">F.5许可证</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%96%91%E9%97%AE"><span class="nav-number">2.</span> <span class="nav-text">疑问</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AC%E5%BC%8F17-s-t-d-%E6%80%8E%E4%B9%88%E5%BE%97%E6%9D%A5%E7%9A%84%EF%BC%9F"><span class="nav-number">2.1.</span> <span class="nav-text">公式17$s_{t}^{-d}$怎么得来的？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E7%AB%A0%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">文章总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E6%96%B0%E7%82%B9%E4%B8%8E%E4%B8%BB%E8%A6%81%E6%80%9D%E6%83%B3"><span class="nav-number">3.1.</span> <span class="nav-text">创新点与主要思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E4%B8%8E%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83"><span class="nav-number">3.2.</span> <span class="nav-text">损失函数与模型训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8D%E8%B6%B3%E4%B9%8B%E5%A4%84"><span class="nav-number">3.3.</span> <span class="nav-text">不足之处</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">3.4.</span> <span class="nav-text">参考资料</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
