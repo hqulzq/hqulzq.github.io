@@ -221,7 +221,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-04-01 15:29:14" itemprop="dateModified" datetime="2025-04-01T15:29:14+08:00">2025-04-01</time>
+                <time title="修改时间：2025-04-22 22:41:44" itemprop="dateModified" datetime="2025-04-22T22:41:44+08:00">2025-04-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -251,81 +251,14 @@
 <li>不足之处：<br>因为设计了加噪的马尔可夫过程，导致采样效率低。</li>
 <li>提出了一种马尔可夫的加噪与去噪过程，diffusion的经典之作</li>
 </ul>
-<h2 id="DDPM-Denoising-Diffusion-Probabilistic-Models"><a href="#DDPM-Denoising-Diffusion-Probabilistic-Models" class="headerlink" title="(DDPM) Denoising Diffusion Probabilistic Models"></a>(DDPM) Denoising Diffusion Probabilistic Models</h2><ul>
-<li>发表于<strong>2020-NeurIPS</strong></li>
-<li>核心公式与推导：</li>
-<li>创新点：</li>
-<li>不足之处：<br>因为设计了加噪的马尔可夫过程，导致采样效率低。</li>
-<li>提出了一种马尔可夫的加噪与去噪过程，diffusion的经典之作</li>
-</ul>
-<h2 id="Palette-Image-to-Image-Diffusion-Models"><a href="#Palette-Image-to-Image-Diffusion-Models" class="headerlink" title="Palette Image-to-Image Diffusion Models"></a>Palette Image-to-Image Diffusion Models</h2><ul>
-<li>发表于<strong>2021-CVPR</strong></li>
-</ul>
-<p>Q: 这篇论文试图解决什么问题？<br>A: 这篇论文提出了一个统一的框架，用于解决基于条件扩散模型的图像到图像的转换问题。具体来说，它旨在解决以下挑战性图像到图像转换任务：</p>
-<ul>
-<li>彩色化（Colorization）：将输入的灰度图像转换为具有合理颜色的彩色图像。</li>
-<li>修复（Inpainting）：在图像中填充用户指定的遮蔽区域，使其内容看起来真实。</li>
-<li>去边框（Uncropping）：扩展输入图像，使其在至少一个方向上增大。</li>
-<li>JPEG恢复（JPEG restoration）：纠正JPEG压缩产生的伪影，恢复图像的合理细节。</li>
-</ul>
-<p>论文的主要贡献包括：</p>
-<ul>
-<li>提出了一个简单的图像到图像扩散模型实现，该模型在所有任务上都优于强大的GAN和回归基线，且无需特定任务的超参数调整、架构定制或任何辅助损失。</li>
-<li>研究了去噪扩散目标中L2与L1损失对样本多样性的影响。</li>
-<li>通过实证研究展示了自注意力在神经架构中的重要性。<br>提倡基于ImageNet的统一评估协议，包括人类评估和样本质量分数（FID、Inception Score、预训练ResNet50的分类准确率和与原始图像的感知距离）。</li>
-<li>展示了一个通用的、多任务扩散模型在性能上与特定任务专家模型相当或更优。</li>
-</ul>
-<h2 id="Classifier-Guidance-diffusion-models-beat-gans-on-image-synthesis"><a href="#Classifier-Guidance-diffusion-models-beat-gans-on-image-synthesis" class="headerlink" title="(Classifier Guidance) diffusion-models-beat-gans-on-image-synthesis"></a>(Classifier Guidance) diffusion-models-beat-gans-on-image-synthesis</h2><ul>
-<li>发表于<strong>2021-NeurIPS</strong></li>
-<li>通过<strong>分类器引导（classifier guidance）提高样本质量</strong>。这是一种简单且计算效率高的方法，可以在多样性和保真度之间进行权衡，成为stable diffusion的重要基础</li>
-</ul>
-<h2 id="Classifier-Free-Diffusion-Guidance"><a href="#Classifier-Free-Diffusion-Guidance" class="headerlink" title="Classifier-Free Diffusion Guidance"></a>Classifier-Free Diffusion Guidance</h2><ul>
-<li>发表于<strong>2021-CVPR-Workshop</strong></li>
-<li>论文探讨了是否可以在不依赖额外分类器的情况下实现类似的引导效果。作者提出了<strong>无分类器引导方法</strong>，通过联合训练条件和无条件扩散模型，并结合这两种模型的分数估计来实现样本质量和多样性之间的权衡。</li>
-</ul>
-<h2 id="GLIDE-Towards-Photorealistic-Image-Generation-and-Editing-with-Text-Guided-Diffusion-Models"><a href="#GLIDE-Towards-Photorealistic-Image-Generation-and-Editing-with-Text-Guided-Diffusion-Models" class="headerlink" title="GLIDE: Towards Photorealistic Image Generation and Editing with Text-Guided Diffusion Models"></a>GLIDE: Towards Photorealistic Image Generation and Editing with Text-Guided Diffusion Models</h2><ul>
-<li>发表于<strong>2021</strong></li>
-<li>这篇论文探讨了如何使用文本引导的扩散模型（text-guided diffusion models）来生成逼真的图像并进行图像编辑。</li>
-</ul>
-<h2 id="DDIM-Denoising-Diffusion-Implicit-Models"><a href="#DDIM-Denoising-Diffusion-Implicit-Models" class="headerlink" title="(DDIM) Denoising Diffusion Implicit Models"></a>(DDIM) Denoising Diffusion Implicit Models</h2><ul>
-<li>发表于<strong>2021-ICLR</strong></li>
-<li>这篇论文试图解决的问题是提高去噪扩散概率模型（Denoising Diffusion Probabilistic Models, DDPMs）的采样效率。DDPMs在图像生成方面取得了高质量的成果，但它们需要模拟一个马尔可夫链（Markov chain）进行多步迭代才能生成一个样本，这使得采样过程非常耗时。为了加速采样过程，论文提出了去噪扩散隐式模型（Denoising Diffusion Implicit Models, DDIMs），这是一种更高效的迭代隐式概率模型，<strong>它与DDPMs有相同的训练过程</strong>，但能够通过<strong>非马尔可夫过程</strong>实现更快的样本生成。DDIMs通过使用非马尔可夫过程，可以在较少的步骤中生成高质量的样本，同时允许在潜在空间中直接进行语义上有意义的图像插值，并以非常低的误差重建观测数据。</li>
-</ul>
-<h2 id="Score-Based-Models-Score-Based-Generative-Modeling-through-Stochastic-Differential-Equations"><a href="#Score-Based-Models-Score-Based-Generative-Modeling-through-Stochastic-Differential-Equations" class="headerlink" title="(Score-Based Models) Score-Based Generative Modeling through Stochastic Differential Equations"></a>(Score-Based Models) Score-Based Generative Modeling through Stochastic Differential Equations</h2><ul>
-<li>发表于<strong>2021-ICLR</strong></li>
-<li>提出了一种<strong>基于随机微分方程（SDE）</strong>的生成模型框架</li>
-<li>论文提供了一个<strong>统一的框架</strong>，可以将现有的基于分数的生成模型（如SMLD和DDPM）整合进来，并允许探索和调整不同的SDE以改进模型性能。</li>
-<li>通过引入<strong>概率流普通微分方程（ODE）</strong>，论文提供了一种新的方法来计算精确的似然，这对于扩散模型的加速采样至关重要</li>
-<li>利用神经网络估计分数，并使用数值SDE求解器生成样本。提出了预测-校正（PC）框架，结合数值SDE求解器和基于分数的MCMC方法，以提高采样质量。</li>
-</ul>
-<h2 id="IDDPM-Improved-Denoising-Diffusion-Probabilistic-Model"><a href="#IDDPM-Improved-Denoising-Diffusion-Probabilistic-Model" class="headerlink" title="(IDDPM) Improved Denoising Diffusion Probabilistic Model"></a>(IDDPM) Improved Denoising Diffusion Probabilistic Model</h2><ul>
-<li>发表于<strong>2021-ICML</strong></li>
-<li>通过<strong>学习逆向过程的方差Σθ(xt, t)</strong>并使用一个简单的重参数化技巧，结合了VLB和Ho et al. (2020)提出的简化目标的混合学习目标，以更紧密地优化VLB。</li>
-<li>出了一种新的<strong>余弦加噪过程</strong>，它在扩散过程的中间线性下降，在t=0和t=T时变化缓慢，以防止噪声水平的突然变化</li>
-<li>提高采样速度：通过在模型中<strong>纳入学习到的方差</strong>，发现可以在更少的步骤中进行采样，而对样本质量的影响很小。这显著加快了采样速度，使得在实际应用中的采样更加高效</li>
-</ul>
-<h2 id="LDM-Stable-Diffusion原型-High-Resolution-Image-Synthesis-with-Latent-Diffusion-Models"><a href="#LDM-Stable-Diffusion原型-High-Resolution-Image-Synthesis-with-Latent-Diffusion-Models" class="headerlink" title="(LDM: Stable Diffusion原型) High-Resolution Image Synthesis with Latent Diffusion Models"></a>(LDM: Stable Diffusion原型) High-Resolution Image Synthesis with Latent Diffusion Models</h2><ul>
-<li>发表于<strong>2022-CVPR</strong></li>
-<li>潜在空间训练：论文提出在预训练的自编码器的潜在空间中训练扩散模型，而不是直接在像素空间。这样做可以显著降低数据的维度，从而减少计算复杂性。</li>
-<li>交叉注意力机制：为了使扩散模型能够处理多种条件输入（如文本或边界框），论文引入了交叉注意力层。这使得模型能够灵活地处理各种输入模式，同时保持高效的并行处理能力。</li>
-</ul>
-<h2 id="ADPM-Analytic-DPM-an-Analytic-Estimate-of-the-Optimal-Reverse-Variance-in-Diffusion-Probabilistic-Models"><a href="#ADPM-Analytic-DPM-an-Analytic-Estimate-of-the-Optimal-Reverse-Variance-in-Diffusion-Probabilistic-Models" class="headerlink" title="(ADPM) Analytic-DPM an Analytic Estimate of the Optimal Reverse Variance in Diffusion Probabilistic Models"></a>(ADPM) Analytic-DPM an Analytic Estimate of the Optimal Reverse Variance in Diffusion Probabilistic Models</h2><ul>
-<li>发表于<strong>2022-ICLR</strong></li>
-<li>提供了一种无需额外训练即可提高预训练DPMs推理效率的方法，通过使用蒙特卡洛方法和预训练的基于分数的模型来<strong>估计方差和KL散度的解析形式</strong>，从而改进了逆向过程的方差估计，推导出了<strong>最优方差的上下界</strong>，并通过对估计值进行剪辑来获得更好的结果</li>
-</ul>
-<h2 id="DPM-Solver-DPM-Solver-A-Fast-ODE-Solver-for-Diffusion-Probabilistic-Model-Sampling-in-Around-10-Steps"><a href="#DPM-Solver-DPM-Solver-A-Fast-ODE-Solver-for-Diffusion-Probabilistic-Model-Sampling-in-Around-10-Steps" class="headerlink" title="(DPM-Solver) DPM-Solver-A Fast ODE Solver for Diffusion Probabilistic Model Sampling in Around 10 Steps"></a>(DPM-Solver) DPM-Solver-A Fast ODE Solver for Diffusion Probabilistic Model Sampling in Around 10 Steps</h2><ul>
-<li>发表于<strong>2022-NeurIPS</strong></li>
-<li>提出了一个名为 DPM-Solver 的快速、专用的高阶求解器，用于解决与 DPMs 相关的扩散常微分方程（ODEs）。DPM-Solver <strong>利用扩散 ODEs 的半线性结构</strong>，通过分析<strong>计算线性部分的解</strong>，避免了将所有项留给黑盒 ODE 求解器，从而减少了离散化误差。此外，通过变量替换，解可以<strong>简化为神经网络的指数加权积分</strong>，这可以通过指数积分器的数值方法高效近似。</li>
-</ul>
-<h2 id="PNMD-Pseudo-Numerical-Methods-for-Diffusion-Models-on-Manifolds"><a href="#PNMD-Pseudo-Numerical-Methods-for-Diffusion-Models-on-Manifolds" class="headerlink" title="(PNMD) Pseudo Numerical Methods for Diffusion Models on Manifolds"></a>(PNMD) Pseudo Numerical Methods for Diffusion Models on Manifolds</h2><ul>
-<li>发表于<strong>2022-ICLR</strong></li>
-<li>加速采样器</li>
-</ul>
-<h2 id="EDM-Elucidating-the-Design-Space-of-Diffusion-Based-Generative-Models"><a href="#EDM-Elucidating-the-Design-Space-of-Diffusion-Based-Generative-Models" class="headerlink" title="(EDM) Elucidating the Design Space of Diffusion-Based Generative Models"></a>(EDM) Elucidating the Design Space of Diffusion-Based Generative Models</h2><ul>
-<li>发表于<strong>2022-NeurIPS</strong></li>
-<li>大一统的diffusion的论文，必须深刻理解</li>
-</ul>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/03/14/diffusion%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E6%84%9F%E6%82%9F/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
