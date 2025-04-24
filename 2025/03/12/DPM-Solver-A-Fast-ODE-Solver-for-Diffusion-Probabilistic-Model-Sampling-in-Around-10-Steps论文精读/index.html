@@ -30,8 +30,15 @@
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/12/DPM-Solver-A-Fast-ODE-Solver-for-Diffusion-Probabilistic-Model-Sampling-in-Around-10-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/a1.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/12/DPM-Solver-A-Fast-ODE-Solver-for-Diffusion-Probabilistic-Model-Sampling-in-Around-10-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/a2.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/12/DPM-Solver-A-Fast-ODE-Solver-for-Diffusion-Probabilistic-Model-Sampling-in-Around-10-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f2.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/12/DPM-Solver-A-Fast-ODE-Solver-for-Diffusion-Probabilistic-Model-Sampling-in-Around-10-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t2.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/12/DPM-Solver-A-Fast-ODE-Solver-for-Diffusion-Probabilistic-Model-Sampling-in-Around-10-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/a3.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/12/DPM-Solver-A-Fast-ODE-Solver-for-Diffusion-Probabilistic-Model-Sampling-in-Around-10-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/a4.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/12/DPM-Solver-A-Fast-ODE-Solver-for-Diffusion-Probabilistic-Model-Sampling-in-Around-10-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/a5.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/12/DPM-Solver-A-Fast-ODE-Solver-for-Diffusion-Probabilistic-Model-Sampling-in-Around-10-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/a6.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/12/DPM-Solver-A-Fast-ODE-Solver-for-Diffusion-Probabilistic-Model-Sampling-in-Around-10-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/a7.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/12/DPM-Solver-A-Fast-ODE-Solver-for-Diffusion-Probabilistic-Model-Sampling-in-Around-10-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t3.png">
 <meta property="article:published_time" content="2025-03-12T12:59:26.000Z">
-<meta property="article:modified_time" content="2025-03-16T14:02:58.886Z">
+<meta property="article:modified_time" content="2025-04-24T07:25:33.549Z">
 <meta property="article:author" content="Zongqing Li">
 <meta property="article:tag" content="diffusion">
 <meta property="article:tag" content="2022">
@@ -139,7 +146,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">61</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">62</span></a>
 
   </li>
         <li class="menu-item menu-item-book">
@@ -232,7 +239,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-03-16 22:02:58" itemprop="dateModified" datetime="2025-03-16T22:02:58+08:00">2025-03-16</time>
+                <time title="修改时间：2025-04-24 15:25:33" itemprop="dateModified" datetime="2025-04-24T15:25:33+08:00">2025-04-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -324,7 +331,316 @@
 </div>
 <h3 id="6-结论"><a href="#6-结论" class="headerlink" title="6 结论"></a>6 结论</h3><p>我们解决了从扩散概率模型（DPMs）进行快速且无需训练的采样问题。我们提出了DPM-Solver，这是一种快速、专门用于求解扩散常微分方程（ODE）的无需训练的求解器，可在约10次函数评估步骤内实现对DPMs的快速采样。DPM-Solver利用了扩散ODE的半线性结构，直接逼近扩散ODE精确解的简化公式，该公式由噪声预测模型的指数加权积分构成。受指数积分器数值方法的启发，我们提出了一阶、二阶和三阶的DPM-Solver，以在理论上保证收敛的情况下逼近噪声预测模型的指数加权积分。我们提出了手动设定和自适应的步长调度，并将DPM-Solver应用于连续时间和离散时间的DPMs。我们的实验结果表明，DPM-Solver可以在各种数据集上，通过约10次函数评估生成高质量样本，与之前最先进的无需训练的采样器相比，实现了4 - 16倍的加速。</p>
 <h4 id="局限性和更广泛的影响"><a href="#局限性和更广泛的影响" class="headerlink" title="局限性和更广泛的影响"></a>局限性和更广泛的影响</h4><p>尽管DPM-Solver在加速性能方面前景良好，但它是为快速采样而设计的，可能不适用于加速DPMs的似然评估。此外，与常用的生成对抗网络（GANs）相比，使用DPM-Solver的扩散模型在实时应用中仍然不够快。另外，与其他深度生成模型一样，DPMs可能被用于生成有害的虚假内容，而本文提出的求解器可能会进一步放大深度生成模型在恶意应用中的潜在不良影响。</p>
-<h2 id="疑问"><a href="#疑问" class="headerlink" title="疑问"></a>疑问</h2><h3 id="3-扩散常微分方程的定制快速求解器-1"><a href="#3-扩散常微分方程的定制快速求解器-1" class="headerlink" title="3 扩散常微分方程的定制快速求解器"></a>3 扩散常微分方程的定制快速求解器</h3><h4 id="公式3-4的推导"><a href="#公式3-4的推导" class="headerlink" title="公式3.4的推导"></a>公式3.4的推导</h4><script type="math/tex; mode=display">
+<h3 id="A-对噪声调度具有不变性的采样"><a href="#A-对噪声调度具有不变性的采样" class="headerlink" title="A 对噪声调度具有不变性的采样"></a>A 对噪声调度具有不变性的采样</h3><p>在本节中，我们将进一步讨论命题3.1中的精确解，并对该公式给出一些见解。下面我们首先根据λ（即半对数信噪比）重新表述该命题。</p>
+<p><strong>命题3.1（扩散常微分方程的精确解）</strong>：给定在时间s处具有相应半对数信噪比$\lambda_{s}$的初始值$\hat{x}_{\lambda_{s}}$，扩散常微分方程（公式2.7）在时间t处具有相应半对数信噪比$\lambda_{t}$的解$\hat{x}_{\lambda_{t}}$为：</p>
+<script type="math/tex; mode=display">\hat{x}_{\lambda_{t}}=\frac{\alpha_{t}}{\alpha_{s}} \hat{x}_{\lambda_{s}}-\alpha_{t} \int_{\lambda_{s}}^{\lambda_{t}} e^{-\lambda} \hat{\epsilon}_{\theta}\left(\hat{x}_{\lambda}, \lambda\right) d \lambda \tag{A.1}</script><p>在接下来的小节中，我们将展示该公式将模型$\epsilon_{\theta}$与特定的噪声调度解耦，因此对噪声调度具有不变性。此外，命题3.1中对λ的变量变换与扩散模型的最大似然训练高度相关。我们将展示扩散模型的最大似然训练和采样都具有与噪声调度无关的不变性公式。</p>
+<h4 id="A-1-采样解与噪声调度的解耦"><a href="#A-1-采样解与噪声调度的解耦" class="headerlink" title="A.1 采样解与噪声调度的解耦"></a>A.1 采样解与噪声调度的解耦</h4><p>在本节中，我们将展示命题3.1可以将扩散常微分方程的精确解与特定的噪声调度（即函数$\alpha_{t}=\alpha(t)$和$\sigma_{t}=\sigma(t)$的选择）解耦。也就是说，给定起始点$\lambda_{s}$、终点$\lambda_{t}$、在$\lambda_{s}$处的初始值$\hat{x}_{\lambda_{s}}$以及噪声预测模型$\hat{\epsilon}_{\theta}$，$\hat{x}_{\lambda_{t}}$的解与$\lambda_{s}$和$\lambda_{t}$之间的噪声调度无关。</p>
+<p>我们首先考虑VP型扩散模型，它与原始的去噪扩散概率模型（DDPM）等价。对于VP型扩散模型，我们始终有$\alpha_{t}^{2}+\sigma_{t}^{2}=1$，因此定义噪声调度等同于定义函数$\alpha_{t}=\alpha(t)$（例如，DDPM使用的噪声调度使得$\beta(t)=\frac{d log \alpha_{t}}{dt}$是t的线性函数，而改进的去噪扩散概率模型（i-DDPM）使用的噪声调度使得$\beta(t)=\frac{d log \alpha_{t}}{dt}$是t的余弦函数）。由于$\lambda_{t}=log \alpha_{t}-log \sigma_{t}$，我们有$\alpha_{t}=\sqrt{\frac{1}{1+e^{-2 \lambda_{t}}}}$和$\sigma_{t}=\sqrt{\frac{1}{1+e^{2 \lambda_{t}}}}$。因此，对于给定的$\lambda_{t}$，我们可以直接计算出$\alpha_{t}$和$\sigma_{t}$。记$\hat{\alpha}_{\lambda}:=\sqrt{\frac{1}{1+e^{-2 \lambda}}}$，我们有：</p>
+<script type="math/tex; mode=display">\hat{x}_{\lambda_{t}}=\frac{\hat{\alpha}_{\lambda_{t}}}{\hat{\alpha}_{\lambda_{s}}} \hat{x}_{\lambda_{s}}-\hat{\alpha}_{\lambda_{t}} \int_{\lambda_{s}}^{\lambda_{t}} e^{-\lambda} \hat{\epsilon}_{\theta}\left(\hat{x}_{\lambda}, \lambda\right) d \lambda \tag{A.2}</script><p>我们应该注意到，被积函数$e^{-\lambda} \hat{\epsilon}_{\theta}(\hat{x}_{\lambda}, \lambda)$是λ的函数，因此它从$\lambda_{s}$到$\lambda_{t}$的积分仅取决于起始点$\lambda_{s}$、终点$\lambda_{t}$以及函数$\hat{\epsilon}_{\theta}$，与中间值无关。由于其他系数（$\hat{\alpha}_{\lambda_{s}}$和$\hat{\alpha}_{\lambda_{t}}$）也仅取决于起始点$\lambda_{s}$和终点$\lambda_{t}$，我们可以得出结论，$\hat{x}_{\lambda_{t}}$与特定的噪声调度选择无关。直观地说，这是因为我们将公式（3.1）中原来对时间t的积分转换为对λ的积分，并且函数$f(t)$和$g(t)$被转换为一个解析公式$e^{-\lambda}$，该公式对$f(t)$和$g(t)$的特定选择具有不变性。最后，对于其他类型的扩散模型（如VE型和subVP型），通过对噪声预测模型进行等效缩放，它们都与VP型等价，正如文献[10]中所证明的那样。因此，这些类型的解也具有这种性质。</p>
+<p>总之，命题3.1将扩散常微分方程的解与噪声调度解耦，这为我们设计针对扩散概率模型（DPMs）的定制采样器提供了机会。事实上，如3.2节所示，所提出的DPM-Solver的唯一近似是关于神经网络$\hat{\epsilon}_{\theta}$对λ的泰勒展开，而DPM-Solver通过解析计算其他系数（这些系数对应于特定的噪声调度）。直观地说，DPM-Solver尽可能地保留已知信息，仅对神经网络的难以处理的积分进行近似，因此它可以在更少的步骤内生成相当的样本。</p>
+<h4 id="A-2-选择λ的时间步对噪声调度具有不变性"><a href="#A-2-选择λ的时间步对噪声调度具有不变性" class="headerlink" title="A.2 选择λ的时间步对噪声调度具有不变性"></a>A.2 选择λ的时间步对噪声调度具有不变性</h4><p>如附录A.1所述，命题3.1的公式将采样解与噪声调度解耦。解取决于起始点$\lambda_{s}$和终点$\lambda_{t}$，并且对中间的噪声调度具有不变性。类似地，DPM-Solver算法的更新方程对中间的噪声调度也具有不变性。因此，如果我们选择了时间步${\lambda_{i}}_{i=0}^{M}$，那么DPM-Solver的解也随之确定，并且对中间的噪声调度具有不变性。</p>
+<p>一种简单的选择λ时间步的方法是均匀划分$[\lambda_{T}, \lambda_{\epsilon}]$，这是我们实验中的设置。然而，我们相信存在更精确的选择时间步的方法，我们将其留作未来的工作。</p>
+<h4 id="A-3-与扩散模型最大似然训练的关系"><a href="#A-3-与扩散模型最大似然训练的关系" class="headerlink" title="A.3 与扩散模型最大似然训练的关系"></a>A.3 与扩散模型最大似然训练的关系</h4><p>有趣的是，连续时间扩散随机微分方程（SDEs）的最大似然训练也具有这种不变性。下面我们简要回顾一下扩散SDEs的最大似然训练损失，然后提出一种理解扩散模型的新视角。</p>
+<p>记数据分布为$q_{0}(x_{0})$，正向过程在每个时间t的分布为$q_{t}(x_{t})$，反向过程在每个时间t的分布为$p_{t}(x_{t})$，其中$p_{T}=N(0, I)$。在文献[3]中证明了，$q_{0}$和$p_{0}$之间的KL散度可以由加权得分匹配损失界定：</p>
+<script type="math/tex; mode=display">D_{KL}\left(q_{0} \| p_{0}\right) \leq D_{KL}\left(q_{T} \| p_{T}\right)+\frac{1}{2} \int_{0}^{T} \frac{g^{2}(t)}{\sigma_{t}^{2}} \mathbb{E}_{q_{0}\left(x_{0}\right)} \mathbb{E}_{\epsilon \sim \mathcal{N}(0, I)}\left[\left\| \epsilon_{\theta}\left(x_{t}, t\right)-\epsilon\right\| _{2}^{2}\right] d t+C \tag{A.3}</script><p>其中$x_{t}=\alpha_{t} x_{0}+\sigma_{t} \epsilon$，C是与θ无关的常数。如3.1节所示，我们有：</p>
+<script type="math/tex; mode=display">g^{2}(t)=\frac{d \sigma_{t}^{2}}{ d t}-2 \frac{d log \alpha_{t}}{ d t} \sigma_{t}^{2}=2 \sigma_{t}^{2}\left(\frac{d log \sigma_{t}}{ d t}-\frac{d log \alpha_{t}}{ d t}\right)=-2 \sigma_{t}^{2} \frac{d \lambda_{t}}{ d t} \tag{A.4}</script><p>因此，通过对$λ$进行变量变换，我们有：</p>
+<script type="math/tex; mode=display">D_{KL}\left(q_{0} \| p_{0}\right) \leq D_{KL}\left(q_{T} \| p_{T}\right)+\int_{\lambda_{T}}^{\lambda_{0}} \mathbb{E}_{q_{0}\left(x_{0}\right)} \mathbb{E}_{\epsilon \sim \mathcal{N}(0, I)}\left[\left\| \epsilon_{\theta}\left(\hat{x}_{\lambda}, \lambda\right)-\epsilon\right\| _{2}^{2}\right] d \lambda+C \tag{A.5}</script><p>这等价于文献[41，5.1节]中的重要性采样技巧和文献[10，公式（22）]中的连续时间扩散损失。与命题3.1相比，我们可以发现扩散模型的采样和最大似然训练都可以转换为关于λ的积分，使得公式对特定的噪声调度具有不变性，我们将其总结在表2中。这种训练和采样的不变性为理解扩散模型带来了新的视角。例如，我们可以直接根据（半）对数信噪比λ而不是时间t来定义噪声预测模型$\epsilon_{\theta}$，然后扩散模型的训练和采样可以在不进一步选择任何特定噪声调度的情况下进行。这一发现可能会统一扩散模型训练和推理的不同方式，我们将其留作未来的研究。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t2.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表2：对噪声调度选择具有不变性的公式。关于$λ$的最大似然训练损失等同于文献[10, 41]中的目标函数，并且在命题3.1中提出了扩散常微分方程的精确解。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="B-定理3-2的证明"><a href="#B-定理3-2的证明" class="headerlink" title="B 定理3.2的证明"></a>B 定理3.2的证明</h3><h4 id="B-1-假设"><a href="#B-1-假设" class="headerlink" title="B.1 假设"></a>B.1 假设</h4><p>在本节中，我们将$x_s$表示为从$x_T$出发的扩散常微分方程（公式2.7）的解。对于DPM-Solver-k，我们做出以下假设：</p>
+<ul>
+<li><strong>假设B.1</strong>：对于$0\leq j\leq k + 1$，$\frac{d^{j}\hat{\epsilon}_{\theta}(\hat{x}_{\lambda},\lambda)}{d\lambda^{j}}$（作为$\lambda$的函数）存在且连续。</li>
+<li><strong>假设B.2</strong>：函数$\epsilon_{\theta}(x,s)$关于其第一个参数$x$是利普希茨连续的。</li>
+<li><strong>假设B.3</strong>：$h_{max}=O(1/M)$。</li>
+</ul>
+<p>我们注意到，第一个假设是泰勒定理（公式3.6）所要求的，第二个假设用于将$\epsilon_{\theta}(\tilde{x}_{s},s)$替换为$\epsilon_{\theta}(x_{s},s)+O(x_{s}-\tilde{x}_{s})$，以便关于$\lambda_{s}$的泰勒展开适用。最后一个假设是一个技术假设，用于排除过大的步长。</p>
+<h4 id="B-2-指数加权积分的一般展开"><a href="#B-2-指数加权积分的一般展开" class="headerlink" title="B.2 指数加权积分的一般展开"></a>B.2 指数加权积分的一般展开</h4><p>首先，我们推导指数加权积分的泰勒展开式。设$t &lt; s$，则$\lambda_{t}&gt;\lambda_{s}$。记$h:=\lambda_{t}-\lambda_{s}$，$k$阶全导数$\hat{\epsilon}_{\theta}^{(k)}(\hat{x}_{\lambda},\lambda):=\frac{d^{k}\hat{\epsilon}_{\theta}(\hat{x}_{\lambda},\lambda)}{d\lambda^{k}}$。对于$n\geq0$，$\hat{\epsilon}_{\theta}(\hat{x}_{\lambda},\lambda)$关于$\lambda$的$n$阶泰勒展开式为：</p>
+<script type="math/tex; mode=display">\hat{\epsilon}_{\theta}\left(\hat{x}_{\lambda}, \lambda\right)=\sum_{k=0}^{n} \frac{\left(\lambda-\lambda_{s}\right)^{k}}{k !} \hat{\epsilon}_{\theta}^{(k)}\left(\hat{x}_{\lambda_{s}}, \lambda_{s}\right)+\mathcal{O}\left(h^{n+1}\right) \tag{B.1}</script><p>为了展开指数积分器，我们进一步定义：</p>
+<script type="math/tex; mode=display">\varphi_{k}(z):=\int_{0}^{1} e^{(1-\delta) z} \frac{\delta^{k-1}}{(k-1) !} d \delta, \quad \varphi_{0}(z)=e^{z} \tag{B.2}</script><p>它满足$\varphi_{k}(0)=\frac{1}{k!}$以及递推关系$\varphi_{k + 1}(z)=\frac{\varphi_{k}(z)-\varphi_{k}(0)}{z}$。通过对$\hat{\epsilon}_{\theta}(\hat{x}_{\lambda},\lambda)$进行泰勒展开，指数积分器可以重写为：</p>
+<script type="math/tex; mode=display">\int_{\lambda_{s}}^{\lambda_{t}} e^{-\lambda} \hat{\epsilon}_{\theta}\left(\hat{x}_{\lambda}, \lambda\right) d \lambda=\frac{\sigma_{t}}{\alpha_{t}} \sum_{k=0}^{n} h^{k+1} \varphi_{k+1}(h) \hat{\epsilon}_{\theta}^{(k)}\left(\hat{x}_{\lambda_{s}}, \lambda_{s}\right)+\mathcal{O}\left(h^{n+2}\right) \tag{B.3}</script><p>因此，公式（3.4）中$x_t$的解可以展开为：</p>
+<script type="math/tex; mode=display">x_{t}=\frac{\alpha_{t}}{\alpha_{s}} x_{s}-\sigma_{t} \sum_{k=0}^{n} h^{k+1} \varphi_{k+1}(h) \hat{\epsilon}_{\theta}^{(k)}\left(\hat{x}_{\lambda_{s}}, \lambda_{s}\right)+\mathcal{O}\left(h^{n+2}\right) \tag{B.4}</script><p>最后，我们列出$k = 1,2,3$时$\varphi_{k}$的闭式：</p>
+<script type="math/tex; mode=display">\varphi_{1}(h)=\frac{e^{h}-1}{h} \tag{B.5}</script><script type="math/tex; mode=display">\varphi_{2}(h)=\frac{e^{h}-h - 1}{h^{2}} \tag{B.6}</script><script type="math/tex; mode=display">\varphi_{3}(h)=\frac{e^{h}-\frac{h^{2}}{2}-h - 1}{h^{3}} \tag{B.7}</script><h4 id="B-3-k-1-时定理3-2的证明"><a href="#B-3-k-1-时定理3-2的证明" class="headerlink" title="B.3 $k = 1$时定理3.2的证明"></a>B.3 $k = 1$时定理3.2的证明</h4><p><strong>证明</strong>：在公式（B.4）中取$n = 0$，$t = t_{i}$，$s = t_{i - 1}$，我们得到：</p>
+<script type="math/tex; mode=display">x_{t_{i}}=\frac{\alpha_{t_{i}}}{\alpha_{t_{i-1}}} x_{t_{i-1}}-\sigma_{t}\left(e^{h_{i}}-1\right) \epsilon_{\theta}\left(x_{t_{i-1}}, t_{i-1}\right)+\mathcal{O}\left(h_{i}^{2}\right) \tag{B.8}</script><p>根据假设B.2和公式（3.7），有：</p>
+<script type="math/tex; mode=display">\begin{align*}
+\tilde{x}_{t_{i}} & =\frac{\alpha_{t_{i}}}{\alpha_{t_{i-1}}} \tilde{x}_{t_{i-1}}-\sigma_{t_{i}}\left(e^{h_{i}}-1\right) \epsilon_{\theta}\left(\tilde{x}_{t_{i-1}}, t_{i-1}\right) \\
+& =\frac{\alpha_{t_{i}}}{\alpha_{t_{i-1}}} \tilde{x}_{t_{i-1}}-\sigma_{t_{i}}\left(e^{h_{i}}-1\right)\left(\epsilon_{\theta}\left(x_{t_{i-1}}, t_{i-1}\right)+\mathcal{O}\left(\tilde{x}_{t_{i-1}}-x_{t_{i-1}}\right)\right) \\
+& =\frac{\alpha_{t_{i}}}{\alpha_{t_{i-1}}} x_{t_{i-1}}-\sigma_{t_{i}}\left(e^{h_{i}}-1\right) \epsilon_{\theta}\left(x_{t_{i-1}}, t_{i-1}\right)+\mathcal{O}\left(\tilde{x}_{t_{i-1}}-x_{t_{i-1}}\right) \\
+& =x_{t_{i}}+\mathcal{O}\left(h_{max }^{2}\right)+\mathcal{O}\left(\tilde{x}_{t_{i-1}}-x_{t_{i-1}}\right)
+\end{align*}</script><p>重复这个论证，我们发现：</p>
+<script type="math/tex; mode=display">\overline{x}_{t_{M}}=x_{t_{0}}+\mathcal{O}\left(M h_{max }^{2}\right)=x_{t_{0}}+\mathcal{O}\left(h_{max }\right)</script><p>从而完成证明。</p>
+<h4 id="B-4-k-2-时定理3-2的证明"><a href="#B-4-k-2-时定理3-2的证明" class="headerlink" title="B.4 $k = 2$时定理3.2的证明"></a>B.4 $k = 2$时定理3.2的证明</h4><p>我们证明算法4中DPM-Solver-2一般形式的离散化误差。</p>
+<p><strong>证明</strong>：首先，对于$0 &lt; t &lt; s &lt; T$，$h:=\lambda_{t}-\lambda_{s}$，我们考虑以下更新：</p>
+<script type="math/tex; mode=display">s_{1}=t_{\lambda}\left(\lambda_{s}+r_{1} h\right) \tag{B.9a}</script><script type="math/tex; mode=display">\overline{u}=\frac{\alpha_{s_{1}}}{\alpha_{s}} x_{s}-\sigma_{s_{1}}\left(e^{r_{1} h}-1\right) \epsilon_{\theta}\left(x_{s}, s\right) \tag{B.9b}</script><script type="math/tex; mode=display">\overline{x}_{t}=\frac{\alpha_{t}}{\alpha_{s}} x_{s}-\sigma_{t}\left(e^{h}-1\right) \epsilon_{\theta}\left(x_{s}, s\right)-\frac{\sigma_{t}}{2 r_{1}}\left(e^{h}-1\right)\left(\epsilon_{\theta}\left(\overline{u}, s_{1}\right)-\epsilon_{\theta}\left(x_{s}, s\right)\right) \tag{B.9c}</script><p>注意，上述更新与DPM-Solver-2的单步更新相同，只是将$\tilde{x}_{t_{i - 1}}$替换为精确解$x_{t_{i - 1}}$，其中$s = t_{i - 1}$，$t = t_{i}$ 。一旦我们证明了$\overline{x}_{t}=x_{t}+O(h^{3})$，就可以通过与附录B.3类似的论证表明$\tilde{x}_{t_{i}}=x_{t_{i}}+O(h_{max }^{3})+O(\tilde{x}_{t_{i-1}}-x_{t_{i-1}})$，从而完成证明。</p>
+<p>在剩下的部分，我们证明$\overline{x}_{t}=x_{t}+O(h^{3})$。</p>
+<p>在公式（B.4）中取$n = 1$，我们得到：</p>
+<script type="math/tex; mode=display">x_{t}=\frac{\alpha_{t}}{\alpha_{s}} x_{s}-\sigma_{t} h \varphi_{1}(h) \epsilon_{\theta}\left(x_{s}, s\right)-\sigma_{t} h^{2} \varphi_{2}(h) \hat{\epsilon}_{\theta}^{(1)}\left(\hat{x}_{\lambda_{s}}, \lambda_{s}\right)+\mathcal{O}\left(h^{3}\right) \tag{B.10}</script><p>由公式（B.1），我们有：</p>
+<script type="math/tex; mode=display">\begin{align*}
+\overline{x}_{t}&=\frac{\alpha_{t}}{\alpha_{s}} x_{s}-\sigma_{t}\left(e^{h}-1\right) \epsilon_{\theta}\left(x_{s}, s\right)-\frac{\sigma_{t}}{2 r_{1}}\left(e^{h}-1\right)\left(\epsilon_{\theta}\left(\overline{u}, s_{1}\right)-\epsilon_{\theta}\left(x_{s}, s\right)\right) \\
+&=\frac{\alpha_{t}}{\alpha_{s}} x_{s}-\sigma_{t}\left(e^{h}-1\right) \epsilon_{\theta}\left(x_{s}, s\right)-\frac{\sigma_{t}}{2 r_{1}}\left(e^{h}-1\right)\left[\epsilon_{\theta}\left(\overline{u}, s_{1}\right)-\epsilon_{\theta}\left(x_{s_{1}}, s_{1}\right)\right] \\
+&-\frac{\sigma_{t}}{2 r_{1}}\left(e^{h}-1\right)\left[\left(\lambda_{s_{1}}-\lambda_{s}\right) \hat{\epsilon}_{\theta}^{(1)}\left(\hat{x}_{\lambda_{s}}, \lambda_{s}\right)+\mathcal{O}\left(h^{2}\right)\right]
+\end{align*}</script><p>注意，根据$\epsilon_{\theta}$关于$x$的利普希茨连续性（假设B.2），有：</p>
+<script type="math/tex; mode=display">\left\| \epsilon_{\theta}\left(\overline{u}, s_{1}\right)-\epsilon_{\theta}\left(x_{s_{1}}, s_{1}\right)\right\| =\mathcal{O}\left(\left\| \overline{u}-x_{s_{1}}\right\| \right)=\mathcal{O}\left(h^{2}\right)</script><p>其中最后一个等式的证明与$k = 1$时类似。由于$e^{h}-1=O(h)$，上述式子中的第二项为$O(h^{3})$。因为$\lambda_{s_{1}}-\lambda_{s}=r_{1} h$，$\varphi_{1}(h)=(e^{h}-1)/h$且$\varphi_{2}(h)=(e^{h}-h - 1)/h^{2}$，我们发现：</p>
+<script type="math/tex; mode=display">x_{t}-\overline{x}_{t}=\sigma_{t}\left[h^{2} \varphi_{2}(h)-\left(e^{h}-1\right) \frac{\lambda_{s_{1}}-\lambda_{s}}{2 r_{1}}\right] \hat{\epsilon}_{\theta}^{(1)}\left(\hat{x}_{\lambda_{s}}, \lambda_{s}\right)+\mathcal{O}\left(h^{3}\right)</script><p>然后，注意到：</p>
+<script type="math/tex; mode=display">h^{2} \varphi_{2}(h)-\left(e^{h}-1\right) \frac{\lambda_{s_{1}}-\lambda_{s}}{2 r_{1}}=\left(2 e^{h}-h - 2 - h e^{h}\right) / 2=\mathcal{O}\left(h^{3}\right)</script><p>证明完成。</p>
+<h4 id="B-5-k-3-时定理3-2的证明"><a href="#B-5-k-3-时定理3-2的证明" class="headerlink" title="B.5 $k = 3$时定理3.2的证明"></a>B.5 $k = 3$时定理3.2的证明</h4><p><strong>证明</strong>：与附录B.4类似，只需证明对于$0 &lt; t &lt; s &lt; T$且$h=\lambda_{s}-\lambda_{t}$，以下更新的误差为$\overline{x}_{t}=x_{t}+O(h^{4})$：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+s_{1}&=t_{\lambda}\left(\lambda_{s}+r_{1} h\right),\quad s_{2}=t_{\lambda}\left(\lambda_{s}+r_{2} h\right) \tag{B.11a}\\
+\overline{u}_{1}&=\frac{\alpha_{s_{1}}}{\alpha_{s}} x_{s}-\sigma_{s_{1}}\left(e^{r_{1} h}-1\right) \epsilon_{\theta}\left(x_{s}, s\right) \tag{B.11b}\\
+D_{1}&=\epsilon_{\theta}\left(\overline{u}_{1}, s_{1}\right)-\epsilon_{\theta}\left(x_{s}, s\right) \tag{B.11c}\\
+\overline{u}_{2}&=\frac{\alpha_{s_{2}}}{\alpha_{s}} x_{s}-\sigma_{s_{2}}\left(e^{r_{2} h}-1\right) \epsilon_{\theta}\left(x_{s}, s\right)-\frac{\sigma_{s_{2}} r_{2}}{r_{1}}\left(\frac{e^{r_{2} h}-1}{r_{2} h}-1\right) D_{1} \tag{B.11d}\\
+D_{2}&=\epsilon_{\theta}\left(\overline{u}_{2}, s_{2}\right)-\epsilon_{\theta}\left(x_{s}, s\right) \tag{B.11e}\\
+\overline{x}_{t}&=\frac{\alpha_{t}}{\alpha_{s}} x_{s}-\sigma_{t}\left(e^{h}-1\right) \epsilon_{\theta}\left(x_{s}, s\right)-\frac{\sigma_{t}}{r_{2}}\left(\frac{e^{h}-1}{h}-1\right) D_{2} \tag{B.11f}\\
+\end{align*}</script><p>首先，我们证明：</p>
+<script type="math/tex; mode=display">\overline{u}_{2}=x_{s_{2}}+\mathcal{O}\left(h^{3}\right) \tag{B.12}</script><p>与附录B.4的证明类似，由于$\frac{e^{r_{2} h - 1}}{r_{2} h}-1=O(h)$且$\overline{u}_{1}=x_{s_{1}}+O(h^{2})$，则：</p>
+<script type="math/tex; mode=display">\begin{align*}
+\overline{u}_{2}&=\frac{\alpha_{s_{2}}}{\alpha_{s}} x_{s}-\sigma_{s_{2}}\left(e^{r_{2} h}-1\right) \epsilon_{\theta}\left(x_{s}, s\right) \\
+&-\sigma_{s_{2}} \frac{r_{2}}{r_{1}}\left(\frac{e^{r_{2} h}-1}{r_{2} h}-1\right)\left(\epsilon_{\theta}\left(x_{s_{1}}, s_{1}\right)-\epsilon_{\theta}\left(x_{s}, s\right)\right)+\mathcal{O}\left(h^{3}\right) \\
+&=\frac{\alpha_{s_{2}}}{\alpha_{s}} x_{s}-\sigma_{s_{2}}\left(e^{r_{2} h}-1\right) \epsilon_{\theta}\left(x_{s}, s\right) \\
+&-\sigma_{s_{2}} \frac{r_{2}}{r_{1}}\left(\frac{e^{r_{2} h}-1}{r_{2} h}-1\right) \epsilon_{\theta}^{(1)}\left(x_{s}, s\right)\left(\lambda_{s_{1}}-\lambda_{s}\right)+\mathcal{O}\left(h^{3}\right)
+\end{align*}</script><p>设$h_{2}=r_{2} h$，然后按照附录B.4的证明思路，只需验证：</p>
+<script type="math/tex; mode=display">\varphi_{1}\left(h_{2}\right) h_{2}=e^{h_{2}}-1</script><script type="math/tex; mode=display">\varphi_{2}\left(h_{2}\right) h_{2}^{2}=\frac{r_{2}}{r_{1}}\left(\frac{e^{h_{2}}-1}{h_{2}}-1\right)\left(\lambda_{s_{1}}-\lambda_{s}\right)+\mathcal{O}\left(h^{3}\right)</script><p>通过应用泰勒展开，上述式子成立。</p>
+<p>利用$\overline{u}_{2}=x_{s_{2}}+O(h^{3})$和$\lambda_{s_{2}}-\lambda_{s}=r_{2} h=\frac{2}{3} h$，我们发现：</p>
+<script type="math/tex; mode=display">\begin{align*}
+\tilde{\boldsymbol{x}}_t 
+&= \frac{\alpha_t}{\alpha_s} \boldsymbol{x}_s - \sigma_t (e^h - 1) \boldsymbol{\epsilon}_\theta(\boldsymbol{x}_s, s) - \sigma_t \frac{1}{r_2} \left( \frac{e^h - 1}{h} - 1 \right) \left( \boldsymbol{\epsilon}_\theta(\tilde{\boldsymbol{u}}_2, s_2) - \boldsymbol{\epsilon}_\theta(\boldsymbol{x}_s, s) \right) \\
+&= \frac{\alpha_t}{\alpha_s} \boldsymbol{x}_s - \sigma_t (e^h - 1) \boldsymbol{\epsilon}_\theta(\boldsymbol{x}_s, s) - \sigma_t \frac{1}{r_2} \left( \frac{e^h - 1}{h} - 1 \right) \left( \boldsymbol{\epsilon}_\theta(\boldsymbol{x}_{s_2}, s_2) - \boldsymbol{\epsilon}_\theta(\boldsymbol{x}_s, s) \right) + \mathcal{O}(h^4) \\
+&= \frac{\alpha_t}{\alpha_s} \boldsymbol{x}_s - \sigma_t (e^h - 1) \boldsymbol{\epsilon}_\theta(\boldsymbol{x}_s, s) \\
+&\quad - \sigma_t \frac{1}{r_2} \left( \frac{e^h - 1}{h} - 1 \right) \left( \boldsymbol{\epsilon}^{(1)}_\theta(\boldsymbol{x}_s, s) r_2 h + \frac{1}{2} \boldsymbol{\epsilon}^{(2)}_\theta(\boldsymbol{x}_s, s) r_2^2 h^2 \right) + \mathcal{O}(h^4).
+\end{align*}</script><p>将其与$n = 2$时公式(B.4)中的泰勒展开式进行比较：</p>
+<script type="math/tex; mode=display">\boldsymbol{x}_t = \frac{\alpha_t}{\alpha_s} \boldsymbol{x}_s - \sigma_t h \varphi_1(h) \boldsymbol{\epsilon}_\theta(\boldsymbol{x}_s, s) - \sigma_t h^2 \varphi_2(h) \boldsymbol{\epsilon}^{(1)}_\theta(\boldsymbol{x}_s, s) - \sigma_t h^3 \varphi_3(h) \boldsymbol{\epsilon}^{(2)}_\theta(\boldsymbol{x}_s, s) + \mathcal{O}(h^4)</script><p>我们需要检验以下条件：</p>
+<script type="math/tex; mode=display">h\varphi_1(h) = e^h - 1</script><script type="math/tex; mode=display">h^2\varphi_2(h) = \left( \frac{e^h - 1}{h} - 1 \right) h</script><script type="math/tex; mode=display">h^3\varphi_3(h) = \left( \frac{e^h - 1}{h} - 1 \right) \frac{r_2 h^2}{2} + \mathcal{O}(h^4)</script><p>前两个条件是显然的。最后一个条件由下式推出：</p>
+<script type="math/tex; mode=display">h^3\varphi_3(h) = e^h - 1 - h - \frac{h^2}{2} = \frac{h^3}{6} + \mathcal{O}(h^4) = \left( \frac{e^h - 1}{h} - 1 \right) \frac{r_2 h^2}{2}</script><p>因此，$\tilde{\boldsymbol{x}}_t = \boldsymbol{x}_t + \mathcal{O}(h^4)$。</p>
+<h4 id="B-6-与显式指数龙格-库塔（expRK）方法的联系"><a href="#B-6-与显式指数龙格-库塔（expRK）方法的联系" class="headerlink" title="B.6 与显式指数龙格 - 库塔（expRK）方法的联系"></a>B.6 与显式指数龙格 - 库塔（expRK）方法的联系</h4><p>假设我们有一个如下形式的常微分方程：</p>
+<script type="math/tex; mode=display">\frac{d x_{t}}{ d t}=\alpha x_{t}+N\left(x_{t}, t\right)</script><p>其中$\alpha \in \mathbb{R}$，$N(x_{t}, t) \in \mathbb{R}^{D}$是关于$x_{t}$的非线性函数。给定在时间$t$的初始值$x_{t}$，对于$h&gt;0$，在时间$t + h$的真实解为：</p>
+<script type="math/tex; mode=display">x_{t + h}=e^{\alpha h} x_{t}+e^{\alpha h} \int_{0}^{h} e^{-\alpha \tau} N\left(x_{t+\tau}, t+\tau\right) d \tau</script><p>指数龙格 - 库塔方法$[25, 31]$使用一些中间点来近似积分$\int e^{-\alpha \tau} N(x_{t+\tau}, t+\tau) d \tau$。我们提出的DPM - Solver受到了相同技术的启发，用于在$\alpha = 1$且$N = \tilde{\epsilon}_{\theta}$时近似相同的积分。然而，DPM - Solver与expRK方法不同，因为它们的线性项$e^{\alpha h} x_{t}$与我们的线性项$\frac{\alpha_{t + h}}{\alpha_{t}} x_{t}$不同。总之，DPM - Solver在推导指数加权积分的高阶近似时，受到了expRK相同技术的启发，但DPM - Solver的公式与expRK不同，它是针对扩散常微分方程的特定公式定制的。</p>
+<h3 id="C-DPM-Solver算法"><a href="#C-DPM-Solver算法" class="headerlink" title="C DPM-Solver算法"></a>C DPM-Solver算法</h3><p>我们首先在算法3、4、5中列出详细的DPM-Solver-1、DPM-Solver-2、DPM-Solver-3。请注意，DPM-Solver-2是一般情况，其中$r_1 \in (0,1)$，在3.2节中我们通常将DPM-Solver-2的$r_1$设置为0.5。</p>
+<p><img src="a3.png"><br><img src="a4.png"></p>
+<p>然后我们列出自适应步长算法，分别命名为DPM-Solver-12（结合DPM-Solver-1和DPM-Solver-2；算法6）和DPM-Solver-23（结合DPM-Solver-2和DPM-Solver-3；算法7）。我们遵循文献[20]，对于图像数据，将绝对容差$\epsilon_{atol}$设为$\frac{x_{max}-x_{min}}{256}$，对于VP型DPMs，该值为0.0078。我们可以调整相对容差$\epsilon_{rtol}$来平衡精度和函数评估次数（NFE），并且发现$\epsilon_{rtol}=0.05$就足够好，且能快速收敛。</p>
+<p>在实践中，自适应步长求解器的输入是批量数据。我们简单地选择$E_2$和$E_3$作为所有批量数据的最大值。此外，我们通过$|s - \epsilon|&gt;10^{-5}$来实现$s&gt;\epsilon$的比较，以避免数值问题。</p>
+<p><img src="a5.png"><br><img src="a6.png"><br><img src="a7.png"></p>
+<h3 id="D-DPM-Solver的实现细节"><a href="#D-DPM-Solver的实现细节" class="headerlink" title="D DPM-Solver的实现细节"></a>D DPM-Solver的实现细节</h3><h4 id="D-1-采样的结束时间"><a href="#D-1-采样的结束时间" class="headerlink" title="D.1 采样的结束时间"></a>D.1 采样的结束时间</h4><p>从理论上讲，我们需要求解从时间T到时间0的扩散常微分方程来生成样本。在实践中，噪声预测模型$\epsilon_{\theta}(x_{t}, t)$的训练和评估通常从时间T到时间$\epsilon$开始，以避免在t接近0时出现数值问题，其中$\epsilon &gt; 0$是一个超参数 。</p>
+<p>与基于扩散随机微分方程（SDE）的采样方法不同，我们在时间$\epsilon$的最后一步不添加 “去噪” 技巧（即将噪声方差设置为零），而是使用DPM-Solver直接求解从T到$\epsilon$的扩散常微分方程，因为我们发现这样的效果已经足够好。</p>
+<p>对于离散时间的DPM，我们首先将模型转换为连续时间（见附录D.2），然后从时间T求解到时间t。</p>
+<h4 id="D-2-从离散时间DPM采样"><a href="#D-2-从离散时间DPM采样" class="headerlink" title="D.2 从离散时间DPM采样"></a>D.2 从离散时间DPM采样</h4><p>在本节中，我们讨论离散时间DPM更普遍的情况，其中我们考虑1000步的DPM和4000步的DPM，同时也考虑采样的结束时间$\epsilon$。</p>
+<p>离散时间DPM在N个固定时间步$\{t_{n}\}_{n = 1}^{N}$训练噪声预测模型。在实践中，$N = 1000$或$N = 4000$，并且4000步DPM的实现会将其时间步转换到1000步DPM的时间步范围内。具体来说，噪声预测模型由$\tilde{\epsilon}_{\theta}(x_{n}, \frac{1000n}{N})$参数化，其中$n = 0, \cdots, N - 1$ ，每个$x_{n}$对应于时间$t_{n + 1}$的值。在实践中，这些离散时间DPM通常在$[0, T]$之间选择均匀的时间步，因此$t_{n}=\frac{nT}{N}$，$n = 1, \cdots, N$。</p>
+<p>然而，离散时间噪声预测模型无法预测小于最小时间$t_{1}$的噪声。由于最小时间步$t_{1}=\frac{T}{N}$，且在时间$t_{1}$对应的离散时间噪声预测模型为$\tilde{\epsilon}_{\theta}(x_{0}, 0)$，我们需要将离散时间步$[t_{1}, t_{N}]=[\frac{T}{N}, T]$ “缩放” 到连续时间范围$[\epsilon, T]$。我们提出以下两种缩放类型：</p>
+<ul>
+<li><strong>类型1</strong>：将离散时间步$[t_{1}, t_{N}]=[\frac{T}{N}, T]$缩放到连续时间范围$[\frac{T}{N}, T]$，并对于$t \in [\epsilon, \frac{T}{N}]$，令$\epsilon_{\theta}(\cdot, t)=\epsilon_{\theta}(\cdot, \frac{T}{N})$。在这种情况下，我们可以通过以下方式定义连续时间噪声预测模型：<script type="math/tex; mode=display">\epsilon_{\theta}(x, t)=\tilde{\epsilon}_{\theta}\left(x, 1000 \cdot \max \left(t-\frac{T}{N}, 0\right)\right) \tag{D.1}</script>其中，连续时间$t \in [\epsilon, \frac{T}{N}]$映射到离散输入0，连续时间T映射到离散输入$\frac{1000(N - 1)}{N}$。</li>
+<li><strong>类型2</strong>：将离散时间步$[t_{1}, t_{N}]=[\frac{T}{N}, T]$缩放到连续时间范围$[0, T]$。在这种情况下，我们可以通过以下方式定义连续时间噪声预测模型：<script type="math/tex; mode=display">\epsilon_{\theta}(x, t)=\tilde{\epsilon}_{\theta}\left(x, 1000 \cdot \frac{(N - 1)t}{NT}\right) \tag{D.2}</script>其中，连续时间0映射到离散输入0，连续时间T映射到离散输入$\frac{1000(N - 1)}{N}$ 。</li>
+</ul>
+<p>注意，$\tilde{\epsilon}_{\theta}$的输入时间可能不是整数，但我们发现噪声预测模型仍然可以很好地工作，我们推测这是由于平滑的时间嵌入（例如位置嵌入 ）。通过这种重新参数化，噪声预测模型可以采用连续时间步作为输入，因此我们也可以使用DPM-Solver进行快速采样。</p>
+<p>在实践中，我们令$T = 1$，最小离散时间$t_{1}=10^{-3}$。对于固定的函数评估次数K，我们通过实验发现，对于较小的K，$\epsilon = 10^{-3}$的类型1可能具有更好的样本质量；对于较大的K，$\epsilon = 10^{-4}$的类型2可能具有更好的样本质量。详细结果请参见附录E。</p>
+<h4 id="D-3-20次函数评估的DPM-Solver"><a href="#D-3-20次函数评估的DPM-Solver" class="headerlink" title="D.3 20次函数评估的DPM-Solver"></a>D.3 20次函数评估的DPM-Solver</h4><p>给定固定的函数评估次数预算$K \leq 20$，我们将区间$[\lambda_{T}, \lambda_{\epsilon}]$均匀划分为$M = (\lfloor K / 3\rfloor + 1)$段，并采取M步来生成样本。这M步取决于K除以3的余数R，以确保函数评估的总次数恰好为K。</p>
+<ul>
+<li>如果$R = 0$，我们首先采取$M - 2$步的DPM-Solver-3，然后采取1步的DPM-Solver-2和1步的DPM-Solver-1。函数评估的总次数为$3 \cdot (\frac{K}{3} - 1)+2 + 1 = K$。</li>
+<li>如果$R = 1$，我们首先采取$M - 1$步的DPM-Solver-3，然后采取1步的DPM-Solver-1。函数评估的总次数为$3 \cdot (\frac{K - 1}{3})+1 = K$。</li>
+<li>如果$R = 2$，我们首先采取$M - 1$步的DPM-Solver-3，然后采取1步的DPM-Solver-2。函数评估的总次数为$3 \cdot (\frac{K - 2}{3})+2 = K$。</li>
+</ul>
+<p>我们通过实验发现，这种时间步的设计可以显著提高生成质量，DPM-Solver可以在10步内生成相当的样本，在20步内生成高质量的样本。</p>
+<h4 id="D-4-函数-t-lambda-cdot-（-lambda-t-的反函数）的解析表达式"><a href="#D-4-函数-t-lambda-cdot-（-lambda-t-的反函数）的解析表达式" class="headerlink" title="D.4 函数$t_{\lambda}(\cdot)$（$\lambda(t)$的反函数）的解析表达式"></a>D.4 函数$t_{\lambda}(\cdot)$（$\lambda(t)$的反函数）的解析表达式</h4><p>计算$t_{\lambda}(\cdot)$的成本可以忽略不计，因为对于先前DPM中使用的$\alpha_{t}$和$\sigma_{t}$的噪声调度（“线性” 和 “余弦”），$\lambda(t)$及其反函数$t_{\lambda}(\cdot)$都有解析表达式。这里我们主要考虑方差保持类型，因为它是使用最广泛的类型。其他类型（方差爆炸型和子方差保持型）的函数可以类似地推导出来。</p>
+<ul>
+<li><strong>线性噪声调度</strong>：我们有<script type="math/tex; mode=display">\log \alpha_{t}=-\frac{\left(\beta_{1}-\beta_{0}\right)}{4}t^{2}-\frac{\beta_{0}}{2}t</script>其中$\beta_{0}=0.1$，$\beta_{1}=20$，遵循文献[3]。由于$\sigma_{t}=\sqrt{1 - \alpha_{t}^{2}}$，我们可以解析地计算$\lambda_{t}$。此外，其反函数为<script type="math/tex; mode=display">t_{\lambda}(\lambda)=\frac{1}{\beta_{1}-\beta_{0}}\left(\sqrt{\beta_{0}^{2}+2\left(\beta_{1}-\beta_{0}\right)\log \left(e^{-2 \lambda}+1\right)}-\beta_{0}\right)</script>为了减少数值问题的影响，我们可以通过以下等效公式计算$t_{\lambda}$：<script type="math/tex; mode=display">t_{\lambda}(\lambda)=\frac{2\log \left(e^{-2 \lambda}+1\right)}{\sqrt{\beta_{0}^{2}+2\left(\beta_{1}-\beta_{0}\right)\log \left(e^{-2 \lambda}+1\right)}+\beta_{0}}</script>并且我们在$[\epsilon, T]$之间求解扩散常微分方程，其中$T = 1$。</li>
+<li><strong>余弦噪声调度</strong>：记<script type="math/tex; mode=display">\log \alpha_{t}=\log \left(\cos \left(\frac{\pi}{2} \cdot \frac{t + s}{1 + s}\right)\right)-\log \left(\cos \left(\frac{\pi}{2} \cdot \frac{s}{1 + s}\right)\right)</script>其中$s = 0.008$，遵循文献[16]。由于文献[16]对导数进行了裁剪以确保数值稳定性，我们也将最大时间裁剪为$T = 0.9946$。因为$\sigma_{t}=\sqrt{1 - \alpha_{t}^{2}}$，我们可以解析地计算$\lambda_{t}$。此外，给定一个固定的$\lambda$，令<script type="math/tex; mode=display">f(\lambda)=-\frac{1}{2}\log \left(e^{-2 \lambda}+1\right)</script>它计算出$\lambda$对应的$\log \alpha$。那么反函数为<script type="math/tex; mode=display">t_{\lambda}(\lambda)=\frac{2(1 + s)}{\pi}\arccos \left(e^{f(\lambda)+\log \cos \left(\frac{\pi s}{2(1 + s)}\right)}\right)-s</script>并且我们在$[\epsilon, T]$之间求解扩散常微分方程，其中$T = 0.9946$。</li>
+</ul>
+<h4 id="D-5-DPM-Solver的条件采样"><a href="#D-5-DPM-Solver的条件采样" class="headerlink" title="D.5 DPM-Solver的条件采样"></a>D.5 DPM-Solver的条件采样</h4><p>DPM-Solver也可以用于条件采样，只需进行简单修改。条件生成需要从条件扩散常微分方程中采样，该方程包含条件噪声预测模型。我们遵循分类器引导方法，将条件噪声预测模型定义为$\epsilon_{\theta}(x_{t}, t, y):=\epsilon_{\theta}(x_{t}, t)-s \cdot \sigma_{t} \nabla_{x} \log p_{t}(y | x_{t} ; \theta)$，其中$p_{t}(y | x_{t} ; \theta)$是一个预训练的分类器，$s$是分类器引导尺度（默认值为1.0）。因此，我们可以使用DPM-Solver求解这个扩散常微分方程，以实现快速条件采样，如图1所示。</p>
+<h4 id="D-6-数值稳定性"><a href="#D-6-数值稳定性" class="headerlink" title="D.6 数值稳定性"></a>D.6 数值稳定性</h4><p>由于在DPM-Solver算法中需要计算$e^{h_{i}} - 1$，我们遵循文献[10]，使用`expm1(h_{i})$而不是$exp(h_{i}) - 1$来提高数值稳定性。</p>
+<h3 id="E-实验细节"><a href="#E-实验细节" class="headerlink" title="E 实验细节"></a>E 实验细节</h3><p>我们测试了用于对最广泛使用的方差保持（VP）型扩散概率模型（DPM）进行采样的方法。在这种情况下，对于所有的$t\in[0,T]$，都有$\alpha_{t}^{2}+\sigma_{t}^{2}=1$，且$\tilde{\sigma}=1$。尽管如此，我们的方法和理论结果具有通用性，且与噪声调度$\alpha_{t}$和$\sigma_{t}$的选择无关。</p>
+<p>在所有实验中，我们在NVIDIA A40 GPU上评估DPM-Solver。不过，计算资源也可以是其他类型的GPU，如NVIDIA GeForce RTX 2080Ti，因为我们可以调整采样的批量大小。</p>
+<h4 id="E-1-关于λ的扩散常微分方程："><a href="#E-1-关于λ的扩散常微分方程：" class="headerlink" title="E.1 关于λ的扩散常微分方程："></a>E.1 关于λ的扩散常微分方程：</h4><p>或者，扩散常微分方程（ODE）可以重新参数化到$\lambda$域。在本节中，我们针对VP类型提出关于$\lambda$的扩散ODE公式，其他类型可以类似推导得出。</p>
+<p>对于给定的$\lambda$，记$\hat{\alpha}_\lambda := \alpha_{t(\lambda)}$，$\hat{\sigma}_\lambda := \sigma_{t(\lambda)}$。由于$\hat{\alpha}_\lambda^2 + \hat{\sigma}_\lambda^2 = 1$，我们可以证明$\frac{\mathrm{d}\lambda}{\mathrm{d}\hat{\alpha}_\lambda} = \frac{1}{\hat{\alpha}_\lambda \hat{\sigma}_\lambda}$，所以$\frac{\mathrm{d}\log\hat{\alpha}_\lambda}{\mathrm{d}\lambda} = \hat{\sigma}_\lambda^2$ 。将变量变换应用于公式(2.7) ，我们有：</p>
+<script type="math/tex; mode=display">\frac{\mathrm{d}\tilde{\boldsymbol{x}}_\lambda}{\mathrm{d}\lambda} = \hat{\boldsymbol{\epsilon}}_\theta(\tilde{\boldsymbol{x}}_\lambda, \lambda) := \hat{\sigma}_\lambda^2 \tilde{\boldsymbol{x}}_\lambda - \hat{\sigma}_\lambda \boldsymbol{\epsilon}_\theta(\tilde{\boldsymbol{x}}_\lambda, \lambda) \tag{E.1}</script><p>常微分方程(E.1) 也可以直接用龙格 - 库塔（RK）方法求解，并且在表1（文档中未给出表1具体内容 ）中关于RK2((\lambda))和RK3((\lambda))的实验里，我们使用了这种公式。</p>
+<h4 id="E-2-代码实现："><a href="#E-2-代码实现：" class="headerlink" title="E.2 代码实现："></a>E.2 代码实现：</h4><p>我们使用JAX（用于连续时间DPM）和PyTorch（用于离散时间DPM）实现了代码，代码发布在<a target="_blank" rel="noopener" href="https://github.com/LuChengTHU/dpm-solver">https://github.com/LuChengTHU/dpm-solver</a> 。</p>
+<h4 id="E-3-与连续时间采样方法的样本质量比较："><a href="#E-3-与连续时间采样方法的样本质量比较：" class="headerlink" title="E.3 与连续时间采样方法的样本质量比较："></a>E.3 与连续时间采样方法的样本质量比较：</h4><p>表3展示了详细的FID结果，与图2a相对应。我们使用了文献[3]中的官方代码和检查点，代码许可证为Apache License 2.0。我们使用了他们发布的 “VP deep” 类型的 “checkpoint_8”。我们比较了$\epsilon = 10^{-3}$和$\epsilon = 10^{-4}$时的方法。我们发现，基于扩散随机微分方程（SDE）的采样方法在$\epsilon = 10^{-3}$时可以获得更好的样本质量；而基于扩散常微分方程（ODE）的采样方法在$\epsilon = 10^{-4}$时可以获得更好的样本质量。对于DPM-Solver，我们发现当函数评估次数（NFE）少于15时，$\epsilon = 10^{-3}$时的FID比$\epsilon = 10^{-4}$时更好；而当NFE超过15时，$\epsilon = 10^{-4}$时的FID比$\epsilon = 10^{-3}$时更好。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t3.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表3：在CIFAR-10数据集上，采用连续时间方法，通过改变函数评估次数（NFE），以FID衡量的样本质量。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>对于采用欧拉离散化的扩散SDE，我们使用文献[3]中的PC采样器，采用 “euler_maruyama” 预测器且无校正器，在T和$\epsilon$之间使用均匀时间步长。我们在最后一步添加了 “去噪” 技巧，这可以显著提高$\epsilon = 10^{-3}$时的FID分数。</p>
+<p>对于采用改进欧拉离散化的扩散SDE[20]，我们遵循其原始论文中的结果，该结果仅包含$\epsilon = 10^{-3}$时的结果。相应的相对容差$\epsilon_{rel}$分别为0.50、0.10和0.05。</p>
+<p>对于使用RK45求解器的扩散ODE，我们使用文献[3]中的代码，并调整求解器的绝对容差（atol）和相对容差（rtol）。对于从小到大的NFE，$\epsilon = 10^{-3}$时的结果，我们使用相同的$atol = rtol = 0.1, 0.01, 0.001$；对于$\epsilon = 10^{-4}$时的结果，我们使用相同的$atol = rtol = 0.1, 0.05, 0.02, 0.01, 0.001$。</p>
+<p>对于使用DPM-Solver的扩散ODE，当$NFE\leq20$时，我们使用附录D.3中的方法；当NFE &gt; 20时，使用附录C中的自适应步长求解器。对于$\epsilon = 10^{-3}$，我们使用相对容差$\epsilon_{rtol}=0.05$的DPM-Solver-12；对于$\epsilon = 10^{-4}$，我们使用相对容差$\epsilon_{rtol}=0.05$的DPM-Solver-23。</p>
+<h4 id="E-4-与RK方法的样本质量比较："><a href="#E-4-与RK方法的样本质量比较：" class="headerlink" title="E.4 与RK方法的样本质量比较："></a>E.4 与RK方法的样本质量比较：</h4><p>表1展示了RK方法与DPM-Solver-2和DPM-Solver-3的不同性能。我们在本节列出详细设置。</p>
+<p>假设我们有一个常微分方程$\frac{dx_{t}}{dt}=F(x_{t},t)$，从时间$t_{i - 1}$的$\tilde{x}_{t_{i - 1}}$开始，我们使用RK2以以下公式（称为显式中点法）来近似时间$t_{i}$的解$\overline{x}_{t_{i}}$：<br>$h_{i}=t_{i}-t_{i - 1}$<br>$s_{i}=t_{i - 1}+\frac{1}{2}h_{i}$<br>$u_{i}=\tilde{x}_{t_{i - 1}}+\frac{h_{i}}{2}F(\tilde{x}_{t_{i - 1}},t_{i - 1})$<br>$\tilde{x}_{t_{i}}=\tilde{x}_{t_{i - 1}}+h_{i}F(u_{i},s_{i})$</p>
+<p>我们使用以下RK3（称为 “Heun三阶法”）来近似时间$t_{i}$的解$\tilde{x}_{t_{i}}$，因为它与我们提出的DPM-Solver-3非常相似：<br>$h_{i}=t_{i}-t_{i - 1}, r_{1}=\frac{1}{3}, r_{2}=\frac{2}{3}$<br>$s_{2i - 1}=t_{i - 1}+r_{1}h_{i}, s_{2i}=t_{i - 1}+r_{2}h_{i}$<br>$u_{2i - 1}=\tilde{x}_{t_{i - 1}}+r_{1}h_{i}F(\tilde{x}_{t_{i - 1}},t_{i - 1})$<br>$u_{2i}=\tilde{x}_{t_{i - 1}}+r_{2}h_{i}F(u_{2i - 1},s_{2i - 1})$<br>$\tilde{x}_{t_{i}}=\tilde{x}_{t_{i - 1}}+\frac{h_{i}}{4}F(\tilde{x}_{t_{i - 1}},t_{i - 1})+\frac{3h_{i}}{4}F(u_{2i},s_{2i})$</p>
+<p>对于RK2(t)的结果，我们使用公式（2.7）中的$F(x_{t},t)=h_{\theta}(x_{t},t)$；对于RK2(λ)和RK3(λ)的结果，我们使用公式（E.1）中的$F(\hat{x}_{\lambda},\lambda)=\hat{h}_{\theta}(\hat{x}_{\lambda},\lambda)$。在所有实验中，我们对t或λ使用均匀步长。</p>
+<h4 id="E-5-与离散时间采样方法的样本质量比较："><a href="#E-5-与离散时间采样方法的样本质量比较：" class="headerlink" title="E.5 与离散时间采样方法的样本质量比较："></a>E.5 与离散时间采样方法的样本质量比较：</h4><p>我们将DPM-Solver与其他用于DPM的离散时间采样方法进行比较，结果如表4和表5所示。我们使用文献[19]中的代码对DDPM和DDIM进行采样，代码许可证为MIT许可证。我们使用文献[21]中的代码对Analytic-DDPM和Analytic-DDIM进行采样，其许可证未知。我们直接采用GGDM[18]原始论文中的最佳结果。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "t4.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表4：在CIFAR - 10、CelebA 64×64和ImageNet 64×64数据集上，使用离散时间扩散概率模型（DPM），通过改变函数评估次数（NFE），以FID衡量的样本质量。方法†GGDM需要额外训练，其原始论文中部分结果缺失，用“\”代替。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "t5.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表5：在具有分类器引导的ImageNet 128×128数据集以及LSUN卧室256×256数据集上，通过改变函数评估次数（NFE），以FID衡量的样本质量。对于去噪扩散隐式模型（DDIM）和去噪扩散概率模型（DDPM），除了实验†使用文献[4]中微调的时间步长外，我们在所有实验中均采用均匀时间步长。对于DPM-Solver，我们使用附录D.3中所述的均匀对数信噪比（logSNR）步长。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>在CIFAR-10实验中，我们使用文献[2]中的预训练检查点，该检查点也在文献[19]发布的代码中提供。我们对DDPM和DDIM使用二次时间步长，根据经验，这比均匀时间步长具有更好的FID性能。我们对Analytic-DDPM和Analytic-DDIM使用均匀时间步长。对于DPM-Solver，我们使用Type-1离散和Type-2离散方法将离散时间模型转换为连续时间模型。当$NFE\leq20$时，我们使用附录D.3中的方法；当NFE &gt; 20时，使用附录C中的自适应步长求解器。在所有实验中，我们使用相对容差$\epsilon_{rtol}=0.05$的DPM-Solver-12。</p>
+<p>在CelebA 64x64实验中，我们使用文献[19]中的预训练检查点。我们对DDPM和DDIM使用二次时间步长，根据经验，这比均匀时间步长具有更好的FID性能。我们对Analytic-DDPM和Analytic-DDIM使用均匀时间步长。对于DPM-Solver，我们使用Type-1离散和Type-2离散方法将离散时间模型转换为连续时间模型。当$NFE\leq20$时，我们使用附录D.3中的方法；当NFE &gt; 20时，使用附录C中的自适应步长求解器。在所有实验中，我们使用相对容差$\epsilon_{rtol}=0.05$的DPM-Solver-12。值得注意的是，我们在CelebA 64x64上的最佳FID结果甚至优于1000步的DDPM（以及所有其他方法）。</p>
+<p>在ImageNet 64x64实验中，我们使用文献[16]中的预训练检查点，代码许可证为MIT许可证。我们按照文献[19]对DDPM和DDIM使用均匀时间步长。我们对Analytic-DDPM和Analytic-DDIM使用均匀时间步长。对于DPM-Solver，我们使用Type-1离散和Type-2离散方法将离散时间模型转换为连续时间模型。当$NFE\leq20$时，我们使用附录D.3中的方法；当NFE &gt; 20时，使用附录C中的自适应步长求解器。在所有实验中，我们使用相对容差$\epsilon_{rtol}=0.05$的DPM-Solver-23。需要注意的是，ImageNet数据集包含真实的人物照片，可能存在隐私问题，如文献[42]中所讨论的那样。</p>
+<p>在ImageNet 128x128实验中，我们使用文献[4]中的预训练检查点（用于扩散模型和分类器模型）进行带分类器引导的采样，代码许可证为MIT许可证。我们按照文献[19]对DDPM和DDIM使用均匀时间步长。对于DPM-Solver，我们仅使用Type-1离散方法将离散时间模型转换为连续时间模型。当$NFE\leq20$时，我们使用附录D.3中的方法；当NFE &gt; 20时，使用附录C中相对容差$\epsilon_{rtol}=0.05$的自适应步长求解器DPM-Solver-12。在所有实验中，我们将分类器引导尺度$s = 1.25$，这是文献[4]中DDIM的最佳设置（详细信息请参考他们的表14）。</p>
+<p>在LSUN bedroom 256x256实验中，我们使用文献[4]中的无条件预训练检查点，代码许可证为MIT许可证。我们按照文献[19]对DDPM和DDIM使用均匀时间步长。对于DPM-Solver，我们仅使用Type-1离散方法将离散时间模型转换为连续时间模型。我们对DPM-Solver使用附录D.3中的方法。</p>
+<h4 id="E-6-比较DPM-Solver的不同阶数"><a href="#E-6-比较DPM-Solver的不同阶数" class="headerlink" title="E.6 比较DPM-Solver的不同阶数"></a>E.6 比较DPM-Solver的不同阶数</h4><p>我们还比较了DPM-Solver不同阶数的样本质量，结果如表6所示。我们使用对λ采用均匀时间步长的DPM-Solver-1、DPM-Solver-2和DPM-Solver-3，当NFE小于20时，使用附录D.3中的快速版本，我们将其命名为DPM-Solver-fast。对于离散时间模型，我们仅比较Type-2离散方法，Type-1的结果类似。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "t6.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表6：不同阶数的DPM-Solver在不同函数评估次数（NFE）下，通过FID衡量的样本质量。带有†的结果表示实际NFE小于给定的NFE，这是因为给定的NFE不能被2或3整除。对于DPM-Solver-fast，我们仅在NFE小于20时对其进行评估，因为当NFE较大时，它与DPM-Solver-3的效果几乎相同。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>由于DPM-Solver-2的实际NFE是$2\times\lfloor NFE/2\rfloor$，DPM-Solver-3的实际NFE是$3\times\lfloor NFE/3\rfloor$，这可能小于NFE，我们使用符号†来表示实际NFE小于给定的NFE。我们发现，当NFE小于20时，所提出的快速版本（DPM-Solver-fast）通常比单一阶数的方法更好；当NFE较大时，DPM-Solver-3优于DPM-Solver-2，DPM-Solver-2优于DPM-Solver-1，这与我们提出的收敛速率分析相符。</p>
+<h4 id="E-7-DPM-Solver与DDIM的运行时间比较："><a href="#E-7-DPM-Solver与DDIM的运行时间比较：" class="headerlink" title="E.7 DPM-Solver与DDIM的运行时间比较："></a>E.7 DPM-Solver与DDIM的运行时间比较：</h4><p>从理论上讲，对于相同的NFE，DPM-Solver和DDIM的运行时间几乎相同（与NFE呈线性关系），因为主要的计算成本是对大型神经网络$\epsilon_{\theta}$的串行评估，而其他系数的计算成本可以忽略不计。</p>
+<p>表7展示了在单个NVIDIA A40上，DPM-Solver和DDIM对离散时间扩散模型进行采样时，不同数据集和NFE下单个批次的运行时间。我们使用torch.cuda.Event和torch.cuda.synchronize来精确计算运行时间。我们对每个数据集使用离散时间预训练扩散模型。我们评估8个批次的运行时间，并计算运行时间的平均值和标准差。由于GPU内存限制，对于LSUN bedroom 256x256，我们使用64的批量大小；对于其他数据集，我们使用128的批量大小。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "t7.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表7：在单个NVIDIA A40上，使用离散时间扩散模型进行采样时，去噪扩散隐式模型（DDIM）和DPM-Solver在不同函数评估次数（NFE）下单个批次的运行时间（秒/批次，±标准差 ）。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>对于DDIM，我们使用官方实现。我们发现，我们实现的DPM-Solver减少了一些系数的重复计算，因此在相同的NFE下，DPM-Solver比他们实现的DDIM略快。尽管如此，运行时间评估结果表明，对于相同的NFE，DPM-Solver和DDIM的运行时间几乎相同，并且运行时间与NFE大致呈线性关系。因此，NFE的加速比几乎就是实际运行时间的加速比，所以所提出的DPM-Solver可以大大加快DPM的采样速度。</p>
+<h4 id="E-8-ImageNet-256x256上的条件采样"><a href="#E-8-ImageNet-256x256上的条件采样" class="headerlink" title="E.8 ImageNet 256x256上的条件采样"></a>E.8 ImageNet 256x256上的条件采样</h4><p>对于图1中的条件采样，我们使用文献[4]中带分类器引导（ADM-G）的预训练检查点，分类器尺度为1.0。代码许可证为MIT许可证。我们对DDIM使用均匀时间步长，对DPM-Solver使用附录D.3中的快速版本（DPM-Solver-fast），步数分别为10、15、20和100。</p>
+<p>图3展示了DDIM和DPM-Solver的条件采样结果。我们发现，具有15次函数评估的DPM-Solver生成的样本与具有100次函数评估的DDIM生成的样本质量相当。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "f3.png" width="60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图3：使用在ImageNet 256×256上预训练且带有分类器引导的扩散概率模型（DPM）[4]，采用相同随机种子，分别使用去噪扩散隐式模型（DDIM）[19]和我们的DPM-Solver，在函数评估次数（NFE）为10、15、20、100时生成的样本。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="E-9-额外样本"><a href="#E-9-额外样本" class="headerlink" title="E.9 额外样本"></a>E.9 额外样本</h4><p>在CIFAR-10、CelebA 64x64、ImageNet 64x64、LSUN bedroom 256x256[40]、ImageNet 256x256上的额外采样结果如图4 - 8所示。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "f4.png" width="60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图4：使用在CIFAR-10数据集上预训练的离散时间扩散概率模型（DPM）[2]，采用相同随机种子，分别使用去噪扩散隐式模型（DDIM）[19]（二次时间步长）和我们的DPM-Solver，在函数评估次数（NFE）为10、12、15、20时生成的随机样本。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "f5.png" width="60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图5：使用在CelebA 64x64数据集上预训练的离散时间扩散概率模型（DPM）[19]，在相同随机种子下，采用去噪扩散隐式模型（DDIM）[19]（二次时间步长）和我们的DPM-Solver，在函数评估次数（NFE）分别为10、12、15、20时生成的随机样本。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "f6.png" width="60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图6：使用在ImageNet 64x64上预训练的离散时间扩散概率模型（DPM）[16]，在相同随机种子下，采用去噪扩散隐式模型（DDIM）[19]（均匀时间步长）和我们的DPM-Solver，在函数评估次数（NFE）为10、12、15、20时生成的随机样本。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "f7.png" width="60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图7：使用在LSUN卧室256x256数据集上预训练的离散时间扩散概率模型（DPM）[4]，在相同随机种子下，采用去噪扩散隐式模型（DDIM）[19]（均匀时间步长）和我们的DPM-Solver，在函数评估次数（NFE）为10、12、15、20时生成的随机样本。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "f8.png" width="60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图8：使用在ImageNet 256x256上预训练且带有分类器引导（分类器引导尺度为1.0）的离散时间扩散概率模型（DPM）[4]，在相同随机种子下，采用去噪扩散隐式模型（DDIM）[19]（均匀时间步长）和我们的DPM-Solver，在函数评估次数（NFE）为10、12、15、20时生成的随机类别条件样本（类别：90，吸蜜鹦鹉）。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="文章总结"><a href="#文章总结" class="headerlink" title="文章总结"></a>文章总结</h2><h2 id="疑问"><a href="#疑问" class="headerlink" title="疑问"></a>疑问</h2><h3 id="3-扩散常微分方程的定制快速求解器-1"><a href="#3-扩散常微分方程的定制快速求解器-1" class="headerlink" title="3 扩散常微分方程的定制快速求解器"></a>3 扩散常微分方程的定制快速求解器</h3><h4 id="公式3-4的推导"><a href="#公式3-4的推导" class="headerlink" title="公式3.4的推导"></a>公式3.4的推导</h4><script type="math/tex; mode=display">
 \begin{align*}
 \mathbf{x}_t &= \frac{\alpha_t}{\alpha_s}\mathbf{x}_s - \alpha_t \int_{s}^{t} \left( \frac{\mathrm{d}\lambda_{\tau}}{\mathrm{d}\tau} \right) \frac{\sigma_{\tau}}{\alpha_{\tau}} \epsilon_{\theta}(\mathbf{x}_{\tau}, \tau) \mathrm{d}\tau \\
 &= \frac{\alpha_t}{\alpha_s}\mathbf{x}_s - \alpha_t \int_{\lambda_s}^{\lambda_t} \left( \frac{\mathrm{d}\lambda_{\tau}}{\mathrm{d}\tau} \right) \frac{\sigma_{t_{\lambda}(\lambda)}}{\alpha_{t_{\lambda}(\lambda)}} \epsilon_{\theta}(\mathbf{x}_{t_{\lambda}(\lambda)}, t_{\lambda}(\lambda)) \frac{\mathrm{d}\tau}{\mathrm{d}\lambda} \mathrm{d}\lambda \\
@@ -470,7 +786,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%89%A9%E6%95%A3%E6%A6%82%E7%8E%87%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.2.</span> <span class="nav-text">2 扩散概率模型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E6%AD%A3%E5%90%91%E8%BF%87%E7%A8%8B%E5%92%8C%E6%89%A9%E6%95%A3%E9%9A%8F%E6%9C%BA%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 正向过程和扩散随机微分方程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E6%89%A9%E6%95%A3%EF%BC%88%E6%A6%82%E7%8E%87%E6%B5%81%EF%BC%89%E5%B8%B8%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 扩散（概率流）常微分方程</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%89%A9%E6%95%A3%E5%B8%B8%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E7%9A%84%E5%AE%9A%E5%88%B6%E5%BF%AB%E9%80%9F%E6%B1%82%E8%A7%A3%E5%99%A8"><span class="nav-number">1.3.</span> <span class="nav-text">3 扩散常微分方程的定制快速求解器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E6%89%A9%E6%95%A3%E5%B8%B8%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E7%B2%BE%E7%A1%AE%E8%A7%A3%E7%9A%84%E7%AE%80%E5%8C%96%E5%85%AC%E5%BC%8F"><span class="nav-number">1.3.1.</span> <span class="nav-text">3.1 扩散常微分方程精确解的简化公式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E6%89%A9%E6%95%A3%E5%B8%B8%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E7%9A%84%E9%AB%98%E9%98%B6%E6%B1%82%E8%A7%A3%E5%99%A8"><span class="nav-number">1.3.2.</span> <span class="nav-text">3.2 扩散常微分方程的高阶求解器</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-%E6%AD%A5%E9%95%BF%E8%B0%83%E5%BA%A6"><span class="nav-number">1.4.</span> <span class="nav-text">3.3 步长调度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-%E4%BB%8E%E7%A6%BB%E6%95%A3%E6%97%B6%E9%97%B4%E6%89%A9%E6%95%A3%E6%A6%82%E7%8E%87%E6%A8%A1%E5%9E%8B%E9%87%87%E6%A0%B7"><span class="nav-number">1.5.</span> <span class="nav-text">3.4 从离散时间扩散概率模型采样</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E4%B8%8E%E7%8E%B0%E6%9C%89%E5%BF%AB%E9%80%9F%E9%87%87%E6%A0%B7%E6%96%B9%E6%B3%95%E7%9A%84%E6%AF%94%E8%BE%83"><span class="nav-number">1.6.</span> <span class="nav-text">4 与现有快速采样方法的比较</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E4%BD%9C%E4%B8%BADPM-Solver-1%E7%9A%84DDIM"><span class="nav-number">1.6.1.</span> <span class="nav-text">4.1 作为DPM-Solver-1的DDIM</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E4%B8%8E%E4%BC%A0%E7%BB%9F%E9%BE%99%E6%A0%BC-%E5%BA%93%E5%A1%94%E6%96%B9%E6%B3%95%E7%9A%84%E6%AF%94%E8%BE%83"><span class="nav-number">1.6.2.</span> <span class="nav-text">4.2 与传统龙格 - 库塔方法的比较</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-%E5%9F%BA%E4%BA%8E%E8%AE%AD%E7%BB%83%E7%9A%84DPM%E5%BF%AB%E9%80%9F%E9%87%87%E6%A0%B7%E6%96%B9%E6%B3%95"><span class="nav-number">1.6.3.</span> <span class="nav-text">4.3 基于训练的DPM快速采样方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.7.</span> <span class="nav-text">5 实验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#5-1-%E4%B8%8E%E8%BF%9E%E7%BB%AD%E6%97%B6%E9%97%B4%E9%87%87%E6%A0%B7%E6%96%B9%E6%B3%95%E7%9A%84%E6%AF%94%E8%BE%83"><span class="nav-number">1.7.1.</span> <span class="nav-text">5.1 与连续时间采样方法的比较</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-2-%E4%B8%8E%E7%A6%BB%E6%95%A3%E6%97%B6%E9%97%B4%E9%87%87%E6%A0%B7%E6%96%B9%E6%B3%95%E7%9A%84%E6%AF%94%E8%BE%83"><span class="nav-number">1.7.2.</span> <span class="nav-text">5.2 与离散时间采样方法的比较</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E7%BB%93%E8%AE%BA"><span class="nav-number">1.8.</span> <span class="nav-text">6 结论</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B1%80%E9%99%90%E6%80%A7%E5%92%8C%E6%9B%B4%E5%B9%BF%E6%B3%9B%E7%9A%84%E5%BD%B1%E5%93%8D"><span class="nav-number">1.8.1.</span> <span class="nav-text">局限性和更广泛的影响</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%96%91%E9%97%AE"><span class="nav-number">2.</span> <span class="nav-text">疑问</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%89%A9%E6%95%A3%E5%B8%B8%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E7%9A%84%E5%AE%9A%E5%88%B6%E5%BF%AB%E9%80%9F%E6%B1%82%E8%A7%A3%E5%99%A8-1"><span class="nav-number">2.1.</span> <span class="nav-text">3 扩散常微分方程的定制快速求解器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%AC%E5%BC%8F3-4%E7%9A%84%E6%8E%A8%E5%AF%BC"><span class="nav-number">2.1.1.</span> <span class="nav-text">公式3.4的推导</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DPM-Solver-K"><span class="nav-number">2.1.2.</span> <span class="nav-text">DPM-Solver-K</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%80%E9%98%B6DPM-Solver%E9%87%87%E6%A0%B7%E5%85%AC%E5%BC%8F%E6%8E%A8%E5%AF%BC"><span class="nav-number">2.1.2.1.</span> <span class="nav-text">一阶DPM Solver采样公式推导</span></a></li></ol></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%89%A9%E6%95%A3%E6%A6%82%E7%8E%87%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.2.</span> <span class="nav-text">2 扩散概率模型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E6%AD%A3%E5%90%91%E8%BF%87%E7%A8%8B%E5%92%8C%E6%89%A9%E6%95%A3%E9%9A%8F%E6%9C%BA%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 正向过程和扩散随机微分方程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E6%89%A9%E6%95%A3%EF%BC%88%E6%A6%82%E7%8E%87%E6%B5%81%EF%BC%89%E5%B8%B8%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 扩散（概率流）常微分方程</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%89%A9%E6%95%A3%E5%B8%B8%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E7%9A%84%E5%AE%9A%E5%88%B6%E5%BF%AB%E9%80%9F%E6%B1%82%E8%A7%A3%E5%99%A8"><span class="nav-number">1.3.</span> <span class="nav-text">3 扩散常微分方程的定制快速求解器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E6%89%A9%E6%95%A3%E5%B8%B8%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E7%B2%BE%E7%A1%AE%E8%A7%A3%E7%9A%84%E7%AE%80%E5%8C%96%E5%85%AC%E5%BC%8F"><span class="nav-number">1.3.1.</span> <span class="nav-text">3.1 扩散常微分方程精确解的简化公式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E6%89%A9%E6%95%A3%E5%B8%B8%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E7%9A%84%E9%AB%98%E9%98%B6%E6%B1%82%E8%A7%A3%E5%99%A8"><span class="nav-number">1.3.2.</span> <span class="nav-text">3.2 扩散常微分方程的高阶求解器</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-%E6%AD%A5%E9%95%BF%E8%B0%83%E5%BA%A6"><span class="nav-number">1.4.</span> <span class="nav-text">3.3 步长调度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-%E4%BB%8E%E7%A6%BB%E6%95%A3%E6%97%B6%E9%97%B4%E6%89%A9%E6%95%A3%E6%A6%82%E7%8E%87%E6%A8%A1%E5%9E%8B%E9%87%87%E6%A0%B7"><span class="nav-number">1.5.</span> <span class="nav-text">3.4 从离散时间扩散概率模型采样</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E4%B8%8E%E7%8E%B0%E6%9C%89%E5%BF%AB%E9%80%9F%E9%87%87%E6%A0%B7%E6%96%B9%E6%B3%95%E7%9A%84%E6%AF%94%E8%BE%83"><span class="nav-number">1.6.</span> <span class="nav-text">4 与现有快速采样方法的比较</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E4%BD%9C%E4%B8%BADPM-Solver-1%E7%9A%84DDIM"><span class="nav-number">1.6.1.</span> <span class="nav-text">4.1 作为DPM-Solver-1的DDIM</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E4%B8%8E%E4%BC%A0%E7%BB%9F%E9%BE%99%E6%A0%BC-%E5%BA%93%E5%A1%94%E6%96%B9%E6%B3%95%E7%9A%84%E6%AF%94%E8%BE%83"><span class="nav-number">1.6.2.</span> <span class="nav-text">4.2 与传统龙格 - 库塔方法的比较</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-%E5%9F%BA%E4%BA%8E%E8%AE%AD%E7%BB%83%E7%9A%84DPM%E5%BF%AB%E9%80%9F%E9%87%87%E6%A0%B7%E6%96%B9%E6%B3%95"><span class="nav-number">1.6.3.</span> <span class="nav-text">4.3 基于训练的DPM快速采样方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.7.</span> <span class="nav-text">5 实验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#5-1-%E4%B8%8E%E8%BF%9E%E7%BB%AD%E6%97%B6%E9%97%B4%E9%87%87%E6%A0%B7%E6%96%B9%E6%B3%95%E7%9A%84%E6%AF%94%E8%BE%83"><span class="nav-number">1.7.1.</span> <span class="nav-text">5.1 与连续时间采样方法的比较</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-2-%E4%B8%8E%E7%A6%BB%E6%95%A3%E6%97%B6%E9%97%B4%E9%87%87%E6%A0%B7%E6%96%B9%E6%B3%95%E7%9A%84%E6%AF%94%E8%BE%83"><span class="nav-number">1.7.2.</span> <span class="nav-text">5.2 与离散时间采样方法的比较</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E7%BB%93%E8%AE%BA"><span class="nav-number">1.8.</span> <span class="nav-text">6 结论</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B1%80%E9%99%90%E6%80%A7%E5%92%8C%E6%9B%B4%E5%B9%BF%E6%B3%9B%E7%9A%84%E5%BD%B1%E5%93%8D"><span class="nav-number">1.8.1.</span> <span class="nav-text">局限性和更广泛的影响</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#A-%E5%AF%B9%E5%99%AA%E5%A3%B0%E8%B0%83%E5%BA%A6%E5%85%B7%E6%9C%89%E4%B8%8D%E5%8F%98%E6%80%A7%E7%9A%84%E9%87%87%E6%A0%B7"><span class="nav-number">1.9.</span> <span class="nav-text">A 对噪声调度具有不变性的采样</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#A-1-%E9%87%87%E6%A0%B7%E8%A7%A3%E4%B8%8E%E5%99%AA%E5%A3%B0%E8%B0%83%E5%BA%A6%E7%9A%84%E8%A7%A3%E8%80%A6"><span class="nav-number">1.9.1.</span> <span class="nav-text">A.1 采样解与噪声调度的解耦</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#A-2-%E9%80%89%E6%8B%A9%CE%BB%E7%9A%84%E6%97%B6%E9%97%B4%E6%AD%A5%E5%AF%B9%E5%99%AA%E5%A3%B0%E8%B0%83%E5%BA%A6%E5%85%B7%E6%9C%89%E4%B8%8D%E5%8F%98%E6%80%A7"><span class="nav-number">1.9.2.</span> <span class="nav-text">A.2 选择λ的时间步对噪声调度具有不变性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#A-3-%E4%B8%8E%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B%E6%9C%80%E5%A4%A7%E4%BC%BC%E7%84%B6%E8%AE%AD%E7%BB%83%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">1.9.3.</span> <span class="nav-text">A.3 与扩散模型最大似然训练的关系</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#B-%E5%AE%9A%E7%90%863-2%E7%9A%84%E8%AF%81%E6%98%8E"><span class="nav-number">1.10.</span> <span class="nav-text">B 定理3.2的证明</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#B-1-%E5%81%87%E8%AE%BE"><span class="nav-number">1.10.1.</span> <span class="nav-text">B.1 假设</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B-2-%E6%8C%87%E6%95%B0%E5%8A%A0%E6%9D%83%E7%A7%AF%E5%88%86%E7%9A%84%E4%B8%80%E8%88%AC%E5%B1%95%E5%BC%80"><span class="nav-number">1.10.2.</span> <span class="nav-text">B.2 指数加权积分的一般展开</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B-3-k-1-%E6%97%B6%E5%AE%9A%E7%90%863-2%E7%9A%84%E8%AF%81%E6%98%8E"><span class="nav-number">1.10.3.</span> <span class="nav-text">B.3 $k &#x3D; 1$时定理3.2的证明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B-4-k-2-%E6%97%B6%E5%AE%9A%E7%90%863-2%E7%9A%84%E8%AF%81%E6%98%8E"><span class="nav-number">1.10.4.</span> <span class="nav-text">B.4 $k &#x3D; 2$时定理3.2的证明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B-5-k-3-%E6%97%B6%E5%AE%9A%E7%90%863-2%E7%9A%84%E8%AF%81%E6%98%8E"><span class="nav-number">1.10.5.</span> <span class="nav-text">B.5 $k &#x3D; 3$时定理3.2的证明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B-6-%E4%B8%8E%E6%98%BE%E5%BC%8F%E6%8C%87%E6%95%B0%E9%BE%99%E6%A0%BC-%E5%BA%93%E5%A1%94%EF%BC%88expRK%EF%BC%89%E6%96%B9%E6%B3%95%E7%9A%84%E8%81%94%E7%B3%BB"><span class="nav-number">1.10.6.</span> <span class="nav-text">B.6 与显式指数龙格 - 库塔（expRK）方法的联系</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#C-DPM-Solver%E7%AE%97%E6%B3%95"><span class="nav-number">1.11.</span> <span class="nav-text">C DPM-Solver算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#D-DPM-Solver%E7%9A%84%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82"><span class="nav-number">1.12.</span> <span class="nav-text">D DPM-Solver的实现细节</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#D-1-%E9%87%87%E6%A0%B7%E7%9A%84%E7%BB%93%E6%9D%9F%E6%97%B6%E9%97%B4"><span class="nav-number">1.12.1.</span> <span class="nav-text">D.1 采样的结束时间</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#D-2-%E4%BB%8E%E7%A6%BB%E6%95%A3%E6%97%B6%E9%97%B4DPM%E9%87%87%E6%A0%B7"><span class="nav-number">1.12.2.</span> <span class="nav-text">D.2 从离散时间DPM采样</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#D-3-20%E6%AC%A1%E5%87%BD%E6%95%B0%E8%AF%84%E4%BC%B0%E7%9A%84DPM-Solver"><span class="nav-number">1.12.3.</span> <span class="nav-text">D.3 20次函数评估的DPM-Solver</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#D-4-%E5%87%BD%E6%95%B0-t-lambda-cdot-%EF%BC%88-lambda-t-%E7%9A%84%E5%8F%8D%E5%87%BD%E6%95%B0%EF%BC%89%E7%9A%84%E8%A7%A3%E6%9E%90%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="nav-number">1.12.4.</span> <span class="nav-text">D.4 函数$t_{\lambda}(\cdot)$（$\lambda(t)$的反函数）的解析表达式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#D-5-DPM-Solver%E7%9A%84%E6%9D%A1%E4%BB%B6%E9%87%87%E6%A0%B7"><span class="nav-number">1.12.5.</span> <span class="nav-text">D.5 DPM-Solver的条件采样</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#D-6-%E6%95%B0%E5%80%BC%E7%A8%B3%E5%AE%9A%E6%80%A7"><span class="nav-number">1.12.6.</span> <span class="nav-text">D.6 数值稳定性</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#E-%E5%AE%9E%E9%AA%8C%E7%BB%86%E8%8A%82"><span class="nav-number">1.13.</span> <span class="nav-text">E 实验细节</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#E-1-%E5%85%B3%E4%BA%8E%CE%BB%E7%9A%84%E6%89%A9%E6%95%A3%E5%B8%B8%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%EF%BC%9A"><span class="nav-number">1.13.1.</span> <span class="nav-text">E.1 关于λ的扩散常微分方程：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#E-2-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%EF%BC%9A"><span class="nav-number">1.13.2.</span> <span class="nav-text">E.2 代码实现：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#E-3-%E4%B8%8E%E8%BF%9E%E7%BB%AD%E6%97%B6%E9%97%B4%E9%87%87%E6%A0%B7%E6%96%B9%E6%B3%95%E7%9A%84%E6%A0%B7%E6%9C%AC%E8%B4%A8%E9%87%8F%E6%AF%94%E8%BE%83%EF%BC%9A"><span class="nav-number">1.13.3.</span> <span class="nav-text">E.3 与连续时间采样方法的样本质量比较：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#E-4-%E4%B8%8ERK%E6%96%B9%E6%B3%95%E7%9A%84%E6%A0%B7%E6%9C%AC%E8%B4%A8%E9%87%8F%E6%AF%94%E8%BE%83%EF%BC%9A"><span class="nav-number">1.13.4.</span> <span class="nav-text">E.4 与RK方法的样本质量比较：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#E-5-%E4%B8%8E%E7%A6%BB%E6%95%A3%E6%97%B6%E9%97%B4%E9%87%87%E6%A0%B7%E6%96%B9%E6%B3%95%E7%9A%84%E6%A0%B7%E6%9C%AC%E8%B4%A8%E9%87%8F%E6%AF%94%E8%BE%83%EF%BC%9A"><span class="nav-number">1.13.5.</span> <span class="nav-text">E.5 与离散时间采样方法的样本质量比较：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#E-6-%E6%AF%94%E8%BE%83DPM-Solver%E7%9A%84%E4%B8%8D%E5%90%8C%E9%98%B6%E6%95%B0"><span class="nav-number">1.13.6.</span> <span class="nav-text">E.6 比较DPM-Solver的不同阶数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#E-7-DPM-Solver%E4%B8%8EDDIM%E7%9A%84%E8%BF%90%E8%A1%8C%E6%97%B6%E9%97%B4%E6%AF%94%E8%BE%83%EF%BC%9A"><span class="nav-number">1.13.7.</span> <span class="nav-text">E.7 DPM-Solver与DDIM的运行时间比较：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#E-8-ImageNet-256x256%E4%B8%8A%E7%9A%84%E6%9D%A1%E4%BB%B6%E9%87%87%E6%A0%B7"><span class="nav-number">1.13.8.</span> <span class="nav-text">E.8 ImageNet 256x256上的条件采样</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#E-9-%E9%A2%9D%E5%A4%96%E6%A0%B7%E6%9C%AC"><span class="nav-number">1.13.9.</span> <span class="nav-text">E.9 额外样本</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E7%AB%A0%E6%80%BB%E7%BB%93"><span class="nav-number">2.</span> <span class="nav-text">文章总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%96%91%E9%97%AE"><span class="nav-number">3.</span> <span class="nav-text">疑问</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%89%A9%E6%95%A3%E5%B8%B8%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E7%9A%84%E5%AE%9A%E5%88%B6%E5%BF%AB%E9%80%9F%E6%B1%82%E8%A7%A3%E5%99%A8-1"><span class="nav-number">3.1.</span> <span class="nav-text">3 扩散常微分方程的定制快速求解器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%AC%E5%BC%8F3-4%E7%9A%84%E6%8E%A8%E5%AF%BC"><span class="nav-number">3.1.1.</span> <span class="nav-text">公式3.4的推导</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DPM-Solver-K"><span class="nav-number">3.1.2.</span> <span class="nav-text">DPM-Solver-K</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%80%E9%98%B6DPM-Solver%E9%87%87%E6%A0%B7%E5%85%AC%E5%BC%8F%E6%8E%A8%E5%AF%BC"><span class="nav-number">3.1.2.1.</span> <span class="nav-text">一阶DPM Solver采样公式推导</span></a></li></ol></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -486,7 +802,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-count">62</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
