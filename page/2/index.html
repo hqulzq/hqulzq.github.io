@@ -366,7 +366,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-04-24 15:25:33" itemprop="dateModified" datetime="2025-04-24T15:25:33+08:00">2025-04-24</time>
+                <time title="修改时间：2025-04-25 19:38:07" itemprop="dateModified" datetime="2025-04-25T19:38:07+08:00">2025-04-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -389,7 +389,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散概率模型（DPMs）是新兴的强大生成模型。尽管DPMs具有高质量的生成性能，但它们的采样速度仍然较慢，因为通常需要对大型神经网络进行数百或数千次的顺序函数评估（步骤）才能生成一个样本。从DPMs中采样可以看作是求解相应的扩散常微分方程（ODEs）。在这项工作中，我们提出了扩散ODEs解的精确公式。该公式通过解析计算解的线性部分，而不是像以往工作那样将所有项都留给黑箱ODE求解器处理。通过变量变换，解可以等效简化为神经网络的指数加权积分。基于我们的公式，我们提出了DPM-Solver，这是一种快速的、具有收敛阶保证的专用高阶扩散ODE求解器。DPM-Solver适用于离散时间和连续时间的DPMs，且无需任何额外训练。实验结果表明，DPM-Solver在各种数据集上仅需10 - 20次函数评估就能生成高质量样本。在CIFAR10数据集上，我们在10次函数评估中达到了4.70的FID（Frechet Inception Distance），在20次函数评估中达到了2.87的FID，并且与之前最先进的无训练采样器相比，在各种数据集上实现了4 - 16倍的加速。<br>
+          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散概率模型（DPMs）是新兴的强大生成模型。尽管DPMs具有高质量的生成性能，但它们的采样速度仍然较慢，因为通常需要对大型神经网络进行数百或数千次的顺序函数评估（步骤）才能生成一个样本。从DPMs中采样可以看作是求解相应的扩散常微分方程（ODEs）。在这项工作中，我们提出了扩散ODEs解的精确公式。<strong>该公式通过解析计算解的线性部分，而不是像以往工作那样将所有项都留给黑箱ODE求解器处理。通过变量变换，解可以等效简化为神经网络的指数加权积分。</strong>基于我们的公式，我们提出了DPM-Solver，这是一种快速的、具有收敛阶保证的<code>专用高阶扩散ODE求解器</code>。DPM-Solver适用于离散时间和连续时间的DPMs，且无<strong>需任何额外训练</strong>。实验结果表明，DPM-Solver在各种数据集上仅需<strong>10 - 20次</strong>函数评估就能生成高质量样本。在CIFAR10数据集上，我们在10次函数评估中达到了4.70的FID（Frechet Inception Distance），在20次函数评估中达到了2.87的FID，并且与之前最先进的无训练采样器相比，在各种数据集上实现了4 - 16倍的加速。<br>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2025/03/12/DPM-Solver-A-Fast-ODE-Solver-for-Diffusion-Probabilistic-Model-Sampling-in-Around-10-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/#more" rel="contents">
