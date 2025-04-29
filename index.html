@@ -221,7 +221,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-04-28 16:03:26" itemprop="dateModified" datetime="2025-04-28T16:03:26+08:00">2025-04-28</time>
+                <time title="修改时间：2025-04-29 11:57:13" itemprop="dateModified" datetime="2025-04-29T11:57:13+08:00">2025-04-29</time>
               </span>
 
           
@@ -848,7 +848,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-03-28 20:28:41" itemprop="dateModified" datetime="2025-03-28T20:28:41+08:00">2025-03-28</time>
+                <time title="修改时间：2025-04-29 15:36:36" itemprop="dateModified" datetime="2025-04-29T15:36:36+08:00">2025-04-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -871,7 +871,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>去噪扩散概率模型（DDPMs）能够生成高质量的样本，如图像和音频样本。然而，DDPMs需要数百到数千次迭代才能生成最终样本。此前有多项研究通过调整方差调度（如改进的去噪扩散概率模型）或去噪方程（如去噪扩散隐式模型（DDIMs））成功加速了DDPMs。但是，这些加速方法无法保持样本质量，甚至在高加速比下会引入新的噪声，这限制了它们的实用性。为了在保持样本质量的同时加速推理过程，我们提出了一种全新的观点，即应将DDPMs视为在流形上求解微分方程。基于这一观点，我们提出了适用于扩散模型的伪数值方法（PNDMs）。具体而言，我们明确了如何在流形上求解微分方程，并证明了DDIMs是伪数值方法的简单情形。我们将几种经典的数值方法转换为相应的伪数值方法，发现伪线性多步法在大多数情况下表现最佳。根据实验结果，直接使用在Cifar10、CelebA和LSUN上预训练的模型时，PNDMs仅需50步就能生成比1000步DDIMs质量更高的合成图像（加速20倍），显著优于250步的DDIMs（在FID指标上提高约0.4），并且在不同的方差调度下具有良好的泛化性。<br>
+          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>去噪扩散概率模型（DDPMs）能够生成高质量的样本，如图像和音频样本。然而，DDPMs需要数百到数千次迭代才能生成最终样本。此前有多项研究通过调整方差调度（如改进的去噪扩散概率模型）或去噪方程（如去噪扩散隐式模型（DDIMs））成功加速了DDPMs。但是，这些加速方法无法保持样本质量，甚至在高加速比下会引入新的噪声，这限制了它们的实用性。为了在保持样本质量的同时加速推理过程，<strong>我们提出了一种全新的观点，即应将DDPMs视为在流形上求解微分方程</strong>。基于这一观点，我们提出了适用于扩散模型的<code>伪数值方法</code>（PNDMs）。具体而言，我们明确了如何在流形上求解微分方程，并证明了<strong>DDIMs是伪数值方法的简单情形</strong>。我们将几种经典的数值方法转换为相应的伪数值方法，发现<strong>伪线性多步法在大多数情况下表现最佳</strong>。根据实验结果，直接使用在Cifar10、CelebA和LSUN上预训练的模型时，PNDMs仅需50步就能生成比1000步DDIMs质量更高的合成图像（加速20倍），显著优于250步的DDIMs（在FID指标上提高约0.4），并且在不同的方差调度下具有良好的泛化性。<br>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2025/03/21/PSEUDO-NUMERICAL-METHODS-FOR-DIFFUSION-MODELS-ON-MANIFOLDS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/#more" rel="contents">

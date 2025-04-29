@@ -27,13 +27,29 @@
 <meta property="og:site_name" content="Lzq&#39;s blog">
 <meta property="og:description" content="全文翻译摘要去噪扩散概率模型（DDPMs）能够生成高质量的样本，如图像和音频样本。然而，DDPMs需要数百到数千次迭代才能生成最终样本。此前有多项研究通过调整方差调度（如改进的去噪扩散概率模型）或去噪方程（如去噪扩散隐式模型（DDIMs））成功加速了DDPMs。但是，这些加速方法无法保持样本质量，甚至在高加速比下会引入新的噪声，这限制了它们的实用性。为了在保持样本质量的同时加速推理过程，我们提出了">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/21/PSEUDO-NUMERICAL-METHODS-FOR-DIFFUSION-MODELS-ON-MANIFOLDS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/a3.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/21/PSEUDO-NUMERICAL-METHODS-FOR-DIFFUSION-MODELS-ON-MANIFOLDS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f5.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/21/PSEUDO-NUMERICAL-METHODS-FOR-DIFFUSION-MODELS-ON-MANIFOLDS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f6.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/21/PSEUDO-NUMERICAL-METHODS-FOR-DIFFUSION-MODELS-ON-MANIFOLDS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t3.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/21/PSEUDO-NUMERICAL-METHODS-FOR-DIFFUSION-MODELS-ON-MANIFOLDS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t4.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/21/PSEUDO-NUMERICAL-METHODS-FOR-DIFFUSION-MODELS-ON-MANIFOLDS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t5.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/21/PSEUDO-NUMERICAL-METHODS-FOR-DIFFUSION-MODELS-ON-MANIFOLDS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t6.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/21/PSEUDO-NUMERICAL-METHODS-FOR-DIFFUSION-MODELS-ON-MANIFOLDS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f7.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/21/PSEUDO-NUMERICAL-METHODS-FOR-DIFFUSION-MODELS-ON-MANIFOLDS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f8.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/21/PSEUDO-NUMERICAL-METHODS-FOR-DIFFUSION-MODELS-ON-MANIFOLDS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f9.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/21/PSEUDO-NUMERICAL-METHODS-FOR-DIFFUSION-MODELS-ON-MANIFOLDS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f10.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/21/PSEUDO-NUMERICAL-METHODS-FOR-DIFFUSION-MODELS-ON-MANIFOLDS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f11.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/21/PSEUDO-NUMERICAL-METHODS-FOR-DIFFUSION-MODELS-ON-MANIFOLDS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f12.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/21/PSEUDO-NUMERICAL-METHODS-FOR-DIFFUSION-MODELS-ON-MANIFOLDS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f13.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/03/21/PSEUDO-NUMERICAL-METHODS-FOR-DIFFUSION-MODELS-ON-MANIFOLDS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t7.png">
 <meta property="article:published_time" content="2025-03-21T07:49:39.000Z">
-<meta property="article:modified_time" content="2025-03-28T12:28:41.533Z">
+<meta property="article:modified_time" content="2025-04-29T07:36:36.743Z">
 <meta property="article:author" content="Zongqing Li">
 <meta property="article:tag" content="diffusion">
 <meta property="article:tag" content="2022">
 <meta property="article:tag" content="ICLR">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hqulzq.github.io/2025/03/21/PSEUDO-NUMERICAL-METHODS-FOR-DIFFUSION-MODELS-ON-MANIFOLDS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/a3.png">
 
 <link rel="canonical" href="https://hqulzq.github.io/2025/03/21/PSEUDO-NUMERICAL-METHODS-FOR-DIFFUSION-MODELS-ON-MANIFOLDS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
 
@@ -228,7 +244,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-03-28 20:28:41" itemprop="dateModified" datetime="2025-03-28T20:28:41+08:00">2025-03-28</time>
+                <time title="修改时间：2025-04-29 15:36:36" itemprop="dateModified" datetime="2025-04-29T15:36:36+08:00">2025-04-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -251,9 +267,9 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>去噪扩散概率模型（DDPMs）能够生成高质量的样本，如图像和音频样本。然而，DDPMs需要数百到数千次迭代才能生成最终样本。此前有多项研究通过调整方差调度（如改进的去噪扩散概率模型）或去噪方程（如去噪扩散隐式模型（DDIMs））成功加速了DDPMs。但是，这些加速方法无法保持样本质量，甚至在高加速比下会引入新的噪声，这限制了它们的实用性。为了在保持样本质量的同时加速推理过程，我们提出了一种全新的观点，即应将DDPMs视为在流形上求解微分方程。基于这一观点，我们提出了适用于扩散模型的伪数值方法（PNDMs）。具体而言，我们明确了如何在流形上求解微分方程，并证明了DDIMs是伪数值方法的简单情形。我们将几种经典的数值方法转换为相应的伪数值方法，发现伪线性多步法在大多数情况下表现最佳。根据实验结果，直接使用在Cifar10、CelebA和LSUN上预训练的模型时，PNDMs仅需50步就能生成比1000步DDIMs质量更高的合成图像（加速20倍），显著优于250步的DDIMs（在FID指标上提高约0.4），并且在不同的方差调度下具有良好的泛化性。<br><span id="more"></span></p>
+        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>去噪扩散概率模型（DDPMs）能够生成高质量的样本，如图像和音频样本。然而，DDPMs需要数百到数千次迭代才能生成最终样本。此前有多项研究通过调整方差调度（如改进的去噪扩散概率模型）或去噪方程（如去噪扩散隐式模型（DDIMs））成功加速了DDPMs。但是，这些加速方法无法保持样本质量，甚至在高加速比下会引入新的噪声，这限制了它们的实用性。为了在保持样本质量的同时加速推理过程，<strong>我们提出了一种全新的观点，即应将DDPMs视为在流形上求解微分方程</strong>。基于这一观点，我们提出了适用于扩散模型的<code>伪数值方法</code>（PNDMs）。具体而言，我们明确了如何在流形上求解微分方程，并证明了<strong>DDIMs是伪数值方法的简单情形</strong>。我们将几种经典的数值方法转换为相应的伪数值方法，发现<strong>伪线性多步法在大多数情况下表现最佳</strong>。根据实验结果，直接使用在Cifar10、CelebA和LSUN上预训练的模型时，PNDMs仅需50步就能生成比1000步DDIMs质量更高的合成图像（加速20倍），显著优于250步的DDIMs（在FID指标上提高约0.4），并且在不同的方差调度下具有良好的泛化性。<br><span id="more"></span></p>
 <h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1 引言"></a>1 引言</h3><p>去噪扩散概率模型（DDPMs）（Sohl-Dickstein等人，2015；Ho等人，2020）是一类生成模型，它通过一个迭代去噪过程来对数据分布进行建模，该去噪过程与多步加噪过程相反。DDPMs已成功应用于多种领域，包括图像生成（Ho等人，2020；Song等人，2020b）、文本生成（Hoogeboom等人，2021；Austin等人，2021）、3D点云生成（Luo和Hu，2021）、文本转语音（Kong等人，2021；Chen等人，2020）以及图像超分辨率（Saharia等人，2021）。与生成对抗网络（GANs）（Goodfellow等人，2014）不同，GANs需要根据不同的模型结构和数据集仔细调整超参数，而DDPMs可以使用相似的模型结构，并通过一个简单的去噪目标进行训练，使模型适应数据中的噪声。为了生成样本，迭代去噪过程从白噪声开始，根据模型在每一步预测的噪声逐步将其去噪，使其转化到目标域。然而，DDPMs的一个关键缺点是，它需要数百到数千次迭代才能生成高质量的样本，并且每一步至少需要通过网络一次，这使得生成大量样本的过程极其缓慢，甚至不可行。相比之下，GANs仅需通过网络一次。</p>
-<p>最近有许多研究致力于提高去噪过程的速度。一些研究寻找更好的方差调度，包括Nichol和Dhariwal（2021）以及Watson等人（2021）。一些研究则专注于改变推理方程，包括Song等人（2020a）和Song等人（2020b）。去噪扩散隐式模型（DDIMs）（Song等人，2020a）依赖非马尔可夫过程，通过每次迭代执行多个步骤来加速去噪过程。概率流（PFs）（Song等人，2020b）在去噪过程和求解常微分方程之间建立了联系，并使用微分方程的数值方法来加速去噪过程。此外，我们在附录A.1中介绍了更多相关研究。然而，DDPMs与数值方法（例如前向欧拉法、线性多步法和龙格 - 库塔法（Timothy，2017））之间的这种直接联系在速度和效果方面都存在不足（见第3.1节）。一些数值方法，如前向欧拉法，虽然简单直接，但只能以牺牲质量为代价来提高速度。一些数值方法，如龙格 - 库塔法，可以在不损失质量的情况下加速反向过程，但它们在每一步都需要沿着神经网络向前传播更多次。此外，我们还注意到，数值方法在高加速比下会引入明显的噪声，这使得高阶数值方法（例如龙格 - 库塔法）甚至比DDIMs的效果更差。Salimans和Ho（2022）也提到了这一现象。为了找出经典数值方法性能下降的原因，我们进行了一些分析，发现经典数值方法可能会采样远离数据主要分布区域的数据，并且DDPMs的推理方程在最后几步不满足数值方法的一个必要条件（见第3.2节）。</p>
+<p>最近有许多研究致力于提高去噪过程的速度。<strong>一些研究寻找更好的方差调度</strong>，包括Nichol和Dhariwal（2021）以及Watson等人（2021）。<strong>一些研究则专注于改变推理方程</strong>，包括Song等人（2020a）和Song等人（2020b）。去噪扩散隐式模型（DDIMs）（Song等人，2020a）依赖非马尔可夫过程，通过每次迭代执行多个步骤来加速去噪过程。概率流（PFs）（Song等人，2020b）在去噪过程和求解常微分方程之间建立了联系，并使用微分方程的数值方法来加速去噪过程。此外，我们在附录A.1中介绍了更多相关研究。然而，DDPMs与数值方法（例如前向欧拉法、线性多步法和龙格 - 库塔法（Timothy，2017））之间的这种直接联系在速度和效果方面都存在不足（见第3.1节）。一些数值方法，如前向欧拉法，虽然简单直接，但只能以牺牲质量为代价来提高速度。一些数值方法，如龙格 - 库塔法，可以在不损失质量的情况下加速反向过程，但它们<strong>在每一步都需要沿着神经网络向前传播更多次</strong>。此外，我们还注意到，<strong>数值方法在高加速比下会引入明显的噪声，这使得高阶数值方法（例如龙格 - 库塔法）甚至比DDIMs的效果更差</strong>。Salimans和Ho（2022）也提到了这一现象。为了找出经典数值方法性能下降的原因，我们进行了一些分析，发现<strong>经典数值方法可能会采样远离数据主要分布区域的数据，并且DDPMs的推理方程在最后几步不满足数值方法的一个必要条件</strong>（见第3.2节）。</p>
 <div class="table-container">
 <table>
 <thead>
@@ -311,8 +327,8 @@ x_{t + \delta} = x_t + \frac{\delta}{6}(k_1 + 2k_2 + 2k_3 + k_4)
 <script type="math/tex; mode=display">x_{t - 1}=\sqrt{\overline{\alpha}_{t - 1}}\left(\frac{x_{t}-\sqrt{1-\overline{\alpha}_{t}}\epsilon_{\theta}(x_{t}, t)}{\sqrt{\overline{\alpha}_{t}}}\right)+\sqrt{1-\overline{\alpha}_{t - 1}-\sigma_{t}^{2}}\epsilon_{\theta}(x_{t}, t)+\sigma_{t}\epsilon_{t} \tag{8}</script><p>这里，$\sigma_{t}$控制随机噪声的比例。如果$\sigma_{t}=1$，公式（8）代表DDPM的反向过程；如果$\sigma_{t}=0$，这个公式代表DDIM的反向过程。只有当$\sigma_{t}=0$时，这个公式才会去掉随机项，成为某个常微分方程的离散形式。从理论上讲，可用于带随机项微分方程的数值方法是有限的。Song等人（2020b）在这种情况下已经做了充分的研究。从经验上看，Song等人（2020a）已经表明，当总步数相对较少时，DDIM具有更好的加速效果。因此，我们的工作集中在$\sigma_{t}=0$的情况。</p>
 <p>为了找到公式（8）相应的常微分方程，我们根据Song等人（2020a）的方法，用连续版本$t - \delta$替换离散的$t - 1$，并将这个公式转化为微分形式，即从公式两边减去$x_{t}$：</p>
 <script type="math/tex; mode=display">x_{t - \delta}-x_{t}=(\overline{\alpha}_{t - \delta}-\overline{\alpha}_{t})\left(\frac{x_{t}}{\sqrt{\overline{\alpha}_{t}}(\sqrt{\overline{\alpha}_{t - \delta}}+\sqrt{\overline{\alpha}_{t}})}-\frac{\epsilon_{\theta}(x_{t}, t)}{\sqrt{\overline{\alpha}_{t}}(\sqrt{(1-\overline{\alpha}_{t - \delta})\overline{\alpha}_{t}}+\sqrt{(1-\overline{\alpha}_{t})\overline{\alpha}_{t - \delta}})}\right) \tag{9}</script><p>因为$\delta$是一个从0到$t$的连续变量，我们现在可以计算生成数据$x_{t}$的导数，得到$\lim_{\delta \to 0}\frac{x_{t}-x_{t - \delta}}{\delta}=-\overline{\alpha}’(t)\left(\frac{x(t)}{2\overline{\alpha}(t)}-\frac{\epsilon_{\theta}(x(t), t)}{2\overline{\alpha}(t)\sqrt{1-\overline{\alpha}(t)}}\right)$。这里，$\overline{\alpha}(t)$是$\{\overline{\alpha}_{i}\}_{i = 1}^{N}$的连续版本，类似于$x(t)$的定义。因此，当$\delta$趋于0时，公式（9）相应的常微分方程为：</p>
-<script type="math/tex; mode=display">\frac{dx}{dt}=-\overline{\alpha}'(t)\left(\frac{x(t)}{2\overline{\alpha}(t)}-\frac{\epsilon_{\theta}(x(t), t)}{2\overline{\alpha}(t)\sqrt{1-\overline{\alpha}(t)}}\right) \tag{10}</script><h4 id="3-2-经典数值方法"><a href="#3-2-经典数值方法" class="headerlink" title="3.2 经典数值方法"></a>3.2 经典数值方法</h4><p>得到目标常微分方程后，最直接的求解方法是使用经典数值方法。然而，我们注意到经典数值方法在高加速比下会引入明显的噪声，使得高阶数值方法（如Runge - Kutta法）甚至比DDIM的效果更差。Salimans和Ho（2022）也提到了这种现象。为了更好地使用数值方法，我们分析公式（10）与常见微分方程之间的差异，发现直接将数值方法应用于扩散模型时存在两个主要问题。</p>
-<p>第一个问题是神经网络$\epsilon_{\theta}$和公式（10）仅在有限区域内有良好定义。公式（2）表明数据$x_{t}$是沿着一条接近弧线的曲线生成的。根据图2，大多数$x_{t}$集中在宽度约为0.1的带状区域内，即图2中的红色区域。这意味着在远离该区域的地方，神经网络$\epsilon_{\theta}$无法获得足够的样本以成功拟合噪声。因此，$\epsilon_{\theta}$和包含$\epsilon_{\theta}$的公式（10）仅在这个有限区域内有良好定义。然而，所有经典数值方法都是沿着直线生成结果，而不是弧线。生成过程可能会生成远离定义良好区域的样本，从而引入新的误差。在4.3节中，我们将给出更多可视化结果来支持这一点。</p>
+<script type="math/tex; mode=display">\frac{dx}{dt}=-\overline{\alpha}'(t)\left(\frac{x(t)}{2\overline{\alpha}(t)}-\frac{\epsilon_{\theta}(x(t), t)}{2\overline{\alpha}(t)\sqrt{1-\overline{\alpha}(t)}}\right) \tag{10}</script><h4 id="3-2-经典数值方法"><a href="#3-2-经典数值方法" class="headerlink" title="3.2 经典数值方法"></a>3.2 经典数值方法</h4><p>得到目标常微分方程后，最直接的求解方法是使用经典数值方法。然而，我们注意到经典数值方法在高加速比下会引入明显的噪声，<strong>使得高阶数值方法（如Runge - Kutta法）甚至比DDIM的效果更差。</strong>Salimans和Ho（2022）也提到了这种现象。为了更好地使用数值方法，我们分析公式（10）与常见微分方程之间的差异，发现直接将数值方法应用于扩散模型时存在两个主要问题。</p>
+<p><strong>第一个问题是神经网络$\epsilon_{\theta}$和公式（10）仅在有限区域内有良好定义。</strong>公式（2）表明数据$x_{t}$是沿着一条接近弧线的曲线生成的。根据图2，大多数$x_{t}$集中在宽度约为0.1的带状区域内，即图2中的红色区域。这意味着在远离该区域的地方，神经网络$\epsilon_{\theta}$无法获得足够的样本以成功拟合噪声。因此，$\epsilon_{\theta}$和包含$\epsilon_{\theta}$的公式（10）仅在这个有限区域内有良好定义。然而，所有经典数值方法都是沿着直线生成结果，而不是弧线。生成过程可能会生成远离定义良好区域的样本，从而引入新的误差。在4.3节中，我们将给出更多可视化结果来支持这一点。</p>
 <div class="table-container">
 <table>
 <thead>
@@ -327,9 +343,9 @@ x_{t + \delta} = x_t + \frac{\delta}{6}(k_1 + 2k_2 + 2k_3 + k_4)
 </tbody>
 </table>
 </div>
-<p>第二个问题是公式（10）在大多数情况下是无界的。我们发现，对于大多数线性方差调度$\beta_{t}$，当$t$趋于0时，公式（10）趋于无穷（见附录A.4），这不符合2.3节中提到的数值方法的条件。这是一个明显的理论缺陷，而以前的研究并未对此进行探讨。相反，在原始的DDPM和DDIM中，随着索引$t$趋于0，对样本$x_{t}$和数据中噪声$\epsilon_{\theta}$的预测越来越精确（见附录A.5）。这意味着原始的扩散模型在最后几步不会产生显著误差，而对公式（10）使用数值方法却会产生误差。这解释了为什么DDIM比高阶数值方法表现更好。</p>
+<p><strong>第二个问题是公式（10）在大多数情况下是无界的。</strong>我们发现，对于大多数线性方差调度$\beta_{t}$，当$t$趋于0时，公式（10）趋于无穷（见附录A.4），这不符合2.3节中提到的数值方法的条件。这是一个明显的理论缺陷，而以前的研究并未对此进行探讨。相反，在原始的DDPM和DDIM中，随着索引$t$趋于0，对样本$x_{t}$和数据中噪声$\epsilon_{\theta}$的预测越来越精确（见附录A.5）。这意味着原始的扩散模型在最后几步不会产生显著误差，而对公式（10）使用数值方法却会产生误差。这解释了为什么DDIM比高阶数值方法表现更好。</p>
 <h4 id="3-3-流形上的伪数值方法"><a href="#3-3-流形上的伪数值方法" class="headerlink" title="3.3 流形上的伪数值方法"></a>3.3 流形上的伪数值方法</h4><p>上述第一个问题表明，我们应该尝试在特定的流形上解决问题。这里，目标流形是DDPM数据$x_{t}$的高密度区域，由$x_{t}(x_{0},\epsilon)=\sqrt{\overline{\alpha}_{t}}x_{0}+\sqrt{1-\overline{\alpha}_{t}}\epsilon$ 定义，其中$\epsilon \sim N(0,1)$。Ernst和Gerhard（1996）展示了几种用于求解具有解析表达式流形上微分方程的数值方法。不幸的是，很难使用上述流形表达式。因为在反向过程中我们不知道目标$x_{0}$，并且随机项$\epsilon$也很难处理。</p>
-<p>在本文中，我们设计了一种不同的方法，使去噪过程的新方程更符合原始DDIM的方程，从而使它们的结果具有相似的数据分布。首先，我们将经典数值方法分为两部分：梯度部分和转移部分。梯度部分决定每一步的梯度，而转移部分生成下一步的结果。例如，线性多步法可以分为梯度部分$f’=\frac{\delta}{24}(55f_{t}-59f_{t - \delta}+37f_{t - 2\delta}-9f_{t - 3\delta})$和转移部分$x_{t + \delta}=x_{t}+\delta f’$。所有经典数值方法都具有相同的线性转移部分，而梯度部分不同。</p>
+<p>在本文中，我们设计了一种不同的方法，使去噪过程的新方程更符合原始DDIM的方程，从而使它们的结果具有相似的数据分布。<strong>首先，我们将经典数值方法分为两部分：梯度部分和转移部分。梯度部分决定每一步的梯度，而转移部分生成下一步的结果。例如，线性多步法可以分为梯度部分$f’=\frac{\delta}{24}(55f_{t}-59f_{t - \delta}+37f_{t - 2\delta}-9f_{t - 3\delta})$和转移部分$x_{t + \delta}=x_{t}+\delta f’$。所有经典数值方法都具有相同的线性转移部分，而梯度部分不同。</strong></p>
 <p>我们将使用非线性转移部分的数值方法定义为伪数值方法。一个理想的转移部分应具有这样的特性：当梯度部分的结果精确时，转移部分的结果尽可能接近流形，并且该结果的误差尽可能小。我们发现公式（9）满足这一特性。</p>
 <p><strong>属性3.1</strong>：如果$\epsilon$是$x_{t}$中的精确噪声，那么根据公式（9）得到的$x_{t - \delta}$的结果也是精确的。我们将此属性的证明放在附录A.5中。因此，我们使用：</p>
 <script type="math/tex; mode=display">\phi(x_{t},\epsilon_{t},t,t - \delta)=\frac{\sqrt{\overline{\alpha}_{t - \delta}}}{\sqrt{\overline{\alpha}_{t}}}x_{t}-\frac{(\overline{\alpha}_{t - \delta}-\overline{\alpha}_{t})}{\sqrt{\overline{\alpha}_{t}}(\sqrt{(1-\overline{\alpha}_{t - \delta})\overline{\alpha}_{t}}+\sqrt{(1-\overline{\alpha}_{t})\overline{\alpha}_{t - \delta}})}\epsilon_{t} \tag{11}</script><p>作为转移部分，$\epsilon_{\theta}$作为梯度部分。也就是说，如果$\epsilon_{\theta}$是精确的，那么$x_{t - \delta}$的结果也是精确的，这意味着$\epsilon_{\theta}$可以确定去噪过程的方向以生成最终结果。因此，这样的选择也满足梯度部分的定义。现在，我们有了梯度部分$\epsilon_{\theta}$和转移部分$\phi$。</p>
@@ -448,6 +464,392 @@ x_{t - \delta}=\phi(x_{t},e_{t}',t,t+\delta)
 <li><strong>寻找更高阶收敛的伪数值方法</strong>：我们分析了S/F-PNDMs的收敛阶数，它们均为二阶收敛。然而，在大多数情况下，F-PNDMs的FID表现优于S-PNDMs。我们认为这是因为转移部分与目标常微分方程之间的结果存在更高阶的误差，限制了F-PNDMs的收敛阶数。虽然这种由转移部分变化带来的误差是理论上的，且根据公式（11）的性质，它并不影响图像质量，但使转移部分更高阶收敛并探究这种变化的影响仍然是一个有趣的研究方向，值得深入探索。</li>
 <li><strong>将PNDMs扩展到更广泛的应用中</strong>：在证明PNDMs的收敛阶数时，我们发现其他类型的转移部分也可以保持收敛阶数不变，这意味着伪数值方法可以应用于更广泛的领域，比如某些神经常微分方程（Chen等人，2019；Dupont等人，2019）。</li>
 </ol>
+<h3 id="A-附录"><a href="#A-附录" class="headerlink" title="A 附录"></a>A 附录</h3><h4 id="A-1-相关工作"><a href="#A-1-相关工作" class="headerlink" title="A.1 相关工作"></a>A.1 相关工作</h4><p>在过去几年中，去噪扩散概率模型（DDPMs）得到了很好的发展。一些工作致力于提高DDPMs的质量和速度，使其更具实用性。Song等人（2020a）引入了新的推理方程来加速DDPMs。Nichol和Dhariwal（2021）、Watson等人（2021）以及Kong和Ping（2021）选择寻找更好的方差调度来提高图像质量。Vahdat等人（2021）结合了DDPMs和变分自编码器的优点，取得了更好的结果。此外，Kim等人（2021）试图解决DDPMs推理方程在某些情况下无界这一现有瓶颈问题。</p>
+<p>Song等人（2020b）发现了DDPMs与噪声条件得分网络（NCSNs，Song和Ermon，2020b）之间的相似性，即它们都使用类似于朗之万动力学的过程来生成样本。因此，一些能够改进NCSNs结果的工作（Song和Ermon，2020a；Kim等人，2021）也可应用于DDPMs。此外，Song等人（2020b）在神经微分方程（Chen等人，2019；Dupont等人，2019）的框架下将DDPMs和NCSNs结合起来。因此，广泛应用于神经微分方程的数值方法也可用于加速DDPMs。我们的工作成功地结合了Song等人（2020a）和Song等人（2020b）的优点。我们使用来自DDIMs的转移部分，并采用来自不同数值方法的不同梯度部分。虽然我们和Song等人（2020b）都求解了由DDPMs导出的特定微分方程，但我们使用了不同的目标方程和数值方法，从而获得了更好的结果。</p>
+<p>DDPMs的应用不仅限于无条件图像生成。一些工作已成功将DDPMs应用于各种类型的数据，包括文本转语音（Chen等人，2020；Lam等人，2021）、歌声生成（Liu等人，2021）、3D点云生成（Luo和Hu，2021）、文本生成（Austin等人，2021）。此外，DDPMs也可用于生成条件样本（Jeong等人，2021；Choi等人，2021）。</p>
+<h4 id="A-2-方法的收敛阶"><a href="#A-2-方法的收敛阶" class="headerlink" title="A.2 方法的收敛阶"></a>A.2 方法的收敛阶</h4><p>我们使用前向欧拉法和线性多步法来说明方法的阶数。假设$x_t$是精确的，并计算$x_{t+\delta}$处的误差。对于前向欧拉法，我们有：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+e_{t,\delta}&=x(t+\delta)-x_{t,\delta}\\
+&=(x(t)+\delta f(x(t),t)+\frac{\delta^2}{2}f''(c))-(x(t)+\delta f(x_t,t))\\
+&=\frac{\delta^2}{2}f''(c)\leq\frac{\delta^2}{2}M
+\end{align*}
+\tag{15}</script><p>这里，我们假设$f^{\prime \prime}$是连续的，所以$f^{\prime \prime}$在一个闭区域内有界。$x(t+\delta)$是精确结果，$x_{t,\delta}$是从$t$到$t+\delta$的数值结果。</p>
+<p>对于线性多步法，我们有：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+e_{t,\delta}&=x(t+\delta)-x_{t,\delta}\\
+&=(x(t)+\frac{\delta}{1!}f(x(t),t)+\frac{\delta^2}{2!}f'(x(t),t)+\cdots+\frac{\delta^4}{4!}f^{(3)}(x(t),t)+O(\delta^5))\\
+&-(x(t)+b_1\delta f(x(t),t)+\sum_{s = 2}^{4}b_s\delta(\sum_{k = 0}^{4}\frac{(-(s - 1)\delta)^k}{(k)!}f^{(k - 1)}(x(t),t)+O(\delta^5)))\\
+&=O(\delta^5)
+\end{align*}
+\tag{16}</script><p>这里，$b_s$满足$\sum_{s = 1}^{4}b_s = 1$以及对于$j \in \{1,\cdots,3\}$的以下方程：</p>
+<script type="math/tex; mode=display">(-1)^jb_2+(-2)^jb_3+(-3)^jb_4=\frac{1}{j + 1} \tag{17}</script><p>我们将$x_{t,\delta}$处的误差称为局部误差，将$x_{t + M\delta}$（$M$足够大但有限）处的误差称为全局误差。假设我们方法的局部误差阶数为$k + 1$，并且目标常微分方程满足利普希茨条件，那么：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+x(t+M\delta)-x_{t,M\delta}&\leq|x(t+M\delta)-x_{t+(M - 1)\delta,\delta}|+|x_{t+(M - 1)\delta,\delta}-x_{t,M\delta}|\\
+&\leq e_{t+(M - 1)\delta,\delta}+e^{L\delta}|x(t+(M - 1)\delta)-x_{t,(M - 1)\delta}|\\
+&\leq e_{t+(M - 1)\delta,\delta}+e^{L\delta}e_{t+(M - 2)\delta,\delta}+\cdots\\
+&\leq C\delta^{k + 1}(1+e^{Lh}+\cdots+e^{(i - 1)Lh})\\
+&=Ch^{k + 1}\frac{e^{iL\delta}-1}{e^{L\delta}-1}\leq C\delta^{k + 1}\frac{e^{iL\delta}-1}{L\delta}\\
+&=O(\delta^k)
+\end{align*}
+\tag{18}</script><p>因此，全局误差比局部误差低一阶。从公式$(15)$可以看出，前向欧拉法的局部误差为$O(\delta^2)$，全局误差为$O(\delta)$，所以我们称它为一阶数值方法。而线性多步法的局部误差为$O(\delta^5)$，全局误差为$O(\delta^4)$，我们称它为四阶数值方法。</p>
+<p>此外，假设一个数值方法的全局误差为$k$阶，我们可以计算该数值方法的收敛速度：</p>
+<script type="math/tex; mode=display">\lim_{\delta \to 0}\frac{x_{t+T}^{2\delta}-x(t+T)}{x_{t+T}^{\delta}-x(t+T)}=\frac{(2\delta)^k}{\delta^k}=2^k \tag{19}</script><p>这里，$x_{t+T}^{\delta}$是在$t + T$处且每步移动$\delta$的结果。这表明当$\delta \to 0$时，四阶方法比一阶方法能更快地收敛到精确解，这意味着我们可以使用更大的迭代间隔$\delta$来获得相似的全局误差，而更大的迭代间隔意味着我们可以通过更少的迭代次数获得高质量的结果。</p>
+<h4 id="A-3-伪二阶方法"><a href="#A-3-伪二阶方法" class="headerlink" title="A.3 伪二阶方法"></a>A.3 伪二阶方法</h4><p>我们介绍两种二阶数值方法。第一种是改进的欧拉法，满足：</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+k_1 = f(x_t,t)\\
+k_2 = f(x_t+\delta k_1,t+\delta)\\
+x_{t+\delta}=x_t+\frac{\delta}{2}(k_1 + k_2)
+\end{cases}
+\tag{20}</script><p>第二种是另一种线性多步法，称为二阶线性多步法，满足：</p>
+<script type="math/tex; mode=display">x_{t+\delta}=x_t+\frac{\delta}{2}(3f_t - f_{t-\delta})\tag{21}</script><p>相应的伪改进欧拉法满足：</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+e_t^1=\epsilon_{\theta}(x_t,t)\\
+x_t^1=\phi(x_t,e_t^1,t,t+\delta)\\
+e_t^2=\epsilon_{\theta}(x_t^1,t+\delta)\\
+e_t'=\frac{1}{2}(e_t^1 + e_t^2)\\
+x_{t+\delta}=\phi(x_t,e_t',t,t+\delta)
+\end{cases}
+\tag{22}</script><p>伪二阶线性多步法满足：</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+e_t=\epsilon_{\theta}(x_t,t)\\
+e_t'=\frac{1}{2}(3e_t - e_{t-\delta})\\
+x_{t+\delta}=\phi(x_t,e_t',t,t+\delta)
+\end{cases}
+\tag{23}</script><p>类似于得到F - PNDMs的方法，我们将它们结合起来得到S - PNDMs。将公式$(22)$和$(23)$缩写为：</p>
+<script type="math/tex; mode=display">x_{t+\delta},e_t = PIE(x_t,\{e_p\}_{p<t},t,t+\delta)</script><script type="math/tex; mode=display">x_{t+\delta},e_t^1 = PLMS'(x_t,t,t+\delta)</script><p><img src="a3.png" width="50%"></p>
+<h4 id="A-4-导数的存在性"><a href="#A-4-导数的存在性" class="headerlink" title="A.4 导数的存在性"></a>A.4 导数的存在性</h4><p>因为$\bar{\alpha}_t$通常是通过线性方差调度$\beta_t$相乘得到的。所以我们有：</p>
+<script type="math/tex; mode=display">\bar{\alpha}_t = e^{at^2+bt+c}\tag{24}</script><p>并且$\bar{\alpha}_0 = 1$，所以$c = 0$。现在我们有：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+&\lim_{\delta \to 0}\frac{x_{t-\delta}-x_t}{\delta}\\
+=&\lim_{\delta \to 0}\frac{\bar{\alpha}_{t-\delta}-\bar{\alpha}_t}{\delta}(\frac{x_t}{\sqrt{\bar{\alpha}_t}(\sqrt{\bar{\alpha}_{t-\delta}}+\sqrt{\bar{\alpha}_t})}-\frac{\epsilon_{\theta}(x_t,t)}{\sqrt{\bar{\alpha}_t}(\sqrt{(1-\bar{\alpha}_{t-\delta})\bar{\alpha}_t}+\sqrt{(1-\bar{\alpha}_t)\bar{\alpha}_{t-\delta}})})\\
+=&\lim_{\delta \to 0}\frac{\bar{\alpha}_{t-\delta}-\bar{\alpha}_t}{\delta}(\frac{x_t}{2\bar{\alpha}_t}-\frac{\epsilon_{\theta}(x_t,t)}{2\sqrt{1-\bar{\alpha}_t}\bar{\alpha}_t})=(e^{at^2+bt})'(\frac{x_t}{2\bar{\alpha}_t}-\frac{\epsilon_{\theta}(x_t,t)}{2\sqrt{1-\bar{\alpha}_t}}
+\end{align*} \tag{25}</script><p>为了使$\lim_{\delta \to 0}\frac{x_{t-\delta}-x_t}{\delta}|_{t = 0}$有意义，$b$必须等于0，否则$(2at + b)\frac{\epsilon_{\theta}(x_t,t)}{\sqrt{1-\bar{\alpha}_t}}$将趋于无穷大。这是一个大多数方差调度都不满足的强条件。在实践中，DDPMs可以非常自由地选择方差调度。这意味着直接将DDPMs视为常微分方程是不合适的，并且存在理论缺陷。</p>
+<h4 id="A-5-t-、-epsilon-theta-和-x-t-之间的关系"><a href="#A-5-t-、-epsilon-theta-和-x-t-之间的关系" class="headerlink" title="A.5 $t$、$\epsilon_{\theta}$和$x_t$之间的关系"></a>A.5 $t$、$\epsilon_{\theta}$和$x_t$之间的关系</h4><p><strong>$t$和$\epsilon_{\theta}$之间的关系</strong>。在图5中，我们可以看到，当步长索引趋于0时，无论是在$\epsilon_{\theta}$域还是样本/图像域，去噪过程都趋于收敛。因此，我们可以说，当步长（即$t$）趋于0时，噪声变得越来越精确。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f5.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图5：不同步数下相邻两项差值的范数$δ$</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>$\epsilon_{\theta}$和$x_t$之间的关系</strong>。为了证明性质3.1，假设$x_t=\sqrt{\bar{\alpha}_t}x_0+\sqrt{1-\bar{\alpha}_t}\epsilon$，$NN$是神经网络且$\epsilon_{\theta}=NN(x_t,t)$。因为我们假设梯度部分是精确的，那么我们有$\epsilon_{\theta}=\epsilon$。那么对于所有$t’ \leq t$，我们有：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+x_{t'}&=\sqrt{\bar{\alpha}_{t'}}(\frac{x_t-\sqrt{1-\bar{\alpha}_t}\epsilon_{\theta}}{\sqrt{\bar{\alpha}_t}})+\sqrt{1-\bar{\alpha}_{t'}}\epsilon_{\theta}\\
+&=\sqrt{\bar{\alpha}_{t'}}(\frac{\sqrt{\bar{\alpha}_t}x_0+\sqrt{1-\bar{\alpha}_t}\epsilon-\sqrt{1-\bar{\alpha}_t}\epsilon}{\sqrt{\bar{\alpha}_t}})+\sqrt{1-\bar{\alpha}_{t'}}\epsilon_{\theta}(x_t,t)\\
+&=\sqrt{\bar{\alpha}_{t'}}x_0+\sqrt{1-\bar{\alpha}_{t'}}\epsilon
+\end{align*} \tag{26}</script><p>这里，我们可以发现$x_{t’}=\sqrt{\bar{\alpha}_{t’}}x_0+\sqrt{1-\bar{\alpha}_{t’}}\epsilon$也是精确的，所以性质3.1成立。</p>
+<h4 id="A-6-伪方法的阶数分析"><a href="#A-6-伪方法的阶数分析" class="headerlink" title="A.6 伪方法的阶数分析"></a>A.6 伪方法的阶数分析</h4><p>为了便于理论分析，我们对问题进行了推广。设$\phi(x(t),\epsilon,t,\delta)=f(x(t),t,\delta)+g(t,\delta)\epsilon(x(t),t)$，并且我们有性质$f(x(t),t,0)=g(t,0)=0$。那么我们有：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+x(1)&=x(0)+\sum_{\delta \to 0}(y(t+\delta)-y(t))\\
+&=x(0)+\sum_{\delta \to 0}(f(x(t),t,\delta)+g(t,\delta)\epsilon(x(t),t))\\
+&=x(0)+\int_{0}^{1}(\frac{\partial f}{\partial \delta}(x(t),t,0)+\frac{\partial g}{\partial \delta}(t,0)\epsilon(x(t),t))
+\end{align*}
+\tag{27}</script><p>现在，公式$(10)$成为这个更一般版本的一个特殊情况，在这个特殊情况下，我们有：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+  f(x(t),t,\delta)&=(\frac{\sqrt{\alpha(t+\delta)}}{\sqrt{\alpha}}-1)x(t)\\
+  g(t,\delta)&=\sqrt{1-\alpha(t+\delta)}-\frac{\sqrt{(1-\alpha(t))\alpha(t+\delta)}}{\sqrt{\alpha(t)}}
+\end{align*} \tag{28}</script><p>现在，我们计算S - PNDMs的局部误差。我们首先计算不同数值方法的理论结果和数值结果。我们有：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+x(t+\delta)&=x(t)+\delta(\frac{\partial f}{\partial \delta}(x(t),t,0)+\frac{\partial g}{\partial \delta}(t,0)\epsilon(x(t),t))+\\
+&\frac{\delta^2}{2}(\frac{\partial f}{\partial \delta}(x(t),t,0)+\frac{\partial g}{\partial \delta}(t,0)\epsilon(x(t),t))'+O(\delta^3)\\
+&=x(t)+\delta(\frac{\partial f}{\partial \delta}(x(t),t,0)+\frac{\partial g}{\partial \delta}(t,0)\epsilon(x(t),t))+O(\delta^3)+\\
+&\frac{\delta^2}{2}(\frac{\partial^2 f}{\partial \delta \partial t}(x(t),t,0)+\frac{\partial^2 f}{\partial \delta \partial x}(x(t),t,0)(\frac{\partial f}{\partial \delta}(x(t),t,0)+\frac{\partial g}{\partial \delta}(t,0)\epsilon(x(t),t)))+\\
+&\frac{\delta^2}{2}(\frac{\partial^2 g}{\partial \delta \delta t}(t,0)\epsilon(x(t),t)+\frac{\partial g}{\partial \delta}(t,0)\epsilon^{'}(x(t),t))
+\end{align*}\tag{29}</script><p>并且：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+&x_{\text{S-PNDM}}(t + \delta)\\
+=&x(t)+f(x(t),t,\delta)+g(t,\delta)\frac{1}{2}(\epsilon(x(t),t)+\epsilon(x(t)+\phi(\ldots,t,\delta),t + \delta))\\
+=&x(t)+\delta\frac{\partial f}{\partial\delta}(x(t),t,0)+\frac{\delta^{2}}{2}\frac{\partial^{2} f}{\partial\delta^{2}}(x(t),t,0)+O(\delta^{3})+\\
+&\quad\left(\delta\frac{\partial g}{\partial\delta}(t,0)+\frac{\delta^{2}}{2}\frac{\partial^{2} g}{\partial\delta^{2}}(t,0)\right)\frac{1}{2}(\epsilon(x(t),t)+\epsilon(x(t + \delta)+O(\delta^{2}),t + \delta))\\
+=&x(t)+\delta\frac{\partial f}{\partial\delta}(x(t),t,0)+\frac{\delta^{2}}{2}\frac{\partial^{2} f}{\partial\delta^{2}}(x(t),t,0)+O(\delta^{3})+\\
+&\quad\left(\delta\frac{\partial g}{\partial\delta}(t,0)+\frac{\delta^{2}}{2}\frac{\partial^{2} g}{\partial\delta^{2}}(t,0)\right)\frac{1}{2}(\epsilon(x(t),t)+\epsilon(x(t + \delta),t + \delta))\\
+=&x(t)+\delta\frac{\partial f}{\partial\delta}(x(t),t,0)+\frac{\delta^{2}}{2}\frac{\partial^{2} f}{\partial\delta^{2}}(x(t),t,0)+O(\delta^{3})+\\
+&\quad\left(\delta\frac{\partial g}{\partial\delta}(t,0)+\frac{\delta^{2}}{2}\frac{\partial^{2} g}{\partial\delta^{2}}(t,0)\right)\frac{1}{2}(\epsilon(x(t),t)+\epsilon(x(t),t)+\delta\epsilon(x(t),t)')\\
+=&x(t)+\delta\frac{\partial f}{\partial\delta}(x(t),t,0)+\frac{\delta^{2}}{2}\frac{\partial^{2} f}{\partial\delta^{2}}(x(t),t,0)+O(\delta^{3})+\\
+&\quad\delta\frac{\partial g}{\partial\delta}(t,0)\left(\epsilon(x(t),t)+\frac{1}{2}\delta\epsilon(x(t),t)'\right)+\frac{\delta^{2}}{2}\frac{\partial^{2} g}{\partial\delta^{2}}(t,0)\epsilon(x(t),t)\\
+=&x(t)+\delta\left(\frac{\partial f}{\partial\delta}(x(t),t,0)+\frac{\partial g}{\partial\delta}(t,0)\epsilon(x(t),t)\right)+O(\delta^{3})+\\
+&\quad\frac{\delta^{2}}{2}\left(\frac{\partial^{2} f}{\partial\delta^{2}}(x(t),t,0)+\frac{\partial g}{\partial\delta}(t,0)\epsilon(x(t),t)'+\frac{\partial^{2} g}{\partial\delta^{2}}(t,0)\epsilon(x(t),t)\right)
+\end{align*} \tag{30}</script><p>然后我们计算理论结果和数值结果之间的差异。我们有：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+&x(t + \delta) - x_{S - PNDM}(x + \delta)\\
+=&\frac{\delta^{2}}{2}\left(\left(\frac{\partial^{2}f}{\partial\delta\partial t} - \frac{\partial^{2}f}{\partial\delta^{2}}\right)(x(t), t, 0) + \frac{\partial^{2}f}{\partial\delta\partial x}(x(t), t, 0)\frac{\partial f}{\partial\delta}(x(t), t, 0)\right)+\\
+&\frac{\delta^{2}}{2}\left(\left(\frac{\partial^{2}g}{\partial\delta\partial t} - \frac{\partial^{2}g}{\partial\delta^{2}}\right)(t, 0) + \frac{\partial^{2}f}{\partial\delta\partial x}(x(t), t, 0)\frac{\partial g}{\partial\delta}(t, 0)\right)\epsilon(x(t), t)+O(\delta^{3})
+\end{align*} \tag{31}</script><p>在这种特殊情况下，我们计算公式（31）中所需的一些项的导数。我们有：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+\frac{\partial g}{\partial \delta}(t, \delta) &=\frac{\partial}{\partial \delta}\left(\sqrt{1 - \alpha(t + \delta)} - \frac{\sqrt{(1 - \alpha(t))\alpha(t + \delta)}}{\sqrt{\alpha(t)}}\right)\\
+&=\frac{-\alpha'(t + \delta)}{2\sqrt{1 - \alpha((t + \delta))}} - \frac{\sqrt{1 - \alpha(t)}\alpha'(t + \delta)}{2\sqrt{\alpha(t)\alpha(t + \delta)}}
+\end{align*} \tag{32}</script><script type="math/tex; mode=display">
+\begin{align*}
+\frac{\partial f}{\partial \delta}(x(t), t, \delta) &=\frac{\partial}{\partial \delta}\left(\left(\frac{\sqrt{\alpha(t + \delta)}}{\sqrt{\alpha}} - 1\right)x(t)\right)\\
+&=\frac{\alpha'(t + \delta)}{2\sqrt{\alpha(t)\alpha(t + \delta)}}x(t)
+\end{align*} \tag{33}</script><script type="math/tex; mode=display">
+\left.\frac{\partial^{2} f}{\partial \delta^{2}}(x(t), t, \delta)\right|_{\delta = 0}=\frac{\alpha''(t + \delta)}{2\sqrt{\alpha(t)\alpha(t + \delta)}}x(t)+\left.\frac{-\alpha'(t + \delta)^{2}}{4\sqrt{\alpha(t)\alpha(t + \delta)^{3}}}x(t)\right|_{\delta = 0} \tag{34}</script><script type="math/tex; mode=display">
+\frac{\partial^{2} f}{\partial \delta \partial t}(x(t), t, 0)=\frac{\alpha''(t)}{2\alpha(t)}x(t)-\frac{\alpha'(t)^{2}}{2\alpha(t)^{2}}x(t) \tag{35}</script><script type="math/tex; mode=display">
+\frac{\partial^{2} f}{\partial \delta \partial x}(x(t), t, 0)=\frac{\alpha'(t)}{2\alpha(t)} \tag{36}</script><script type="math/tex; mode=display">
+\begin{align*}
+\left.\frac{\partial^{2}g}{\partial\delta^{2}}(t,\delta)\right|_{\delta = 0}&=\frac{-\alpha''(t+\delta)}{2\sqrt{1 - \alpha((t+\delta))}}-\frac{\sqrt{1 - \alpha(t)}\alpha''(t+\delta)}{2\sqrt{\alpha(t)\alpha(t+\delta)}}+\\
+&\quad\frac{-\alpha'(t+\delta)^{2}}{4\sqrt{1 - \alpha(t+\delta)}^{3}}+\frac{\sqrt{1 - \alpha(t)}\alpha'(t+\delta)^{2}}{4\sqrt{\alpha(t)\alpha(t+\delta)}^{3}}\Bigg|_{\delta = 0}\\
+&=\frac{-\alpha''(t)}{2\sqrt{1 - \alpha((t))}}-\frac{\sqrt{1 - \alpha(t)}\alpha''(t)}{2\sqrt{\alpha(t)\alpha(t)}}+\\
+&\quad\frac{-\alpha'(t)^{2}}{4\sqrt{1 - \alpha(t)}^{3}}+\frac{\sqrt{1 - \alpha(t)}\alpha'(t)^{2}}{4\sqrt{\alpha(t)\alpha(t)}^{3}}
+\end{align*} \tag{37}</script><script type="math/tex; mode=display">
+\begin{align*}
+\left.\frac{\partial^{2}g}{\partial\delta\partial t}(t,\delta)\right|_{\delta = 0}&=\frac{\partial}{\partial t}\left(\frac{-\alpha'(t)}{2\sqrt{1 - \alpha((t))}}-\frac{\sqrt{1 - \alpha(t)}\alpha'(t)}{2\sqrt{\alpha(t)\alpha(t)}}\right)\\
+&=\frac{-\alpha''(t)}{2\sqrt{1 - \alpha((t))}}-\frac{\sqrt{1 - \alpha(t)}\alpha''(t)}{2\sqrt{\alpha(t)\alpha(t)}}+\\
+&\quad\frac{-\alpha'(t)^{2}}{4\sqrt{1 - \alpha(t)}^{3}}+\frac{\sqrt{1 - \alpha(t)}\alpha'(t)^{2}}{2\alpha(t)^{2}}+\frac{\alpha'(t)^{2}}{4\sqrt{\alpha^{2}(t)(1 - \alpha(t))}}
+\end{align*} \tag{38}</script><p>现在我们可以计算方程(31)的最终结果。我们将其分成三个部分以及前两项的值。我们有：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+&\left(\frac{\partial^{2}f}{\partial\delta\partial t}-\frac{\partial^{2}f}{\partial\delta^{2}}\right)(x(t),t,0)+\frac{\partial^{2}f}{\partial\delta\partial x}(x(t),t,0)\frac{\partial f}{\partial\delta}(x(t),t,0)\\
+=&\left(\frac{\alpha''(t)}{2\alpha(t)}x(t)-\frac{\alpha'(t)^{2}}{2\alpha(t)^{2}}x(t)\right)-\left(\frac{\alpha''(t)}{2\alpha(t)}x(t)+\frac{-\alpha'(t)^{2}}{4\alpha(t)^{2}}x(t)\right)+\frac{1}{2\alpha(t)}\frac{\alpha'(t)}{2\alpha(t)}x(t)\\
+=&0
+\end{align*} \tag{39}</script><p>以及</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+&\left(\frac{\partial^{2}g}{\partial\delta\partial t}-\frac{\partial^{2}g}{\partial\delta^{2}}\right)(t,0)+\frac{\partial^{2}f}{\partial\delta\partial x}(x(t),t,0)\frac{\partial g}{\partial\delta}(t,0)\\
+=&\frac{\sqrt{1 - \alpha(t)}\alpha'(t)^{2}}{4\alpha(t)^{2}}+\frac{\alpha'(t)^{2}}{4\alpha(t)\sqrt{1 - \alpha(t)}}+\frac{\alpha'(t)}{2\alpha(t)}\left(\frac{-\alpha'(t)}{2\sqrt{1 - \alpha((t))}}-\frac{\sqrt{1 - \alpha(t)}\alpha'(t)}{2\alpha(t)}\right)\\
+=&\frac{\alpha'(t)^{2}}{4\alpha(t)^{2}\sqrt{1 - \alpha(t)}}+\frac{\alpha'(t)}{2\alpha(t)}\left(\frac{-\alpha'(t)}{2\sqrt{1 - \alpha(t)\alpha(t)}}\right)\\
+=&0
+\end{align*} \tag{40}</script><p>最后，我们得到公式（31）的最终结果：</p>
+<script type="math/tex; mode=display">x(t + \delta) - x_{S - PNDM}(x + \delta)=O(\delta^{3}) \tag{41}</script><p>F - PNDMs收敛阶的计算与之类似，在此我们省略这部分内容。因此，性质3.2成立。</p>
+<h4 id="A-7-方差调度"><a href="#A-7-方差调度" class="headerlink" title="A.7 方差调度"></a>A.7 方差调度</h4><p>根据表2中Cifar10（余弦）的数据，伪数值方法（PNDMs）可用于线性方差调度和余弦方差调度。然而，我们也注意到，当使用相对较大的生成步数时，余弦方差调度能使FID（Fenchel Inception Distance，芬切尔 -  inception距离）更低，但在步数较少时，这种效果有限。F - PNDM会利用连续四个步骤的信息，因此对于F - PNDM而言，方差调度的平滑性比DDIM更为重要。通过该实验可知，我们的研究成果可与关注方差调度的研究相结合，进一步提升加速效果。不过，更适合伪数值方法的方差调度仍有待后续研究探索。</p>
+<h4 id="A-8-简单示例"><a href="#A-8-简单示例" class="headerlink" title="A.8 简单示例"></a>A.8 简单示例</h4><p>在这里，我们设计了一个简单示例，用于在不受神经网络影响的情况下测试我们的新方法。我们随机生成初始输入$x_1 = (m_1, m_2)$，其中$m_i \sim U(0, 1)$（$m_i$服从区间$(0, 1)$上的均匀分布），并使用一个简单的解析方程$\epsilon_{\theta}(x) = (\sin x[0], \cos x[1])$来替代实际情况中的神经网络。保持公式（11）中的$\phi$不变，并令$\bar{\alpha}_{t}=\alpha(t)=1 - t$，那么我们得到：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+&\phi(x_t, \epsilon_{\theta}(x_t), t, t - \delta)\\
+=&\frac{\sqrt{\overline{\alpha}_{t - \delta}}}{\sqrt{\overline{\alpha}_{t}}}x_t - \frac{(\overline{\alpha}_{t - \delta} - \overline{\alpha}_{t})}{\sqrt{\overline{\alpha}_{t}}(\sqrt{(1 - \overline{\alpha}_{t - \delta})\overline{\alpha}_{t}} + \sqrt{(1 - \overline{\alpha}_{t})\overline{\alpha}_{t - \delta}})}\epsilon_{t}\\
+=&\frac{\sqrt{1 - (t - \delta)}}{\sqrt{1 - t}}x_t - \frac{\delta}{\sqrt{1 - t}(\sqrt{(t - \delta)(1 - t)} + \sqrt{t(1 - (t - \delta))})}\epsilon_{\theta}(x_t)
+\end{align*} \tag{42}</script><p>在这里，我们使用三种不同的数值方法来生成$x_0$。</p>
+<p>对于DDIM，我们有：</p>
+<script type="math/tex; mode=display">x_{t - \delta}=x_t + \phi(x_t, \epsilon_{\theta}(x_t), t, t - \delta) \tag{43}</script><p>对于四阶数值方法（FON），根据公式（10），我们有：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+e_{t}'&=\overline{\alpha}'(t)\left(\frac{x_{t}}{2 \overline{\alpha}(t)} - \frac{\epsilon_{\theta}(x_{t})}{2 \overline{\alpha}(t) \sqrt{1 - \overline{\alpha}(t)}}\right)\\
+&=-\left(\frac{x_{t}}{2(1 - t)} - \frac{\epsilon_{\theta}(x_{t})}{2(1 - t) \sqrt{t}}\right)\\
+x_{t - \delta}&=x_t + \frac{\delta}{24}(55e_{t}' - 59e_{t + \delta}' + 37e_{t + 2 \delta}' - 9e_{t + 3 \delta}')
+\end{align*} \tag{44}</script><p>对于F - PNDM，我们有：</p>
+<script type="math/tex; mode=display">
+\begin{gathered}
+e'=\frac{1}{24}(55\epsilon_{\theta}(x_t) - 59\epsilon_{\theta}(x_{t + \delta}) + 37\epsilon_{\theta}(x_{t + 2 \delta}) - 9\epsilon_{\theta}(x_{t + 3 \delta}))\\
+x_{t - \delta}=x_t + \phi(x_t, e', t, t - \delta)
+\end{gathered} \tag{45}</script><p>然后我们绘制相应的生成曲线，如图6所示。我们发现结果与实际情况相似。这里的主要区别在于，FON可以修正其结果，而在实际情况中却不能。原因是在简单示例中梯度处处有定义，而在实际情况中，梯度仅在DDPMs的数据$x_t$的高密度区域才有意义。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f6.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图6：我们简单示例的生成曲线。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="A-9-更多FID结果"><a href="#A-9-更多FID结果" class="headerlink" title="A.9 更多FID结果"></a>A.9 更多FID结果</h4><p>在此，我们在表3、表4、表5和表6中提供了在Cifar10、CelebA、LSUN教堂和LSUN卧室数据集上更详细的FID（Fenchel Inception Distance，芬切尔 -  inception距离）结果。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t3.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表3：在Cifar10数据集上以FID（Fenchel Inception Distance，芬切尔 -  inception距离）衡量的图像生成结果。表格上半部分使用线性方差调度，下半部分使用余弦方差调度。第一行展示的是Song等人（2020a）提供的FID值。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t4.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表4：在CelebA数据集上以FID衡量的图像生成结果。所有结果均采用线性方差调度。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t5.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表5：以FID衡量的LSUN教堂图像生成结果。所有结果均采用线性方差调度。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t6.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表6：在LSUN卧室数据集上以FID衡量的图像生成结果。所有结果均采用线性方差调度。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="A-10更多图像结果"><a href="#A-10更多图像结果" class="headerlink" title="A.10更多图像结果"></a>A.10更多图像结果</h4><p>在此，我们在图7、图9、图8、图10、图11和图12中展示了在Cifar10、CelebA、LSUN教堂和LSUN卧室数据集上生成的更多图像。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f7.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图7：使用DDIMs、经典数值方法和PNDMs在Cifar10上生成的5、10、20、50、100、250、500步的结果</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f8.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图8：使用DDIMs、经典数值方法和PNDMs在CelebA上生成的5、10、20、50、100、250、500步的结果</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f9.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图9：PNDMs在Cifar10上生成的图像</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f10.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图10：PNDMs在CelebA上生成的图像</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f11.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图11：使用DDIMs、经典数值方法和PNDMs在LSUN教堂上生成的5、10、20、50、100步的结果</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f12.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图12：使用DDIMs、经典数值方法和PNDMs在LSUN卧室上生成的5、10、20、50、100步的结果</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="A-11更多可视化结果"><a href="#A-11更多可视化结果" class="headerlink" title="A.11更多可视化结果"></a>A.11更多可视化结果</h4><p>在此，我们在图13中展示了更多与图4类似的可视化结果。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f13.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图13：5、10、20、25、40和50步下的可视化结果</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="A-12-带有标准差的-FID-结果"><a href="#A-12-带有标准差的-FID-结果" class="headerlink" title="A.12 带有标准差的 FID 结果"></a>A.12 带有标准差的 FID 结果</h4><p>在此，我们报告经过四次采样运行测试得到的 FID 结果的均值和标准差。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t7.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表7：在Cifar10数据集上以FID衡量的图像生成结果。DDIM</em>指的是一种伪数值方法，同时也是对DDIM的重新测试。*</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="文章总结"><a href="#文章总结" class="headerlink" title="文章总结"></a>文章总结</h2><p>这篇论文发表于<strong>2022-ICLR</strong>，主</p>
+<h3 id="创新点与主要思想"><a href="#创新点与主要思想" class="headerlink" title="创新点与主要思想"></a>创新点与主要思想</h3><ol>
+<li>通过</li>
+</ol>
+<h3 id="不足之处"><a href="#不足之处" class="headerlink" title="不足之处"></a>不足之处</h3><ul>
+<li>因</li>
+</ul>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><ul>
+<li>论文：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2202.09778">Pseudo Numerical Methods for Diffusion Models on Manifolds</a></li>
+<li>github: <a target="_blank" rel="noopener" href="https://github.com/luping-liu/PNDM">PNDM</a></li>
+</ul>
 
     </div>
 
@@ -533,7 +935,7 @@ x_{t - \delta}=\phi(x_{t},e_{t}',t,t+\delta)
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%83%8C%E6%99%AF"><span class="nav-number">1.3.</span> <span class="nav-text">2 背景</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E5%8E%BB%E5%99%AA%E6%89%A9%E6%95%A3%E6%A6%82%E7%8E%87%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.3.1.</span> <span class="nav-text">2.1 去噪扩散概率模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E9%9A%8F%E6%9C%BA%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B"><span class="nav-number">1.3.2.</span> <span class="nav-text">2.2 随机微分方程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-%E6%95%B0%E5%80%BC%E6%96%B9%E6%B3%95"><span class="nav-number">1.3.3.</span> <span class="nav-text">2.3 数值方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E7%94%A8%E4%BA%8EDDPM%E7%9A%84%E4%BC%AA%E6%95%B0%E5%80%BC%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.</span> <span class="nav-text">3 用于DDPM的伪数值方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E5%85%AC%E5%BC%8F%E8%BD%AC%E6%8D%A2"><span class="nav-number">1.4.1.</span> <span class="nav-text">3.1 公式转换</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E7%BB%8F%E5%85%B8%E6%95%B0%E5%80%BC%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.2.</span> <span class="nav-text">3.2 经典数值方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-%E6%B5%81%E5%BD%A2%E4%B8%8A%E7%9A%84%E4%BC%AA%E6%95%B0%E5%80%BC%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.3.</span> <span class="nav-text">3.3 流形上的伪数值方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-%E6%A2%AF%E5%BA%A6%E9%83%A8%E5%88%86"><span class="nav-number">1.4.4.</span> <span class="nav-text">3.4 梯度部分</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-5-%E7%AE%97%E6%B3%95"><span class="nav-number">1.4.5.</span> <span class="nav-text">3.5 算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-6-%E6%94%B6%E6%95%9B%E9%98%B6%E6%95%B0"><span class="nav-number">1.4.6.</span> <span class="nav-text">3.6 收敛阶数</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.5.</span> <span class="nav-text">4 实验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E5%AE%9E%E9%AA%8C%E8%AE%BE%E7%BD%AE"><span class="nav-number">1.5.1.</span> <span class="nav-text">4.1 实验设置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E6%A0%B7%E6%9C%AC%E6%95%88%E7%8E%87%E5%92%8C%E8%B4%A8%E9%87%8F"><span class="nav-number">1.5.2.</span> <span class="nav-text">4.2 样本效率和质量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-%E6%B5%81%E5%BD%A2%E4%B8%8A%E7%9A%84%E6%A0%B7%E6%9C%AC"><span class="nav-number">1.5.3.</span> <span class="nav-text">4.3 流形上的样本</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E8%AE%A8%E8%AE%BA"><span class="nav-number">1.6.</span> <span class="nav-text">5 讨论</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%83%8C%E6%99%AF"><span class="nav-number">1.3.</span> <span class="nav-text">2 背景</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E5%8E%BB%E5%99%AA%E6%89%A9%E6%95%A3%E6%A6%82%E7%8E%87%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.3.1.</span> <span class="nav-text">2.1 去噪扩散概率模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E9%9A%8F%E6%9C%BA%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B"><span class="nav-number">1.3.2.</span> <span class="nav-text">2.2 随机微分方程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-%E6%95%B0%E5%80%BC%E6%96%B9%E6%B3%95"><span class="nav-number">1.3.3.</span> <span class="nav-text">2.3 数值方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E7%94%A8%E4%BA%8EDDPM%E7%9A%84%E4%BC%AA%E6%95%B0%E5%80%BC%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.</span> <span class="nav-text">3 用于DDPM的伪数值方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E5%85%AC%E5%BC%8F%E8%BD%AC%E6%8D%A2"><span class="nav-number">1.4.1.</span> <span class="nav-text">3.1 公式转换</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E7%BB%8F%E5%85%B8%E6%95%B0%E5%80%BC%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.2.</span> <span class="nav-text">3.2 经典数值方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-%E6%B5%81%E5%BD%A2%E4%B8%8A%E7%9A%84%E4%BC%AA%E6%95%B0%E5%80%BC%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.3.</span> <span class="nav-text">3.3 流形上的伪数值方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-%E6%A2%AF%E5%BA%A6%E9%83%A8%E5%88%86"><span class="nav-number">1.4.4.</span> <span class="nav-text">3.4 梯度部分</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-5-%E7%AE%97%E6%B3%95"><span class="nav-number">1.4.5.</span> <span class="nav-text">3.5 算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-6-%E6%94%B6%E6%95%9B%E9%98%B6%E6%95%B0"><span class="nav-number">1.4.6.</span> <span class="nav-text">3.6 收敛阶数</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.5.</span> <span class="nav-text">4 实验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E5%AE%9E%E9%AA%8C%E8%AE%BE%E7%BD%AE"><span class="nav-number">1.5.1.</span> <span class="nav-text">4.1 实验设置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E6%A0%B7%E6%9C%AC%E6%95%88%E7%8E%87%E5%92%8C%E8%B4%A8%E9%87%8F"><span class="nav-number">1.5.2.</span> <span class="nav-text">4.2 样本效率和质量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-%E6%B5%81%E5%BD%A2%E4%B8%8A%E7%9A%84%E6%A0%B7%E6%9C%AC"><span class="nav-number">1.5.3.</span> <span class="nav-text">4.3 流形上的样本</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E8%AE%A8%E8%AE%BA"><span class="nav-number">1.6.</span> <span class="nav-text">5 讨论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#A-%E9%99%84%E5%BD%95"><span class="nav-number">1.7.</span> <span class="nav-text">A 附录</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#A-1-%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.7.1.</span> <span class="nav-text">A.1 相关工作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#A-2-%E6%96%B9%E6%B3%95%E7%9A%84%E6%94%B6%E6%95%9B%E9%98%B6"><span class="nav-number">1.7.2.</span> <span class="nav-text">A.2 方法的收敛阶</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#A-3-%E4%BC%AA%E4%BA%8C%E9%98%B6%E6%96%B9%E6%B3%95"><span class="nav-number">1.7.3.</span> <span class="nav-text">A.3 伪二阶方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#A-4-%E5%AF%BC%E6%95%B0%E7%9A%84%E5%AD%98%E5%9C%A8%E6%80%A7"><span class="nav-number">1.7.4.</span> <span class="nav-text">A.4 导数的存在性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#A-5-t-%E3%80%81-epsilon-theta-%E5%92%8C-x-t-%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">1.7.5.</span> <span class="nav-text">A.5 $t$、$\epsilon_{\theta}$和$x_t$之间的关系</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#A-6-%E4%BC%AA%E6%96%B9%E6%B3%95%E7%9A%84%E9%98%B6%E6%95%B0%E5%88%86%E6%9E%90"><span class="nav-number">1.7.6.</span> <span class="nav-text">A.6 伪方法的阶数分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#A-7-%E6%96%B9%E5%B7%AE%E8%B0%83%E5%BA%A6"><span class="nav-number">1.7.7.</span> <span class="nav-text">A.7 方差调度</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#A-8-%E7%AE%80%E5%8D%95%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.7.8.</span> <span class="nav-text">A.8 简单示例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#A-9-%E6%9B%B4%E5%A4%9AFID%E7%BB%93%E6%9E%9C"><span class="nav-number">1.7.9.</span> <span class="nav-text">A.9 更多FID结果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#A-10%E6%9B%B4%E5%A4%9A%E5%9B%BE%E5%83%8F%E7%BB%93%E6%9E%9C"><span class="nav-number">1.7.10.</span> <span class="nav-text">A.10更多图像结果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#A-11%E6%9B%B4%E5%A4%9A%E5%8F%AF%E8%A7%86%E5%8C%96%E7%BB%93%E6%9E%9C"><span class="nav-number">1.7.11.</span> <span class="nav-text">A.11更多可视化结果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#A-12-%E5%B8%A6%E6%9C%89%E6%A0%87%E5%87%86%E5%B7%AE%E7%9A%84-FID-%E7%BB%93%E6%9E%9C"><span class="nav-number">1.7.12.</span> <span class="nav-text">A.12 带有标准差的 FID 结果</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E7%AB%A0%E6%80%BB%E7%BB%93"><span class="nav-number">2.</span> <span class="nav-text">文章总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E6%96%B0%E7%82%B9%E4%B8%8E%E4%B8%BB%E8%A6%81%E6%80%9D%E6%83%B3"><span class="nav-number">2.1.</span> <span class="nav-text">创新点与主要思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8D%E8%B6%B3%E4%B9%8B%E5%A4%84"><span class="nav-number">2.2.</span> <span class="nav-text">不足之处</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">2.3.</span> <span class="nav-text">参考资料</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
