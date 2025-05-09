@@ -44,7 +44,7 @@
 <meta property="og:image" content="https://hqulzq.github.io/2025/02/18/DDIM%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f_12.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/02/18/DDIM%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f_13.png">
 <meta property="article:published_time" content="2025-02-18T13:14:08.000Z">
-<meta property="article:modified_time" content="2025-04-11T07:29:41.538Z">
+<meta property="article:modified_time" content="2025-05-09T12:49:25.330Z">
 <meta property="article:author" content="Zongqing Li">
 <meta property="article:tag" content="diffusion">
 <meta property="article:tag" content="2021">
@@ -245,7 +245,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-04-11 15:29:41" itemprop="dateModified" datetime="2025-04-11T15:29:41+08:00">2025-04-11</time>
+                <time title="修改时间：2025-05-09 20:49:25" itemprop="dateModified" datetime="2025-05-09T20:49:25+08:00">2025-05-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -538,7 +538,7 @@ p(x_{t - 1}|x_t) &\approx p(x_{t - 1}|x_t, x_0 = \bar{\mu}(x_t)) \\
 &= \mathcal{N} \left( x_{t - 1}; \frac{1}{\alpha_t} \left( x_t - \left( \bar{\beta}_t - \alpha_t \sqrt{\bar{\beta}_{t - 1}^2 - \sigma_t^2} \right) \epsilon_{\theta}(x_t, t) \right), \sigma_t^2 I \right) \tag{1.13}
 \end{align*}</script><p>这就求出了生成过程所需要的$p(x_{t - 1}|x_t)$，其中$\alpha_t = \frac{\bar{\alpha}_t}{\bar{\alpha}_{t - 1}}$。它的特点是训练过程没有变化（也就是说最终保存下来的模型没有变化），但生成过程却有一个可变的参数$\sigma_t$，就是这个参数给DDPM带来了新鲜的结果。</p>
 <p>当取$\sigma_t = 0$，此时从$x_t$到$x_{t - 1}$是一个确定性变换</p>
-<script type="math/tex; mode=display">x_{t - 1} = \frac{1}{\alpha_t} \left( x_t - (\beta_t - \alpha_t \beta_{t - 1}) \epsilon_{\theta}(x_t, t) \right) \tag{12}</script><p>这也是DDIM论文中特别关心的一个例子，准确来说，<strong>原论文的DDIM就是特指$\sigma_t = 0$的情形，</strong>其中“I”的含义就是“Implicit”，意思这是一个隐式的概率模型，因为跟其他选择所不同的是，此时从给定的$x_T = z$出发，得到的生成结果$x_0$是不带随机性的。这在理论上和实用上都带来了一些好处。</p>
+<script type="math/tex; mode=display">x_{t - 1} = \frac{1}{\alpha_t} \left( x_t - (\overline{\beta}_t - \alpha_t \overline{\beta}_{t - 1}) \epsilon_{\theta}(x_t, t) \right) \tag{12}</script><p>这也是DDIM论文中特别关心的一个例子，准确来说，<strong>原论文的DDIM就是特指$\sigma_t = 0$的情形，</strong>其中“I”的含义就是“Implicit”，意思这是一个隐式的概率模型，因为跟其他选择所不同的是，此时从给定的$x_T = z$出发，得到的生成结果$x_0$是不带随机性的。这在理论上和实用上都带来了一些好处。</p>
 <h5 id="加速采样"><a href="#加速采样" class="headerlink" title="加速采样"></a>加速采样</h5><p>DDIM 原论文中阐述方差($\sigma_t$)为 0 时可以加速采样（图像生成）过程，它从子序列的角度解释，不是很容易理解。这里我们就从随机性的直观角度理解。</p>
 <p>方差不为 0 时，$x_t$到$x_{t - 1}$的每一步是随机性采样，随机性导致不可控，会走很多弯路。就好比你从起点$x_T$走到终点$x_0$，每一步你不好好走，虽然指向目的地的方向（期望）确定了，但是总是在这个方向上加上一个随机量（方差）作为你的步进，自然你会走很多弯路绕路，走的不是直线。这样你到达目的地$x_0$的步数（时间）就变长了。</p>
 <p>方差为 0 时，$x_t$到$x_{t - 1}$的每一步，你就专注的向着目的地笔直前进（沿着期望的方向），不搞幺蛾子，自然到达目的地就快了很多。</p>

@@ -39,7 +39,7 @@
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/28/Consistency-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f5.png">
 <meta property="og:image" content="https://hqulzq.github.io/2025/03/28/Consistency-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f6.png">
 <meta property="article:published_time" content="2025-03-28T08:42:39.000Z">
-<meta property="article:modified_time" content="2025-03-29T08:01:40.366Z">
+<meta property="article:modified_time" content="2025-05-08T06:20:01.034Z">
 <meta property="article:author" content="Zongqing Li">
 <meta property="article:tag" content="diffusion">
 <meta property="article:tag" content="2023">
@@ -240,7 +240,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-03-29 16:01:40" itemprop="dateModified" datetime="2025-03-29T16:01:40+08:00">2025-03-29</time>
+                <time title="修改时间：2025-05-08 14:20:01" itemprop="dateModified" datetime="2025-05-08T14:20:01+08:00">2025-05-08</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -421,6 +421,61 @@
 </div>
 <h3 id="7-结论"><a href="#7-结论" class="headerlink" title="7. 结论"></a>7. 结论</h3><p>我们介绍了一致性模型，这是一类专门为支持单步和少步生成而设计的生成模型。通过实验，我们证明了在多个图像基准测试和较少的采样迭代中，我们的一致性蒸馏方法优于现有的扩散模型蒸馏技术。此外，作为独立的生成模型，一致性模型除了生成对抗网络（GANs）外，比现有的单步生成模型能生成更好的样本。与扩散模型类似，它们还支持零样本图像编辑应用，如图像修复、上色、超分辨率、去噪、插值和笔画引导的图像生成。</p>
 <p>此外，一致性模型与其他领域中使用的技术有着惊人的相似之处，包括深度Q学习（Mnih等人, 2015）和基于动量的对比学习（Grill等人, 2020; He等人, 2020）。这为在这些不同领域之间交流思想和方法提供了令人兴奋的前景。</p>
+<h3 id="A-证明"><a href="#A-证明" class="headerlink" title="A. 证明"></a>A. 证明</h3><h4 id="A-1-符号说明"><a href="#A-1-符号说明" class="headerlink" title="A.1. 符号说明"></a>A.1. 符号说明</h4><p>我们用$f_{\theta}(x, t)$表示由$\theta$参数化的一致性模型，用$f(x, t ; \phi)$表示公式(3)中经验概率流常微分方程（PF ODE）的一致性函数。这里$\phi$表示其对预训练得分模型$s_{\phi}(x, t)$的依赖。对于公式(2)中PF ODE的一致性函数，我们将其记为$f(x, t)$ 。给定一个多元函数$h(x, y)$，我们用$\partial_{1} h(x, y)$表示$h$关于$x$的雅可比矩阵，类似地，用$\partial_{2} h(x, y)$表示$h$关于$y$的雅可比矩阵。除非另有说明，$x$被认为是从数据分布$p_{data }(x)$中采样的随机变量，$n$是从$[1, N - 1]$中均匀随机采样的，$x_{t_{n}}$是从$N(x ; t_{n}^{2} I)$中采样的。这里$[1, N - 1]$表示整数集$\{1, 2, \cdots, N - 1\}$。此外，回想一下我们定义：</p>
+<script type="math/tex; mode=display">\hat{x}_{t_{n}}^{\phi}:=x_{t_{n+1}}+(t_{n}-t_{n+1})\Phi(x_{t_{n+1}}, t_{n+1} ; \phi)</script><p>其中$\Phi(\cdots ; \phi)$表示由得分模型$s_{\phi}(x, t)$定义的经验PF ODE的单步ODE求解器的更新函数。默认情况下，$\mathbb{E}[\cdot]$表示对表达式中所有相关随机变量的期望。</p>
+<h4 id="A-2-一致性蒸馏"><a href="#A-2-一致性蒸馏" class="headerlink" title="A.2. 一致性蒸馏"></a>A.2. 一致性蒸馏</h4><p>定理1. 设$\Delta t:=\max_{n \in [1, N - 1]}|t_{n+1}-t_{n}|$，$f(\cdot, \cdot ; \phi)$是公式(3)中经验PF ODE的一致性函数。假设$f_{\theta}$满足利普希茨条件：存在$L &gt; 0$，使得对于所有$t \in [\epsilon, T]$，$x$和$y$，有$\left|f_{\theta}(x, t)-f_{\theta}(y, t)\right|_{2} \leq L|x - y|_{2}$。进一步假设对于所有$n \in [1, N - 1]$，在$t_{n+1}$处调用的ODE求解器的局部误差一致有界为$O((t_{n+1}-t_{n})^{p + 1})$，其中$p \geq 1$。那么，如果$L_{C D}^{N}(\theta, \theta ; \phi)=0$，则有：</p>
+<script type="math/tex; mode=display">\sup_{n, x}\left\| f_{\theta}\left(x, t_{n}\right)-f\left(x, t_{n} ; \phi\right)\right\| _{2}=O\left((\Delta t)^{p}\right)</script><p>证明：由$L_{CD}^{N}(\theta, \theta ; \phi)=0$，我们有：</p>
+<script type="math/tex; mode=display">\mathcal{L}_{CD}^{N}(\theta, \theta ; \phi)=\mathbb{E}\left[\lambda\left(t_{n}\right) d\left(f_{\theta}\left(x_{t_{n+1}}, t_{n+1}\right), f_{\theta}\left(\hat{x}_{t_{n}}^{\phi}, t_{n}\right)\right)\right]=0 \tag{11}</script><p>根据定义，我们有$p_{t_{n}}(x_{t_{n}})=p_{data }(x) \otimes N(0, t_{n}^{2} I)$，其中$t_{n} \geq \epsilon &gt; 0$。由此可知，对于每个$x_{t_{n}}$和$1 \leq n \leq N$，$p_{t_{n}}(x_{t_{n}})&gt;0$。因此，公式(11)意味着：</p>
+<script type="math/tex; mode=display">\lambda\left(t_{n}\right) d\left(f_{\theta}\left(x_{t_{n+1}}, t_{n+1}\right), f_{\theta}\left(\hat{x}_{t_{n}}^{\phi}, t_{n}\right)\right) \equiv 0 \tag{12}</script><p>因为$\lambda(\cdot)&gt;0$且$d(x, y)=0 \Leftrightarrow x = y$，这进一步意味着：</p>
+<script type="math/tex; mode=display">f_{\theta}\left(x_{t_{n+1}}, t_{n+1}\right) \equiv f_{\theta}\left(\hat{x}_{t_{n}}^{\phi}, t_{n}\right) \tag{13}</script><p>现在，令$e_{n}$表示在$t_{n}$处的误差向量，定义为：</p>
+<script type="math/tex; mode=display">e_{n}:=f_{\theta}\left(x_{t_{n}}, t_{n}\right)-f\left(x_{t_{n}}, t_{n} ; \phi\right)</script><p>我们可以很容易地推导出以下递归关系：</p>
+<script type="math/tex; mode=display">\begin{align}
+e_{n+1}&=f_{\theta}\left(x_{t_{n+1}}, t_{n+1}\right)-f\left(x_{t_{n+1}}, t_{n+1} ; \phi\right)\\
+&\stackrel{(i)}{=} f_{\theta}\left(\hat{x}_{t_{n}}^{\phi}, t_{n}\right)-f\left(x_{t_{n}}, t_{n} ; \phi\right)\\
+&=f_{\theta}\left(\hat{x}_{t_{n}}^{\phi}, t_{n}\right)-f_{\theta}\left(x_{t_{n}}, t_{n}\right)+f_{\theta}\left(x_{t_{n}}, t_{n}\right)-f\left(x_{t_{n}}, t_{n} ; \phi\right)\\
+&=f_{\theta}\left(\hat{x}_{t_{n}}^{\phi}, t_{n}\right)-f_{\theta}\left(x_{t_{n}}, t_{n}\right)+e_{n}
+\end{align}</script><p>其中，(i)是由于公式(13)以及$f(x_{t_{n+1}}, t_{n+1} ; \phi)=f(x_{t_{n}}, t_{n} ; \phi)$。因为$f_{\theta}(\cdot, t_{n})$的利普希茨常数为$L$，所以我们有：</p>
+<script type="math/tex; mode=display">\begin{align}
+\left\| e_{n+1}\right\| _{2} & \leq\left\| e_{n}\right\| _{2}+L\left\| \hat{x}_{t_{n}}^{\phi}-x_{t_{n}}\right\| _{2}\\
+&\stackrel{(i)}{=}\left\| e_{n}\right\| _{2}+L \cdot O\left(\left(t_{n+1}-t_{n}\right)^{p+1}\right)\\
+&=\left\| e_{n}\right\| _{2}+O\left(\left(t_{n+1}-t_{n}\right)^{p+1}\right)
+\end{align}</script><p>其中，(i)成立是因为ODE求解器的局部误差有界为$O((t_{n+1}-t_{n})^{p+1})$。此外，我们观察到$e_{1}=0$，因为：</p>
+<script type="math/tex; mode=display">\begin{align}
+e_{1}&=f_{\theta}\left(x_{t_{1}}, t_{1}\right)-f\left(x_{t_{1}}, t_{1} ; \phi\right)\\
+&\stackrel{(i)}{=} x_{t_{1}}-f\left(x_{t_{1}}, t_{1} ; \phi\right)\\
+&\stackrel{(ii)}{=} x_{t_{1}}-x_{t_{1}}\\
+&=0
+\end{align}</script><p>这里，(i)为真，是由于一致性模型的参数化使得$f(x_{t_{1}}, t_{1} ; \phi)=x_{t_{1}}$；(ii)由$f(\cdot, \cdot ; \phi)$的定义得出。这使我们能够对递归公式(14)进行归纳，得到：</p>
+<script type="math/tex; mode=display">\begin{align}
+\left\| e_{n}\right\| _{2} & \leq\left\| e_{1}\right\| _{2}+\sum_{k = 1}^{n - 1}O\left(\left(t_{k+1}-t_{k}\right)^{p+1}\right)\\
+&=\sum_{k = 1}^{n - 1}O\left(\left(t_{k+1}-t_{k}\right)^{p+1}\right)\\
+&=\sum_{k = 1}^{n - 1}(t_{k+1}-t_{k})O\left(\left(t_{k+1}-t_{k}\right)^{p}\right)\\
+&\leq \sum_{k = 1}^{n - 1}(t_{k+1}-t_{k})O((\Delta t)^{p})\\
+&=O\left((\Delta t)^{p}\right)\sum_{k = 1}^{n - 1}(t_{k+1}-t_{k})\\
+&\leq O\left((\Delta t)^{p}\right)(T - \epsilon)\\
+&=O\left((\Delta t)^{p}\right)
+\end{align}</script><p>至此证明完成。$\square$</p>
+<h4 id="A-3-一致性训练"><a href="#A-3-一致性训练" class="headerlink" title="A.3. 一致性训练"></a>A.3. 一致性训练</h4><p>以下引理为得分函数提供了一个无偏估计量，这对我们证明定理2至关重要。<br>引理1. 设$x \sim p_{data }(x)$，$x_{t} \sim N(x ; t^{2} I)$，且$p_{t}(x_{t})=p_{data }(x) \otimes N(0, t^{2} I)$。我们有：</p>
+<script type="math/tex; mode=display">\nabla \log p_{t}(x)=-\mathbb{E}\left[\frac{x_{t}-x}{t^{2}} \big| x_{t}\right]</script><p>证明：根据$p_{t}(x_{t})$的定义，我们有：</p>
+<script type="math/tex; mode=display">\nabla \log p_{t}(x_{t})=\nabla_{x_{t}} \log \int p_{data }(x) p(x_{t} | x) \mathrm{d}x</script><p>其中$p(x_{t} | x)=N(x_{t} ; x, t^{2} I)$。这个表达式可以进一步简化为：</p>
+<script type="math/tex; mode=display">\begin{align}
+\nabla \log p_{t}(x_{t})&=\frac{\int p_{data }(x) \nabla_{x_{t}} p(x_{t} | x) \mathrm{d}x}{\int p_{data }(x) p(x_{t} | x) \mathrm{d}x}\\
+&=\frac{\int p_{data }(x) p(x_{t} | x) \nabla_{x_{t}} \log p(x_{t} | x) \mathrm{d}x}{\int p_{data }(x) p(x_{t} | x) \mathrm{d}x}\\
+&=\frac{\int p_{data }(x) p(x_{t} | x) \nabla_{x_{t}} \log p(x_{t} | x) \mathrm{d}x}{p_{t}(x_{t})}\\
+&=\int \frac{p_{data }(x) p(x_{t} | x)}{p_{t}(x_{t})} \nabla_{x_{t}} \log p(x_{t} | x) \mathrm{d}x\\
+&\stackrel{(i)}{=} \int p(x | x_{t}) \nabla_{x_{t}} \log p(x_{t} | x) \mathrm{d}x\\
+&=-\mathbb{E}\left[\nabla_{x_{t}} \log p(x_{t} | x) \big| x_{t}\right]\\
+&=-\mathbb{E}\left[\frac{x_{t}-x}{t^{2}} \big| x_{t}\right]
+\end{align}</script><p>其中，(i)是由于贝叶斯法则。</p>
+<p>定理2. 设$\Delta t:=\max_{n \in [1, N - 1]}|t_{n+1}-t_{n}|$。假设$d$和$f_{\theta^{-}}$都是二阶连续可微的，且二阶导数有界，加权函数$\lambda(\cdot)$有界，并且$\mathbb{E}[\left|\nabla \log p_{t_{n}}(x_{t_{n}})\right|_{2}^{2}]&lt;\infty$。进一步假设我们使用欧拉ODE求解器，并且预训练得分模型与真实情况匹配，即对于所有$t \in [\epsilon, T]$，有$s_{\phi}(x, t) \equiv \nabla \log p_{t}(x)$。那么：</p>
+<script type="math/tex; mode=display">\mathcal{L}_{C D}^{N}\left(\theta, \theta^{-} ; \phi\right)=\mathcal{L}_{C T}^{N}\left(\theta, \theta^{-}\right)+o(\Delta t)</script><p>其中，期望是关于$x \sim p_{data }$，$n \sim U [1, N - 1]$，以及$x_{t_{n+1}} \sim N(x ; t_{n+1}^{2} I)$取的。一致性训练目标记为$L_{C T}^{N}(\theta, \theta^{-})$，定义为：</p>
+<script type="math/tex; mode=display">\mathbb{E}\left[\lambda\left(t_{n}\right) d\left(f_{\theta}\left(x+t_{n+1} z, t_{n+1}\right), f_{\theta^{-}}\left(x+t_{n} z, t_{n}\right)\right)\right]</script><p>其中$z \sim N(0, I)$。此外，如果$\inf_{N} L_{C D}^{N}(\theta, \theta^{-} ; \phi)&gt;0$，则$L_{C T}^{N}(\theta, \theta^{-}) \geq O(\Delta t)$。<br>证明：通过泰勒展开，我们有：</p>
+<script type="math/tex; mode=display">\begin{align}
+\mathcal{L}_{CD}^{N}\left(\theta, \theta^{-} ; \phi\right)&=\mathbb{E}\left[\lambda\left(t_{n}\right) d\left(f_{\theta}\left(x_{t_{n+1}}, t_{n+1}\right), f_{\theta^{-}}\left(x_{t_{n+1}}, t_{n+1}\right)\right)\right]\\
+&=\mathbb{E}\left[\lambda\left(t_{n}\right) d\left(f_{\theta}\left(x_{t_{n+1}}, t_{n+1}\right), f_{\theta^{-}}\left(x_{t_{n+1}}+(t_{n+1}-t_{n})t_{n+1} \nabla \log p_{t_{n+1}}\left(x_{t_{n+1}}\right), t_{n}\right)\right)\right]\\
+&=\mathbb{E}\left[\lambda\left(t_{n}\right) d\left(f_{\theta}\left(x_{t_{n+1}}, t_{n+1}\right), f_{\theta^{-}}\left(x_{t_{n+1}}, t_{n+1}\right)+\partial_{1} f_{\theta^{-}}\left(x_{t_{n+1}}, t_{n+1}\right)(t_{n+1}-t_{n})t_{n+1} \nabla \log p_{t_{n+1}}\left(x_{t_{n+1}}\right)\right)\right]
+\end{align}</script><p>然后，我们将引理1应用于公式(15)，并以相反的方向使用泰勒展开，得到：</p>
+<p>$$\begin{align}<br>\mathcal{L}_{CD}^{N}\left(\theta, \theta^{-} ; \phi\right)&amp;+\mathbb{E}\left[\lambda\left(t_{n}\right) d\left(f_{\theta}\left(x_{t_{n+1}}, t_{n+1}\right), f_{\theta^{-}}\left(x_{t_{n+1}}, t_{n+1}\right)\right)\right]\\<br>&amp;+\mathbb{E}\left\{\lambda\left(t_{n}\right) \partial_{2} d\left(f_{\theta}\left(x_{t_{n+1}}, t_{n+1}\right), f_{\theta^{-}}\left(x_{t_{n+1}}, t_{n+1}\right)\right)\left[\partial_{1} f_{\theta^{-}}\left(x_{t_{n+1}}, t_{n+1}\right)(t_{n}-t_{n+1})t_{n+1} \mathbb{E}\left[\frac{x_{t_{n+1}}-x}{t_{n+1}^{2}} \big| x_{t_{n+1}}\right]\right]\right\}\\<br>&amp;+\mathbb{E}\left\{\lambda\left(t_{n}\right) \partial_{2} d\left(f_{\theta}\left(x_{t_{n+1}}, t_{n+1}\right), f_{\theta^{-}}\left(x_{t_{n+1}}, t_{n+1}\right)\right)\left[\partial_{2} f_{\theta^{-}}\left(x_{t_{n+1}}, t_{n+1}\right)(t_{n}-t_{n+1})t_{n+1} \mathbb{E}\left[\frac{x_{t_{n+1}}-x}{t_{n+1}^{2}} \big| x_{t_{n+1}}\right]\right]\right\}\\<br>&amp;+\mathbb{E}\left[\lambda\left(t_{n}\right) \partial_{2} d\left(f_{\theta}\left(x_{t_{n+1}}, t_{n+1}\right), f_{\theta^{-}}\left(x_{t_{n+1}}, t_{n+1}\right)\right)\left[\partial_{2} f_{\theta^{-}}\left(x_{t_{n+1}}, t_{n+1}\right)(t_{n}-t_{n+1})\right]\right\}+E\left[\omega\left[\left(t_{n+1}-t_{n}\right)\right]\right]\\<br>&amp;=\mathbb{E}\left[\lambda\left(t_{n}\right)\right) d\left(f\left(x_{</p>
 
     </div>
 
@@ -506,7 +561,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1. 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.3.</span> <span class="nav-text">2. 扩散模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E4%B8%80%E8%87%B4%E6%80%A7%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.4.</span> <span class="nav-text">3. 一致性模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E9%80%9A%E8%BF%87%E8%92%B8%E9%A6%8F%E8%AE%AD%E7%BB%83%E4%B8%80%E8%87%B4%E6%80%A7%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.5.</span> <span class="nav-text">4. 通过蒸馏训练一致性模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E7%8B%AC%E7%AB%8B%E8%AE%AD%E7%BB%83%E4%B8%80%E8%87%B4%E6%80%A7%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.6.</span> <span class="nav-text">5. 独立训练一致性模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.7.</span> <span class="nav-text">6. 实验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#6-1-%E8%AE%AD%E7%BB%83%E4%B8%80%E8%87%B4%E6%80%A7%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.7.1.</span> <span class="nav-text">6.1 训练一致性模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-2-%E5%B0%91%E6%AD%A5%E5%9B%BE%E5%83%8F%E7%94%9F%E6%88%90"><span class="nav-number">1.7.2.</span> <span class="nav-text">6.2 少步图像生成</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-3-%E9%9B%B6%E6%A0%B7%E6%9C%AC%E5%9B%BE%E5%83%8F%E7%BC%96%E8%BE%91"><span class="nav-number">1.7.3.</span> <span class="nav-text">6.3 零样本图像编辑</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E7%BB%93%E8%AE%BA"><span class="nav-number">1.8.</span> <span class="nav-text">7. 结论</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1. 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.3.</span> <span class="nav-text">2. 扩散模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E4%B8%80%E8%87%B4%E6%80%A7%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.4.</span> <span class="nav-text">3. 一致性模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E9%80%9A%E8%BF%87%E8%92%B8%E9%A6%8F%E8%AE%AD%E7%BB%83%E4%B8%80%E8%87%B4%E6%80%A7%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.5.</span> <span class="nav-text">4. 通过蒸馏训练一致性模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E7%8B%AC%E7%AB%8B%E8%AE%AD%E7%BB%83%E4%B8%80%E8%87%B4%E6%80%A7%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.6.</span> <span class="nav-text">5. 独立训练一致性模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.7.</span> <span class="nav-text">6. 实验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#6-1-%E8%AE%AD%E7%BB%83%E4%B8%80%E8%87%B4%E6%80%A7%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.7.1.</span> <span class="nav-text">6.1 训练一致性模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-2-%E5%B0%91%E6%AD%A5%E5%9B%BE%E5%83%8F%E7%94%9F%E6%88%90"><span class="nav-number">1.7.2.</span> <span class="nav-text">6.2 少步图像生成</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-3-%E9%9B%B6%E6%A0%B7%E6%9C%AC%E5%9B%BE%E5%83%8F%E7%BC%96%E8%BE%91"><span class="nav-number">1.7.3.</span> <span class="nav-text">6.3 零样本图像编辑</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E7%BB%93%E8%AE%BA"><span class="nav-number">1.8.</span> <span class="nav-text">7. 结论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#A-%E8%AF%81%E6%98%8E"><span class="nav-number">1.9.</span> <span class="nav-text">A. 证明</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#A-1-%E7%AC%A6%E5%8F%B7%E8%AF%B4%E6%98%8E"><span class="nav-number">1.9.1.</span> <span class="nav-text">A.1. 符号说明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#A-2-%E4%B8%80%E8%87%B4%E6%80%A7%E8%92%B8%E9%A6%8F"><span class="nav-number">1.9.2.</span> <span class="nav-text">A.2. 一致性蒸馏</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#A-3-%E4%B8%80%E8%87%B4%E6%80%A7%E8%AE%AD%E7%BB%83"><span class="nav-number">1.9.3.</span> <span class="nav-text">A.3. 一致性训练</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
