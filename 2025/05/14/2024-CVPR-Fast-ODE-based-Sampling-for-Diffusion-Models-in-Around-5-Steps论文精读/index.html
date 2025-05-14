@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="全文翻译摘要从扩散模型中采样可被视为求解相应的常微分方程（ODE），目标是在尽可能少的函数评估次数（NFE）下获得精确解。最近，各种利用高阶ODE求解器的快速采样器不断涌现，其性能优于最初的一阶采样器。然而，这些数值方法本身会产生一定的近似误差，在NFE极少（例如约5次）的情况下，会显著降低样本质量。相比之下，基于几何观察发现，每条采样轨迹几乎都位于嵌入环境空间的二维子空间中，我们提出了近似平均方">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2024-CVPR-Fast ODE-based Sampling for Diffusion Models in Around 5 Steps论文精读">
+<meta property="og:url" content="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/index.html">
+<meta property="og:site_name" content="Lzq&#39;s blog">
+<meta property="og:description" content="全文翻译摘要从扩散模型中采样可被视为求解相应的常微分方程（ODE），目标是在尽可能少的函数评估次数（NFE）下获得精确解。最近，各种利用高阶ODE求解器的快速采样器不断涌现，其性能优于最初的一阶采样器。然而，这些数值方法本身会产生一定的近似误差，在NFE极少（例如约5次）的情况下，会显著降低样本质量。相比之下，基于几何观察发现，每条采样轨迹几乎都位于嵌入环境空间的二维子空间中，我们提出了近似平均方">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f2.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f3.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f4.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f5.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f6.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/a1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/a2.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t2.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t3.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f7.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t4.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t5.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t6.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t7.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t8.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t10.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t11.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t9.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t12.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t13.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f8.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f10.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f11.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f12.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f13.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f14.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f15.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f9.png">
+<meta property="article:published_time" content="2025-05-14T13:33:40.000Z">
+<meta property="article:modified_time" content="2025-05-14T14:51:36.671Z">
+<meta property="article:author" content="Zongqing Li">
+<meta property="article:tag" content="diffusion">
+<meta property="article:tag" content="CVPR">
+<meta property="article:tag" content="2024">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f1.png">
+
+<link rel="canonical" href="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>2024-CVPR-Fast ODE-based Sampling for Diffusion Models in Around 5 Steps论文精读 | Lzq's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lzq's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">46</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">65</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book">
+
+    <a href="/book" rel="section"><i class="fas fa-book fa-fw"></i>Book</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/05/14/2024-CVPR-Fast-ODE-based-Sampling-for-Diffusion-Models-in-Around-5-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          2024-CVPR-Fast ODE-based Sampling for Diffusion Models in Around 5 Steps论文精读
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-05-14 21:33:40 / 修改时间：22:51:36" itemprop="dateCreated datePublished" datetime="2025-05-14T21:33:40+08:00">2025-05-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>从扩散模型中采样可被视为求解相应的常微分方程（ODE），目标是在尽可能少的函数评估次数（NFE）下获得精确解。最近，各种利用高阶ODE求解器的快速采样器不断涌现，其性能优于最初的一阶采样器。然而，这些数值方法本身会产生一定的近似误差，在NFE极少（例如约5次）的情况下，会显著降低样本质量。相比之下，基于几何观察发现，每条采样轨迹几乎都位于嵌入环境空间的二维子空间中，我们提出了近似平均方向求解器（AMEDSolver），通过直接学习快速扩散采样的平均方向来消除截断误差。此外，我们的方法可轻松用作插件，进一步提升现有的基于ODE的采样器性能。在分辨率从32到512的图像合成实验中，大量实验证明了我们方法的有效性。仅需5次NFE，我们在CIFAR-10数据集上实现了6.61的FID（弗雷歇 inception距离），在64×64分辨率的ImageNet数据集上达到10.74的FID，在LSUN卧室数据集上获得13.20的FID。我们的代码可在<a target="_blank" rel="noopener" href="https://github.com/zjupi/diff-sampler">https://github.com/zjupi/diff-sampler</a>获取。</p>
+<span id="more"></span>
+<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1. 引言"></a>1. 引言</h3><p>近年来，扩散模型因其出色的生成能力而备受关注[9, 34, 36, 38]。给定一个噪声输入，它们能够通过使用分数函数执行迭代去噪步骤来生成逼真的输出[15, 42, 45]。这个过程可以解释为对随机微分方程（SDE）进行某种数值离散化，或者更常见的是，对其相应的概率流常微分方程（PF-ODE）进行数值离散化[45]。与生成对抗网络（GANs）[12]和变分自编码器（VAEs）[19]等其他生成模型相比，扩散模型在样本质量高和训练稳定方面具有优势，但采样速度较慢，这对其应用构成了巨大挑战。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f1.png" width="40%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图1：使用默认无分类器引导尺度7.5和文本提示“草地上的一只柯基犬，周围环绕着一群彩色气球”，由Stable-Diffusion[34]合成的图像。我们的方法在样本质量上改进了DPM-Solver++(2M)[26]。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>现有的加速扩散采样方法主要分为两大流派。一类是设计更快的数值求解器，在保持较小截断误差的同时增大步长[10, 18, 23, 25, 43, 51]。它们可进一步分为单步求解器和多步求解器[2]。前者仅使用当前时间步的信息来计算下一步的解，而后者则利用多个过去时间步的信息。这些方法成功地将函数评估次数（NFE）从1000次减少到20次以下，几乎不影响样本质量。另一类方法旨在基于知识蒸馏的思想，在数据分布和预先指定的噪声分布之间建立一对一映射[4, 24, 27, 39, 46]。有了训练良好的学生模型后，仅需一次NFE就能实现高质量的生成。然而，训练这样的学生模型，要么需要预先生成数百万张图像[24, 27]，要么需要通过精心修改训练过程来承担巨大的训练成本[4, 39, 46]。此外，基于蒸馏的模型无法保证随着NFE的增加样本质量会提高，并且它们在似然评估方面也存在困难。</p>
+<p>在本文中，我们进一步推动基于ODE的扩散模型采样，使其在大约5步内完成。基于每个采样轨迹大致位于嵌入高维空间的二维子空间这一几何特性，我们提出了近似平均方向求解器（AMED-Solver），这是一种单步ODE求解器，用于学习预测每个采样步骤中的平均方向。图2展示了各种ODE求解器的比较。我们还将我们的方法扩展为一个插件，可应用于任何ODE求解器。当在改进的PNDM求解器[51]上应用AMED-Plugin时，我们在CIFAR-10数据集上实现了6.61的FID，在64×64分辨率的ImageNet数据集上达到10.74的FID，在LSUN卧室数据集上获得13.20的FID 。我们的主要贡献如下：</p>
+<ul>
+<li>我们引入了AMED-Solver，这是一种新的用于扩散模型的单步ODE求解器，从设计上消除了截断误差。</li>
+<li>我们提出了AMED-Plugin，它可以应用于任何ODE求解器，训练开销小，采样开销可忽略不计。</li>
+<li>在各种数据集上的大量实验验证了我们的方法在快速图像生成中的有效性。</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f2.png" width="80%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图2：各种ODE求解器的比较。红点表示不同求解器的实际采样步骤。(a) DDIM求解器[43]对PF-ODE应用欧拉离散化。在每个采样步骤中，它沿着梯度方向给出下一步的解。(b) 多步求解器[23, 26, 51, 52]需要当前梯度和几个历史梯度记录，然后沿着这些梯度的组合方向给出解。(c) 在广义DPM-Solver-2[25]中，有一个超参数r控制中间时间步的位置。r = 0.5时恢复为默认的DPM-Solver-2，r = 1时恢复为Heun的第二种方法[18]。采样步骤的梯度由中间和当前时间步的梯度组合给出（见表1）。(d) 我们提出的AMED-Solver试图找到中间时间步和缩放因子，以给出接近最优的指向真实解的梯度。用于采样步骤的这个梯度是自适应学习得到的，而不像DPM-Solver-2那样通过启发式方法分配。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="2-背景"><a href="#2-背景" class="headerlink" title="2. 背景"></a>2. 背景</h3><h4 id="2-1-扩散模型"><a href="#2-1-扩散模型" class="headerlink" title="2.1 扩散模型"></a>2.1 扩散模型</h4><p>正向扩散过程可以形式化为一个随机微分方程（SDE）：</p>
+<script type="math/tex; mode=display">dx = f(x, t)dt + g(t)dw_t \tag{1}</script><p>其中，$f(\cdot, t): \mathbb{R}^d \to \mathbb{R}^d$和$g(\cdot): \mathbb{R} \to \mathbb{R}$分别是漂移系数和扩散系数，$w_t \in \mathbb{R}^d$是标准维纳过程[31]。这个正向过程形成了一个连续的随机过程$\{x_t\}_{t = 0}^T$以及相关的概率密度$\{p_t(x)\}_{t = 0}^T$。为了使从隐式数据分布$p_d = p_0$中采样得到的样本$x_0$近似服从预先指定的噪声分布，即$p_T \approx p_n$ 。给定一个编码$x_T \sim p_n$，然后通过反转公式（1）来进行生成过程[1, 11]。值得注意的是，存在一个概率流常微分方程（PF - ODE）：</p>
+<script type="math/tex; mode=display">dx = \left[f(x, t) - \frac{1}{2}g(t)^2 \nabla_x \log p_t(x)\right]dt \tag{2}</script><p>它与反向SDE具有相同的边缘分布[29, 45]，并且$\nabla_x \log p_t(x)$被称为分数函数[16, 28]。通常，由于其概念简单、采样效率高以及独特的编码方式，PF - ODE在实际应用中更受青睐[45]。在本文中，我们遵循EDM[18]的配置，设置$f(x, t) = 0$，$g(t) = \sqrt{2t}$以及$\sigma(t) = t$ 。在这种情况下，$t^2$的倒数等于信噪比[20]，并且扰动核为：</p>
+<script type="math/tex; mode=display">p_t(x|x_0) = \mathcal{N}(x; x_0, t^2I)\tag{3}</script><p>为了模拟PF - ODE，我们通常训练一个U - Net[15, 35]来预测$s_{\theta}(x, t)$，以近似难以处理的$\nabla_x \log p_t(x)$ 。文献中主要有两种参数化方式。一种使用噪声预测模型$\epsilon_{\theta}(x, t)$——预测在时间$t$添加到$x$上的高斯噪声[15, 43]，另一种使用数据预测模型$D_{\theta}(x, t)$——预测从时间$t$到$0$对$x$的去噪输出[6, 18, 26]。在我们的设置中，它们具有以下关系：</p>
+<script type="math/tex; mode=display">s_{\theta}(x, t) = -\frac{\epsilon_{\theta}(x, t)}{t} = \frac{D_{\theta}(x, t) - x}{t^2}\tag{4}</script><p>在噪声预测表示下，扩散模型的训练是通过最小化最小二乘估计的加权组合来进行的：</p>
+<script type="math/tex; mode=display">\mathbb{E}_{x \sim p_d, \epsilon \sim \mathcal{N}(0, I)}\left\|\epsilon_{\theta}(x + t\epsilon; t) - \epsilon\right\|_2^2\tag{5}</script><p>然后，我们将学习到的分数函数公式（4）代入公式（2），得到PF - ODE的一个简单形式：</p>
+<script type="math/tex; mode=display">dx = \epsilon_{\theta}(x, t)dt \tag{6}</script><p>采样轨迹$\{x_{t_n}\}_{n = 1}^N$的获取方式是，首先从$p_n = N(0, T^2I)$中抽取$x_{t_N}$，然后按照时间序列$\Gamma = \{t_1 = \epsilon, \cdots, t_N = T\}$，通过$N - 1$步求解公式（6）。</p>
+<h4 id="2-2-先前快速ODE求解器的分类"><a href="#2-2-先前快速ODE求解器的分类" class="headerlink" title="2.2 先前快速ODE求解器的分类"></a>2.2 先前快速ODE求解器的分类</h4><p>为了加速扩散采样，人们提出了各种快速ODE求解器，这些求解器可以分为单步求解器和多步求解器[2]。单步求解器包括DDIM[43]、EDM[18]和DPM - Solver[25]，它们仅使用当前时间步的信息来计算下一步的解；而多步求解器包括PNDM[23]和DEIS[51]，它们利用多个过去时间步的信息来计算下一步的解（直观比较见图2）。我们强调，应该将单步ODE求解器与单步（$NFE = 1$）基于蒸馏的方法[27, 39, 46]区分开来。</p>
+<p>单步方法的优点在于易于实现且能够自启动，因为不需要历史记录。然而，如图3所示，它们存在样本质量快速下降的问题，尤其是在NFE预算有限的情况下。原因可能是，在相同的NFE下，多步求解器的实际采样步数是单步求解器的两倍，这使得它们能够更频繁、更灵活地调整方向。我们将展示，我们提出的AMED - Solver可以通过学习平均方向在很大程度上解决这个问题。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f3.png" width="60%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图3：多步和单步ODE求解器的样本质量下降情况。单步求解器生成的图像质量，尤其是包括DPM-Solver2[25]和EDM[18]在内的高阶单步求解器，随着NFE的减少而迅速下降，而我们提出的AMED-Solver在很大程度上缓解了这种下降。示例来自FFHQ 64×64[17]和ImageNet 64×64[37]。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="3-我们提出的AMED-Solver"><a href="#3-我们提出的AMED-Solver" class="headerlink" title="3. 我们提出的AMED-Solver"></a>3. 我们提出的AMED-Solver</h3><p>在本节中，我们提出AMED-Solver，这是一种用于扩散模型的单步ODE求解器，它释放了单步求解器在极小NFE情况下的潜力，使其能够达到甚至超越多步求解器的性能。此外，我们提出的方法可以作为插件推广到任何ODE求解器上，在各种数据集上都能带来显著的性能提升。我们的关键发现是，由公式$(6)$生成的采样轨迹几乎位于嵌入高维空间的二维子空间中，这启发我们利用均值定理来最小化离散化误差。</p>
+<h4 id="3-1-采样轨迹几乎位于二维子空间"><a href="#3-1-采样轨迹几乎位于二维子空间" class="headerlink" title="3.1 采样轨迹几乎位于二维子空间"></a>3.1 采样轨迹几乎位于二维子空间</h4><p>如先前工作[6]所示，通过求解公式(6)生成的采样轨迹展现出极为简单的几何结构，并且与退火平均偏移存在隐含联系。从噪声分布出发的每个样本，都会沿着一条平滑的、近似线性的采样轨迹，以单调增加似然的方式逼近数据流形。此外，无论是在条件生成还是无条件生成的情况下，来自不同初始点的所有轨迹都具有相似的几何形状[6]。</p>
+<p>在本文中，我们进一步指出，由ODE求解器生成的采样轨迹几乎位于嵌入高维空间的二维平面内。我们通过对不同数据集（包括CIFAR10 32×32[21]、FFHQ 64×64[17]、ImageNet 64×64[37]和LSUN Bedroom 256×256[50]）上的1000条采样轨迹进行主成分分析（PCA），对这一论断进行了实验验证。如图4所示，使用前两个主成分的相对投影误差不超过8%，并且始终保持在较低水平。此外，仅用两个主成分就可以完全解释样本方差。考虑到图像空间维度巨大，分别为3072（$3×32×3$）、12288（$3×64×6$）或196608（$3×256×25$），采样轨迹呈现出一种有趣的特性，即它们的动态变化几乎可以仅用两个主成分来描述。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f4.png" width="60%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图4. 我们对每条采样轨迹$\{x_t\}_{t=\epsilon}^{T}$进行主成分分析（PCA）。(a) 将这些轨迹投影到由前两个主成分张成的二维子空间中，得到$\{\overline{x}_t\}_{t=1}^{T}$，相对投影误差计算为$ \parallel x_t - \tilde{x}_t  \parallel _2 /  \parallel x_t  \parallel _2 $。(b) 我们逐步增加主成分的数量，并计算累积方差百分比为$Var(\{\tilde{x}_t\}_{t=\epsilon}^{T}) / Var(\{x_t\}_{t=\epsilon}^{T})$。结果通过使用EDM求解器[18]对1000条采样轨迹进行平均得到，其中函数评估次数（NFE）为80次。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="3-2-近似平均方向求解器"><a href="#3-2-近似平均方向求解器" class="headerlink" title="3.2 近似平均方向求解器"></a>3.2 近似平均方向求解器</h4><p>基于上述几何直观，接下来我们将更详细地解释我们的方法。公式$(6)$的精确解为：</p>
+<script type="math/tex; mode=display">x_{t_n}=x_{t_{n + 1}}+\int_{t_{n + 1}}^{t_n}\epsilon_{\theta}(x_t,t)dt\tag{7}</script><p>对上述积分的各种数值近似对应着不同类型的基于快速ODE的求解器。例如，直接显式矩形法得到DDIM[43]，线性多步法得到PNDM[23]，泰勒展开得到DPM-Solver[25]，多项式外推得到DEIS[51]。与这些工作不同，我们更直接地推导我们的方法，期望积分所涉及的均值定理成立，这样我们就可以找到一个中间时间步$s_n \in (t_n, t_{n + 1})$和一个缩放因子$c_n \in \mathbb{R}$，满足：</p>
+<script type="math/tex; mode=display">\epsilon_{\theta}(x_{s_n},s_n)=\frac{1}{c_n(t_n - t_{n + 1})}\int_{t_{n + 1}}^{t_n}\epsilon_{\theta}(x_t,t)dt\tag{8}</script><p>虽然实值函数的著名均值定理在向量值情况下并不成立[7]，但采样轨迹$\{x_t\}_{t=\epsilon}^T$几乎位于二维子空间这一显著的几何性质保证了我们的使用。通过适当选择$s_n$和$c_n$，我们能够通过下式对公式$(7)$进行近似：</p>
+<script type="math/tex; mode=display">x_{t_n}\approx x_{t_{n + 1}}+c_n(t_n - t_{n + 1})\epsilon_{\theta}(x_{s_n},s_n)\tag{9}</script><p>这个公式给出了一种单步ODE求解器。当设置$s_n = \sqrt{t_n t_{n + 1}}$且$c_n = 1$时，可以恢复DPM-Solver-2[25]。在表1中，我们通过将$c_n \epsilon_{\theta}(x_{s_n}, s_n)$概括为梯度项，对各种单步求解器进行了比较。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t1.png" width="80%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表1. 各种单步ODE求解器的比较。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>对于$\{s_n\}_{n = 1}^{N - 1}$和$\{c_n\}_{n = 1}^{N - 1}$的选择，我们基于蒸馏训练一个浅层神经网络$g_{\phi}$（称为AMED预测器），其训练成本较低且采样成本可忽略不计。简而言之，给定教师采样轨迹上的样本$y_{t_n}$、$y_{t_{n + 1}}$和学生采样轨迹上的$x_{t_{n + 1}}$，$g_{\phi}$给出使$d(x_{t_n}, y_{t_n})$最小化的$s_n$和$c_n$，其中$x_{t_n}$由公式$(9)$给出，$d(\cdot, \cdot)$是一种距离度量。由于我们试图找到最能近似公式$(8)$中积分的平均方向，因此我们将所提出的单步ODE求解器公式$(9)$命名为近似平均方向求解器（Approximate MEan - Direction Solver），简称为AMED - Solver。在详细说明训练和采样细节之前，我们先将我们的想法推广为现有快速ODE求解器的插件。</p>
+<h4 id="3-3-AMED作为插件"><a href="#3-3-AMED作为插件" class="headerlink" title="3.3 AMED作为插件"></a>3.3 AMED作为插件</h4><p>AMED的思想可用于进一步改进现有的扩散模型快速ODE求解器。在我们的分析中，我们以多项式时间调度[18]为例：</p>
+<script type="math/tex; mode=display">t_n=(t_1^{1/\rho}+\frac{n - 1}{N - 1}(t_N^{1/\rho}-t_1^{1/\rho}))^{\rho}\tag{10}</script><p>需要注意的是，另一种常用的均匀对数信噪比（logSNR）调度实际上是公式$(10)$中$\rho$趋于正无穷时的极限情况。</p>
+<p>给定一个时间调度$\Gamma = \{t_1 = \epsilon, \cdots, t_N = T\}$，AMED - Solver通过在$s_n \in (t_n, t_{n + 1})$（$n = 1, \cdots, N - 1$）进行额外的模型评估来实现。同样地，我们可以通过预测$\{s_n\}_{n = 1}^{N - 1}$和$\{c_n\}_{n = 1}^{N - 1}$来改进任何ODE求解器，使学生和教师采样轨迹达到最佳对齐。</p>
+<p>我们通过一个实验对此进行验证。在实验中，我们固定$c_n = 1$，首先使用Heun的第二种方法，以80次NFE生成一个真实轨迹$\{x_{t_n}^G\}_{n = 1}^N$，并在$\Gamma$处提取样本。对于每个ODE求解器，我们按照DPM - Solver - 2[25]的做法，在$s_n = \sqrt{t_n t_{n + 1}}$处进行评估，生成一个基线轨迹$\{x_{t_n}^B\}_{n = 1}^N$。然后，我们对$r_n$进行网格搜索，得到$s_n = t_n^{r_n}t_{n + 1}^{1 - r_n}$和一个搜索轨迹$\{x_{t_n}^S\}_{n = 1}^N$。我们将相对对齐度定义为$\left|x_{t_n}^B - x_{t_n}^G\right|_2 - \left|x_{t_n}^S - x_{t_n}^G\right|_2$。正的相对对齐度值表明搜索轨迹$\{x_{t_n}^S\}_{n = 1}^N$比基线轨迹$\{x_{t_n}^B\}_{n = 1}^N$更接近真实轨迹$\{x_{t_n}^G\}_{n = 1}^N$。如图5所示，相对对齐度值在大多数情况下保持为正，这意味着适当选择中间时间步可以进一步改进快速ODE求解器。因此，如3.2节所述，我们还训练一个AMED预测器来预测中间时间步以及方向缩放因子。由于这个过程仍然具有寻找指向真实解方向的意义，我们将这种方法命名为AMED - Plugin，并将其应用于各种快速ODE求解器。</p>
+<p>通过图5，我们可以直接比较DPM - Solver - 2和我们提出的AMED - Solver，因为当$r$固定为0.5时，它们具有相同的基线轨迹。我们的AMED - Solver与真实解的对齐更好，并且搜索得到的中间时间步的位置比DPM - Solver - 2稳定得多。我们推测，DPM - Solver - 2受固定$r$限制的梯度方向（见表1）不是最优的。相反，学习得到的系数为AMED - Solver提供了更大的灵活性，以确定更好的梯度方向。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f5.png" width="40%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图5：搜索中间时间步的有效性。给定时间调度$\Gamma = \{t_1 = \epsilon, \cdots, t_N = T\}$，其中$\epsilon = 0.002$，$T = 80$，$N = 6$，我们首先生成一个真实轨迹。对于每个ODE求解器，我们通过在$s_n = \sqrt{t_n t_{n + 1}}$处进行评估生成一个基线轨迹，并通过对$r_n$进行贪婪网格搜索得到$s_n = t_n^{r_n}t_{n + 1}^{1 - r_n}$，从而生成一个搜索轨迹。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="3-4-训练和采样"><a href="#3-4-训练和采样" class="headerlink" title="3.4 训练和采样"></a>3.4 训练和采样</h4><p>由于来自不同采样轨迹的样本趋近于不对称的数据流形，它们当前的位置应该对相应的轨迹曲率有所贡献[6]。为了在不增加额外计算开销的情况下识别样本位置，我们在每次评估预训练的U - Net模型后提取其瓶颈特征。然后，我们将当前和下一个时间步$t_{n + 1}$和$t_n$以及瓶颈特征$h_{t_{n + 1}}$作为AMED预测器$g_{\phi}$的输入，以预测中间时间步$s_n$和缩放因子$c_n$。形式上，我们有：</p>
+<script type="math/tex; mode=display">\{s_n, c_n\}=g_{\phi}(h_{t_{n + 1}},t_{n + 1},t_n)\tag{11}</script><p>网络架构如图6所示。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f6.png" width="40%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图6：网络架构。给定U - Net模型在时间$t_{n + 1}$提取的瓶颈特征，我们进行通道均值池化，并将其通过两个全连接层。它与时间嵌入连接，再经过一个额外的全连接层和一个sigmoid函数，输出$r_n$和$c_n$。然后中间时间步由$s_n = t_n^{r_n}t_{n + 1}^{1 - r_n}$给出。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>至于从时间$t_{n + 1}$到$t_n$的采样，我们首先在$t_{n + 1}$处进行一次U - Net评估，并提取瓶颈特征$h_{n + 1}$以预测$s_n$和$c_n$。对于AMED - Solver，我们通过从$t_{n + 1}$到$s_n$的欧拉步得到$x_{s_n}$，然后使用公式$(9)$得到$x_{t_n}$。当在其他ODE求解器上应用AMED - Plugin时，我们按照原始求解器的采样过程从$t_{n + 1}$步进到$s_n$，再从$s_n$步进到$t_n$，并且$c_n$用于缩放后一步的方向。因此，总NFE为$2(N - 1)$。我们将从$t_{n + 1}$到$t_n$的这样一个采样步表示为：</p>
+<script type="math/tex; mode=display">x_{t_n}=\Phi(x_{t_{n + 1}},t_{n + 1},t_n,\Lambda_n)\tag{12}</script><p>其中$\Lambda_n$是在这一步中引入的中间时间步$s_n \in (t_n, t_{n + 1})$和缩放因子$c_n$的集合。</p>
+<p>$g_{\phi}$的训练基于知识蒸馏，这需要在$\Gamma$处评估的学生和教师采样轨迹，分别表示为$\{x_{t_n}\}_{n = 1}^N$和$\{y_{t_n}\}_{n = 1}^N$。然后，我们将生成学生和教师轨迹的采样过程分别表示为$\Phi_s$（带有$\Lambda_n^s = \{s_n, c_n\}$）和$\Phi_t$（带有$\Lambda_n^t$）。由于教师轨迹需要更多的NFE来提供可靠的参考，我们将中间时间步设置为按照原始时间调度在$t_n$和$t_{n + 1}$之间进行$M$步插值。以多项式调度为例，我们设置$\Lambda_n^t = \{s_n^1 \cdots, s_n^M, c_n^1 = 1 \cdots, c_n^M = 1\}$，其中：</p>
+<script type="math/tex; mode=display">s_n^i=(t_n^{1/\rho}+\frac{i}{M + 1}(t_{n + 1}^{1/\rho}-t_n^{1/\rho}))^{\rho}\tag{13}</script><p>我们使用两个轨迹上样本之间的距离度量$d(\cdot, \cdot)$来训练$g_{\phi}$，其中$\{s_n, c_n\}$由$g_{\phi}$预测：</p>
+<script type="math/tex; mode=display">\mathcal{L}_{t_n}(\phi)=d(\Phi_s(x_{t_{n + 1}},t_{n + 1},t_n,\{s_n, c_n\}),y_{t_n})\tag{14}</script><p>在一个训练循环中，我们首先在$t_N$处生成一批噪声图像和教师轨迹。然后，我们计算损失，并从$t_{N - 1}$到$t_1$逐步更新$g_{\phi}$。因此，在一个训练循环中应用$N - 1$次反向传播。训练和采样算法分别在算法1和算法2中给出。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="a1.png"></th>
+<th style="text-align:center"><img src="a2.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>算法1</em></td>
+<td style="text-align:center"><em>算法2</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>与之前的研究发现（当t较大时，采样轨迹近乎直线 ）类似，我们注意到在时间$t_N$处的梯度项$\epsilon_{\theta}(x_{t_{N}}, t_{N})$与$x_{t_{N}}$的方向几乎相同。因此，为节省一次函数评估次数（NFE），我们在首次采样步骤中直接将$x_{t_{N}}$用作方向，这在NFE预算有限的情况下尤为重要。该技巧被称为解析首步（AFS） 。我们发现，对于低分辨率的数据集，应用AFS对样本质量的影响微乎其微，甚至还能提升样本质量。</p>
+<p>受同期研究成果[49]的启发，当在分辨率较小（32×32和64×64）的数据集上，将我们的AMED-Plugin应用于DDIM[43]、iPNDM[51]和DPM-Solver++ [26]时，我们可以选择通过$g_{\phi}$额外训练时间缩放因子$\{a_{n}\}_{n = 1}^{N - 1}$，以拓展解空间。给定$a_{n}$ ，在向$t_{n}$步长推进时，我们使用$\epsilon_{\theta}(x_{s_{n}}, a_{n}s_{n})$代替$\epsilon_{\theta}(x_{s_{n}}, s_{n})$，在某些情况下，这一做法提升了实验结果。</p>
+<h4 id="3-5-与基于蒸馏的方法比较"><a href="#3-5-与基于蒸馏的方法比较" class="headerlink" title="3.5 与基于蒸馏的方法比较"></a>3.5 与基于蒸馏的方法比较</h4><p>尽管我们提出的AMED-Solver是一种基于求解器的方法，但它与基于蒸馏的方法有着相似的原理。主要区别在于，基于蒸馏的方法最终通过微调预训练模型或从头开始训练新的预测模型，构建从噪声到数据分布的映射[6, 27, 39, 46]，而我们的AMED-Solver仍然遵循求解ODE的本质，构建从噪声到图像的概率流。基于蒸馏的方法仅通过一次NFE就能实现高质量生成，展现出令人瞩目的成果[46]。然而，这些方法在训练上需要付出巨大努力。人们需要精心设计训练细节，并且训练模型通常需要花费大量时间（通常需要数天甚至数十天的GPU计算时间）。此外，由于基于蒸馏的模型像典型的生成模型一样直接构建映射，它们在两个不相连的模式之间进行插值时存在困难[40]。</p>
+<p>此外，我们的训练目标是恰当地预测采样过程中的几个参数，而不是像那些基于蒸馏的方法那样直接预测下一个时间步的高维样本。因此，得益于采样轨迹的几何特性，我们的架构非常简单，易于训练。此外，AMED-Solver保留了基于ODE求解器方法的本质，并且对于下游任务而言，不存在明显的内在缺陷。</p>
+<h3 id="4-实验"><a href="#4-实验" class="headerlink" title="4. 实验"></a>4. 实验</h3><h4 id="4-1-设置"><a href="#4-1-设置" class="headerlink" title="4.1 设置"></a>4.1 设置</h4><p><strong>数据集</strong>：我们在图像分辨率从32到512的广泛数据集上应用AMED-Solver和AMED-Plugin，包括CIFAR10 32×32[21]、FFHQ 64×64[17]、ImageNet 64×64[37]、LSUN Bedroom 256×256[50]。我们还在分辨率为512的Stable-Diffusion[34]上给出了定量和定性结果。</p>
+<p><strong>模型</strong>：预训练模型包括来自[18]和[46]的像素空间模型，以及来自[34]的隐空间模型。</p>
+<p><strong>求解器</strong>：我们重新实现了几种有代表性的快速ODE求解器，包括DDIM[43]、DPM-Solver-2[25]、多步DPM-Solver++[26]、UniPC[52]和改进的PNDM（iPNDM）[23,51]。值得一提的是，我们发现iPNDM取得了非常令人印象深刻的结果，在许多情况下优于其他ODE求解器。</p>
+<p><strong>时间调度</strong>：我们主要使用多项式时间调度（$\rho=7$），这是[18]中的默认设置，但对于DPM-Solver++和UniPC，我们使用原始论文[26,52]中推荐的logSNR调度以获得更好的结果。此外，对于CIFAR10 32×32[21]、FFHQ 64×64[17]和ImageNet 64×64[37]上的AMED-Solver，我们使用均匀时间调度，这在具有DDPM主干的论文[15]中广泛使用。</p>
+<p><strong>训练</strong>：AMED预测器$g_{\phi}$的总参数仅为9k。使用单个NVIDIA A100 GPU训练$g_{\phi}$处理10k图像，在CIFAR10上需要2-8分钟，在LSUN Bedroom上需要1-3小时。在所有实验中，均使用L2范数作为公式(14)中的距离度量。我们使用双倍NFE（$M=1$）的DPM-Solver-2[25]或EDM[18]生成AMED-Solver的教师轨迹，而AMED-Plugin使用与生成学生轨迹相同的求解器（DPM-Solver-2的$M=1$，其他求解器的$M=2$）。详细讨论见附录C.2。</p>
+<p><strong>采样</strong>：由于设计原因，AMED-Solver和AMED-Plugin自然生成偶数NFE的求解器。使用解析首步（AFS）时，总NFE变为奇数。为了设计小NFE的快速求解器，我们主要在NFE∈{3,5,7,9}（应用AFS）上测试我们的方法。附录C.4提供了NFE∈{4,6,8,10}（不使用AFS）的更多结果。</p>
+<p><strong>评估</strong>：我们通过弗雷歇 inception 距离（FID）[14]衡量样本质量，使用50k图像计算FID。对于Stable-Diffusion，我们遵循[33]，使用从MS-COCO[22]验证集采样的30k固定提示生成的30k图像评估FID值。</p>
+<h4 id="4-2-图像生成"><a href="#4-2-图像生成" class="headerlink" title="4.2 图像生成"></a>4.2 图像生成</h4><p>在本节中，我们展示图像生成结果。对于CIFAR10 32×32、FFHQ 64×64和ImageNet 64×64等小分辨率数据集，我们报告AMED-Plugin在iPNDM求解器上的结果（因其领先性能）。对于LSUN Bedroom等大分辨率数据集，我们报告AMED-Plugin在DPM-Solver-2上的结果（因AFS对多步求解器在此类情况下效果较差，详见附录C.4）。我们实现的DPM-Solver++和UniPC为3阶，iPNDM为4阶。为报告DPM-Solver-2和EDM的奇数NFE结果，我们在其第一步应用AFS。</p>
+<p>结果如表2所示。AMED-Solver优于其他单步方法，甚至在许多情况下击败多步方法。对于AMED-Plugin，我们发现其在应用于各种求解器时尤其对DPM-Solver-2有显著提升（见表2d）。值得注意的是，iPNDM上的AMED-Plugin在5 NFE下，使CIFAR10 32×32、ImageNet 64×64和FFHQ 64×64的FID分别改善了6.98、4.68和5.16。我们的方法在约5 NFE的基于求解器的方法中取得了最先进的结果。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t2.png" width="80%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表2. 图像生成结果。我们提出的AMED-Solver和AMED-Plugin在约5次函数评估次数（NFE）的基于求解器的方法中取得了最先进的结果。†：训练了额外的时间缩放因子$\{a_{n}\}_{n=1}^{N-1}$。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>对于Stable-Diffusion[34]，我们使用v1.4检查点，默认无分类器引导尺度为7.5。样本按官方实现推荐使用DPM-Solver++(2M)生成。定量结果见表3。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t3.png" width="50%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表3. 在Stable-Diffusion[34]上的FID结果。AMED-Plugin应用于DPM-Solver++(2M)求解器。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>在图7中，我们展示了AMED-Solver的学习参数$g_{\phi}$，其中$r_n$和$c_n$由$g_{\phi}$预测，$s_n=t_n^{r_n}t_{n+1}^{1-r_n}$。虚线表示DPM-Solver-2的默认设置。更多定量和定性结果见附录C。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f7.png" width="50%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图7. 学习到的系数$r_{n}$和$c_{n}$在不同步骤中变化，且平均值始终低于默认设置。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="4-3-消融研究"><a href="#4-3-消融研究" class="headerlink" title="4.3 消融研究"></a>4.3 消融研究</h4><p><strong>教师求解器</strong>：在表4中，我们在CIFAR10上测试了使用不同教师求解器训练$g_{\phi}$的AMED-Solver和AMED-Plugin（基于iPNDM）。结果表明，当教师求解器与学生求解器的采样过程相似时，可获得最佳结果。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t4.png" width="50%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表4. CIFAR10数据集上教师求解器的比较。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>时间调度</strong>：我们观察到不同的快速ODE求解器对时间调度有不同偏好，甚至依赖于所使用的数据集。在表5中，我们提供了DPM-Solver++(3M)[26]在CIFAR10上不同时间调度的结果，发现该求解器偏好logSNR调度（首步和第二步的时间间隔大于其他测试调度）。相比之下，我们的AMED-Plugin在这些情况下均大幅且一致地提升了结果，与具体时间调度无关。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t5.png" width="50%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表5. CIFAR10数据集上不同时间调度下的FID结果。DPM-Solver++(3M)在较大NFE时表现出对均匀logSNR调度的偏好。我们的AMED-Plugin则持续提升了结果。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="5-结论"><a href="#5-结论" class="headerlink" title="5. 结论"></a>5. 结论</h3><p>在本文中，我们引入了一种名为AMED-Solver的单步ODE求解器，以最小化快速扩散采样中的离散化误差。我们的核心发现是，现有ODE求解器生成的每条采样轨迹大致位于二维子空间中，因此均值定理可用于学习近似平均方向。AMED-Solver有效缓解了单步方法中常见的样本质量快速下降问题，并在大分辨率数据集上表现出色。我们还将AMED-Solver的思想推广为AMED-Plugin，这是一种可应用于任何快速ODE求解器的插件，以进一步提高样本质量。通过大量实验验证，我们的方法在极小数目的函数评估次数（约5次）下取得了最先进的结果。我们希望我们的尝试能够启发未来的工作，进一步释放快速求解器在扩散模型中的潜力。</p>
+<p><strong>局限性与未来工作</strong>：扩散模型的快速ODE求解器对时间调度高度敏感，尤其是在NFE预算有限的情况下（见表5）。通过实验我们发现，任何固定的时间调度都无法在所有情况下表现良好。实际上，我们的AMED-Plugin可视为对时间调度的部分调整，以部分缓解但无法完全避免这一问题。我们认为，更好的时间调度设计需要进一步了解采样轨迹的几何形状[6]，这将留待未来的工作探索。</p>
+<h3 id="6-致谢"><a href="#6-致谢" class="headerlink" title="6. 致谢"></a>6. 致谢</h3><p>作者要感谢Jianlin Su和匿名审稿人提出的宝贵意见。本研究得到了浙江大学上海高等研究院繁星科学基金（项目编号：SN-ZJU-SIAS-001）、国家自然科学基金（项目编号：U1866602）以及杭州市城市大学超级计算中心提供的先进计算资源支持。</p>
+<h3 id="A-相关工作"><a href="#A-相关工作" class="headerlink" title="A. 相关工作"></a>A. 相关工作</h3><p>自从扩散模型[15,44]诞生以来，与其他生成模型[12,19]相比，其生成速度已成为主要缺点。为解决这一问题，研究人员已采取措施加速扩散模型的采样，主要分为两大方向。</p>
+<p>一是设计更快的求解器。在早期工作[30,43]中，作者通过系统或二次采样减少时间步数，将生成速度从1000次函数评估（NFE）加速至少于50次。Analytic-DPM[3]提供了采样过程中最优方差的解析形式，并改善了结果。最近，鉴于将扩散过程解释为概率流常微分方程（PF-ODE）[45]，一类基于数值方法的ODE求解器将采样过程加速至约10次NFE。EDM[18]的作者在扩散模型的训练和采样方面实现了多项改进，并提出使用Heun的二阶方法。PDNM[23]使用线性多步法结合龙格-库塔算法对PF-ODE进行热启动求解。文献[51]的作者建议使用低阶线性多步法进行热启动，并提出了iPNDM。鉴于PF-ODE的半线性结构，DPM-Solver[25]和DEIS[51]分别通过对PF-ODE解析解中涉及的积分进行泰勒展开和多项式外推来提出。DPM-Solver在DPM-Solver++[26]中进一步扩展为单步和多步方法。UniPC[52]提出了统一的预测-校正求解器，并相比DPM-Solver++改进了结果。</p>
+<p>除了上述无需训练的快速求解器，还有需要额外训练的求解器。[48]针对广义DDPM族提出了一系列重参数化方法，采用KID[5]损失。与我们的方法更相关的是，在GENIE[10]中，作者将二阶截断泰勒方法[32]应用于PF-ODE，并通过蒸馏新模型来预测高阶梯度项。不同于此，在AMED-Solver中，我们训练了一个仅预测中间时间步的网络，而非高维输出。</p>
+<p>另一主流方向是基于训练的蒸馏方法，试图构建从噪声分布到隐式数据分布的直接映射。这一思想最早在[27]中作为离线方法引入，需要预先构建由原始模型生成的数据集。Rectified Flow[24]也引入了基于最优传输的离线蒸馏。对于在线蒸馏方法，可以将扩散模型从超过1000步逐步蒸馏至1步[4,39]，或利用PF-ODE轨迹的一致性属性来调整去噪输出[8,13,46]。</p>
+<h3 id="B-实验细节"><a href="#B-实验细节" class="headerlink" title="B. 实验细节"></a>B. 实验细节</h3><p><strong>数据集：</strong>我们在广泛的数据集和设置上应用了AMED-Solver和AMED-Plugin。我们报告了包括像素空间和隐空间无条件生成、有/无引导条件生成的结果。数据集的图像分辨率从32到512不等，包括CIFAR10 32×32[21]、FFHQ 64×64[17]、ImageNet 64×64[37]和LSUN卧室256×256[50]。我们还给出了由分辨率为512的Stable-Diffusion[34]生成的定量和定性结果。为了进一步评估我们方法的有效性，在附录C中，我们还包括了使用分类器引导的ImageNet 256×256[37]和隐空间LSUN卧室256×256[50]的更多结果。  </p>
+<p><strong>模型：</strong>我们在实验中使用的预训练模型包括来自[18]、[46]以及[9]的像素空间模型，和来自[34]的隐空间模型。我们的代码架构主要基于[18]的实现。  </p>
+<p><strong>快速ODE求解器：</strong>为了进行公平比较，我们重新实现了几种有代表性的快速ODE求解器，包括DDIM[43]、DPM-Solver-2[25]、多步DPM-Solver++[26]、UniPC[52]和改进的PNDM（iPNDM）[23,51]。通过实现，我们获得了比原始论文更好或相当的FID结果。值得一提的是，在实现过程中，我们发现iPNDM取得了非常令人印象深刻的结果，在许多情况下优于其他ODE求解器。  </p>
+<p><strong>时间调度：</strong>我们注意到不同的ODE求解器对时间调度有不同的偏好。我们主要使用多项式时间调度（ρ=7），这是[18]中的默认设置，但DPM-Solver++和UniPC除外，我们在这些求解器中使用了原始论文[26,52]推荐的logSNR时间调度以获得更好的结果。如第3.4节所述，logSNR调度是多项式调度当ρ趋近于+∞时的极限情况。此外，对于CIFAR10 32×32[21]、FFHQ 64×64[17]和ImageNet 64×64[37]上的AMED-Solver，我们使用了均匀时间调度，这在具有DDPM[15]主干的论文中被广泛使用。在我们的设置中，这种均匀时间调度从其原始范围[0.001,1]转换为[t₁, tₙ]，遵循EDM[18]的实现。对于使用分类器引导的ImageNet 256×256和隐空间LSUN卧室的实验，均匀时间调度效果最佳，原因可能在于它们不同的训练过程。  </p>
+<p><strong>训练：</strong>由于AMED预测器g_φ仅包含9k参数，其训练不会造成太大的计算成本。训练过程的主要时间用于生成学生和教师轨迹。我们使用单个NVIDIA A100 GPU对g_φ进行10k图像的训练，在CIFAR10上耗时2-8分钟，在LSUN卧室上耗时1-3小时。对于公式（14）中的距离度量，我们在所有实验中均使用L2范数。对于AMED-Solver的教师轨迹生成，我们使用DPM-Solver-2[25]或EDM[18]并将NFE加倍（M=1）。对于AMED-Plugin，我们使用与生成学生轨迹相同的求解器，其中DPM-Solver-2的M=1，其他求解器的M=2。  </p>
+<p><strong>采样：</strong>由于设计原因，我们的AMED-Solver或AMED-Plugin自然生成具有偶数NFE的求解器。因此，一旦使用解析第一步（AFS），总NFE变为奇数。出于设计极小NFE快速ODE求解器的目标，我们主要在NFE∈{3,5,7,9}（使用AFS）的情况下测试我们的方法。也有不使用AFS的NFE∈{4,6,8,10}的结果。  </p>
+<p><strong>评估：</strong>我们通过Fréchet Inception Distance（FID）[14]衡量样本质量，这是一种著名的图像质量定量评估指标，与人类感知高度一致。对于所有涉及的实验，我们使用[18]中的实现计算50k样本的FID。对于Stable-Diffusion，我们遵循[33]，通过从MS-COCO[22]验证集采样的30k个固定提示生成的30k样本评估FID值。</p>
+<h3 id="C-补充结果"><a href="#C-补充结果" class="headerlink" title="C. 补充结果"></a>C. 补充结果</h3><h4 id="C-1-单步求解器的快速退化"><a href="#C-1-单步求解器的快速退化" class="headerlink" title="C.1 单步求解器的快速退化"></a>C.1 单步求解器的快速退化</h4><p>在预实验中，我们发现通过适当选择中间时间步可以缓解单步求解器的快速退化问题。如表6所示，DPM-Solver-2的性能对其超参数r的选择非常敏感。我们应用AMED-Plugin来学习合适的r，发现它在添加很少训练开销和可忽略的采样开销的情况下，取得了与最佳搜索r相似的结果。  </p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t6.png" width="50%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表6：DPM-Solver-2在CIFAR10上的性能对r的选择敏感。在DPM-Solver-2上应用AMED-Plugin有效帮助学习合适的r。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="C-2-中间步骤的消融研究"><a href="#C-2-中间步骤的消融研究" class="headerlink" title="C.2 中间步骤的消融研究"></a>C.2 中间步骤的消融研究</h4><p>如第3.4节所述，对于教师采样轨迹，每个采样步骤中注入M个中间时间步。我们使用平滑插值，这意味着由原始调度Γ和注入的时间步组合而成的教师时间调度，等同于在相同ρ下通过简单地将公式（10）中的总时间步数设置为$(M+1)(N-1)+1$得到的时间调度。通过这种方式，我们可以轻松地在教师轨迹上的Γ处提取样本，以获得参考样本$\{y_{t_n}\}_{n=1}^N$。  </p>
+<p>这里我们以在CIFAR10上使用iPNDM和AMED-Plugin进行无条件生成为例，提供关于M选择的消融研究。学生和教师求解器设置为相同。结果如表7所示。  </p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t7.png" width="50%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表7 在CIFAR10上使用iPNDM和AMED-Plugin时，M对结果的敏感性。训练了额外的时间缩放因子。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="C-3-瓶颈特征输入和时间缩放因子的消融研究"><a href="#C-3-瓶颈特征输入和时间缩放因子的消融研究" class="headerlink" title="C.3 瓶颈特征输入和时间缩放因子的消融研究"></a>C.3 瓶颈特征输入和时间缩放因子的消融研究</h4><p>由于输入到g_φ的U-Net瓶颈特征因样本而异，学习到的参数是样本相关的，这意味着不同轨迹具有不同的时间调度。由于不同起点的采样轨迹具有相似的几何形状，输入瓶颈特征的有效性可能有限。我们还注意到，在训练过程中，同一批次中学习参数的标准差较小。因此，我们需要测试U-Net瓶颈特征输入是否必要。在表8中，我们将U-Net瓶颈特征替换为零矩阵（无瓶颈），得到所有采样轨迹共享的参数。结果显示了瓶颈特征输入的有效性。此外，时间缩放因子的使用提供了改进的结果。当在小分辨率（32×32和64×64）数据集上对DDIM[43]、iPNDM[51]和DPM-Solver++[26]应用我们的AMED-Plugin时，我们可选地通过g_φ训练此时间缩放因子以扩展解空间。  </p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t8.png" width="50%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表8 在CIFAR10上使用iPNDM和AMED-Plugin时，瓶颈特征输入的消融研究。†：训练了额外的时间缩放因子。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="C-4-解析第一步（AFS）的消融研究"><a href="#C-4-解析第一步（AFS）的消融研究" class="headerlink" title="C.4 解析第一步（AFS）的消融研究"></a>C.4 解析第一步（AFS）的消融研究</h4><p>解析第一步（AFS）技巧最早在[10]中引入，用于减少一次NFE，其中作者将第一个采样步骤中的U-Net输出替换为x_T的方向。在表10和表11中，我们提供了表2a和表2b的扩展结果，以及AFS与我们提出的AMED-Plugin之间的消融对比。我们发现，在分辨率为32和64的数据集上，使用AFS提供了一致的改进。结果表明，在大多数情况下，它们可以被视为两个独立的组件，共同提升各种ODE求解器的性能。然而，对于高分辨率数据集，应用AFS通常会导致较大的性能下降（见表9）。  </p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t10.png" width="70%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表10. CIFAR10 32×32上的无条件生成：训练了额外的时间缩放因子${a_{n}}_{n=1}^{N-1}$。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t11.png" width="70%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表11. ImageNet 64×64上的条件生成：训练了额外的时间缩放因子${a_{n}}_{n=1}^{N-1}$。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t9.png" width="50%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表9 在像素空间LSUN卧室256×256上AFS的消融研究。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="C-5-更多定量结果"><a href="#C-5-更多定量结果" class="headerlink" title="C.5 更多定量结果"></a>C.5 更多定量结果</h4><p>在本节中，我们提供了更多数据集上的额外定量结果，包括隐空间LSUN卧室256×256[34,50]和使用分类器引导的ImageNet 256×256[37]。结果如表12和表13所示。  </p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t12.png" width="50%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表12 隐空间LSUN卧室上的无条件生成。AMED-Plugin应用于DPM-Solver++。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t13.png" width="50%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表13 使用分类器引导的ImageNet 256×256上的条件生成。AMED-Plugin应用于DPM-Solver++。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="C-6-更多定性结果"><a href="#C-6-更多定性结果" class="headerlink" title="C.6 更多定性结果"></a>C.6 更多定性结果</h4><p>我们在图8中展示了使用Stable-Diffusion-v1[34]生成的更多定性结果，默认无分类器引导尺度为7.5。图10至图15提供了在NFE为3和5时各种数据集上的结果。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f8.png" width="50%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图8. 使用Stable-Diffusion v1.4[34]生成的图像，默认无分类器引导尺度为7.5。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f10.png" width="70%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图10. 使用3次函数评估（NFE）在CIFAR10 32×32数据集上生成的未筛选样本。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f11.png" width="70%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图11. 使用3次函数评估（NFE）在ImageNet 64×64数据集上生成的未筛选样本。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f12.png" width="70%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图12. 使用3次函数评估（NFE）在FFHQ 64×64数据集上生成的未筛选样本。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f13.png" width="70%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图13. 使用5次函数评估（NFE）在CIFAR10 32×32数据集上生成的未筛选样本。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f14.png" width="70%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图14. 使用5次函数评估（NFE）在ImageNet 64×64数据集上生成的未筛选样本。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f15.png" width="70%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图15. 使用5次函数评估（NFE）在FFHQ 64×64数据集上生成的未筛选样本。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="D-理论分析"><a href="#D-理论分析" class="headerlink" title="D. 理论分析"></a>D. 理论分析</h3><p>在第3.1节中，我们通过实验表明，由ODE求解器生成的扩散模型采样轨迹几乎位于环境空间中的二维子空间内。这是均值定理在向量值函数情况下近似成立的核心条件。然而，采样轨迹并不一定严格位于平面内。在本节中，我们分析这对AMED-Solver的影响程度，其中我们将二维子空间设定为由前两个主成分张成的平面。  </p>
+<h4 id="符号说明"><a href="#符号说明" class="headerlink" title="符号说明"></a>符号说明</h4><ul>
+<li>设 $d$ 为环境空间的维度。  </li>
+<li>$\{x_{\tau}\}_{\tau=\epsilon}^{T}$ 为PF-ODE方程（6）的解。  </li>
+<li>$\{\tilde{x}_{\tau}\}_{\tau=\epsilon}^{T}$ 为将 $\{x_{\tau}\}_{\tau=\epsilon}^{T}$ 投影到由其前两个主成分张成的二维子空间后得到的轨迹。  </li>
+<li>给定 $\epsilon \leq s &lt; m &lt; t \leq T$ 和常数 $c$，AMED-Solver的单步更新为：  <script type="math/tex; mode=display">
+x_{s}^{A} = x_{t} + c(s-t)\epsilon_{\theta}(x_{m}, m). \tag{15}</script></li>
+<li>定义缩放逻辑函数为：  <script type="math/tex; mode=display">
+f(\tau) = a\left(\frac{1}{1+e^{-b\tau}} - \frac{1}{2}\right), \quad \tau \in \mathbb{R}; \ a, b \in \mathbb{R}^{+}. \tag{16}</script></li>
+<li>定义随机微分方程（SDE）：  <script type="math/tex; mode=display">
+dz_{\tau} = g(\tau)dw_{\tau}, \quad \tau \in [s, t] \tag{17}</script>其中初始值在 $t$ 处为0，$g(\tau)$ 为实值函数，$w_{\tau} \in \mathbb{R}^{d}$ 为标准维纳过程。  </li>
+</ul>
+<h4 id="假设条件"><a href="#假设条件" class="headerlink" title="假设条件"></a>假设条件</h4><p><strong>假设1</strong>：存在 $a, b &gt; 0$，使得对 $\tau \in [\epsilon, T]$，有  </p>
+<script type="math/tex; mode=display">
+\|x_{\tau} - \tilde{x}_{\tau}\|_{2} \leq f(\tau).</script><p>对于 $a$ 和 $b$ 的选择，在图9中，我们按照第3.1节的实验设置计算 $|x_{\tau} - \tilde{x}_{\tau}|_{2}$。通过实验发现，通过设置 $a = \sqrt{3d}/15$ 和 $b = 3$，可以大致上界该范数。  </p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f9.png" width="70%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图9. 按照第3.1节中的实验，我们计算$\parallel x_{t}-\overline{x}_{t} \parallel _{2}$，并发现可以通过适当设置公式（16）对其进行界定。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>假设2</strong>：存在可积函数 $\omega: \mathbb{R}^{d+1} \to \mathbb{R}^{d}$，使得 $\{\tilde{x}_{\tau}\}_{\tau=\epsilon}^{T}$ 满足</p>
+<script type="math/tex; mode=display">
+\tilde{x}_{s} = \tilde{x}_{t} + \int_{t}^{s} \left[\epsilon_{\theta}(x_{\tau}, \tau) + \omega(x_{\tau}, \tau)\right] d\tau, \tag{18}</script><p>初始值为 $\tilde{x}_{T}$。通过这种方式，我们可以将方程（7）中的积分分解为与 $\{\tilde{x}_{\tau}\}_{\tau=\epsilon}^{T}$ 所在平面平行和垂直的两个分量，即</p>
+<script type="math/tex; mode=display">
+\int_{t}^{s} \epsilon_{\theta}(x_{\tau}, \tau) d\tau = \int_{t}^{s} \epsilon_{\theta}(x_{\tau}, \tau)_{\parallel} d\tau + \int_{t}^{s} \epsilon_{\theta}(x_{\tau}, \tau)_{\perp} d\tau, \tag{19}</script><p>其中 $\epsilon_{\theta}(x_{\tau}, \tau)_{\parallel}$ 和 $\epsilon_{\theta}(x_{\tau}, \tau)_{\perp}$ 分别为平行和垂直分量。  </p>
+<p><strong>假设3</strong>：将方程（15）中的 $\epsilon_{\theta}(x_{m}, m)$ 分解为假设2中的平行和垂直分量：</p>
+<script type="math/tex; mode=display">
+\epsilon_{\theta}(x_{m}, m) = \epsilon_{\theta}^{\parallel}(x_{m}, m) + \epsilon_{\theta}^{\perp}(x_{m}, m). \tag{20}</script><p>假设平行分量被最优学习，且对于垂直分量，有</p>
+<script type="math/tex; mode=display">
+\|c(s-t)\epsilon_{\theta}^{\perp}(x_{m}, m)\|_{2} \leq \left\| \int_{t}^{s} \omega(x_{\tau}, \tau) d\tau \right\|_{2}. \tag{21}</script><p><strong>假设4</strong>：存在函数 $g(\tau)$，使得在高概率下，</p>
+<script type="math/tex; mode=display">
+\left\| \int_{t}^{s} \omega(\tilde{x}_{\tau}, \tau) d\tau \right\|_{2} \leq \|z_{s}\|_{2}. \tag{22}</script><h4 id="引理1"><a href="#引理1" class="headerlink" title="引理1"></a>引理1</h4><p>在假设1和假设4下，令 $g(\tau) = f(\tau)/\sqrt{d}$，则 $z_{s}$ 集中在半径为</p>
+<script type="math/tex; mode=display">
+r(s, t) = \frac{a}{\sqrt{b}} \sqrt{\left.\frac{1}{1+e^{x}}\right|_{bs}^{bt} + \frac{b}{4}(t-s)} \tag{23}</script><p>的薄壳内。  </p>
+<p><strong>证明</strong>：由于SDE方程（17）的漂移系数为零，其扰动核 $p(z_{s} | z_{t}=0)$ 是均值为零的高斯分布[41]。协方差 $P(s, t)$ 为</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+P(s, t) &= \int_{s}^{t} g^{2}(\tau) d\tau \cdot I \tag{24}\\
+&= \frac{a^{2}}{d} \int_{s}^{t} \left(\frac{1}{1+e^{-b\tau}} - \frac{1}{2}\right)^{2} d\tau \cdot I \tag{25}\\
+&= \underbrace{\frac{a^{2}}{b d} \left(\left.\frac{1}{1+e^{x}}\right|_{bs}^{bt} + \frac{b}{4}(t-s)\right)}_{\sigma^{2}(s, t)} \cdot I. \tag{26}
+\end{align*}</script><p>根据著名的测度集中定理[47]，存在常数 $c &gt; 0$，使得对任意 $h \geq 0$，有</p>
+<script type="math/tex; mode=display">
+\mathbb{P}\left( \left| \|z_{s}\|_{2} - |\sigma(s, t)|\sqrt{d} \right| \geq h \right) \leq 2e^{-c h^{2}}, \tag{27}</script><p>证明完毕。  </p>
+<h4 id="命题1"><a href="#命题1" class="headerlink" title="命题1"></a>命题1</h4><p>给定 $\epsilon \leq s &lt; t \leq T$，在上述假设和引理1下，高概率成立</p>
+<script type="math/tex; mode=display">
+\|x_{s} - x_{s}^{A}\|_{2} \leq f(s) + f(t) + r(s, t). \tag{28}</script><p><strong>证明</strong>：根据假设和引理1，有</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+\|x_{s} - x_{s}^{A}\|_{2} &\leq \|x_{s} - \tilde{x}_{s}\|_{2} + \|\tilde{x}_{s} - x_{s}^{A}\|_{2} \tag{29}\\
+&\leq f(s) + \left\| \tilde{x}_{s} - x_{t} - c(s-t)\epsilon_{\theta}(x_{m}, m) \right\|_{2}  \tag{30}\\
+&= f(s) + \left\| \tilde{x}_{t} - x_{t} + \int_{t}^{s} \left(\epsilon_{\theta} + \omega\right)(x_{\tau}, \tau) d\tau - c(s-t)\epsilon_{\theta}(x_{m}, m) \right\|_{2} \tag{31}\\
+&\leq f(s) + f(t) + \left\| c(s-t)\epsilon_{\theta}^{\perp}(x_{m}, m) \right\|_{2} + \left\| c(s-t)\epsilon_{\theta}^{\parallel}(x_{m}, m) - \int_{t}^{s} \epsilon_{\theta}^{\parallel}(x_{\tau}, \tau) d\tau \right\|_{2} \tag{32}\\
+&\leq f(s) + f(t) + \left\| \int_{t}^{s} \omega(x_{\tau}, \tau) d\tau \right\|_{2} \tag{33}\\
+&\leq f(s) + f(t) + r(s, t),
+\end{align*}</script><p>其中最后一步在高概率下成立。证明完毕。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/diffusion/" rel="tag"># diffusion</a>
+              <a href="/tags/CVPR/" rel="tag"># CVPR</a>
+              <a href="/tags/2024/" rel="tag"># 2024</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/05/11/ONE-STEP-DIFFUSION-VIA-SHORTCUT-MODELS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" rel="prev" title="ONE STEP DIFFUSION VIA SHORTCUT MODELS论文精读">
+      <i class="fa fa-chevron-left"></i> ONE STEP DIFFUSION VIA SHORTCUT MODELS论文精读
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1. 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%83%8C%E6%99%AF"><span class="nav-number">1.3.</span> <span class="nav-text">2. 背景</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.3.1.</span> <span class="nav-text">2.1 扩散模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E5%85%88%E5%89%8D%E5%BF%AB%E9%80%9FODE%E6%B1%82%E8%A7%A3%E5%99%A8%E7%9A%84%E5%88%86%E7%B1%BB"><span class="nav-number">1.3.2.</span> <span class="nav-text">2.2 先前快速ODE求解器的分类</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%88%91%E4%BB%AC%E6%8F%90%E5%87%BA%E7%9A%84AMED-Solver"><span class="nav-number">1.4.</span> <span class="nav-text">3. 我们提出的AMED-Solver</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E9%87%87%E6%A0%B7%E8%BD%A8%E8%BF%B9%E5%87%A0%E4%B9%8E%E4%BD%8D%E4%BA%8E%E4%BA%8C%E7%BB%B4%E5%AD%90%E7%A9%BA%E9%97%B4"><span class="nav-number">1.4.1.</span> <span class="nav-text">3.1 采样轨迹几乎位于二维子空间</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E8%BF%91%E4%BC%BC%E5%B9%B3%E5%9D%87%E6%96%B9%E5%90%91%E6%B1%82%E8%A7%A3%E5%99%A8"><span class="nav-number">1.4.2.</span> <span class="nav-text">3.2 近似平均方向求解器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-AMED%E4%BD%9C%E4%B8%BA%E6%8F%92%E4%BB%B6"><span class="nav-number">1.4.3.</span> <span class="nav-text">3.3 AMED作为插件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-%E8%AE%AD%E7%BB%83%E5%92%8C%E9%87%87%E6%A0%B7"><span class="nav-number">1.4.4.</span> <span class="nav-text">3.4 训练和采样</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-5-%E4%B8%8E%E5%9F%BA%E4%BA%8E%E8%92%B8%E9%A6%8F%E7%9A%84%E6%96%B9%E6%B3%95%E6%AF%94%E8%BE%83"><span class="nav-number">1.4.5.</span> <span class="nav-text">3.5 与基于蒸馏的方法比较</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.5.</span> <span class="nav-text">4. 实验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E8%AE%BE%E7%BD%AE"><span class="nav-number">1.5.1.</span> <span class="nav-text">4.1 设置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E5%9B%BE%E5%83%8F%E7%94%9F%E6%88%90"><span class="nav-number">1.5.2.</span> <span class="nav-text">4.2 图像生成</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-%E6%B6%88%E8%9E%8D%E7%A0%94%E7%A9%B6"><span class="nav-number">1.5.3.</span> <span class="nav-text">4.3 消融研究</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E7%BB%93%E8%AE%BA"><span class="nav-number">1.6.</span> <span class="nav-text">5. 结论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E8%87%B4%E8%B0%A2"><span class="nav-number">1.7.</span> <span class="nav-text">6. 致谢</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#A-%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.8.</span> <span class="nav-text">A. 相关工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#B-%E5%AE%9E%E9%AA%8C%E7%BB%86%E8%8A%82"><span class="nav-number">1.9.</span> <span class="nav-text">B. 实验细节</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#C-%E8%A1%A5%E5%85%85%E7%BB%93%E6%9E%9C"><span class="nav-number">1.10.</span> <span class="nav-text">C. 补充结果</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#C-1-%E5%8D%95%E6%AD%A5%E6%B1%82%E8%A7%A3%E5%99%A8%E7%9A%84%E5%BF%AB%E9%80%9F%E9%80%80%E5%8C%96"><span class="nav-number">1.10.1.</span> <span class="nav-text">C.1 单步求解器的快速退化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#C-2-%E4%B8%AD%E9%97%B4%E6%AD%A5%E9%AA%A4%E7%9A%84%E6%B6%88%E8%9E%8D%E7%A0%94%E7%A9%B6"><span class="nav-number">1.10.2.</span> <span class="nav-text">C.2 中间步骤的消融研究</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#C-3-%E7%93%B6%E9%A2%88%E7%89%B9%E5%BE%81%E8%BE%93%E5%85%A5%E5%92%8C%E6%97%B6%E9%97%B4%E7%BC%A9%E6%94%BE%E5%9B%A0%E5%AD%90%E7%9A%84%E6%B6%88%E8%9E%8D%E7%A0%94%E7%A9%B6"><span class="nav-number">1.10.3.</span> <span class="nav-text">C.3 瓶颈特征输入和时间缩放因子的消融研究</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#C-4-%E8%A7%A3%E6%9E%90%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%88AFS%EF%BC%89%E7%9A%84%E6%B6%88%E8%9E%8D%E7%A0%94%E7%A9%B6"><span class="nav-number">1.10.4.</span> <span class="nav-text">C.4 解析第一步（AFS）的消融研究</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#C-5-%E6%9B%B4%E5%A4%9A%E5%AE%9A%E9%87%8F%E7%BB%93%E6%9E%9C"><span class="nav-number">1.10.5.</span> <span class="nav-text">C.5 更多定量结果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#C-6-%E6%9B%B4%E5%A4%9A%E5%AE%9A%E6%80%A7%E7%BB%93%E6%9E%9C"><span class="nav-number">1.10.6.</span> <span class="nav-text">C.6 更多定性结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#D-%E7%90%86%E8%AE%BA%E5%88%86%E6%9E%90"><span class="nav-number">1.11.</span> <span class="nav-text">D. 理论分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%A6%E5%8F%B7%E8%AF%B4%E6%98%8E"><span class="nav-number">1.11.1.</span> <span class="nav-text">符号说明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%81%87%E8%AE%BE%E6%9D%A1%E4%BB%B6"><span class="nav-number">1.11.2.</span> <span class="nav-text">假设条件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BC%95%E7%90%861"><span class="nav-number">1.11.3.</span> <span class="nav-text">引理1</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%91%BD%E9%A2%981"><span class="nav-number">1.11.4.</span> <span class="nav-text">命题1</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zongqing Li"
+      src="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+  <p class="site-author-name" itemprop="name">Zongqing Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hqulzq" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hqulzq" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hqulzq@163.com" title="E-Mail → mailto:hqulzq@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+      
+<script type="text/javascript" charset="utf-8" src="/js/tagcloud.js"></script>
+<script type="text/javascript" charset="utf-8" src="/js/tagcanvas.js"></script>
+<div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div id="myCanvasContainer" class="widget tagcloud">
+        <canvas width="250" height="250" id="resCanvas" style="width=100%">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2023/" rel="tag">2023</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2024/" rel="tag">2024</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2025/" rel="tag">2025</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICML/" rel="tag">ICML</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ODE%E6%B1%82%E8%A7%A3/" rel="tag">ODE求解</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">30</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%85%E8%AF%BB/" rel="tag">阅读</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+        </canvas>
+    </div>
+</div>
+
+
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zongqing Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('post.copy_button').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('post.copy_success')
+          else $(this).text('post.copy_failure')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('post.copy_button')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
