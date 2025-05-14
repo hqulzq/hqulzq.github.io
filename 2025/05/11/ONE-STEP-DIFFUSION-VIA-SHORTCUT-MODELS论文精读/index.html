@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="全文翻译摘要扩散模型和流匹配模型通过学习将噪声转化为数据，能够生成多样且逼真的图像。然而，从这些模型中采样需要经过神经网络多次迭代去噪，这使得生成过程缓慢且成本高昂。以往加速采样的方法需要复杂的训练机制，如多阶段训练、使用多个网络或采用不稳定的调度策略。我们引入了快捷模型（shortcut models），这是一类生成模型，它使用单个网络和单一训练阶段，在单次或多次采样步骤中生成高质量样本。快捷模">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ONE STEP DIFFUSION VIA SHORTCUT MODELS论文精读">
+<meta property="og:url" content="https://hqulzq.github.io/2025/05/11/ONE-STEP-DIFFUSION-VIA-SHORTCUT-MODELS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/index.html">
+<meta property="og:site_name" content="Lzq&#39;s blog">
+<meta property="og:description" content="全文翻译摘要扩散模型和流匹配模型通过学习将噪声转化为数据，能够生成多样且逼真的图像。然而，从这些模型中采样需要经过神经网络多次迭代去噪，这使得生成过程缓慢且成本高昂。以往加速采样的方法需要复杂的训练机制，如多阶段训练、使用多个网络或采用不稳定的调度策略。我们引入了快捷模型（shortcut models），这是一类生成模型，它使用单个网络和单一训练阶段，在单次或多次采样步骤中生成高质量样本。快捷模">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/11/ONE-STEP-DIFFUSION-VIA-SHORTCUT-MODELS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/11/ONE-STEP-DIFFUSION-VIA-SHORTCUT-MODELS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f2.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/11/ONE-STEP-DIFFUSION-VIA-SHORTCUT-MODELS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/a_1_2.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/11/ONE-STEP-DIFFUSION-VIA-SHORTCUT-MODELS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f3.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/11/ONE-STEP-DIFFUSION-VIA-SHORTCUT-MODELS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/11/ONE-STEP-DIFFUSION-VIA-SHORTCUT-MODELS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f4.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/11/ONE-STEP-DIFFUSION-VIA-SHORTCUT-MODELS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f5.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/11/ONE-STEP-DIFFUSION-VIA-SHORTCUT-MODELS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f6.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/11/ONE-STEP-DIFFUSION-VIA-SHORTCUT-MODELS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f7.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/11/ONE-STEP-DIFFUSION-VIA-SHORTCUT-MODELS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f8.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/11/ONE-STEP-DIFFUSION-VIA-SHORTCUT-MODELS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f9.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/11/ONE-STEP-DIFFUSION-VIA-SHORTCUT-MODELS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t2.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/11/ONE-STEP-DIFFUSION-VIA-SHORTCUT-MODELS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t3.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/11/ONE-STEP-DIFFUSION-VIA-SHORTCUT-MODELS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/11/ONE-STEP-DIFFUSION-VIA-SHORTCUT-MODELS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f1.png">
+<meta property="article:published_time" content="2025-05-11T07:03:26.000Z">
+<meta property="article:modified_time" content="2025-05-11T11:00:49.521Z">
+<meta property="article:author" content="Zongqing Li">
+<meta property="article:tag" content="diffusion">
+<meta property="article:tag" content="ICLR">
+<meta property="article:tag" content="2025">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hqulzq.github.io/2025/05/11/ONE-STEP-DIFFUSION-VIA-SHORTCUT-MODELS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f1.png">
+
+<link rel="canonical" href="https://hqulzq.github.io/2025/05/11/ONE-STEP-DIFFUSION-VIA-SHORTCUT-MODELS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>ONE STEP DIFFUSION VIA SHORTCUT MODELS论文精读 | Lzq's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lzq's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">46</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">64</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book">
+
+    <a href="/book" rel="section"><i class="fas fa-book fa-fw"></i>Book</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/05/11/ONE-STEP-DIFFUSION-VIA-SHORTCUT-MODELS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ONE STEP DIFFUSION VIA SHORTCUT MODELS论文精读
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-05-11 15:03:26 / 修改时间：19:00:49" itemprop="dateCreated datePublished" datetime="2025-05-11T15:03:26+08:00">2025-05-11</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散模型和流匹配模型通过学习将噪声转化为数据，能够生成多样且逼真的图像。然而，从这些模型中采样需要经过神经网络多次迭代去噪，这使得生成过程缓慢且成本高昂。以往加速采样的方法需要复杂的训练机制，如多阶段训练、使用多个网络或采用不稳定的调度策略。我们引入了快捷模型（shortcut models），这是一类生成模型，它使用单个网络和单一训练阶段，在单次或多次采样步骤中生成高质量样本。快捷模型不仅根据当前噪声水平对网络进行条件设定，还依据期望的步长进行调整，使模型能够在生成过程中实现快速推进。在各种采样步长预算下，快捷模型始终能比一致性模型（consistency models）和重流模型（reflow）等先前方法生成更高质量的样本。与蒸馏方法相比，快捷模型将复杂度降低到单个网络和单一训练阶段，并且在推理时允许灵活改变步长预算。<br><span id="more"></span></p>
+<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1 引言"></a>1 引言</h3><p>诸如扩散模型（Sohl-Dickstein等人，2015；Ho等人，2020；Song等人，2020）和流匹配模型（Lipman等人，2022；Liu等人，2022 ）这类迭代去噪方法，在对各种图像（Rombach等人，2022；Esser等人，2024）、视频（Ho等人，2022；BarTal等人，2024）、音频（Kong等人，2020）和蛋白质（Abramson等人，2024）进行建模方面取得了显著成功。然而，它们的缺点在于推理成本较高。尽管这些方法能生成高质量的样本，但需要迭代推理过程，通常需要神经网络进行数十到数百次前向传递，这使得生成过程缓慢且成本高昂。<strong>我们认为，存在一种生成建模目标，它既能保留扩散训练的优势，又能在一步内完成去噪。</strong></p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f1.png" width="60%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图1：不同推理预算下，流匹配模型和快捷模型的生成结果。快捷模型在广泛的推理预算范围内都能生成高质量图像，包括仅使用一次前向传递，与扩散模型和流匹配模型相比，采样时间最多可大幅缩短128倍。相比之下，扩散模型和流匹配模型在少步设置下，生成质量会迅速下降。每列中使用相同的初始噪声，两个模型均在CelebA-HQ和Imagenet-256（类别条件）上进行训练。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>我们<strong>考虑端到端的设置，即通过单个模型在单次训练中实现一步去噪</strong>。与之密切相关的是先前的两阶段方法，这些方法先利用现有的扩散模型，随后将一步生成能力提炼到模型中。这些阶段增加了复杂性，并且需要生成大型合成数据集（Luhman和Luhman，2021；Liu等人，2022），或者在一系列教师网络和学生网络中进行传播（Ho等人，2020；Meng等人，2023）。一致性模型（Song等人，2023）更接近端到端的设置，但它们对大量自训练（bootstrapping）的依赖，要求在整个训练过程中进行仔细的学习调度。两阶段或严格调度的过程存在何时结束训练并开始蒸馏的指定问题。相比之下，端到端的方法可以无限期地训练，以持续改进。</p>
+<p>我们提出快捷模型，这是一类端到端的生成模型，能够在任何推理预算下，包括在单次采样步骤中，生成高质量的样本。<font style="color:red; background:yellow">我们的核心见解是，让神经网络不仅根据噪声水平，还根据期望的步长进行条件设定，使其能够在去噪过程中准确地向前跳跃。快捷模型可以看作是在训练期间进行自我蒸馏，因此不需要单独的蒸馏步骤，并且可以在单次运行中完成训练。无需进行调度或仔细的预热。快捷模型的训练效率很高，与基础扩散模型相比，仅需多约16% 的计算量。</font></p>
+<p>实证评估表明，快捷模型满足许多有用的需求。在常用的CelebA-HQ和Imagenet-256基准测试中，单个快捷模型可以处理多步、少步和一步生成。准确性并未受到牺牲，实际上，多步生成的质量与基线扩散模型相当。同时，快捷模型在少步和一步设置中，始终能够与两阶段蒸馏方法相媲美，甚至超越它们。</p>
+<p>本文的主要贡献总结如下：</p>
+<ul>
+<li>我们引入了快捷模型，这是一类生成模型，通过根据期望步长对模型进行条件设定，在单次前向传递中生成高质量样本。与蒸馏模型或一致性模型不同，快捷模型在单次训练运行中进行训练，无需调度。</li>
+<li>我们在固定架构和计算量的情况下，对快捷模型与先前的扩散模型和流匹配模型方法，在CelebAHQ-256和ImageNet-256上进行了全面比较。快捷模型达到或超过了需要多个训练阶段的蒸馏方法，并且在推理预算范围内，显著优于先前的端到端方法。</li>
+<li>为了证明快捷模型在图像生成之外的通用性，我们将其应用于机器人控制领域，用快捷策略取代扩散策略。我们观察到，快捷模型在推理成本降低一个数量级的情况下，仍能保持相当的性能。</li>
+<li>我们发布了模型检查点和完整的训练代码，以复现我们的实验结果：<a target="_blank" rel="noopener" href="https://github.com/kvfrans/shortcut-models">https://github.com/kvfrans/shortcut-models</a></li>
+</ul>
+<h3 id="2-背景"><a href="#2-背景" class="headerlink" title="2 背景"></a>2 背景</h3><ul>
+<li><strong>扩散和流匹配</strong>：最近出现的一类模型，包括扩散模型（Sohl-Dickstein等人，2015；Ho等人，2020；Song等人，2020 ）和流匹配模型（Lipman等人，2022；Liu等人，2022 ），它们通过学习一个将噪声转化为数据的常微分方程（ODE）来解决生成建模问题。在本文中，为简化起见，我们采用最优传输流匹配目标（Liu等人，2022 ）。我们将$x_{t}$定义为数据点$x_{1} \sim D$和相同维度的噪声点$x_{0} \sim N(0, \mathbb{I})$之间的线性插值。速度$v_{t}$是从噪声点指向数据点的方向：<script type="math/tex; mode=display">x_{t}=(1 - t)x_{0} + tx_{1}\quad 且 \quad v_{t}=x_{1}-x_{0} \tag{1}</script>给定$x_{0}$和$x_{1}$，速度$v_{t}$就完全确定了。但仅给定$x_{t}$时，会存在多对合理的$(x_{0}, x_{1})$组合，因此速度可能有不同取值，这使得$v_{t}$成为一个随机变量。流模型通过学习一个神经网络来估计期望值$\bar{v}_{t}=\mathbb{E}[v_{t} | x_{t}]$，该期望值是对$x_{t}$处所有合理速度的平均。流模型可以通过对随机采样的噪声$x_{0}$和数据$x_{1}$对的经验速度进行回归来优化：<script type="math/tex; mode=display">\overline{v}_{\theta}\left(x_{t}, t\right) \approx \mathbb{E}_{x_{0}, x_{1} \sim D}\left[v_{t} | x_{t}\right] \quad \mathcal{L}^{F}(\theta)=\mathbb{E}_{x_{0}, x_{1} \sim D}\left[\left\| \overline{v}_{\theta}\left(x_{t}, t\right)-\left(x_{1}-x_{0}\right)\right\| ^{2}\right] \tag{2}</script>为了从流模型中采样，首先从正态分布中采样一个噪声点$x_{0}$。然后，根据学习到的流模型$\bar{v}_{\theta}(x_{t}, t)$定义的去噪ODE，将该点从$x_{0}$迭代更新到$x_{1}$。在实践中，这个过程通过在小的离散时间间隔上使用欧拉采样进行近似。</li>
+<li><strong>少步模糊性</strong>：虽然一个训练完美的ODE在连续时间内可以确定性地将噪声分布映射到数据分布，但在有限步长下，这种保证就会丧失。如图2所示，流匹配模型学习预测从$x_{t}$指向数据的平均方向，因此使用大步长进行预测会跳到多个数据点的平均值处。在$t = 0$时，模型接收纯噪声作为输入，并且在训练期间$(x_{0}, x_{1})$是随机配对的，所以在$t = 0$时预测的速度指向数据集的均值。因此，即使在流匹配目标的最优情况下，对于任何多模态数据分布，一步生成都会失败。</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f2.png" width="60%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图2：简单的扩散模型和流匹配模型在少步生成时会失败。左图：训练路径是通过随机配对数据和噪声创建的。注意路径是重叠的；仅给定$x_{t}$时，指向数据点的方向$v_{t}$存在固有不确定性。虽然流匹配模型学习了一个确定性的ODE，但其路径不是直的，必须紧密跟随。预测的方向$v_{t}$指向合理数据点的平均值。推理步骤越少，生成结果就越偏向数据集均值，从而导致偏离轨道。在第一次采样步骤中，模型指向数据集均值，因此无法在一步内生成多模态数据（见红色圆圈）。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="3-用于少步生成的快捷模型"><a href="#3-用于少步生成的快捷模型" class="headerlink" title="3 用于少步生成的快捷模型"></a>3 用于少步生成的快捷模型</h3><p>我们引入快捷模型，这是一类全新的去噪生成模型，克服了扩散模型和流匹配模型所需的大量采样步骤的问题。<strong>我们的核心思路是，不仅依据时间步$t$，还依据期望步长$d$对模型进行条件设定，训练出一个支持不同采样预算的单一模型。</strong></p>
+<p>如图2所示，流匹配模型学习的ODE会沿着弯曲路径将噪声映射到数据。简单地采用大步长采样会导致较大的离散化误差，在单步采样的情况下，甚至会导致灾难性的失败。通过依据$d$进行条件设定，快捷模型能够考虑未来路径的曲率，从而跳到正确的下一个点，而不是偏离轨道。我们将从$x_{t}$指向正确的下一个点$x_{t+d}’$的归一化方向称为快捷方向$s(x_{t}, t, d)$：</p>
+<script type="math/tex; mode=display">x_{t+d}' = x_{t} + s(x_{t}, t, d)d \tag{3}</script><p>我们的目标是训练一个快捷模型$s_{\theta}(x_{t}, t, d)$，以学习所有$x_{t}$、$t$和$d$组合的快捷方向。因此，<strong>快捷模型可以看作是流匹配模型向更大步长的扩展：流匹配模型仅学习瞬时速度，而快捷模型还额外学习进行更大的跳跃。当$d \to 0$时，快捷方向等同于流。</strong></p>
+<p>一种简单的计算训练$s_{\theta}(x_{t}, t, d)$目标的方法是，以足够小的步长对ODE进行正向模拟（Luhman &amp; Luhman, 2021; Liu et al., 2022）。然而，这种方法计算成本高昂，尤其对于端到端训练来说。相反，我们利用快捷模型固有的自一致性属性，即一个快捷步等同于两个连续的、步长减半的快捷步：</p>
+<script type="math/tex; mode=display">s(x_{t}, t, 2d) = s(x_{t}, t, d)/2 + s(x_{t+d}', t, d)/2 \tag{4}</script><p>这使得我们能够在$d&gt;0$时使用自一致性目标训练快捷模型，并在$d = 0$时使用流匹配损失（公式2）作为基本情况。原则上，我们可以在任何$d \sim p(d)$的分布上训练模型。在实践中，我们将批次分为两部分，一部分使用$d = 0$进行训练，另一部分使用随机采样的$d&gt;0$目标进行训练。由此，我们得到了组合的快捷模型损失函数：</p>
+<script type="math/tex; mode=display">\mathcal{L}^{\mathbb{S}}(\theta)=E_{x_{0} \sim \mathcal{N}, x_{1} \sim D,(t, d) \sim p(t, d)}[\underbrace{\left\| s_{\theta}\left(x_{t}, t, 0\right)-\left(x_{1}-x_{0}\right)\right\| ^{2}}_{流匹配部分}+\underbrace{\left\| s_{\theta}\left(x_{t}, t, 2d\right)-s_{target }\right\| ^{2}}_{自一致性部分}] \tag{5}</script><script type="math/tex; mode=display">其中s_{target }=s_{\theta}\left(x_{t}, t, d\right) / 2+s_{\theta}\left(x_{t+d}', t, d\right) / 2且x_{t+d}'=x_{t}+s_{\theta}\left(x_{t}, t, d\right) d</script><p>直观地说，上述目标学习了一种从噪声到数据的映射，这种映射在任何步长序列下查询时都是一致的，包括直接在单步中查询。目标中的流匹配部分使快捷模型在小步长时能够与经验速度样本相匹配，从而为快捷模型奠定基础生成能力，就像等效的流匹配模型在多步查询时一样。在自一致性部分，通过连接两个较小快捷步的序列来构建较大步长的合适目标，将生成能力从多步传播到少步再到单步。这个组合目标可以通过单个模型在单个端到端训练过程中联合训练。</p>
+<p><img src="a_1_2.png" alt="算法"></p>
+<h4 id="3-1-训练细节"><a href="#3-1-训练细节" class="headerlink" title="3.1 训练细节"></a>3.1 训练细节</h4><p>我们现在介绍一个通过上述目标训练快捷模型的简单框架。在每个阶段，我们做出有助于训练稳定性和简便性的设计决策。</p>
+<ul>
+<li><strong>回归经验样本</strong>：当$d \to 0$时，快捷方向等同于瞬时流。因此，我们可以使用公式2给出的损失，在$d = 0$时训练快捷模型，即通过随机采样$(x_{0}, x_{1})$对，并拟合$v_{t}$的期望值。这一项可以看作是使小步长快捷方向与数据去噪ODE相匹配的基础。我们发现均匀采样$t \sim U(0,1)$是最简单的方法，并且与其他采样方案效果相当。</li>
+<li><strong>强制自一致性</strong>：鉴于快捷模型在小步长时是准确的，我们的下一个目标是确保快捷模型在大步长时也能保持这种性能。为此，我们依赖于模型自身生成的自训练目标。为了限制累积的近似误差，最好限制自训练路径的总长度。因此，我们选择一种二元递归公式，即使用两个快捷步来构建一个步长加倍的快捷步（图3）。</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f3.png" width="70%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图3：快捷模型训练概述。当$d≈0$时，快捷模型的目标等同于流匹配目标，可以通过对经验$E[v_{t} \mid x_{t}]$样本进行回归来训练。对于更大步长$d$的快捷模型，其目标是通过连接两个步长为$d/2$的快捷步来构建的。这两个目标可以联合训练；快捷模型不需要两阶段训练过程或离散化调度。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>我们必须确定一个步数M，以表示近似ODE的最小时间单位；在我们的实验中使用128。根据$d \in(1 / 128, 1 / 64 … 1 / 2,1)$，这会产生$log _{2}(128)+1=8$种可能的快捷步长。在每次训练步骤中，我们采样$x_{t}$、t和一个随机的$d&lt;1$，然后使用快捷模型进行两个连续的步骤。这两个步骤的连接结果随后被用作训练模型在$2d$步长时的目标。<br>需要注意的是，第二步是在去噪ODE下基于$x_{t+d}’$进行查询的，而不是基于经验数据配对，即它是通过将预测的第一个快捷步加到$x_{t}$上构建的，而不是从数据集中的$x_{1}$进行插值得到的。当d取最小值（例如1/128）时，我们改为在$d = 0$时查询模型。</p>
+<ul>
+<li><strong>联合优化</strong>：公式5由经验流匹配目标和自一致性目标组成，在训练过程中进行联合优化。经验项的方差要高得多，因为它是对具有固有不确定性的随机噪声配对进行回归，而自一致性项使用确定性的自训练目标。我们发现构建一个经验目标数量明显多于自一致性目标数量的批次会很有帮助。<br>上述做法也为我们提高计算效率提供了空间。训练所需的自一致性目标比经验目标少，而且生成自一致性目标的成本也更高（需要额外进行两次前向传递）。因此，我们可以通过将比例为$1-k$的经验目标与k个自一致性目标组合来构建训练批次。我们发现$k=(1 / 4)$是比较合理的。通过这种方式，我们可以将快捷模型的训练成本降低到仅比等效扩散模型高约16%。</li>
+<li><strong>引导</strong>：无分类器引导（CFG; Ho &amp; Salimans, 2022）已被证明是扩散模型实现高生成保真度的重要工具。CFG提供了一种在类别条件和无条件去噪ODE之间进行权衡的线性近似。我们发现CFG在小步长时很有帮助，但在大步长时，由于线性近似不合适，容易产生误差。因此，我们在评估快捷模型且$d = 0$时使用CFG，在其他情况下则不使用。快捷模型中CFG的一个局限性是，CFG尺度必须在训练前指定。</li>
+<li><strong>指数移动平均权重</strong>：最近的许多扩散模型都对权重参数使用指数移动平均（EMA）来提高样本质量。EMA对生成结果有平滑作用，这在扩散建模中特别有用，因为目标本身存在方差。我们发现在快捷模型中也是如此，$d = 0$时损失的方差可能会导致$d = 1$时输出出现大幅振荡。利用EMA参数生成自一致性目标可以缓解这个问题。</li>
+<li><strong>权重衰减</strong>：我们发现权重衰减对于确保训练稳定性至关重要，尤其是在训练早期。当快捷模型接近初始化时，它生成的自一致性目标大多是噪声。模型可能会锁定这些不一致的目标，导致出现伪影和不良的特征学习。我们发现适当的权重衰减可以消除这些问题，使我们无需离散化调度或仔细的预热过程。</li>
+<li><strong>离散时间采样</strong>：在实践中，我们可以通过仅在相关时间步上进行训练来减轻快捷网络的负担。在训练过程中，我们首先采样d，然后仅在快捷模型将被查询的离散时间点（即d的倍数）上采样t。我们仅在这些时间步上训练自一致性目标。</li>
+</ul>
+<h3 id="4-相关工作"><a href="#4-相关工作" class="headerlink" title="4 相关工作"></a>4 相关工作</h3><ul>
+<li><strong>扩散模型的蒸馏</strong>：此前有多项研究探索了将预训练的扩散模型蒸馏为一步或几步模型的方法（Luo, 2023）。知识蒸馏（Luhman &amp; Luhman, 2021）和校正流（Liu et al., 2022）通过完全模拟去噪ODE来生成合成数据集。由于完全模拟的成本较高，人们提出了许多利用自训练来热启动ODE模拟的方法（Gu et al., 2023; Xie et al., 2024）。此外，也有人提出用对抗（Sauer et al., 2023）或分布匹配（Yin et al., 2024b;a）目标等替代L2距离作为蒸馏目标。我们的工作与使用二元时间蒸馏（Salimans &amp; Ho, 2022; Meng et al., 2023; Berthelot et al., 2023）的技术最为相关，该技术将蒸馏过程划分为$log _{2}(T)$个阶段，逐步增大步长，从而缩短所需的自训练路径。与这些先前的工作不同，我们专注于端到端地学习一步生成模型，无需单独的预训练和蒸馏阶段。我们的方法在计算成本上低于完全模拟的方法（如校正流、知识蒸馏），并且避免了渐进蒸馏方法中多个教师-学生阶段。</li>
+<li><strong>一致性建模</strong>：一致性模型（Song et al., 2023）是一类一步生成模型，旨在学习从任何部分含噪的数据点映射到最终数据点。虽然这类模型可用作蒸馏的学生模型（Luo et al., 2023; Geng et al., 2024），但也有人提出通过一致性训练从头开始端到端地训练一致性模型（Song et al., 2023; Song &amp; Dhariwal, 2023）。我们的工作解决的是相同的问题，但采用了不同的方法——一致性训练在经验$x_{t}$和$x_{t+d}$样本之间强制一致性，由于存在模糊性，这种方法在每个离散化步骤都会累积不可约的偏差。我们则是从学习到的ODE中采样$x_{t+d}’$，从而避免了这个问题。快捷模型仅需要$log _{2}(T)$次自训练，而一致性模型则需要T次。快捷模型自然支持多步生成作为非自训练的基本情况，而一致性模型在所有情况下都需要自训练。此外，快捷模型在实践中更简单，因为许多一致性模型的技巧（如使用严格的离散化调度、使用感知损失而非L2损失）在快捷模型中可以完全省略。</li>
+</ul>
+<h3 id="5-实验"><a href="#5-实验" class="headerlink" title="5 实验"></a>5 实验</h3><p>我们开展了一系列实验，对快捷模型的质量、可扩展性和稳健性进行评估。在质量方面，快捷模型展现出与先前两阶段方法相媲美的少步和单步生成能力，并且优于其他端到端方法。同时，快捷模型在多步生成时能保持基础扩散模型的性能。我们的实验表明，随着模型规模的增加，快捷模型的生成能力持续提升。快捷模型学习到了可插值的潜在噪声空间，并且在诸如机器人控制等应用中表现稳健。</p>
+<h4 id="5-1-快捷模型与先前的一步生成方法相比表现如何？"><a href="#5-1-快捷模型与先前的一步生成方法相比表现如何？" class="headerlink" title="5.1 快捷模型与先前的一步生成方法相比表现如何？"></a>5.1 快捷模型与先前的一步生成方法相比表现如何？</h4><p>在本节中，我们使用相同的模型架构和代码库，从无到有地训练每个目标函数，以此对我们的方法与多种先前方法进行细致比较。我们采用DiT-B扩散变换器架构（Peebles &amp; Xie, 2023），选择CelebAHQ-256进行无条件生成任务，选择Imagenet-256进行类别条件生成任务。在所有实验中，我们使用AdamW优化器（Loshchilov, 2017），学习率恒定为$1\times10^{-4}$ ，权重衰减设置为0.1。所有实验均使用sd-vae-ft-mse自动编码器（Rombach et al., 2022）的潜在空间。</p>
+<ul>
+<li><strong>与先前工作的比较</strong>：我们将对比两类基于扩散的先前方法：一类是两阶段方法，先预训练一个扩散模型，再单独进行蒸馏；另一类是端到端方法，通过单次训练从无到有地训练一个一步模型。<ul>
+<li>Diffusion (DiT-B)代表标准的扩散模型，严格遵循（Peebles &amp; Xie, 2023）中的设置。</li>
+<li>Flow Matching使用最优传输目标替换扩散目标（Liu et al., 2022）。它与扩散模型一起，为迭代多步去噪模型的性能提供了基线。其余方法均以标准流匹配模型为基础（若适用，将其作为教师模型）。</li>
+<li>Reflow代表一种标准的两阶段蒸馏方法，通过全面评估教师模型来生成合成的$(x_{0}, x_{1})$对。我们遵循Liu等人（2022）的方法，为CelebAHQ生成50,000个合成示例，为Imagenet生成1,000,000个合成示例。每个示例的生成需要128次前向传递。Reflow与知识蒸馏（Luhman &amp; Luhman, 2021）类似，不同之处在于学生模型在所有$t\in(0,1)$上进行训练，而非仅在$t = 0$时训练。</li>
+<li>Progressive Distillation代表一种两阶段二元时间蒸馏方法，与我们提出的方法具有相似性。遵循Salimans和Ho（2022）的方法，从预训练的教师模型出发，逐步蒸馏出一系列学生模型，每个学生模型的步长是前一个的2倍。为与我们的方法保持一致，在第一阶段蒸馏（将128步模型蒸馏为64步模型）时使用无分类器引导。</li>
+<li>Consistency Distillation代表一种基于一致性模型的两阶段蒸馏策略。通过教师扩散模型生成$(x_{t}, x_{t+d})$对，然后训练一个单独的学生一致性模型，以确保在这些对中对$x_{1}$的预测保持一致。</li>
+<li>Consistency Training代表一种先前的端到端方法，与我们的设置最为接近，它从无到有地训练一个一步模型。一致性模型基于从数据集中采样的经验$(x_{t}, x_{t+d})$样本进行训练。按照Song等人（2023）的方法，在训练过程中逐渐增加时间离散化区间。</li>
+<li>Live Reflow是我们提出的另一种端到端方法，在该方法中，模型同时基于流匹配和Reflow蒸馏得到的目标进行训练。模型分别以不同的目标类型作为条件。蒸馏目标在每个训练步骤中通过完全去噪自生成，因此该方法的计算成本相当高。我们将其纳入比较范围以供参考。</li>
+</ul>
+</li>
+</ul>
+<p>这些工作涵盖了先前两阶段蒸馏和端到端训练方法的主要类型。为确保比较的严谨性，我们在同一代码库上运行所有先前工作的对比实验，并且使用不少于我们方法的总计算量。</p>
+<ul>
+<li><strong>评估</strong>：我们使用标准的弗雷歇初始距离（Frechet Inception Distance，FID）指标，对采用128步、4步和1步扩散生成的样本进行模型评估。我们报告FID-50k指标，这是先前研究中的标准做法。按照标准流程，FID的计算基于整个数据集的统计信息，生成的图像不进行压缩，并且使用双线性上采样将图像大小调整为299x299，并将像素值裁剪到(-1, 1)范围内。在评估过程中，我们使用指数移动平均（EMA）模型参数。</li>
+</ul>
+<p>表1突出展示了快捷模型在少步和单步采样情况下保持精确生成的能力。除两阶段渐进蒸馏方法外，快捷模型的性能优于所有先前方法，且无需多个训练阶段。需要注意的是，渐进蒸馏模型失去了多步采样的能力，而快捷模型保留了这一能力。不出所料，扩散模型和流匹配模型在4步和1步生成任务中表现不佳。有趣的是，在我们的实验中，快捷模型的FID略优于可比的流匹配模型。一种未经证实的假设是，自一致性损失起到了对模型的隐式正则化作用，不过我们将这一探究留作未来的研究方向。附录A中提供了更多可视化示例。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t1.png" width="70%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表1：在等效架构（DiT-B）和计算量下不同训练目标的比较。表中展示了128步、4步和1步去噪的FID-50k分数（分数越低越好）。快捷模型在单次训练中，无论推理预算如何，都能生成高质量样本。与扩散模型和流匹配模型相比，快捷模型大幅减少了所需的采样步骤。与蒸馏方法相比，快捷模型简化了训练流程，并在训练后可灵活选择推理预算。括号内表示在目标原本不支持的条件下进行的评估。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="5-2-快捷模型在不同推理预算下的表现如何？"><a href="#5-2-快捷模型在不同推理预算下的表现如何？" class="headerlink" title="5.2 快捷模型在不同推理预算下的表现如何？"></a>5.2 快捷模型在不同推理预算下的表现如何？</h4><p>我们现在分析快捷模型在生成图像时，随着步数变化的表现。简单的流匹配模型通过切线速度来近似去噪ODE，而快捷模型则经过训练，近似对去噪ODE进行积分，在低步数情况下表现更为精确。图4表明，虽然更多的步数通常会有所帮助，但简单的流匹配模型在低步数时的性能下降，比快捷模型明显得多。在我们的实验中发现，快捷模型在多步生成时的性能并未受到牺牲，即使在高步数情况下，它也能保持与基线流模型相当的性能。<br>流模型在少步生成时产生的伪影类似于模糊和模态崩溃（图1左图）。快捷模型通常不会出现这些问题，并且从相同的初始噪声生成的图像，在整体上与多步生成的等效图像相匹配。快捷模型中的伪影主要体现在高精度细节方面的错误。因此，单步快捷模型生成的图像可作为一种参考：如果下游用户希望优化单步生成的图像，他们可以使用相同的初始噪声重新生成图像，只需增加生成步数即可。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f4.png" width="70%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图4：流匹配模型和快捷模型在去噪步数减少时的表现。简单的流匹配模型会出现性能下降和模态崩溃的问题，而快捷模型在少步和单步生成时仍能够保持相似的样本分布。在大推理预算下，这种能力并不会牺牲生成质量。定性示例见图1。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="5-3-快捷模型的性能如何随模型规模提升？"><a href="#5-3-快捷模型的性能如何随模型规模提升？" class="headerlink" title="5.3 快捷模型的性能如何随模型规模提升？"></a>5.3 快捷模型的性能如何随模型规模提升？</h4><p>深度学习中的一个显著趋势是，大规模的过参数化模型在规模扩大时，能力也会增强。然而，这一趋势在基于自训练的方法中并不明显，例如在强化学习中学习Q函数（Kumar et al., 2020; Sokar et al., 2023; Obando-Ceron et al., 2024）。这类方法常见的问题类似于一种秩崩溃现象：通过在自生成的输出上重新训练，模型的表达能力可能会受到限制。由于快捷模型本质上也是基于自训练的，我们探究它是否能从模型规模的扩大中受益。如图5所示，即使在单步设置下，我们基于Transformer的快捷模型架构，也能随着模型规模的增加，实现越来越精确的生成。这些结果表明，尽管快捷模型依赖自训练，但它能够避免严重的性能崩溃，并且随着模型参数数量的增加，性能持续提升。在Imagenet-256数据集上，使用DiT-XL规模训练的快捷模型，单步FID能够达到10.6，128步FID能够达到3.8，附录中的表2展示了具体数据。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f5.png" width="70%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图5：随着模型参数数量的增加，一步生成的质量持续提升。虽然生成模型通常会随着模型规模的扩大而不断改进，但像Q学习这样基于自训练的方法已被证明会丧失这一特性（Kumar等人，2020）。我们的研究表明，快捷模型虽然也是基于自训练的方法，却保留了随着模型规模提升生成精度的能力。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="5-4-快捷模型能为我们提供可插值的潜在空间吗？"><a href="#5-4-快捷模型能为我们提供可插值的潜在空间吗？" class="headerlink" title="5.4 快捷模型能为我们提供可插值的潜在空间吗？"></a>5.4 快捷模型能为我们提供可插值的潜在空间吗？</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f6.png" width="70%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图6：两个采样噪声点之间的插值结果。图中展示的所有图像均由模型生成。每一行图像均是对两个高斯噪声样本进行方差保持插值后，再经单步去噪生成的。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>快捷模型表示从噪声到数据的确定性映射。为了探究这种映射的结构，我们可以在初始噪声样本之间进行插值，并观察相应生成的图像。图6展示了通过这种方式生成的插值示例。首先采样一对噪声点$(x_{0}^{0}, x_{0}^{1})$，然后以方差保持的方式进行插值：</p>
+<script type="math/tex; mode=display">x_{0}^{n}=n x_{0}^{0}+\sqrt{1-n^{2}} x_{0}^{1} \tag{6}</script><p>尽管在噪声到数据的映射过程中没有进行显式的正则化，但得到的插值生成图像呈现出定性上的平滑过渡。中间的图像在语义上似乎是合理的。需要注意的是，在可视化的生成图像中，所有图像均由模型生成。虽然我们没有探索在现有图像之间进行插值，但可以像Ho等人（2020）所做的那样，向现有图像中添加噪声，并对这些中间点进行插值。</p>
+<h4 id="5-5-快捷模型在非图像领域是否有效？"><a href="#5-5-快捷模型在非图像领域是否有效？" class="headerlink" title="5.5 快捷模型在非图像领域是否有效？"></a>5.5 快捷模型在非图像领域是否有效？</h4><p>本文中描述的生成建模目标与具体领域无关，但传统的常见基准测试通常涉及图像生成。我们现在通过在机器人控制任务中训练快捷模型策略，来评估快捷模型公式的通用性。<br>具体而言，我们基于Chi等人（2023）提出的方法进行构建。这种扩散策略框架训练一个以观测为条件的模型，以迭代方式预测机器人动作。原研究使用100个去噪步骤，而我们旨在通过训练快捷模型将推理步骤减少到一步。除了将AdamW权重衰减从0.001调整为0.1，并添加步长d的条件项外，我们使用与原研究相同的网络结构和超参数。此外，我们使用流匹配目标，而非epsilon预测目标。</p>
+<p>图7展示了从Chi等人（2023）的研究中选取的机器人控制任务——Push-T和Transport，在这些任务中，基线方法表现不佳。我们将快捷模型策略与迭代去噪方法IBC（Florence et al., 2022）和扩散策略（Chi et al., 2023），以及一步方法LSTM-GMM（Mandlekar et al., 2021）和BET（Shafiullah et al., 2022）进行比较。结果表明，快捷模型策略在机器人控制任务中能够取得优异的性能，同时将推理成本限制为单次函数调用。相比之下，一步扩散策略则遭遇灾难性失败。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f7.png" width="70%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图7：快捷模型能够以与扩散策略类似的方式表示多模态策略，同时将去噪步骤减少到1步。左侧展示的是Push-T任务（上图）和Transport任务（下图）的轨迹。在每种情况下，一个生成模型通过人类演示进行训练，然后根据一组过去的观测数据查询该模型以生成动作。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="6-讨论"><a href="#6-讨论" class="headerlink" title="6 讨论"></a>6 讨论</h3><p>本文介绍了快捷模型，这是一种新型的基于扩散的生成模型，支持少步和一步生成。快捷模型背后的关键思想是学习一个以步长为条件的模型，该模型在小步长时与数据相关联，并在大步长时通过自训练进行训练。</p>
+<p>快捷模型提供了一种简单的方法，无需调度，可在单次运行中端到端地进行训练。与先前的蒸馏方法不同，快捷模型不需要单独的预训练和蒸馏阶段。与一致性训练相比，快捷模型不需要训练调度，仅使用标准的L2回归，并且所需的自训练步骤更少。</p>
+<p>在CelebA-HQ和Imagenet-256上的实证评估表明，快捷模型优于先前的单阶段方法，并且与两阶段蒸馏方法具有竞争力。尽管依赖自训练，但快捷模型训练稳定，并且随着模型参数规模的增加而表现更好。我们展示了快捷模型如何应用于非图像领域，如机器人控制。</p>
+<ul>
+<li><strong>最佳实践</strong>：对于希望使用快捷模型的从业者，我们建议牢记以下几点。应遵循标准的扩散模型实践，例如将数据集归一化到单位方差。如果自一致性损失表现出不稳定的行为，可以减少训练批次中自一致性目标的比例。强烈建议使用非零的权重衰减。使用指数移动平均（EMA）参数进行评估通常会带来性能提升，但并非严格必要。</li>
+<li><strong>实现方式</strong>：我们提供了快捷模型的开源代码实现，以及模型检查点，可在以下网址获取：<a target="_blank" rel="noopener" href="https://github.com/kvfrans/shortcut-models">https://github.com/kvfrans/shortcut-models</a></li>
+<li><strong>局限性</strong>：虽然快捷模型为训练一步生成模型提供了一个简单的框架，但一个关键的固有局限性是，噪声和数据之间的映射完全依赖于数据集上的期望。在其他类型的生成模型（例如生成对抗网络（GANs）（Goodfellow等人，2020）、变分自编码器（VAEs）（Kingma，2013））中，可以调整这种映射，这有可能简化学习问题。其次，在我们的快捷模型实现中，多步生成质量和一步生成质量之间仍然存在差距。</li>
+<li><strong>未来工作</strong>：快捷模型开辟了一系列未来的研究方向。在表1中，快捷模型的多步生成表现略优于基础流模型，那么是否有一种方法可以通过一步生成来提升多步生成的质量（而不是通常的相反情况）？对快捷模型公式进行扩展是可能的，例如通过类似重流（Reflow）的过程（Liu等人，2022）迭代地调整噪声到数据的映射，或者缩小多步和一步生成之间的差距。这项工作为开发理想的生成建模目标奠定了基础，即一种简单的方法，能够同时满足快速采样、模态覆盖和高质量生成这三个要求。</li>
+</ul>
+<h3 id="7-致谢"><a href="#7-致谢" class="headerlink" title="7 致谢"></a>7 致谢</h3><p>本研究部分得到了美国国家科学基金会为KF提供的奖学金支持，资助编号为DGE 2146752。本材料中表达的任何观点、发现、结论或建议均为作者个人观点，不一定反映美国国家科学基金会的意见。PA同时担任加州大学伯克利分校教授和亚马逊学者。本文描述的是在加州大学伯克利分校开展的工作，与亚马逊无关。感谢谷歌TPU研究云（TRC）为我们提供TPU资源用于研究。</p>
+<h3 id="A-附录"><a href="#A-附录" class="headerlink" title="A 附录"></a>A 附录</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f8.png" width="70%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图8：从无条件的CelebA-HQ数据集中生成的256x256分辨率图像示例。每组三张图代表从相同噪声生成的图像，从上到下分别是经过128步、4步和1步去噪的结果。这些结果由DiT-B规模的模型训练40万次迭代生成。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f9.png" width="70%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图9：从类别条件的Imagenet数据集中生成的256x256分辨率图像示例。每组三张图代表从相同噪声生成的图像，从上到下分别是经过128步、4步和1步去噪的结果。这些结果由DiT-XL规模的模型训练80万次迭代生成。训练过程（生成过程中不使用）中使用了1.5的无分类器引导（CFG）。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t2.png" width="70%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表2：与Imagenet-256上的最先进生成模型的比较。由于计算资源的限制，我们无法使用与之前报告的最佳生成模型相同的计算资源来训练模型。然而，结果表明快捷模型能够随着模型规模的增加而提升生成质量。使用DiT-XL架构的快捷模型（XL）达到的FID比表1中的DiT-B架构低得多，并且与之前的最先进模型具有竞争力。请注意，所比较的模型使用不同的架构和计算预算。此外，由于卷积层和注意力层中的权重共享，参数数量与训练计算量并非完全成正比。水平短划线表示未报告的数量。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="B-训练细节"><a href="#B-训练细节" class="headerlink" title="B 训练细节"></a>B 训练细节</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t3.png" width="70%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表3：训练过程中使用的超参数。除非另有说明，模型架构遵循Peebles &amp; Xie (2023)中描述的DiT-B架构。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="B-1-计算"><a href="#B-1-计算" class="headerlink" title="B.1 计算"></a>B.1 计算</h4><p>所有实验均在TPUv3节点上运行，并且使用JAX框架实现相关方法。虽然不同方法的运行时间有所差异，但每次训练通常需要1 - 2天完成。</p>
+<h4 id="B-2-方法细节"><a href="#B-2-方法细节" class="headerlink" title="B.2 方法细节"></a>B.2 方法细节</h4><p>以下是对对比方法背后细节的描述。所有方法均在同一代码库中实现，并使用相同的架构。选择训练预算时，确保对比实验使用大致相同的计算量（如果某种方法为产生合理结果需要更多计算量，则提供更多计算资源）。</p>
+<ul>
+<li><strong>流匹配</strong>：我们使用标准的线性插值来生成速度目标。对基础模型进行80万次迭代训练，并使用确定性欧拉采样对图像进行去噪。训练40万次迭代时的模型检查点用作两阶段蒸馏方法的教师模型。</li>
+<li><strong>重流（Reflow）</strong>：我们使用基础流匹配模型来创建重流中使用的合成目标。对于CelebA-HQ数据集，生成50,000个目标；对于Imagenet数据集，生成1,000,000个目标。然后在合成数据集上再进行40万次迭代的蒸馏过程。在适用的情况下，使用无分类器引导（CFG）生成合成数据，而在最终蒸馏得到的模型中不使用CFG。</li>
+<li><strong>渐进蒸馏</strong>：我们按照标准的蒸馏时长（40万次迭代）进行渐进蒸馏，并将其平均分配到每个蒸馏阶段。由于共有8个不同阶段，每个阶段包含5万次训练步骤。在每个阶段，使用教师模型采样两个连续的自训练步骤，学生模型被训练来模仿这些步骤。在一个训练阶段结束时，学生模型将成为新的教师模型。仅在第一阶段（将128步模型蒸馏为64步模型）使用无分类器引导。</li>
+<li><strong>一致性蒸馏</strong>：我们在速度空间中训练一个一致性模型，以匹配流匹配的基本框架。因此在每次迭代中，需要在两点$(x_{t}, x_{t+d})$之间强制实现速度预测的一致性。这两个点是通过在教师流模型的方向上，从$x_{t}$迈出一个小步长$d = (1 / 128)$得到的。通过查询一致性模型从$x_{t+d}$计算目标速度，使用该预测估计$x_{1}$，然后将目标速度计算为$(x_{1} - x_{t}) / (1 - t)$。</li>
+<li><strong>一致性训练</strong>：以与上述相同的格式训练一致性模型。与从教师模型采样$(x_{t}, x_{t+d})$不同，这里的样本对是通过在不同强度下对噪声和经验数据样本进行插值得到的。遵循Song等人（2023）的方法，使用离散化调度。我们采用与渐进蒸馏中类似的二元时间调度，具体来说，第一阶段有一个离散化区间，然后是两个，接着是四个，以此类推。</li>
+<li><strong>实时重流（Live Reflow）</strong>：在这种方法中，我们将重流转换为可以在单次训练中运行的过程。与快捷模型类似，我们训练一个以$d$为条件的模型。批次中的一部分样本用于在$d = 0$时训练模型，使其朝着流匹配损失优化，我们使用与快捷模型相同的比例0.75。批次的另一部分由通过对一组随机噪声进行完全去噪自生成的自训练目标组成。由于这是一个计算成本相当高的过程，我们将目标生成的去噪步骤限制为8步。即便如此，实时重流的计算量仍是其他方法的4倍多。</li>
+</ul>
+<h2 id="文章总结"><a href="#文章总结" class="headerlink" title="文章总结"></a>文章总结</h2><p>这篇论文发表于<strong>2025-ICLR-Oral</strong>，提出了一个叫<strong>快捷模型</strong>的生成模型，它的突破思想是将步长也当成条件输入到扩散模型中，并配以一个直观的正则项，这样可以使用单个网络和单一训练阶段，在单次或多次采样步骤中生成高质量样本。</p>
+<h3 id="创新点与主要思想"><a href="#创新点与主要思想" class="headerlink" title="创新点与主要思想"></a>创新点与主要思想</h3><h4 id="ODE扩散"><a href="#ODE扩散" class="headerlink" title="ODE扩散"></a>ODE扩散</h4><p>原论文的结论是基于ODE式扩散模型的，而对于ODE式扩散的理论基础，我们在本系列的（六）、（十二）、（十四）、（十五）、（十七）等博客中已经多次介绍，其中最简单的一种理解方式大概是（十七）中的ReFlow视角，下面我们简单重复一下。</p>
+<p>假设$x_0 \sim p_0(x_0)$是先验分布采样的随机噪声，$x_1 \sim p_1(x_1)$是目标分布采样的真实样本（注：前面的文章中，普通都是$x_T$是噪声、$x_0$是目标样本，这里方便起见反过来了），ReFlow允许我们指定任意从$x_0$到$x_1$的运动轨迹，最简单的轨迹自然是直线：</p>
+<script type="math/tex; mode=display">x_t = (1 - t)x_0 + tx_1 \tag{1}</script><p>两边求导，就可以得到它满足的ODE（常微分方程）：</p>
+<script type="math/tex; mode=display">\frac{dx_t}{dt} = x_1 - x_0 \tag{2}</script><p>这个ODE很简单，但实际上没用，因为我们想要的是通过ODE由$x_0$生成$x_1$，而上述ODE却显式地依赖$x_1$。为了解决这个问题，一个很简单的想法是“学一个$x_t$的函数去逼近$x_1 - x_0$”，学完之后就用它来取代$x_1 - x_0$，即</p>
+<script type="math/tex; mode=display">\theta^* = \underset{\theta}{\text{argmin}} \mathbb{E}_{x_0 \sim p_0(x_0), x_1 \sim p_1(x_1)} \left[ \left\lVert v_\theta(x_t, t) - (x_1 - x_0) \right\rVert^2 \right] \tag{3}</script><p>以及</p>
+<script type="math/tex; mode=display">\frac{dx_t}{dt} = x_1 - x_0 \quad \Rightarrow \quad \frac{dx_t}{dt} = v_{\theta^*}(x_t, t) \tag{4}</script><p>这就是ReFlow。当然这里还欠缺了一个理论证明，就是通过平方误差来拟合$v_\theta(x_t, t)$所得到的ODE确实能生成我们期望的分布，这部分大家自行看《生成扩散模型漫谈（十七）：构建ODE的一般步骤（下）》就好。</p>
+<h4 id="步长自治"><a href="#步长自治" class="headerlink" title="步长自治"></a>步长自治</h4><p>假设我们已经有了$v_\theta(x_t, t)$，那么通过求解微分方程$\frac{dx_t}{dt} = v_\theta(x_t, t)$就可以实现从$x_0$到$x_1$的变换。划重点，是“微分方程”，但实际上我们没法真的去数值计算微分方程，而是只能算“差分方程”：</p>
+<script type="math/tex; mode=display">x_{t + \epsilon} - x_t = v_\theta(x_t, t)\epsilon \tag{5}</script><p>这个差分方程是原始ODE的“欧拉近似”，近似程度取决于步长$\epsilon$的大小，当$\epsilon \to 0$时就精确等于原始ODE，换言之步长越小越精确。然而，生成步数等于$1 / \epsilon$，我们希望生成步数越少越好，这意味着不能用太大的步长，最好$\epsilon$可以等于1，这样$x_1 = x_0 + v_\theta(x_0, 0)$，一步就可以完成生成。</p>
+<p>问题是，如果直接用大步长代入上式，最终所算得的$x_1$必然会严重偏离精确解。这时候原论文（下称“Shortcut模型”）的巧妙构思就登场了：它认为模型$v_\theta(x_t, t)$不应该只是$x_t$和$t$的函数，还应该是步长$\epsilon$的函数，这样差分方程(5)就可以自行适应步长：</p>
+<script type="math/tex; mode=display">x_{t + \epsilon} - x_t = v_\theta(x_t, t, \epsilon)\epsilon \tag{6}</script><p>目标(3)训练的是精确的ODE模型，所以它训练的是$\epsilon = 0$的模型：</p>
+<script type="math/tex; mode=display">\mathcal{L}_1 = \mathbb{E}_{x_0 \sim p_0(x_0), x_1 \sim p_1(x_1)} \left[ \frac{1}{2} \left\lVert v_\theta(x_t, t, 0) - (x_1 - x_0) \right\rVert^2 \right] \tag{7}</script><p>那$\epsilon &gt; 0$的部分又怎么训练呢？我们的目标是生成步数越少越好，这等价于说希望“两倍的步长走1步等于单倍的步长走2步”：</p>
+<script type="math/tex; mode=display">x_t + v_\theta(x_t, t, 2\epsilon)2\epsilon = \underbrace{x_t + v_\theta(x_t, t, \epsilon)\epsilon}_{x_{t + \epsilon}} + \underbrace{v_\theta(x_t + v_\theta(x_t, t, \epsilon)\epsilon, t + \epsilon, \epsilon)\epsilon}_{\tilde{x}_{t + \epsilon}} \tag{8}</script><p>即$v_\theta(x_t, t, 2\epsilon) = [v_\theta(x_t, t, \epsilon) + v_\theta(\tilde{x}_{t + \epsilon}, t + \epsilon, \epsilon)] / 2$。为了达到这个目标，我们补充一项自洽性损失函数</p>
+<script type="math/tex; mode=display">\mathcal{L}_2 = \mathbb{E}_{x_0 \sim p_0(x_0), x_1 \sim p_1(x_1)} \left[ \left\lVert v_\theta(x_t, t, 2\epsilon) - [v_\theta(x_t, t, \epsilon) + v_\theta(\tilde{x}_{t + \epsilon}, t + \epsilon, \epsilon)] / 2 \right\rVert^2 \right] \tag{9}</script><p>$\mathcal{L}_1$与$\mathcal{L}_2$相加，就构成了Shortcut模型的损失函数。</p>
+<p>（注：有读者指出，更早的《Consistency Trajectory Models: Learning Probability Flow ODE Trajectory of Diffusion》提出过以离散化时间的起点和终点作为条件输入的做法，指定起点和终点后步长其实也就确定了，所以Shortcut以步长为输入的做法并不算完全创新。）</p>
+<h4 id="模型细节"><a href="#模型细节" class="headerlink" title="模型细节"></a>模型细节</h4><p>以上基本就是Shortcut模型的全部理论内容，非常精巧且简明，但从理论到实验，还需要一些细节，比如步长$\epsilon$如何融入到模型中去。</p>
+<p>首先，在训练$\mathcal{L}_2$时，Shortcut并没有均匀地从$[0, 1]$采样$\epsilon$，而是设置了一个最小步长$2^{-7}$，然后将它们倍增至1，即所有的非零步长只有$\{2^{-7}, 2^{-6}, 2^{-5}, 2^{-4}, 2^{-3}, 2^{-2}, 2^{-1}, 1\}$这8个值，从前7个中均匀采样来训练$\mathcal{L}_2$。这样一来，$\epsilon$的取值就是有限的，算上0一共就只有9个，所以Shortcut模型直接以Embedding的方式来输入$\epsilon$，将它跟$t$的Embedding加在一起。</p>
+<p>其次，注意到$\mathcal{L}_2$的计算量是比$\mathcal{L}_1$大的，因为$v_\theta(\tilde{x}_{t + \epsilon}, t, \epsilon)$这一项需要两次前向传播，所以论文的做法是每个batch中$3/4$的样本都用来计算$\mathcal{L}_1$，剩下的$1/4$样本才用来算$\mathcal{L}_2$。该操作不仅是为了节省计算量，实际上还调节了$\mathcal{L}_1, \mathcal{L}_2$的权重，因为$\mathcal{L}_2$比$\mathcal{L}_1$更好训练，所以它的训练样本可以适当少些。</p>
+<p>除此之外，论文在实践的时候还对$\mathcal{L}_2$做了微调，多加了个stop gradient算子：</p>
+<script type="math/tex; mode=display">\mathcal{L}_2 = \mathbb{E}_{x_0 \sim p_0(x_0), x_1 \sim p_1(x_1)} \left[ \left\lVert v_\theta(x_t, t, 2\epsilon) - \text{sg} \left[ \frac{v_\theta(x_t, t, \epsilon) + v_\theta(\tilde{x}_{t + \epsilon}, t + \epsilon, \epsilon)}{2} \right] \right\rVert^2 \right] \tag{10}</script><p>为什么要这样做呢？按照作者的回复，这是自引导学习的常见做法，被stop gradient的部分属于目标，不应该有梯度，跟BYOL、SimSiam等无监督学习方案类似。不过照笔者看来，这个操作最大的价值还是节省训练成本，因为$v_\theta(\tilde{x}_{t + \epsilon}, t, \epsilon)$这一项做了两次前向传播，如果要对它反向传播，计算量也要翻倍。</p>
+<h4 id="实验效果"><a href="#实验效果" class="headerlink" title="实验效果"></a>实验效果</h4><p>现在我们来看Shortcut模型的实验效果，看起来它是目前单步生成效果最好的、单阶段训练的扩散模型：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t1.png" width="70%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表1：在等效架构（DiT-B）和计算量下不同训练目标的比较。表中展示了128步、4步和1步去噪的FID-50k分数（分数越低越好）。快捷模型在单次训练中，无论推理预算如何，都能生成高质量样本。与扩散模型和流匹配模型相比，快捷模型大幅减少了所需的采样步骤。与蒸馏方法相比，快捷模型简化了训练流程，并在训练后可灵活选择推理预算。括号内表示在目标原本不支持的条件下进行的评估。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>这是它的实际采样效果图：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f1.png" width="60%" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图1：不同推理预算下，流匹配模型和快捷模型的生成结果。快捷模型在广泛的推理预算范围内都能生成高质量图像，包括仅使用一次前向传递，与扩散模型和流匹配模型相比，采样时间最多可大幅缩短128倍。相比之下，扩散模型和流匹配模型在少步设置下，生成质量会迅速下降。每列中使用相同的初始噪声，两个模型均在CelebA-HQ和Imagenet-256（类别条件）上进行训练。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>不过仔细观察单步生成的样本就会发现，其实还有明显的瑕疵，所以说虽然Shortcut模型相比于之前的单阶段训练方案来说已经取得了较大的进步，但还有明显的提升空间。</p>
+<h4 id="延伸思考"><a href="#延伸思考" class="headerlink" title="延伸思考"></a>延伸思考</h4><p>看到Shortcut模型，不知道大家想到了哪些相关工作？笔者想到了一个可能大家都想不到的，那就是我们在《生成扩散模型漫谈（二十一）：中值定理加速ODE采样》介绍过的AMED。</p>
+<p>Shortcut模型与AMED的底层思想是相通的，它们都已经发现，单靠研究复杂的高阶求解器，将生成的NFE（模型的运行次数）降低到个位数就已经很简单了，更不用说做单步生成了。所以它们一致认为，真正要变的并不是求解器，而是模型。该怎么变呢？AMED想到的是“中值定理”：对ODE两端积分，我们有精确的</p>
+<script type="math/tex; mode=display">x_{t + \epsilon} - x_t = \int_{t}^{t + \epsilon} v_\theta(x_\tau, \tau) d\tau \tag{11}</script><p>类比“积分中值定理”，我们能找到一个$s \in [t, t + \epsilon]$，成立</p>
+<script type="math/tex; mode=display">\frac{1}{\epsilon} \int_{t}^{t + \epsilon} v_\theta(x_\tau, \tau) d\tau = v_\theta(x_s, s) \tag{12}</script><p>于是我们得到</p>
+<script type="math/tex; mode=display">x_{t + \epsilon} - x_t = v_\theta(x_s, s)\epsilon \tag{13}</script><p>当然，积分中值定理实际上只对标量函数成立，对向量函数是不保证成立的，所以说是“类比”。现在的问题是并不知道$s$的值，所以AMED的后续做法是用一个非常小的（计算量几乎可以忽略的）模型去预测$s$。</p>
+<p>AMED是基于现成扩散模型的事后修正方法，因此它的效果取决于中值定理对$v_\theta(x_t, t)$模型的成立程度，这显得有些“运气成分”，并且AMED需要先用欧拉格式预估一下$x_s$，所以它的NFE最少是2，不能做到单步生成。相比之下，Shortcut模型更“激进”，它直接把步长作为条件输入，将加速生成的条件(8)作为损失函数，这样一来不仅避免了“中值定理”近似的可行性讨论，还使得最少NFE可以降低到1。</p>
+<p>更巧妙的是，细思之下我们会发现两者的做法其实也有些共性，前面我们说了Shortcut是直接将$\epsilon$转成Embedding加到$t$的Embedding上的，这不相当于跟AMED一样都是修改$t$嘛！只不过AMED是直接修改$t$的数值，而Shortcut修改的是$t$的Embedding。 </p>
+<h3 id="改进之处"><a href="#改进之处" class="headerlink" title="改进之处"></a>改进之处</h3><h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2410.12557">One Step Diffusion via Shortcut Models</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/kvfrans/shortcut-models">shortcut-models</a></li>
+<li><a target="_blank" rel="noopener" href="https://spaces.ac.cn/archives/10617">生成扩散模型漫谈（二十七）：将步长作为条件输入</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/diffusion/" rel="tag"># diffusion</a>
+              <a href="/tags/ICLR/" rel="tag"># ICLR</a>
+              <a href="/tags/2025/" rel="tag"># 2025</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/05/11/%E5%B8%B8%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E7%9A%84%E6%95%B0%E5%80%BC%E8%A7%A3%E6%B3%95/" rel="prev" title="常微分方程的数值解法">
+      <i class="fa fa-chevron-left"></i> 常微分方程的数值解法
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%83%8C%E6%99%AF"><span class="nav-number">1.3.</span> <span class="nav-text">2 背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E7%94%A8%E4%BA%8E%E5%B0%91%E6%AD%A5%E7%94%9F%E6%88%90%E7%9A%84%E5%BF%AB%E6%8D%B7%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.4.</span> <span class="nav-text">3 用于少步生成的快捷模型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E8%AE%AD%E7%BB%83%E7%BB%86%E8%8A%82"><span class="nav-number">1.4.1.</span> <span class="nav-text">3.1 训练细节</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.5.</span> <span class="nav-text">4 相关工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.6.</span> <span class="nav-text">5 实验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#5-1-%E5%BF%AB%E6%8D%B7%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%85%88%E5%89%8D%E7%9A%84%E4%B8%80%E6%AD%A5%E7%94%9F%E6%88%90%E6%96%B9%E6%B3%95%E7%9B%B8%E6%AF%94%E8%A1%A8%E7%8E%B0%E5%A6%82%E4%BD%95%EF%BC%9F"><span class="nav-number">1.6.1.</span> <span class="nav-text">5.1 快捷模型与先前的一步生成方法相比表现如何？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-2-%E5%BF%AB%E6%8D%B7%E6%A8%A1%E5%9E%8B%E5%9C%A8%E4%B8%8D%E5%90%8C%E6%8E%A8%E7%90%86%E9%A2%84%E7%AE%97%E4%B8%8B%E7%9A%84%E8%A1%A8%E7%8E%B0%E5%A6%82%E4%BD%95%EF%BC%9F"><span class="nav-number">1.6.2.</span> <span class="nav-text">5.2 快捷模型在不同推理预算下的表现如何？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-3-%E5%BF%AB%E6%8D%B7%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%80%A7%E8%83%BD%E5%A6%82%E4%BD%95%E9%9A%8F%E6%A8%A1%E5%9E%8B%E8%A7%84%E6%A8%A1%E6%8F%90%E5%8D%87%EF%BC%9F"><span class="nav-number">1.6.3.</span> <span class="nav-text">5.3 快捷模型的性能如何随模型规模提升？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-4-%E5%BF%AB%E6%8D%B7%E6%A8%A1%E5%9E%8B%E8%83%BD%E4%B8%BA%E6%88%91%E4%BB%AC%E6%8F%90%E4%BE%9B%E5%8F%AF%E6%8F%92%E5%80%BC%E7%9A%84%E6%BD%9C%E5%9C%A8%E7%A9%BA%E9%97%B4%E5%90%97%EF%BC%9F"><span class="nav-number">1.6.4.</span> <span class="nav-text">5.4 快捷模型能为我们提供可插值的潜在空间吗？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-5-%E5%BF%AB%E6%8D%B7%E6%A8%A1%E5%9E%8B%E5%9C%A8%E9%9D%9E%E5%9B%BE%E5%83%8F%E9%A2%86%E5%9F%9F%E6%98%AF%E5%90%A6%E6%9C%89%E6%95%88%EF%BC%9F"><span class="nav-number">1.6.5.</span> <span class="nav-text">5.5 快捷模型在非图像领域是否有效？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E8%AE%A8%E8%AE%BA"><span class="nav-number">1.7.</span> <span class="nav-text">6 讨论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E8%87%B4%E8%B0%A2"><span class="nav-number">1.8.</span> <span class="nav-text">7 致谢</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#A-%E9%99%84%E5%BD%95"><span class="nav-number">1.9.</span> <span class="nav-text">A 附录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#B-%E8%AE%AD%E7%BB%83%E7%BB%86%E8%8A%82"><span class="nav-number">1.10.</span> <span class="nav-text">B 训练细节</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#B-1-%E8%AE%A1%E7%AE%97"><span class="nav-number">1.10.1.</span> <span class="nav-text">B.1 计算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B-2-%E6%96%B9%E6%B3%95%E7%BB%86%E8%8A%82"><span class="nav-number">1.10.2.</span> <span class="nav-text">B.2 方法细节</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E7%AB%A0%E6%80%BB%E7%BB%93"><span class="nav-number">2.</span> <span class="nav-text">文章总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E6%96%B0%E7%82%B9%E4%B8%8E%E4%B8%BB%E8%A6%81%E6%80%9D%E6%83%B3"><span class="nav-number">2.1.</span> <span class="nav-text">创新点与主要思想</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ODE%E6%89%A9%E6%95%A3"><span class="nav-number">2.1.1.</span> <span class="nav-text">ODE扩散</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%AD%A5%E9%95%BF%E8%87%AA%E6%B2%BB"><span class="nav-number">2.1.2.</span> <span class="nav-text">步长自治</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E7%BB%86%E8%8A%82"><span class="nav-number">2.1.3.</span> <span class="nav-text">模型细节</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E6%95%88%E6%9E%9C"><span class="nav-number">2.1.4.</span> <span class="nav-text">实验效果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BB%B6%E4%BC%B8%E6%80%9D%E8%80%83"><span class="nav-number">2.1.5.</span> <span class="nav-text">延伸思考</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%94%B9%E8%BF%9B%E4%B9%8B%E5%A4%84"><span class="nav-number">2.2.</span> <span class="nav-text">改进之处</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">2.3.</span> <span class="nav-text">参考资料</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zongqing Li"
+      src="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+  <p class="site-author-name" itemprop="name">Zongqing Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">64</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hqulzq" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hqulzq" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hqulzq@163.com" title="E-Mail → mailto:hqulzq@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+      
+<script type="text/javascript" charset="utf-8" src="/js/tagcloud.js"></script>
+<script type="text/javascript" charset="utf-8" src="/js/tagcanvas.js"></script>
+<div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div id="myCanvasContainer" class="widget tagcloud">
+        <canvas width="250" height="250" id="resCanvas" style="width=100%">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2023/" rel="tag">2023</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2024/" rel="tag">2024</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2025/" rel="tag">2025</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICML/" rel="tag">ICML</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ODE%E6%B1%82%E8%A7%A3/" rel="tag">ODE求解</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">29</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%85%E8%AF%BB/" rel="tag">阅读</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+        </canvas>
+    </div>
+</div>
+
+
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zongqing Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('post.copy_button').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('post.copy_success')
+          else $(this).text('post.copy_failure')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('post.copy_button')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
