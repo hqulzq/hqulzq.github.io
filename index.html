@@ -213,10 +213,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2025-05-18 22:29:11 / 修改时间：23:40:01" itemprop="dateCreated datePublished" datetime="2025-05-18T22:29:11+08:00">2025-05-18</time>
+              <time title="创建时间：2025-05-18 22:29:11" itemprop="dateCreated datePublished" datetime="2025-05-18T22:29:11+08:00">2025-05-18</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-05-19 00:40:02" itemprop="dateModified" datetime="2025-05-19T00:40:02+08:00">2025-05-19</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -238,9 +244,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><p>基于扩散的生成模型利用随机微分方程（SDE）及其等效的常微分方程（ODE），在复杂数据分布和易处理的先验分布之间建立平滑连接。在本文中，我们揭示了扩散模型基于ODE的采样过程中几个有趣的轨迹特性。我们刻画了一个隐式去噪轨迹，并讨论了其在形成具有强形状规律性的耦合采样轨迹中所起的关键作用，且该作用与生成内容无关。我们还描述了一种基于动态规划的方案，使采样中的时间安排能更好地适应底层轨迹结构。这一简单策略对任何给定的基于ODE的数值求解器只需进行最小修改，且计算成本可忽略不计，同时在图像生成中表现出优异性能，尤其是在5~10次函数评估时。</p>
-<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1. 引言"></a>1. 引言</h3><p>基于扩散的生成模型（Sohl-Dickstein等人，2015；Song &amp; Ermon，2019；Ho等人，2020；Song等人，2021c）已引起广泛关注，并在图像（Dhariwal &amp; Nichol，2021；Rombach等人，2022）、音频（Kong等人，2021）、视频（Ho等人，2022；Blattmann等人，2023），尤其是文本到图像合成（Saharia等人，2022；Ruiz等人，2023；Podell等人，2024；Esser等人，2024）领域取得了显著成果。这些模型通过正向过程向数据中引入噪声，随后通过反向采样生成数据，两个过程均通过随机微分方程（SDE）进行建模和表征（Song等人，2021c）。在基于扩散的生成模型中，核心要素是分数函数（score function），定义为对数数据密度关于输入的梯度（Hyvärinen，2005；Lyu，2009；Raphan &amp; Simoncelli，2011；Vincent，2011），且与模型的具体结构无关。训练此类模型涉及学习分数函数，这可通过开发依赖噪声的去噪模型实现——该模型通过最小化正向过程中生成的数据-噪声对的重构均方误差进行训练（Kingma等人，2021；Karras等人，2022）。</p>
-<p>为了生成数据，基于扩散的生成模型通过数值求解器求解学习到的基于分数的反向SDE。近期研究表明，反向SDE可有效替换为等效的概率流常微分方程（PF-ODE），且保留相同的边际分布（Song等人，2021c,a；Lu等人，2022a；Zhang &amp; Chen，2023；Zhou等人，2023）。这种基于ODE的确定性生成过程将随机采样需求简化为仅初始样本选择的随机性，从而简化并增强了对整个生成过程的控制（Song等人，2021a,c）。在PF-ODE框架下，采样轨迹从高斯白噪声出发，通过数值求解器在离散时间步运行形成，这些时间步共同构成了采样中的时间安排。</p>
+          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><p>基于扩散的生成模型利用随机微分方程（SDE）及其等效的常微分方程（ODE），在复杂数据分布和易处理的先验分布之间建立平滑连接。<strong>在本文中，我们揭示了扩散模型基于ODE的采样过程中几个有趣的轨迹特性。我们刻画了一个隐式去噪轨迹，并讨论了其在形成具有强形状规律性的耦合采样轨迹中所起的关键作用，且该作用与生成内容无关。</strong>我们还描述了一种基于<code>动态规划</code>的方案，使采样中的时间安排能更好地适应底层轨迹结构。这一简单策略对任何给定的基于ODE的数值求解器只需进行最小修改，且计算成本可忽略不计，同时在图像生成中表现出优异性能，尤其是在5~10次函数评估时。</p>
+<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1. 引言"></a>1. 引言</h3><p>基于扩散的生成模型（Sohl-Dickstein等人，2015；Song &amp; Ermon，2019；Ho等人，2020；Song等人，2021c）已引起广泛关注，并在图像（Dhariwal &amp; Nichol，2021；Rombach等人，2022）、音频（Kong等人，2021）、视频（Ho等人，2022；Blattmann等人，2023），尤其是文本到图像合成（Saharia等人，2022；Ruiz等人，2023；Podell等人，2024；Esser等人，2024）领域取得了显著成果。这些模型通过正向过程向数据中引入噪声，随后通过反向采样生成数据，两个过程均通过随机微分方程（SDE）进行建模和表征（Song等人，2021c）。在基于扩散的生成模型中，核心要素是分数函数（score function），定义为对数数据密度关于输入的梯度（Hyvärinen，2005；Lyu，2009；Raphan &amp; Simoncelli，2011；Vincent，2011），且与模型的具体结构无关。训练此类模型涉及学习分数函数，这可通过开发依赖噪声的去噪模型实现。该模型的训练目标是最小化正向过程中生成的数据 - 噪声对在数据重建中的均方误差（Kingma 等人，2021；Karras 等人，2022）。为了生成数据，基于扩散的生成模型通过数值求解器求解所获得的基于分数的反向 SDE。最近的研究表明，反向 SDE 可以有效地被等效的概率流常微分方程（PF-ODE）替代，同时保留相同的边际分布（Song 等人，2021c；a；Lu 等人，2022a；Zhang 与 Chen，2023；Zhou 等人，2023）。这种基于确定性 ODE 的生成方式将随机采样的需求减少到仅初始样本选择的随机性，从而简化了整个生成过程并提供了更强的控制能力（Song 等人，2021a；c）。在 PF-ODE 框架下，从白高斯噪声开始，采样轨迹通过运行具有离散时间步长的数值求解器形成。这些时间步长共同构成了采样中使用的时间调度。</p>
 <p>尽管扩散模型展现出强大的生成能力，但其诸多数学和统计特性仍不明确，这主要归因于SDE和神经网络模型的复杂性，以及涉及的数据维度较高。特别是实证研究表明，基于PF-ODE的扩散模型的采样轨迹存在一种有趣的规律性（Chen等人，2023a），即样本路径倾向于呈现“回旋镖”形状，或具体而言如图1所示的线性-非线性-线性结构。此外，我们观察到每条采样轨迹几乎不偏离其起点和终点的连线，且该偏差可通过两到三个正交基有效近似（第3节）。无论初始随机样本或对应的真实数据样本如何，这种模式在不同轨迹中一致出现（见图4）。这种简单结构保证了合成不同样本时可共享通用时间安排，并使我们能够安全地采用大采样步长而不会引入较大截断误差（Song等人，2021a；Karras等人，2022；Lu等人，2022a），尤其是在第一步（Dockhorn等人，2022；Zhou等人，2023）。</p>
 <div class="table-container">
 <table>
@@ -257,21 +262,21 @@
 </table>
 </div>
 <p>我们假设这种规律性反映了采样轨迹的某些潜在几何结构。本文旨在阐明这一现象。我们首先对基于ODE的采样轨迹进行简化，揭示出一个隐式去噪轨迹。该去噪轨迹对应于采样轨迹上每个点的旋转，从而决定了采样轨迹的曲率（第4.1节）。基于这一洞察，我们表明，当使用变宽度核密度估计（KDE）从训练样本近似原始数据分布时，去噪轨迹具有闭式解。这与经典的均值漂移算法（Fukunaga &amp; Hostetler，1975；Cheng，1995；Comaniciu &amp; Meer，2002）类似，但其重要区别在于我们在KDE中使用时变宽度（第4.2节）。尽管基于KDE的解在实际求解采样轨迹时不可行，但其渐近收敛于基于真实数据分布的最优解，且其闭式形式便于理论分析。我们证明，线性-非线性-线性结构可自然地从PF-ODE的这一解释中推导得出。这种轨迹规律性统一了先前的观察，并阐明了许多现有的加速扩散模型采样的启发式方法。利用采样轨迹的形状规律性，我们引入一种基于动态规划的高效加速采样方法，以确定最优时间安排。实验结果表明，基于轨迹规律性的加速采样可在少量（≤10次）函数评估中显著提升基于扩散的生成模型的性能。</p>
-<p>我们的主要贡献总结如下：<br>• 描述并验证了基于ODE的扩散采样轨迹的强形状规律性，即采样轨迹近似遵循线性-非线性-线性结构的相似形状。<br>• 通过带时变带宽的KDE数据建模下的去噪轨迹闭式解，解释了这一规律性。<br>• 开发了一种基于动态规划的方法，利用轨迹规律性寻找采样步的最优时间安排，该方法引入的开销极小且能提升图像质量。</p>
+<p>我们的主要贡献总结如下：<br>• 描述并验证了基于ODE的扩散采样轨迹的强形状规律性，即采样轨迹近似遵循<font style="color:red; background: yellow">线性-非线性-线性结构的相似形状。</font><br>• 通过带时变带宽的KDE数据建模下的去噪轨迹闭式解，解释了这一规律性。<br>• 开发了一种基于动态规划的方法，利用轨迹规律性寻找采样步的最优时间安排，该方法引入的开销极小且能提升图像质量。</p>
 <h3 id="2-预备知识"><a href="#2-预备知识" class="headerlink" title="2. 预备知识"></a>2. 预备知识</h3><p>成功的生成建模需要将数据分布 $ p_d $ 与非信息性、易处理的分布 $ p_n $ 建立联系。扩散模型通过向数据中逐步引入高斯白噪声（有效消除其结构），再通过一系列去噪步骤从噪声样本中重建合成数据来实现这一目标。正向过程可建模为从 $ x_0 \sim p_d $ 开始的扩散过程 $\{x_t\}_{t=0}^T$，其是线性伊藤随机微分方程（SDE）的解（Song等人，2021c；Karras等人，2022）：</p>
 <script type="math/tex; mode=display">
-dx_t = f(t)x_t dt + g(t) dw_t, \quad (1)</script><p>其中 $ w_t $ 表示维纳过程；$ f(t)x_t $ 和 $ g(t) $ 分别为漂移系数和扩散系数。在初始条件 $ p_0(x_0) = p_d(x_0) $ 下，边际分布 $ p_t(x_t) $ 按著名的福克-普朗克方程演化（Oksendal，2013）。通过合理设置漂移和扩散系数，数据分布可通过正向过程平滑转换为（近似）噪声分布 $ p_T(x_T) \approx p_n $。此时转移核始终为高斯分布，即 $ p_{0t}(x_t | x_0) = \mathcal{N}(x_t; s(t)x_0, s^2(t)\sigma^2(t)I) $，其中 $ s(t) = \exp(\int_0^t f(\xi) d\xi) $，$ \sigma(t) = \sqrt{\int_0^t [g(\xi)/s(\xi)]^2 d\xi} $，为简化符号，后文记为 $ s_t $、$ \sigma_t $。信噪比（SNR）定义为 $ 1/\sigma_t^2 $（Karras等人，2022），更多细节见附录A.1。</p>
+dx_t = f(t)x_t dt + g(t) dw_t, \tag{1}</script><p>其中 $ w_t $ 表示维纳过程；$ f(t)x_t $ 和 $ g(t) $ 分别为漂移系数和扩散系数。在初始条件 $ p_0(x_0) = p_d(x_0) $ 下，边际分布 $ p_t(x_t) $ 按著名的福克-普朗克方程演化（Oksendal，2013）。通过合理设置漂移和扩散系数，数据分布可通过正向过程平滑转换为（近似）噪声分布 $ p_T(x_T) \approx p_n $。此时转移核始终为高斯分布，即 $ p_{0t}(x_t | x_0) = \mathcal{N}(x_t; s(t)x_0, s^2(t)\sigma^2(t)I) $，其中 $ s(t) = \exp(\int_0^t f(\xi) d\xi) $，$ \sigma(t) = \sqrt{\int_0^t [g(\xi)/s(\xi)]^2 d\xi} $，为简化符号，后文记为 $ s_t $、$ \sigma_t $。信噪比（SNR）定义为 $ 1/\sigma_t^2 $（Karras等人，2022），更多细节见附录A.1。</p>
 <p>文献中常用两种形式的SDE，即方差保持（VP）SDE和方差爆炸（VE）SDE（Song等人，2021c），二者均广泛应用于大规模生成模型（Ramesh等人，2022；Rombach等人，2022；Balaji等人，2022；Yuan等人，2023）。我们的分析基于VE-SDE，且结果可轻松扩展至VP-SDE。事实上，我们可安全地移除式（1）中的漂移项而不改变底层扩散模型的本质特征（见备注2.1，证明见附录A.1）。因此，我们仅考虑标准化VE-SDE：</p>
 <script type="math/tex; mode=display">
-dx_t = \sqrt{d\sigma_t^2/dt} dw_t, \quad \sigma_t: \mathbb{R} \to \mathbb{R}, \quad (2)</script><p>其中 $ \sigma_t $ 为预定义的递增噪声调度。</p>
+dx_t = \sqrt{d\sigma_t^2/dt} dw_t, \quad \sigma_t: \mathbb{R} \to \mathbb{R},  \tag{2}</script><p>其中 $ \sigma_t $ 为预定义的递增噪声调度。</p>
 <p>正向SDE（2）的反向过程由另一SDE描述，其通过反向采样从噪声中合成数据（Feller，1949；Anderson，1982）。值得注意的是，存在一个概率流常微分方程（PF-ODE），其在扩散过程的每个时间步保持与SDE相同的边际分布 $\{p_t(x_t)\}_{t=0}^T$（Song等人，2021c）：</p>
 <script type="math/tex; mode=display">
-dx_t = -\sigma_t \nabla_{x_t} \log p_t(x_t) d\sigma_t. \quad (3)</script><p>ODE的确定性特性在生成建模中具有多项优势，包括高效采样、唯一编码和有意义的隐变量操作（Song等人，2021c,a）。因此，本文选择该公式分析扩散模型的采样行为。</p>
+dx_t = -\sigma_t \nabla_{x_t} \log p_t(x_t) d\sigma_t. \tag{3}</script><p>ODE的确定性特性在生成建模中具有多项优势，包括高效采样、唯一编码和有意义的隐变量操作（Song等人，2021c,a）。因此，本文选择该公式分析扩散模型的采样行为。</p>
 <p><strong>训练</strong>：模拟上述PF-ODE（3）需要分数函数 $\nabla_{x_t} \log p_t(x_t)$（Hyvärinen，2005；Lyu，2009），其通常通过去噪分数匹配（Vincent，2011）估计。由于分数函数与后验期望之间存在深层联系，即 $\mathbb{E}(x_0 | x_t) = x_t + \sigma_t^2 \nabla_{x_t} \log p_t(x_t)$（Robbins，1956；Efron，2011；Raphan &amp; Simoncelli，2011），我们可训练去噪自编码器（DAE）$ r_\theta $ 来估计条件期望 $\mathbb{E}(x_0 | x_t)$，并将其转换为分数函数。使用加权函数 $\lambda(t)$ 在不同噪声水平下训练该神经网络的目标函数为：</p>
 <script type="math/tex; mode=display">
-L_{\text{DAE}}(\theta; \lambda(t)) := \int_0^T \lambda(t) \mathbb{E}_{x_0 \sim p_d} \mathbb{E}_{x_t \sim p_{0t}(x_t | x_0)} \| r_\theta(x_t; \sigma_t) - x_0 \|_2^2 dt. \quad (4)</script><p>最优估计器 $ r_\theta^{\ast}(x_t; \sigma_t) $（又称贝叶斯最小二乘估计器）等于 $\mathbb{E}(x_0 | x_t)$，因此有 $ r_\theta^<em>(x_t; \sigma_t) = x_t + \sigma_t^2 \nabla_{x_t} \log p_t(x_t) $。实际中，假设收敛模型近似满足 $ r_\theta(x_t; \sigma_t) \approx r_\theta^</em>(x_t; \sigma_t) $，将其代入（3）可得经验PF-ODE：</p>
+L_{\text{DAE}}(\theta; \lambda(t)) := \int_0^T \lambda(t) \mathbb{E}_{x_0 \sim p_d} \mathbb{E}_{x_t \sim p_{0t}(x_t | x_0)} \| r_\theta(x_t; \sigma_t) - x_0 \|_2^2 dt. \tag{4}</script><p>最优估计器 $ r_\theta^{\ast}(x_t; \sigma_t) $（又称贝叶斯最小二乘估计器）等于 $\mathbb{E}(x_0 \mid x_t)$，因此有 $ r_\theta^{\ast}(x_t; \sigma_t) = x_t + \sigma_t^2 \nabla_{x_t} \log p_t(x_t) $。实际中，假设收敛模型近似满足 $ r_\theta(x_t; \sigma_t) \approx r_\theta^{\ast}(x_t; \sigma_t) $，将其代入（3）可得经验PF-ODE：</p>
 <script type="math/tex; mode=display">
-dx_t = \frac{x_t - r_\theta(x_t; \sigma_t)}{\sigma_t} d\sigma_t = \epsilon_\theta(x_t; \sigma_t) d\sigma_t. \quad (5)</script><p>上述噪声预测模型 $\epsilon_\theta(\cdot, \cdot)$ 已应用于先前工作（Ho等人，2020；Song等人，2021a；Nichol &amp; Dhariwal，2021；Bao等人，2022）。</p>
+dx_t = \frac{x_t - r_\theta(x_t; \sigma_t)}{\sigma_t} d\sigma_t = \epsilon_\theta(x_t; \sigma_t) d\sigma_t.\tag{5}</script><p>上述噪声预测模型 $\epsilon_\theta(\cdot, \cdot)$ 已应用于先前工作（Ho等人，2020；Song等人，2021a；Nichol &amp; Dhariwal，2021；Bao等人，2022）。</p>
 <p><strong>采样</strong>：给定经验PF-ODE（5），生成新样本的方法为：首先从纯噪声 $\hat{x}_{t_N} \sim p_n$ 作为初始条件，然后通过数值方法反向求解该方程，在特定时间调度 $\Gamma = \{t_0 = \epsilon, \cdots, t_N = T\}$ 下得到序列 $\{\hat{x}_{t_n}\}_{n=0}^N$。我们用 $\hat{x}_{t_n}$ 表示数值方法生成的样本，以区别于精确解 $x_{t_n}$。最终样本 $\hat{x}_{t_0}$ 近似服从数据分布 $p_d$，该序列称为采样轨迹。实际中，有多种受经典数值方法启发的采样策略用于求解反向PF-ODE（5），包括欧拉法（Song等人，2021a）、休恩法（Karras等人，2022）、龙格-库塔法（Song等人，2021c；Liu等人，2022；Lu等人，2022a）和线性多步法（Liu等人，2022；Lu等人，2022b；Zhang &amp; Chen，2023；Zhao等人，2023）。</p>
 <h3 id="3-PF-ODE采样轨迹的规律性"><a href="#3-PF-ODE采样轨迹的规律性" class="headerlink" title="3. PF-ODE采样轨迹的规律性"></a>3. PF-ODE采样轨迹的规律性</h3><p>如第1节所述，扩散模型的PF-ODE框架下，采样轨迹的形状存在某种规律性，且与生成的具体内容无关。为更好地阐释这一概念，我们开展了一系列实证研究。</p>
 <h4 id="3-1-一维投影"><a href="#3-1-一维投影" class="headerlink" title="3.1 一维投影"></a>3.1 一维投影</h4><p>在原始高维空间中可视化完整采样轨迹并分析其几何特征极具挑战性。为此，我们首先考察轨迹偏离起点与终点连线的程度，以评估轨迹的线性度（见图1）。这种方法使我们能够对齐并整体观察所有采样轨迹的一般行为。具体而言，轨迹偏差定义为每个中间样本 $\hat{x}_{t_n}$ 到向量 $\hat{x}_{t_N} - \hat{x}_{t_0}$ 的垂直 $L^2$ 距离，如图2中呈“回旋镖”形状的红色曲线所示。此外，我们计算轨迹中 $\hat{x}_{t_n}$ 与最终样本 $\hat{x}_{t_0}$ 的 $L^2$ 距离 $|\hat{x}_{t_n} - \hat{x}_{t_0}|_2$，即图2中的蓝色单调曲线。</p>
@@ -289,7 +294,7 @@ dx_t = \frac{x_t - r_\theta(x_t; \sigma_t)}{\sigma_t} d\sigma_t = \epsilon_\thet
 </tbody>
 </table>
 </div>
-<p>从图2可观察到，采样轨迹的偏差从 $t=80$ 到约 $t=10$ 逐渐增大，随后在接近最终样本时迅速减小。这一模式表明，初始阶段每个样本可能受多种模式影响，波动较大，而在某个转折点后则强烈受特定模式引导。这一现象支持了在最小时间戳附近密集安排时间间隔、在最大时间戳附近稀疏安排的策略（Song等人，2021a；Lu等人，2022a；Karras等人，2022；Song等人，2023）。此外，计算图2中最大偏差与端点距离的比值（约为 $30 / 8868 \approx 0.0034$），可见轨迹偏差极小，呈现显著的直线性。同时，采样轨迹上的生成样本倾向于从起点单调向终点移动。</p>
+<p>从图2可观察到，采样轨迹的偏差从 $t=80$ 到约 $t=10$ 逐渐增大，随后在接近最终样本时迅速减小。这一模式表明，初始阶段每个样本可能受多种模式影响，波动较大，而在某个转折点后则强烈受特定模式引导。<strong>这一现象支持了在最小时间戳附近密集安排时间间隔、在最大时间戳附近稀疏安排的策略（Song等人，2021a；Lu等人，2022a；Karras等人，2022；Song等人，2023）</strong>。然而，当我们考察图2中最大偏差与端点距离的比值时，发现轨迹偏差极小（约为$30 / 8868 ≈0.0034$），表明轨迹具有显著的直线性。此外，沿采样轨迹生成的样本往往从初始点向终点单调移动。</p>
 <h4 id="3-2-多维投影"><a href="#3-2-多维投影" class="headerlink" title="3.2 多维投影"></a>3.2 多维投影</h4><p>此外，我们对向量 $\hat{x}_{t_N} - \hat{x}_{t_0}$ 的正交补空间进行主成分分析（PCA），以评估轨迹的旋转特性。如图3a所示，首先将每个d维采样轨迹投影到与 $\hat{x}_{t_N} - \hat{x}_{t_0}$ 向量正交的(d-1)维空间，再进行PCA。图3b-3c显示，结合 $\hat{x}_{t_N} - \hat{x}_{t_0}$ 和第一主成分的二维近似显著缩小了与真实轨迹的视觉差异，降低了 $L^2$ 重建误差。这表明每个d维采样轨迹的点均轻微偏离二维平面，因此可通过这种方式有效刻画轨迹的切向量和法向量。</p>
 <div class="table-container">
 <table>
