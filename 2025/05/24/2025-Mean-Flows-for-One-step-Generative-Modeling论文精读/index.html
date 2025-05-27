@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="全文翻译摘要我们提出了一个用于单步生成建模的有原则且有效的框架。与Flow Matching方法所建模的瞬时速度不同，我们引入了平均速度的概念来刻画流场。我们推导了平均速度和瞬时速度之间明确的恒等式，并将其用于指导神经网络训练。我们的方法被称为MeanFlow模型，它是自包含的，不需要预训练、蒸馏或课程学习。MeanFlow在实验中表现出了强大的性能：在ImageNet 256×256上，从头开始">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2025 Mean Flows for One-step Generative Modeling论文精读">
+<meta property="og:url" content="https://hqulzq.github.io/2025/05/24/2025-Mean-Flows-for-One-step-Generative-Modeling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/index.html">
+<meta property="og:site_name" content="Lzq&#39;s blog">
+<meta property="og:description" content="全文翻译摘要我们提出了一个用于单步生成建模的有原则且有效的框架。与Flow Matching方法所建模的瞬时速度不同，我们引入了平均速度的概念来刻画流场。我们推导了平均速度和瞬时速度之间明确的恒等式，并将其用于指导神经网络训练。我们的方法被称为MeanFlow模型，它是自包含的，不需要预训练、蒸馏或课程学习。MeanFlow在实验中表现出了强大的性能：在ImageNet 256×256上，从头开始">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/24/2025-Mean-Flows-for-One-step-Generative-Modeling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/24/2025-Mean-Flows-for-One-step-Generative-Modeling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f2.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/24/2025-Mean-Flows-for-One-step-Generative-Modeling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f3.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/24/2025-Mean-Flows-for-One-step-Generative-Modeling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/a1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/24/2025-Mean-Flows-for-One-step-Generative-Modeling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/a2.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/24/2025-Mean-Flows-for-One-step-Generative-Modeling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/24/2025-Mean-Flows-for-One-step-Generative-Modeling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f4.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/24/2025-Mean-Flows-for-One-step-Generative-Modeling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t2.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/24/2025-Mean-Flows-for-One-step-Generative-Modeling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t3.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/24/2025-Mean-Flows-for-One-step-Generative-Modeling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t4.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/24/2025-Mean-Flows-for-One-step-Generative-Modeling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t5.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/05/24/2025-Mean-Flows-for-One-step-Generative-Modeling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f5.png">
+<meta property="article:published_time" content="2025-05-24T06:02:56.000Z">
+<meta property="article:modified_time" content="2025-05-24T10:34:11.442Z">
+<meta property="article:author" content="Zongqing Li">
+<meta property="article:tag" content="diffusion">
+<meta property="article:tag" content="2025">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hqulzq.github.io/2025/05/24/2025-Mean-Flows-for-One-step-Generative-Modeling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f1.png">
+
+<link rel="canonical" href="https://hqulzq.github.io/2025/05/24/2025-Mean-Flows-for-One-step-Generative-Modeling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>2025 Mean Flows for One-step Generative Modeling论文精读 | Lzq's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lzq's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">46</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">69</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book">
+
+    <a href="/book" rel="section"><i class="fas fa-book fa-fw"></i>Book</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/05/24/2025-Mean-Flows-for-One-step-Generative-Modeling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          2025 Mean Flows for One-step Generative Modeling论文精读
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-05-24 14:02:56 / 修改时间：18:34:11" itemprop="dateCreated datePublished" datetime="2025-05-24T14:02:56+08:00">2025-05-24</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>我们提出了一个用于单步生成建模的有原则且有效的框架。与Flow Matching方法所建模的瞬时速度不同，我们引入了平均速度的概念来刻画流场。我们推导了平均速度和瞬时速度之间明确的恒等式，并将其用于指导神经网络训练。<strong>我们的方法被称为MeanFlow模型，它是自包含的，不需要预训练、蒸馏或课程学习。</strong>MeanFlow在实验中表现出了强大的性能：在ImageNet 256×256上，从头开始训练的模型通过单次函数评估（1-NFE）实现了3.43的FID，显著优于之前最先进的单步扩散/流模型。我们的研究大幅缩小了单步扩散/流模型与其多步前身之间的差距，希望能激励未来的研究重新审视这些强大模型的基础。</p>
+<span id="more"></span>
+<h3 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1 介绍"></a>1 介绍</h3><p>生成建模的目标是将先验分布转换为数据分布。Flow Matching [28, 2, 30] 提供了一个直观且概念简单的框架，用于构建将一种分布传输到另一种分布的流路径。与扩散模型 [42, 44, 19] 密切相关，Flow Matching 专注于指导模型训练的速度场。自提出以来，Flow Matching 已在现代生成建模中得到广泛应用 [11, 33, 35]。</p>
+<p>Flow Matching 和扩散模型在生成过程中都执行迭代采样。最近的研究非常关注少步（特别是单步前馈）生成模型。在这一方向上，先驱性的一致性模型 [46, 43, 15, 31] 对沿同一路径采样的输入的网络输出引入了一致性约束。尽管结果令人鼓舞，但一致性约束是作为网络行为的属性强加的，而本应指导学习的底层真实场的属性仍然未知。因此，训练可能不稳定，需要精心设计的“离散化课程” [46, 43, 15] 来逐步约束时间域。</p>
+<p>在这项工作中，我们提出了一个有原则且有效的单步生成框架，称为 MeanFlow。<strong>核心思想是引入一个表示平均速度的新真实场，这与 Flow Matching 中通常建模的瞬时速度形成对比。平均速度定义为位移与时间间隔的比率，其中位移由瞬时速度的时间积分给出。仅从这个定义出发，我们推导出平均速度和瞬时速度之间明确的内在关系，该关系自然地作为指导网络训练的原则性基础。</strong></p>
+<p>基于这一基本概念，我们训练神经网络直接对平均速度场进行建模。我们引入了一个损失函数，促使网络满足平均速度和瞬时速度之间的内在关系。无需额外的一致性启发式方法。真实目标场的存在确保了最优解原则上独立于特定网络，这在实践中可导致更稳健和稳定的训练。我们进一步表明，我们的框架可以自然地将无分类器引导（CFG）[18] 纳入目标场，使用引导时在采样时不产生额外成本。</p>
+<p>我们的 MeanFlow 模型在单步生成建模中表现出强大的实验性能。在 ImageNet 256×256 [7] 上，我们的方法使用1-NFE（函数评估次数）生成实现了3.43的FID。这一结果以50%至70%的相对优势显著优于同类中的先前最先进方法（图1）。此外，我们的方法是一个自包含的生成模型：它完全从头开始训练，无需任何预训练、蒸馏或课程学习。我们的研究在很大程度上缩小了单步扩散/流模型与其多步前身之间的差距，希望能启发未来的工作重新思考这些强大模型的基础。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f1.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图1：从零开始在ImageNet 256×256上的单步生成。我们的MeanFlow（MF）模型比以前最先进的单步扩散/流方法实现了明显更好的生成质量。这里，iCT[43]、Shortcut[13]和我们的MF都是1-NFE生成，而IMM的1步结果[52]涉及2-NFE引导。详细数字在表2中。显示的图像由我们的1-NFE模型生成。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="2-相关工作"><a href="#2-相关工作" class="headerlink" title="2 相关工作"></a>2 相关工作</h3><p><strong>扩散与流匹配：</strong>在过去十年中，扩散模型[42,44,19,45]已发展成为生成建模的成功框架。这些模型通过逐步向干净数据添加噪声，并训练神经网络逆转这一过程，涉及求解随机微分方程（SDE），后被重新表述为概率流常微分方程（ODE）[45,22]。流匹配方法[28,2,30]通过建模定义分布间流路径的速度场扩展了这一框架，也可视为连续时间标准化流的一种形式[36]。</p>
+<p><strong>少步扩散/流模型：</strong>从实践和理论角度看，减少采样步数已成为重要考量。一种方法是将预训练的多步扩散模型蒸馏为少步模型，如[39,14,41]或分数蒸馏[32,50,53]。早期少步模型训练探索[46]基于蒸馏方法发展，而一致性模型[46]作为独立生成模型无需蒸馏，通过对不同时间步的网络输出施加一致性约束，促使其沿轨迹产生相同端点，相关研究已探索多种一致性模型和训练策略[46,43,15,31,49]。</p>
+<p>近期工作中，一些方法聚焦于用两个时间相关变量刻画扩散/流相关量。如[3]将流图定义为两时间步间流的积分，并开发多种匹配损失用于学习；相比之下，本文基于的平均速度对应位移。Shortcut模型[13]在流匹配基础上引入自一致性损失，捕捉不同离散时间间隔的流关系；归纳矩匹配[52]则对不同时间步的随机插值器自一致性进行建模。</p>
+<h3 id="3-背景：流匹配"><a href="#3-背景：流匹配" class="headerlink" title="3 背景：流匹配"></a>3 背景：流匹配</h3><p>流匹配[28,30,1]是一类生成模型，通过学习匹配概率分布间的流（以速度场表示）。形式上，给定数据$x\sim p_{\text{data}}(x)$和先验$\epsilon\sim p_{\text{prior}}(\epsilon)$，流路径可构造为$z_t = a_t x + b_t \epsilon$（$t$为时间），速度$v_t$定义为$v_t = z_t’ = a_t’ x + b_t’ \epsilon$（’表示时间导数），在[28]中称为条件速度，记为$v_t = v_t(z_t|x)$（图2左）。常用调度为$a_t=1-t$、$b_t=t$，此时$v_t=\epsilon-x$。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f2.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图2：流匹配中的速度场[28]。左图：条件流[28]。给定的$z_t$可能源自不同的$(x, \epsilon)$对，从而产生不同的条件速度$v_t$。右图：边际流[28]，通过对所有可能的条件速度进行边缘化得到。边际速度场作为网络训练的底层真实场。此处展示的所有速度本质上都是瞬时速度。插图参考[12]。（灰色点：来自先验的样本；红色点：来自数据的样本。）</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>由于给定$z_t$及其$v_t$可能来自不同$x$和$\epsilon$，流匹配本质上对所有可能情况的期望建模，称为边际速度[28]（图2右）：</p>
+<script type="math/tex; mode=display">v(z_t, t) \triangleq \mathbb{E}_{p_t(v_t|z_t)}[v_t]. \tag{1}</script><p>由$\theta$参数化的神经网络$v_\theta$用于拟合边际速度场，损失函数为：</p>
+<script type="math/tex; mode=display">L_{\text{FM}}(\theta) = \mathbb{E}_{t, p_t(z_t)}\|v_\theta(z_t, t) - v(z_t, t)\|^2.</script><p>但因式(1)的边缘化操作难以直接计算，[28]提出改用条件流匹配损失：</p>
+<script type="math/tex; mode=display">L_{\text{CFM}}(\theta) = \mathbb{E}_{t, x, \epsilon}\|v_\theta(z_t, t) - v_t(z_t|x)\|^2,</script><p>其中目标$v_t$为条件速度，最小化$L_{\text{CFM}}$等价于最小化$L_{\text{FM}}$[28]。</p>
+<p>给定边际速度场$v(z_t, t)$，通过求解$z_t$的ODE生成样本：</p>
+<script type="math/tex; mode=display">\frac{d}{dt}z_t = v(z_t, t), \tag{2}</script><p>初始条件为$z_1 = \epsilon\sim p_{\text{prior}}$，解可写为$z_r = z_t - \int_r^t v(z_\tau, \tau)d\tau$（$r$为另一时间步）。实际中通过离散时间步数值近似，如欧拉法：$z_{t_{i+1}} = z_{t_i} + (t_{i+1}-t_i)v(z_{t_i}, t_i)$，也可应用高阶求解器。</p>
+<p>值得注意的是，即使条件流设计为直线（“整流”）[28,30]，边际速度场（式(1)）通常会诱导弯曲轨迹（图2）。这种非直线性不仅源于神经网络近似，更来自底层真实边际速度场。对弯曲轨迹采用粗离散化时，数值ODE求解器会导致结果不准确。</p>
+<h3 id="4-MeanFlow模型"><a href="#4-MeanFlow模型" class="headerlink" title="4 MeanFlow模型"></a>4 MeanFlow模型</h3><h4 id="4-1-平均流"><a href="#4-1-平均流" class="headerlink" title="4.1 平均流"></a>4.1 平均流</h4><p>我们方法的核心思想是引入表示平均速度的新场，而流匹配中建模的速度为瞬时速度。</p>
+<p><strong>平均速度</strong>：定义为两时间步$t$和$r$间的位移（通过积分获得）除以时间间隔，形式上平均速度$u$为：</p>
+<script type="math/tex; mode=display">u(z_t, r, t) \triangleq \frac{1}{t-r}\int_r^t v(z_\tau, \tau)d\tau. \tag{3}</script><p>为强调概念差异，全文用$u$表示平均速度，$v$表示瞬时速度。$u(z_t, r, t)$是依赖$(r,t)$的场（图3）。本质上，平均速度$u$是瞬时速度$v$的泛函：$u = F[v] \triangleq \frac{1}{t-r}\int_r^t vd\tau$，它由$v$诱导，与神经网络无关。从概念上看，如同瞬时速度$v$在流匹配中作为真实场，本文框架中的平均速度$u$为学习提供了底层真实场。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f3.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图3：平均速度场 $u(z, r, t)$。最左侧：尽管瞬时速度 $v$ 决定了路径的切线方向，但由式（3）定义的平均速度 $u(z, r, t)$ 通常与 $v$ 不共线。平均速度与位移方向一致，位移量为 $(t-r) u(z, r, t)$。右侧三个子图：场 $u(z, r, t)$ 同时依赖于 $r$ 和 $t$，此处展示了 $t=0.5$、$0.7$ 和 $1.0$ 时的情况。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>根据定义，$u$的场满足特定边界条件和“一致性”约束（扩展[46]的术语）。当$r\to t$时，$\lim_{r\to t}u = v$；此外，自然满足一种“一致性”：在$[r,t]$上的大步长与在$[r,s]$和$[s,t]$上的两个连续小步长一致，这是因为$(t-r)u(z_t, r, t) = (s-r)u(z_s, r, s) + (t-s)u(z_t, s, t)$，直接由积分的可加性$\int_r^t vd\tau = \int_r^s vd\tau + \int_s^t vd\tau$推导而来。因此，准确近似真实$u$的网络应天然满足一致性关系，无需显式约束。</p>
+<p>MeanFlow模型的最终目标是用神经网络$u_\theta(z_t, r, t)$近似平均速度。显著优势在于：若能准确近似该量，可通过$u_\theta(\epsilon, 0, 1)$的单次评估近似整个流路径。即该方法更适用于单步或少步生成，因推理时无需像建模瞬时速度那样显式近似时间积分（实验也将验证）。但直接用式(3)定义的平均速度作为网络训练的真实目标不可行，因训练中需计算积分。<strong>关键洞见在于：可通过操作平均速度的定义式构造优化目标，即使仅已知瞬时速度，也能用于训练。</strong></p>
+<p><strong>MeanFlow恒等式</strong>：将式(3)改写为</p>
+<script type="math/tex; mode=display">(t-r)u(z_t, r, t) = \int_r^t v(z_\tau, \tau)d\tau \tag{4}</script><p>将$r$视为与$t$独立，对两边关于$t$求导：</p>
+<script type="math/tex; mode=display">\frac{d}{dt}(t-r)u(z_t, r, t) = \frac{d}{dt}\int_r^t v(z_\tau, \tau)d\tau \Rightarrow u(z_t, r, t) + (t-r)\frac{d}{dt}u(z_t, r, t) = v(z_t, t), \tag{5}</script><p>左边用乘积法则，右边用微积分基本定理。整理得恒等式：</p>
+<script type="math/tex; mode=display">\underbrace{u(z_t, r, t)}_{\text{平均速度}} = \underbrace{v(z_t, t)}_{\text{瞬时速度}} - (t-r)\underbrace{\frac{d}{dt}u(z_t, r, t)}_{\text{时间导数}} \tag{6}</script><p>称为“MeanFlow恒等式”，描述$v$与$u$的关系，可证明式(6)与式(4)等价（附录B.3）。</p>
+<p>式(6)右侧为$u(z_t, r, t)$的“目标”形式，用于构造损失函数训练神经网络。为使目标适用，需进一步分解时间导数项，如下所述。</p>
+<p><strong>计算时间导数</strong>：式(6)中$\frac{d}{dt}u$为全导数，可展开为偏导数：</p>
+<script type="math/tex; mode=display">\frac{d}{dt}u(z_t, r, t) = \frac{dz_t}{dt}\partial_z u + \frac{dr}{dt}\partial_r u + \frac{dt}{dt}\partial_t u. \tag{7}</script><p>由$\frac{dz_t}{dt}=v(z_t, t)$（式(2)）、$\frac{dr}{dt}=0$、$\frac{dt}{dt}=1$，得$u$与$v$的另一关系：</p>
+<script type="math/tex; mode=display">\frac{d}{dt}u(z_t, r, t) = v(z_t, t)\partial_z u + \partial_t u, \tag{8}</script><p>表明全导数由$[\partial_z u, \partial_r u, \partial_t u]$（$u$的雅可比矩阵）与切向量$[v, 0, 1]$的雅可比向量积（JVP）给出，现代库（如PyTorch的torch.func.jvp或JAX的jax.jvp）可高效计算。</p>
+<p><strong>基于平均速度的训练</strong>：至此，公式与网络参数化无关。现引入模型学习$u$：参数化网络$u_\theta$，促使其满足MeanFlow恒等式（式(6)），具体最小化目标：</p>
+<script type="math/tex; mode=display">\mathcal{L}(\theta) = \mathbb{E}\|u_\theta(z_t, r, t) - \text{sg}(u_{\text{tgt}})\|_2^2, \tag{9}</script><p>其中$u_{\text{tgt}} = v(z_t, t) - (t-r)(v(z_t, t)\partial_z u_\theta + \partial_t u_\theta)$。$u_{\text{tgt}}$作为有效回归目标，由式(6)驱动，仅用瞬时速度$v$作为真实信号，无需积分计算。目标中的导数项（$\partial u$）由参数化对应项（$\partial u_\theta$）替代。损失函数中，对目标$u_{\text{tgt}}$应用停止梯度（sg）操作[46,43,15,31,13]，避免通过雅可比向量积的“双重反向传播”，规避高阶优化。若$u_\theta$损失为零，易证其满足MeanFlow恒等式（式(6)）及原始定义（式(3)）。</p>
+<p>式(10)中的速度$v(z_t, t)$为流匹配中的边际速度[28]（图2右），按[28]用条件速度（图2左）替代，目标变为：</p>
+<script type="math/tex; mode=display">u_{\text{tgt}} = v_t - (t-r)(v_t\partial_z u_\theta + \partial_t u_\theta), \tag{11}</script><p>其中$v_t = a_t’x + b_t’\epsilon$为条件速度[28]，默认$v_t = \epsilon - x$。</p>
+<p>最小化式(9)损失的伪代码见算法1。本质上，方法与流匹配类似，关键差异是匹配目标由$- (t-r)(v_t\partial_z u_\theta + \partial_t u_\theta)$修正，源于对平均速度的考量。特别地，若限制$t=r$，第二项消失，方法完全匹配标准流匹配。</p>
+<p>算法1中，JVP操作高效：通过JVP计算$\frac{d}{dt}u$仅需一次反向传播，类似神经网络标准反向传播。因$\frac{d}{dt}u$是目标$u_{\text{tgt}}$的一部分且对$\theta$停止梯度，神经网络优化（对$\theta$）的反向传播将$\frac{d}{dt}u$视为常数，不产生高阶梯度计算。JVP仅引入一次额外反向传播，成本与反向传播相当，JAX实现中开销小于总训练时间的20%（附录）。</p>
+<p><img src="a1.png" width="50%"></p>
+<p><strong>采样</strong>：MeanFlow模型采样简单，用平均速度替代时间积分：</p>
+<script type="math/tex; mode=display">z_r = z_t - (t-r)u(z_t, r, t). \tag{12}</script><p>单步采样时，$z_0 = z_1 - u(z_1, 0, 1)$，其中$z_1 = \epsilon\sim p_{\text{prior}}(\epsilon)$，伪代码见算法2。尽管本文主要关注单步采样，需强调给定此式，少步采样也很直接。</p>
+<p><img src="a2.png" width="50%"></p>
+<p><strong>与先前工作的关系</strong>：虽与先前单步生成模型[46,43,15,31,49,23,13,52]相关，但方法提供了更有原则的框架。核心是两个底层场$v$和$u$间的函数关系，自然导出$u$必须满足的MeanFlow恒等式（式(6)），该恒等式不依赖神经网络引入。相比之下，先前工作通常依赖对神经网络行为强加的额外一致性约束。一致性模型[46,43,15,31]聚焦于锚定在数据侧的路径（本文记号中，对应对任意$t$固定$r\equiv0$），因此仅依赖单个时间变量，而本文方法依赖两个时间变量。Shortcut[13]和IMM[52]模型也依赖两个时间变量，引入额外的两时间自一致性约束。相比之下，本文方法仅由平均速度定义驱动，训练用的MeanFlow恒等式（式(6)）由该定义自然推导，无额外假设。</p>
+<h4 id="4-2-带引导的MeanFlow"><a href="#4-2-带引导的MeanFlow" class="headerlink" title="4.2 带引导的MeanFlow"></a>4.2 带引导的MeanFlow</h4><p>我们的方法自然支持无分类器引导（CFG）[18]。与在采样时简单应用CFG（这会使函数评估次数NFE翻倍）不同，我们将CFG视为底层真实场的固有属性。这种公式设计使我们能够在享受CFG优势的同时，在采样时保持1-NFE的特性。</p>
+<p><strong>真实场构造：</strong>我们构造一个新的真实场 $v^{\text{cfg}}$：</p>
+<script type="math/tex; mode=display">
+v^{\text{cfg}}(z_t, t|c) \triangleq \omega v(z_t, t|c) + (1-\omega)v(z_t, t), \tag{13}</script><p>其中$v(z_t, t|c)$是类条件速度场，$v(z_t, t)$是类非条件速度场，两者的线性组合由引导系数$\omega$控制：</p>
+<script type="math/tex; mode=display">
+v(z_t, t|c) \triangleq \mathbb{E}_{p_t(v_t|z_t, c)}[v_t], \quad v(z_t, t) \triangleq \mathbb{E}_c[v(z_t, t|c)],</script><p>这里$v_t$是条件速度[28]（在此上下文中更准确地称为样本条件速度）。遵循平均流的核心思想，我们引入与$v^{\text{cfg}}$对应的平均速度场$u^{\text{cfg}}$，根据平均流恒等式（式(6)），$u^{\text{cfg}}$满足：</p>
+<script type="math/tex; mode=display">
+u^{\text{cfg}}(z_t, r, t|c) = v^{\text{cfg}}(z_t, t|c) - (t-r)\frac{d}{dt}u^{\text{cfg}}(z_t, r, t|c). \tag{15}</script><p>需注意，$v^{\text{cfg}}$和$u^{\text{cfg}}$是不依赖于神经网络的底层真实场。进一步结合$v(z_t, t) = v^{\text{cfg}}(z_t, t)$和$v^{\text{cfg}}(z_t, t) = u^{\text{cfg}}(z_t, t, t)$的关系（推导自式(16)），可将式(13)改写为：</p>
+<script type="math/tex; mode=display">
+v^{\text{cfg}}(z_t, t|c) = \omega v(z_t, t|c) + (1-\omega)u^{\text{cfg}}(z_t, t, t). \tag{16}</script><p><strong>带引导的模型训练：</strong>基于式(15)和式(16)，我们通过神经网络$u_\theta^{\text{cfg}}$参数化$u^{\text{cfg}}$，并构造训练目标函数：</p>
+<script type="math/tex; mode=display">
+\mathcal{L}(\theta) = \mathbb{E}\left\| u_\theta^{\text{cfg}}(z_t, r, t|c) - \text{sg}(u_{\text{tgt}}) \right\|_2^2, \tag{17}</script><p>其中目标值$u_{\text{tgt}}$定义为：</p>
+<script type="math/tex; mode=display">
+u_{\text{tgt}} = \tilde{v}_t - (t-r)\left( \tilde{v}_t \partial_z u_\theta^{\text{cfg}} + \partial_t u_\theta^{\text{cfg}} \right),</script><p>而$\tilde{v}_t$是融合类条件和非条件信息的速度项：</p>
+<script type="math/tex; mode=display">
+\tilde{v}_t \triangleq \omega v_t + (1-\omega)u_\theta^{\text{cfg}}(z_t, t, t). \tag{19}</script><p>这里$v_t = \epsilon - x$是样本条件速度，当$\omega = 1$时，损失函数退化为无CFG的情况（式(9)）。</p>
+<p>为使网络$u_\theta^{\text{cfg}}$适应类非条件输入，我们按[18]的做法以10%的概率随机丢弃类标签。此外，通过引入混合系数$\kappa$（见附录B.1），可进一步将类条件和非条件的$u^{\text{cfg}}$输出融合到目标函数中，从而优化引导效果。</p>
+<p><strong>单NFE采样与CFG集成：</strong>在我们的框架中，$u_\theta^{\text{cfg}}$直接建模由$v^{\text{cfg}}$诱导的平均速度场，因此采样时无需额外计算。单步生成仅需调用$u_\theta^{\text{cfg}}(\epsilon, 0, 1)$一次（算法2），保持1-NFE特性。与传统CFG需两次函数评估（分别计算类条件和非条件输出）不同，我们的方法通过训练阶段的目标设计，将引导信息嵌入平均速度场，实现了采样效率与生成质量的平衡。</p>
+<h4 id="4-3-设计决策"><a href="#4-3-设计决策" class="headerlink" title="4.3 设计决策"></a>4.3 设计决策</h4><p><strong>损失度量：</strong>在式(9)中，损失度量采用L2平方损失。遵循[46,43,15]，我们研究了不同的损失度量。一般来说，损失函数形式为$L = |\Delta|_2^{2\gamma}$，其中$\Delta$表示回归误差。可证明（见[15]），最小化$|\Delta|_2^{2\gamma}$等价于使用“自适应损失权重”最小化L2平方损失$|\Delta|_2^2$。具体而言，权重设置为$w = 1/(|\Delta|_2^2 + c)^p$，其中$p = 1-\gamma$且$c&gt;0$（如$10^{-3}$）。自适应加权损失为$\text{sg}(w) \cdot L$，其中$L = |\Delta|_2^2$。若$p=0.5$，则类似于[43]中的伪Huber损失。我们在实验中比较了不同的$p$值。</p>
+<p><strong>采样时间步$(r, t)$：</strong>我们从预定义分布中采样两个时间步$(r, t)$，研究了两种分布类型：（i）均匀分布$u(0,1)$；（ii）对数正态（lognorm）分布[11]，即先从正态分布$N(\mu, \sigma)$中采样，再通过逻辑函数映射到$(0,1)$。采样得到的配对中，较大的值赋给$t$，较小的值赋给$r$，并设置一定比例的随机样本满足$r=t$。  </p>
+<p><strong>基于$(r, t)$的条件化：</strong>我们使用位置嵌入[48]对时间变量进行编码，然后将其组合作为神经网络的条件输入。需要注意的是，尽管场由$u_\theta(z_t, r, t)$参数化，但网络不一定需要直接以$(r, t)$为条件。例如，可让网络以$(t, \Delta t)$为条件，其中$\Delta t = t-r$，此时$u_\theta(\cdot, r, t) \triangleq \text{net}(\cdot, t, t-r)$，其中$\text{net}$为网络。JVP计算始终相对于函数$u_\theta(\cdot, r, t)$。我们在实验中比较了不同的条件化形式。</p>
+<h3 id="5-实验"><a href="#5-实验" class="headerlink" title="5 实验"></a>5 实验</h3><h4 id="5-1-消融研究"><a href="#5-1-消融研究" class="headerlink" title="5.1 消融研究"></a>5.1 消融研究</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t1.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表1：ImageNet 256×256的1-NFE生成消融研究。评估FID-50K。默认配置以灰色标记：B/4主干，从头开始训练80轮。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>我们在表1中研究了模型的特性，分析如下：</p>
+<p>从流匹配到平均流。我们的方法可以看作是目标经过修改的流匹配（算法1），当r始终等于t时，它简化为标准的流匹配。表1a比较了随机采样r≠t的比例。0%的r≠t比例（简化为标准流匹配基线）在1-NFE生成时无法产生合理的结果。非零的r≠t比例使MeanFlow能够生效，在1-NFE生成下产生有意义的结果。我们观察到，模型在学习瞬时速度（r=t）和通过修改后的目标传播到r≠t之间取得平衡。这里，25%的比例实现了最佳的FID，100%的比例也产生了有效的结果。</p>
+<p>JVP计算。式（8）中的JVP操作是连接所有(r,t)坐标的核心关系。在表1b中，我们进行了破坏性比较，故意执行不正确的JVP计算。结果表明，只有当JVP计算正确时，才能获得有意义的结果。值得注意的是，沿着∂zu的JVP切线是d维的，其中d是数据维度（这里是32×32×4），而沿着∂ru和∂tu的切线是一维的。然而，这两个时间变量决定了场u，因此即使它们只是一维的，它们的作用也是至关重要的。</p>
+<p>基于(r,t)的条件。如4.3节所讨论的，我们可以通过各种形式的显式位置嵌入来表示uθ(z,r,t)，例如uθ(·,r,t)≜net(·,t,t−r)。表1c比较了这些变体。表1c显示，所有研究的(r,t)嵌入变体都产生了有意义的1-NFE结果，证明了MeanFlow作为一个框架的有效性。嵌入(t,t−r)，即时间和间隔，取得了最佳结果，而直接嵌入(r,t)的表现几乎一样好。值得注意的是，即使只嵌入间隔t−r也能产生合理的结果。</p>
+<p>时间采样器。先前的工作[11]已经表明，用于采样t的分布会影响生成质量。我们在表1d中研究了用于采样(r,t)的分布。注意，(r,t)首先被独立采样，然后通过后处理步骤通过交换来强制t&gt;r，然后将r≠t的比例限制为指定的比例。表1d报告说，对数正态采样器表现最好，这与流匹配中的观察结果一致[11]。</p>
+<p>损失度量。据报道[43]，损失度量的选择对少步/单步生成的性能有很大影响。我们在表1e中研究了这一方面。我们的损失度量是通过带幂次p的自适应损失加权实现的（4.3节）。表1e显示，p=1时取得了最佳结果，而p=0.5（类似于[43]中的伪Huber损失）也表现得很有竞争力。标准的L2平方损失（这里p=0）与其他设置相比表现不佳，但仍然产生了有意义的结果，这与[43]中的观察结果一致。</p>
+<p>引导尺度。表1f报告了使用CFG的结果。与多步生成中的观察结果一致[34]，CFG在我们的1-NFE设置中也显著提高了生成质量。我们强调，我们的CFG公式（4.2节）自然支持1-NFE采样。</p>
+<p>可扩展性。图4展示了MeanFlow在更大的模型尺寸和不同训练持续时间下的1-NFE FID结果。与基于Transformer的扩散/流模型（DiT[34]和SiT[33]）的行为一致，MeanFlow模型在1-NFE生成方面表现出了有希望的可扩展性。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f4.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图4：MeanFlow模型在ImageNet 256×256上的可扩展性。报告了1-NFE生成的FID值。所有模型均从头开始训练。在应用CFG的同时保持了1-NFE采样特性。我们的方法在模型规模方面展现出了良好的可扩展性。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="5-2-与先前工作的比较"><a href="#5-2-与先前工作的比较" class="headerlink" title="5.2 与先前工作的比较"></a>5.2 与先前工作的比较</h4><p>ImageNet 256×256的比较。在图1中，我们与之前的单步扩散/流模型进行了比较，这些模型也总结在表2（左）中。总体而言，MeanFlow在其类别中大大优于之前的方法：它实现了3.43的FID，与IMM的单步结果7.77[52]相比，相对改进超过50%；如果我们只比较1-NFE（而不仅仅是单步）生成，MeanFlow与之前的最先进技术（10.60，Shortcut[13]）相比有近70%的相对改进。我们的方法大大缩小了单步和多步扩散/流模型之间的差距。</p>
+<p>在2-NFE生成中，我们的方法实现了2.20的FID（表2，左下）。这个结果与多步扩散/流模型的领先基线相当，即DiT[34]（FID 2.27）和SiT[33]（FID 2.15），两者在相同的XL/2骨干下的NFE为250×2（表2，右）。我们的结果表明，少步扩散/流模型可以与它们的多步前身相媲美。正交的改进，如REPA[51]，是适用的，留待未来的工作。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t2.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表2：ImageNet-256×256上的类条件生成结果。所有条目在适用情况下均报告了使用无分类器引导（CFG）的结果。左表：从头开始训练的1-NFE和2-NFE扩散/流模型。右表：作为参考的其他生成模型家族。在两个表中，“×2”表示CFG导致每个采样步骤的函数评估次数（NFE）为2。我们的MeanFlow模型均训练240个轮次，除了“MeanFlow-XL+”模型，其训练轮次更多，并采用为长期训练选择的配置，具体见附录。†：iCT [43]的结果由[52]报告。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>值得注意的是，我们的方法是自包含的，完全从头开始训练。它在不使用任何预训练、蒸馏或[43,15,31]中采用的课程学习的情况下取得了强劲的结果。</p>
+<p>CIFAR-10的比较。我们在表3中报告了CIFAR-10[25]（32×32）上的无条件生成结果。FID-50K是通过1-NFE采样报告的。所有条目都使用与[44]开发的相同的U-net[38]（约55M），直接应用于像素空间。所有其他竞争对手都使用EDM风格的预处理器[22]，而我们的没有预处理器。实现细节在附录中。在这个数据集上，我们的方法与先前的方法具有竞争力。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t3.png" width="50%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表3：CIFAR-10无条件生成结果。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="6-结论"><a href="#6-结论" class="headerlink" title="6 结论"></a>6 结论</h3><p>我们提出了MeanFlow，这是一种用于单步生成的有原则且高效的框架。从广义上讲，本文考虑的场景与物理学中的多尺度模拟问题相关，这些问题可能涉及空间或时间上的一系列尺度、长度和分辨率。进行数值模拟本质上受到计算机解析尺度范围能力的限制。我们的公式涉及在粗粒度级别描述底层物理量，这是许多物理学重要应用的共同主题。我们希望这项工作能在生成建模、模拟和相关领域的动力系统研究之间架起桥梁。</p>
+<h3 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h3><h4 id="A-实现细节"><a href="#A-实现细节" class="headerlink" title="A 实现细节"></a>A 实现细节</h4><p><strong>ImageNet 256×256：</strong>我们使用标准VAE标记器提取潜在表示。潜在空间尺寸为32×32×4，作为模型输入。主干架构遵循DiT[34]，基于ViT[9]并采用adaLN-Zero[34]进行条件化。为对两个时间变量（如$(r, t)$）进行条件化，我们对每个时间变量应用位置嵌入，随后通过2层MLP处理并求和。我们保持DiT架构模块不变，而架构改进是正交且可行的。具体配置见表4。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t4.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表4：ImageNet 256×256的配置。B/4是我们的消融模型。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>CIFAR-10：</strong>我们在CIFAR-10上进行无条件生成实验，实现遵循标准流匹配实践[29]。模型输入为像素空间的32×32×3。网络采用基于[44]开发的U-net[38]（约55M），这是其他对比基线常用的架构。我们对两个时间变量（此处为$(t, t−r)$）应用位置嵌入并拼接作为条件化输入，不使用任何EDM预处理器[22]。</p>
+<p>训练使用Adam优化器，学习率0.0006，批量大小1024，(β₁, β₂)=(0.9, 0.999)， dropout 0.2，权重衰减0，EMA衰减率0.99995。模型训练800K次迭代（含10K次预热[16]）。(r, t)采样器为lognorm(–2.0, 2.0)，r≠t采样比例75%，自适应加权幂次p=0.75。数据增强设置遵循[22]，禁用垂直翻转和旋转。</p>
+<h4 id="B-额外技术细节"><a href="#B-额外技术细节" class="headerlink" title="B 额外技术细节"></a>B 额外技术细节</h4><h5 id="B-1-MeanFlow的改进CFG"><a href="#B-1-MeanFlow的改进CFG" class="headerlink" title="B.1 MeanFlow的改进CFG"></a>B.1 MeanFlow的改进CFG</h5><p>在4.2节中，我们讨论了如何自然扩展方法以支持CFG，唯一需要的修改是通过式(19)修订目标。我们注意到式(19)中仅呈现了类非条件的$u^{\text{cfg}}$。在原始CFG[18]中，混合类条件和类非条件预测是标准做法，通过随机丢弃实现。我们观察到类似思路也可应用于我们的回归目标。</p>
+<p>形式上，引入混合尺度κ并将式(16)重写为：</p>
+<script type="math/tex; mode=display">v^{\text{cfg}}(z_t, t|c) = \omega v(z_t, t|c) + \kappa u^{\text{cfg}}(z_t, t, t|c) + (1-\omega-\kappa) u^{\text{cfg}}(z_t, t, t). \tag{20}</script><p>此处κ的作用是在右侧与$u^{\text{cfg}}(\cdot|c)$混合。利用$v(z_t, t) = v^{\text{cfg}}(z_t, t)$和$v^{\text{cfg}}(z_t, t) = u^{\text{cfg}}(z_t, t, t)$的关系（推导式(16)时已使用），可证明式(20)满足原始CFG公式（式(13)），且有效引导尺度为$\omega’ = \frac{\omega}{1-\kappa}$。据此，式(19)重写为：</p>
+<script type="math/tex; mode=display">\tilde{v}_t \triangleq \omega \underbrace{(\epsilon-x)}_{\text{样本}v_t} + \underbrace{\kappa u_\theta^{\text{cfg}}(z_t, t, t|c)}_{\text{类条件输出}} + \underbrace{(1-\omega-\kappa) u_\theta^{\text{cfg}}(z_t, t, t)}_{\text{类非条件输出}}.</script><p>损失函数与式(17)定义相同。</p>
+<p>表5探索了引入κ的影响，其中固定有效引导尺度$\omega’=2.0$并变化κ。结果表明，通过κ混合可进一步提升生成质量。需注意，主文表1f的消融未包含此改进（即κ=0）。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t5.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表5：MeanFlow的改进CFG。κ如式(20)所定义，其目的是使类条件$u^{cfg}(\cdot \mid c)$和类非条件$u^{cfg}(\cdot)$都出现在目标中。在本表中，我们将有效引导尺度$\omega’$（由$\omega’ = \omega / (1 - \kappa)$给出）固定为2.0。因此，对于不同的κ值，我们通过$\omega = (1 - \kappa) \cdot \omega’$来设置ω。如果κ=0，则退回到式(19)中的CFG情况（另见表1f）。与标准CFG随机丢弃类条件的做法类似[18]，我们观察到在目标中混合类条件和类非条件$u^{cfg}$可提高生成质量。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h5 id="B-2-损失度量"><a href="#B-2-损失度量" class="headerlink" title="B.2 损失度量"></a>B.2 损失度量</h5><p>L2平方损失为$L = |\Delta|_2^2$，其中$\Delta = u_\theta - u_{\text{tgt}}$为回归误差。通常可采用幂次L2损失$L_\gamma = |\Delta|_2^{2\gamma}$，γ为用户指定超参数。最小化该损失等价于最小化自适应加权L2平方损失（见[15]）：其梯度可视为对L2平方损失$(|\Delta|_2^2)$乘以损失自适应权重$\lambda \propto |\Delta|_2^{2(\gamma-1)}$。实际中，我们遵循[15]采用权重：</p>
+<script type="math/tex; mode=display">w = 1/(\|\Delta\|_2^2 + c)^p, \tag{22}</script><p>其中$p=1-\gamma$，$c&gt;0$为避免除零的小常数。若$p=0.5$，则类似于[43]中的伪Huber损失。自适应加权损失为$\text{sg}(w) \cdot L$，其中$\text{sg}$表示停止梯度操作。</p>
+<h5 id="B-3-MeanFlow恒等式的充分性"><a href="#B-3-MeanFlow恒等式的充分性" class="headerlink" title="B.3 MeanFlow恒等式的充分性"></a>B.3 MeanFlow恒等式的充分性</h5><p>主文中，从定义式(4)推导了MeanFlow恒等式(6)，表明“式(4)⇒式(6)”，即式(6)是式(4)的必要条件。下面证明其也是充分条件，即“式(6)⇒式(4)”。</p>
+<p>一般而言，导数相等不直接蕴含积分相等（可能相差常数）。在本文中，该常数可抵消。考虑“位移场”$S$：</p>
+<script type="math/tex; mode=display">S(z_t, r, t) = (t-r)u(z_t, r, t). \tag{23}</script><p>若将$S$视为任意函数，导数相等仅能保证积分相等（差常数）：</p>
+<script type="math/tex; mode=display">\frac{d}{dt}S(z_t, r, t) = v(z_t, t) \Rightarrow S(z_t, r, t) + C_1 = \int_r^t v(z_\tau, \tau)d\tau + C_2.</script><p>但$S$的定义要求$t=r$时$S=0$，且$t=r$时$\int_r^t vd\tau=0$，故$C_1=C_2$，即“式(6)⇒式(4)”。</p>
+<p>该充分性源于对平均速度$u$的建模，而非直接建模位移$S$。若强制位移的导数相等（如$\frac{d}{dt}S = v$），则无法自动满足$S|_{t=r}=0$，需额外边界条件。本文公式可自动满足该条件。</p>
+<h5 id="B-4-雅可比向量积（JVP）计算分析"><a href="#B-4-雅可比向量积（JVP）计算分析" class="headerlink" title="B.4 雅可比向量积（JVP）计算分析"></a>B.4 雅可比向量积（JVP）计算分析</h5><p>尽管JVP计算在某些方法中可能是关注点，但本文中开销极低。由于计算的积（雅可比矩阵与切向量的乘积）需停止梯度（式(10)），在基于θ的SGD反向传播中被视为常数，不增加θ反向传播的开销。</p>
+<p>因此，计算该乘积的额外开销仅为JVP操作的“反向”传递。这一反向传递与神经网络优化（关于θ）的标准反向传播类似——事实上，在JAX[4]等深度学习库中，使用相似接口计算标准反向传播（关于θ）。本文中，其开销甚至低于标准反向传播，因仅需反向传播至输入变量，而非参数θ，故开销很小。</p>
+<p>我们在消融模型B/4上对JVP开销进行基准测试，使用JAX在v4-8 TPU上实现。将MeanFlow与流匹配对比，唯一开销来自JVP的反向传递；注意JVP的前向传递是标准前向传播，流匹配（或任何典型目标函数）同样需要。基准测试显示，流匹配训练耗时0.045秒/迭代，MeanFlow为0.052秒/迭代，仅增加16%的时间开销。</p>
+<h4 id="C-定性结果"><a href="#C-定性结果" class="headerlink" title="C 定性结果"></a>C 定性结果</h4><p>图5展示了使用1-NFE模型（MeanFlow-XL/2，FID 3.43）在ImageNet 256×256上的类条件生成示例。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f5.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图5：1-NFE生成结果。我们展示了使用我们的1-NFE模型（MeanFlow-XL/2，FID 3.43）在ImageNet 256×256上进行类条件生成的精选示例。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="文章总结"><a href="#文章总结" class="headerlink" title="文章总结"></a>文章总结</h2>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/diffusion/" rel="tag"># diffusion</a>
+              <a href="/tags/2025/" rel="tag"># 2025</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/05/18/2024-ICML-On-the-Trajectory-Regularity-of-ODE-based-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" rel="prev" title="2024-ICML-On the Trajectory Regularity of ODE-based Diffusion Sampling论文精读">
+      <i class="fa fa-chevron-left"></i> 2024-ICML-On the Trajectory Regularity of ODE-based Diffusion Sampling论文精读
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.2.</span> <span class="nav-text">1 介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.3.</span> <span class="nav-text">2 相关工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E8%83%8C%E6%99%AF%EF%BC%9A%E6%B5%81%E5%8C%B9%E9%85%8D"><span class="nav-number">1.4.</span> <span class="nav-text">3 背景：流匹配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-MeanFlow%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.5.</span> <span class="nav-text">4 MeanFlow模型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E5%B9%B3%E5%9D%87%E6%B5%81"><span class="nav-number">1.5.1.</span> <span class="nav-text">4.1 平均流</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E5%B8%A6%E5%BC%95%E5%AF%BC%E7%9A%84MeanFlow"><span class="nav-number">1.5.2.</span> <span class="nav-text">4.2 带引导的MeanFlow</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-%E8%AE%BE%E8%AE%A1%E5%86%B3%E7%AD%96"><span class="nav-number">1.5.3.</span> <span class="nav-text">4.3 设计决策</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.6.</span> <span class="nav-text">5 实验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#5-1-%E6%B6%88%E8%9E%8D%E7%A0%94%E7%A9%B6"><span class="nav-number">1.6.1.</span> <span class="nav-text">5.1 消融研究</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-2-%E4%B8%8E%E5%85%88%E5%89%8D%E5%B7%A5%E4%BD%9C%E7%9A%84%E6%AF%94%E8%BE%83"><span class="nav-number">1.6.2.</span> <span class="nav-text">5.2 与先前工作的比较</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E7%BB%93%E8%AE%BA"><span class="nav-number">1.7.</span> <span class="nav-text">6 结论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%84%E5%BD%95"><span class="nav-number">1.8.</span> <span class="nav-text">附录</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#A-%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82"><span class="nav-number">1.8.1.</span> <span class="nav-text">A 实现细节</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B-%E9%A2%9D%E5%A4%96%E6%8A%80%E6%9C%AF%E7%BB%86%E8%8A%82"><span class="nav-number">1.8.2.</span> <span class="nav-text">B 额外技术细节</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#B-1-MeanFlow%E7%9A%84%E6%94%B9%E8%BF%9BCFG"><span class="nav-number">1.8.2.1.</span> <span class="nav-text">B.1 MeanFlow的改进CFG</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#B-2-%E6%8D%9F%E5%A4%B1%E5%BA%A6%E9%87%8F"><span class="nav-number">1.8.2.2.</span> <span class="nav-text">B.2 损失度量</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#B-3-MeanFlow%E6%81%92%E7%AD%89%E5%BC%8F%E7%9A%84%E5%85%85%E5%88%86%E6%80%A7"><span class="nav-number">1.8.2.3.</span> <span class="nav-text">B.3 MeanFlow恒等式的充分性</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#B-4-%E9%9B%85%E5%8F%AF%E6%AF%94%E5%90%91%E9%87%8F%E7%A7%AF%EF%BC%88JVP%EF%BC%89%E8%AE%A1%E7%AE%97%E5%88%86%E6%9E%90"><span class="nav-number">1.8.2.4.</span> <span class="nav-text">B.4 雅可比向量积（JVP）计算分析</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#C-%E5%AE%9A%E6%80%A7%E7%BB%93%E6%9E%9C"><span class="nav-number">1.8.3.</span> <span class="nav-text">C 定性结果</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E7%AB%A0%E6%80%BB%E7%BB%93"><span class="nav-number">2.</span> <span class="nav-text">文章总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zongqing Li"
+      src="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+  <p class="site-author-name" itemprop="name">Zongqing Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">69</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hqulzq" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hqulzq" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hqulzq@163.com" title="E-Mail → mailto:hqulzq@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+      
+<script type="text/javascript" charset="utf-8" src="/js/tagcloud.js"></script>
+<script type="text/javascript" charset="utf-8" src="/js/tagcanvas.js"></script>
+<div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div id="myCanvasContainer" class="widget tagcloud">
+        <canvas width="250" height="250" id="resCanvas" style="width=100%">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2023/" rel="tag">2023</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2024/" rel="tag">2024</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2025/" rel="tag">2025</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICML/" rel="tag">ICML</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ODE%E6%B1%82%E8%A7%A3/" rel="tag">ODE求解</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">33</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%85%E8%AF%BB/" rel="tag">阅读</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+        </canvas>
+    </div>
+</div>
+
+
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zongqing Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('post.copy_button').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('post.copy_success')
+          else $(this).text('post.copy_failure')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('post.copy_button')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
