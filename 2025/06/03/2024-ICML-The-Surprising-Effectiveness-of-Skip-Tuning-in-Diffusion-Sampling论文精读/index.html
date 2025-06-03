@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="全文翻译摘要随着UNet架构的引入，扩散概率模型已成为图像生成任务中的主导力量。UNet的一个关键设计是编码器块和解码器块之间的跳跃连接。尽管跳跃连接已被证明可以提高训练稳定性和模型性能，但我们发现这种捷径可能成为变换复杂性的限制因素。随着采样步骤的减少，生成过程和UNet的作用更接近从高斯分布到目标分布的前推变换，这对网络的复杂性构成了挑战。为了解决这一挑战，我们提出了Skip-Tuning，这">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2024-ICML-The Surprising Effectiveness of Skip-Tuning in Diffusion Sampling论文精读">
+<meta property="og:url" content="https://hqulzq.github.io/2025/06/03/2024-ICML-The-Surprising-Effectiveness-of-Skip-Tuning-in-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/index.html">
+<meta property="og:site_name" content="Lzq&#39;s blog">
+<meta property="og:description" content="全文翻译摘要随着UNet架构的引入，扩散概率模型已成为图像生成任务中的主导力量。UNet的一个关键设计是编码器块和解码器块之间的跳跃连接。尽管跳跃连接已被证明可以提高训练稳定性和模型性能，但我们发现这种捷径可能成为变换复杂性的限制因素。随着采样步骤的减少，生成过程和UNet的作用更接近从高斯分布到目标分布的前推变换，这对网络的复杂性构成了挑战。为了解决这一挑战，我们提出了Skip-Tuning，这">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hqulzq.github.io/2025/06/03/2024-ICML-The-Surprising-Effectiveness-of-Skip-Tuning-in-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/06/03/2024-ICML-The-Surprising-Effectiveness-of-Skip-Tuning-in-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f2.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/06/03/2024-ICML-The-Surprising-Effectiveness-of-Skip-Tuning-in-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/06/03/2024-ICML-The-Surprising-Effectiveness-of-Skip-Tuning-in-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t2.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/06/03/2024-ICML-The-Surprising-Effectiveness-of-Skip-Tuning-in-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t3.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/06/03/2024-ICML-The-Surprising-Effectiveness-of-Skip-Tuning-in-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f3.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/06/03/2024-ICML-The-Surprising-Effectiveness-of-Skip-Tuning-in-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t4.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/06/03/2024-ICML-The-Surprising-Effectiveness-of-Skip-Tuning-in-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t6.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/06/03/2024-ICML-The-Surprising-Effectiveness-of-Skip-Tuning-in-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f4.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/06/03/2024-ICML-The-Surprising-Effectiveness-of-Skip-Tuning-in-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t7.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/06/03/2024-ICML-The-Surprising-Effectiveness-of-Skip-Tuning-in-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f5.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/06/03/2024-ICML-The-Surprising-Effectiveness-of-Skip-Tuning-in-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f6.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/06/03/2024-ICML-The-Surprising-Effectiveness-of-Skip-Tuning-in-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t8.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/06/03/2024-ICML-The-Surprising-Effectiveness-of-Skip-Tuning-in-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t9.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/06/03/2024-ICML-The-Surprising-Effectiveness-of-Skip-Tuning-in-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f7.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/06/03/2024-ICML-The-Surprising-Effectiveness-of-Skip-Tuning-in-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f11.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/06/03/2024-ICML-The-Surprising-Effectiveness-of-Skip-Tuning-in-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t10.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/06/03/2024-ICML-The-Surprising-Effectiveness-of-Skip-Tuning-in-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t11.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/06/03/2024-ICML-The-Surprising-Effectiveness-of-Skip-Tuning-in-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t12.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/06/03/2024-ICML-The-Surprising-Effectiveness-of-Skip-Tuning-in-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t13.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/06/03/2024-ICML-The-Surprising-Effectiveness-of-Skip-Tuning-in-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t14.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/06/03/2024-ICML-The-Surprising-Effectiveness-of-Skip-Tuning-in-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f8.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/06/03/2024-ICML-The-Surprising-Effectiveness-of-Skip-Tuning-in-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t15.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/06/03/2024-ICML-The-Surprising-Effectiveness-of-Skip-Tuning-in-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f10.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/06/03/2024-ICML-The-Surprising-Effectiveness-of-Skip-Tuning-in-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f9.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/06/03/2024-ICML-The-Surprising-Effectiveness-of-Skip-Tuning-in-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/a1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/06/03/2024-ICML-The-Surprising-Effectiveness-of-Skip-Tuning-in-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t5.png">
+<meta property="article:published_time" content="2025-06-03T09:47:32.000Z">
+<meta property="article:modified_time" content="2025-06-03T13:42:43.640Z">
+<meta property="article:author" content="Zongqing Li">
+<meta property="article:tag" content="diffusion">
+<meta property="article:tag" content="ICLR">
+<meta property="article:tag" content="2024">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hqulzq.github.io/2025/06/03/2024-ICML-The-Surprising-Effectiveness-of-Skip-Tuning-in-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f1.png">
+
+<link rel="canonical" href="https://hqulzq.github.io/2025/06/03/2024-ICML-The-Surprising-Effectiveness-of-Skip-Tuning-in-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>2024-ICML-The Surprising Effectiveness of Skip-Tuning in Diffusion Sampling论文精读 | Lzq's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lzq's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">46</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">72</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book">
+
+    <a href="/book" rel="section"><i class="fas fa-book fa-fw"></i>Book</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/06/03/2024-ICML-The-Surprising-Effectiveness-of-Skip-Tuning-in-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          2024-ICML-The Surprising Effectiveness of Skip-Tuning in Diffusion Sampling论文精读
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-06-03 17:47:32 / 修改时间：21:42:43" itemprop="dateCreated datePublished" datetime="2025-06-03T17:47:32+08:00">2025-06-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>随着UNet架构的引入，扩散概率模型已成为图像生成任务中的主导力量。UNet的一个关键设计是编码器块和解码器块之间的跳跃连接。尽管跳跃连接已被证明可以提高训练稳定性和模型性能，但我们发现<strong>这种捷径可能成为变换复杂性的限制因素。</strong>随着采样步骤的减少，生成过程和UNet的作用更接近从高斯分布到目标分布的前推变换，这对网络的复杂性构成了挑战。为了解决这一挑战，我们提出了Skip-Tuning，这是一种简单但效果惊人的无训练调优方法，适用于跳跃连接。我们的方法仅使用19次函数评估（NFE），就可以使ImageNet 64上的预训练EDM的FID提高100%（达到1.75），打破了无论采样步骤如何的ODE采样器的限制。令人惊讶的是，当我们增加采样步骤时，这种改进仍然存在，甚至仅用39次NFE就能超过EDM-2的最佳结果（1.58 vs 1.57）。我们进行了全面的探索性实验，以揭示这种惊人效果的原因。<strong>我们观察到，虽然Skip-Tuning增加了像素空间的分数匹配损失，但特征空间的损失却减少了，尤其是在中间噪声水平下，这与图像质量改善的最有效范围一致。</strong></p>
+<span id="more"></span>
+<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1. 引言"></a>1. 引言</h3><p>在过去几年里，扩散概率模型（DPMs）（Sohl-Dickstein等人，2015；Ho等人，2020；Song等人，2020b）因其在生成建模，尤其是高分辨率图像生成中的成功而备受关注。DPMs的一个显著特点是训练和采样通常是解耦的。训练目标是噪声数据的多级分数函数，由去噪分数匹配中的UNet捕获。为了生成新样本，基于微分方程求解器开发了各种采样方法，通过选择采样步骤数，我们可以在效率和质量（离散化误差）之间进行权衡。这为分数网络的训练后修改留下了空间，可能显著改善扩散采样过程。许多工作致力于使用预训练的DPMs进行高效扩散采样，尽可能减少步骤，例如通过改进的微分方程求解器（Lu等人，2022；Zhao等人，2023；Xue等人，2023）、额外的蒸馏训练（Salimans &amp; Ho，2022；Song等人，2023；Luo等人，2023）等。在这项工作中，我们通过研究网络架构，揭示了一个改善扩散采样的重要但被忽略的角度。</p>
+<p>DPM的概念（Sohl-Dickstein等人，2015）早于其实证成功。尽管其数学公式优雅，但在采用UNet架构进行去噪分数匹配之前（Song &amp; Ermon，2019；Ho等人，2020），实证性能一直不足。UNet中最独特的设计是编码器块和解码器块之间的跳跃连接，该设计最初是为图像分割提出的（Ronneberger等人，2015）。然而，许多工作此后证明了其在DPMs中的有效性，并且在经过各种架构修改后，这种跳跃设计仍然是主流。在试验Transformer架构时，（Bao等人，2023）进行了全面研究，发现长跳跃连接有助于扩散训练。然而，当涉及到少样本扩散采样时，这种跳跃连接可能不是理想的设计选择。随着采样步骤的减少，生成过程或UNet的作用更接近从高斯分布到目标分布的前推变换，这本质上与分数匹配的目标相矛盾。将与数据无关的高斯分布推向高度复杂和多模态的数据分布对网络的表达能力是一个巨大的挑战（Xiao等人，2018；Hu等人，2023）。从这个角度来看，跳跃连接，尤其是低级别的跳跃连接，可能是UNet容量的限制因素，因为它们提供了从编码器到解码器的捷径。</p>
+<p><strong>为了应对这一挑战，我们提出了Skip-Tuning，这是一种简单且无需训练的对残差连接强度的修改，以改善少步扩散采样。</strong>通过大量实验，我们发现Skip-Tuning不仅在少样本情况下显著提高了图像质量，而且对更多采样步骤普遍有帮助。令人惊讶的是，在ImageNet上使用EDM（Karras等人，2022）仅10次NFE，我们就打破了ODE采样器的限制，并且仅用39次NFE就击败了经过大量优化的EDM-2（Karras等人，2023）。我们的方法在各种不同架构的DPMs上具有良好的泛化性，例如LDM（Rombach等人，2022）和UViT（Bao等人，2023）。我们进行了全面的探索性实验，以阐明Skip-Tuning的惊人效果。<strong>我们发现，尽管原始去噪分数匹配损失随着Skip-Tuning而增加，但特征空间中的损失却减少了，尤其是对于中间噪声值（采样阶段）。</strong>这个有效范围与我们通过详尽窗口搜索确定的图像质量改善范围一致。我们还进行了基于特征空间分数匹配的微调实验，结果显示性能明显比Skip-Tuning差。除了FID，我们还使用其他生成质量指标进行了实验，例如Inception Score、Precision &amp; Recall和最大均值差异（MMD）（Jayasumana等人，2023）。例如，对反转过程的研究表明，就各种核的MMD而言，Skip-Tuned UNet可以产生更接近高斯分布的反转噪声。</p>
+<p>这项工作通过展示一种简单但非常有用的无训练调优方法来提高样本质量，有助于更好地理解扩散采样中UNet跳跃连接的作用。提出的Skip-Tuning与现有的扩散采样器正交，可以结合使用以充分释放DPMs的潜力。</p>
+<h3 id="2-预备知识"><a href="#2-预备知识" class="headerlink" title="2. 预备知识"></a>2. 预备知识</h3><p>扩散概率模型（DPMs）（Sohl-Dickstein 等人，2015；Ho 等人，2020；Song 等人，2020b；Kingma 等人，2021）通过以下随机微分方程（SDE）向数据添加噪声：  </p>
+<script type="math/tex; mode=display">d x_{t}=f(t) x_{t} d t+g(t) d w_{t}, \ (1)</script><p>其中 $w_{t} \in \mathbb{R}^{D}$ 表示标准维纳过程。对于任意 $t \in[0, T]$，条件于 $x_{0}$ 的 $x_{t}$ 分布为高斯分布，即 $x_{t} | x_{0} \sim N(\alpha_{t} x_{0}, \sigma_{t}^{2} I)$。函数 $\alpha_{t}$ 和 $\sigma_{t}$ 的选择使得 $x_{T}$ 近似为零均值、单位协方差的高斯分布。Anderson（1982）证明前向过程（1）存在等价的反向时间扩散过程（从 $T$ 到 $0$）。因此，生成过程等价于求解扩散SDE（Song 等人，2020b）：</p>
+<script type="math/tex; mode=display">d x_{t}=\left[f(t) x_{t}-g^{2}(t) \nabla_{x} \log q_{t}\left(x_{t}\right)\right] d t+g(t) d \overline{w}_{t}, \quad(2)</script><p>其中 $\overline{w}_{t}$ 表示反向时间的维纳过程，$\nabla_{x} \log q_{t}(x)$ 是分数函数。此外，Song 等人（2020b）还表明存在对应的确定性过程，其边际概率密度 $q_{t}(x)$ 与（2）相同：</p>
+<script type="math/tex; mode=display">d x_{t}=\left[f(t) x_{t}-\frac{1}{2} g^{2}(t) \nabla_{x} \log q_{t}\left(x_{t}\right)\right] d t .</script><p>我们通常训练一个由 $\theta$ 参数化的分数网络 $s_{\theta}(x, t)$，通过优化去噪分数匹配损失（Vincent，2011；Song 等人，2020b）来近似（2）中的分数函数 $\nabla_{x} \log q_{t}(x)$：</p>
+<script type="math/tex; mode=display">\mathcal{L}=\mathbb{E}_{t}\left\{\omega_{t} \mathbb{E}_{x_{0}, x_{t}}\left[\left\| s_{\theta}\left(x_{t}, t\right)-\nabla_{x} \log q_{0 t}\left(x_{t} | x_{0}\right)\right\| _{2}^{2}\right]\right\},</script><p>其中 $\omega_{t}$ 是加权函数。尽管扩散采样中引入随机性已被证明可实现更好的质量和多样性（Karras 等人，2022；Xue 等人，2023），但当采样步骤较少时，基于ODE的采样方法（Song 等人，2020a；Zhang &amp; Chen，2022；Lu 等人，2022；Zhao 等人，2023）更为优越。</p>
+<p>UNet 是一种基于卷积神经网络的架构，最初用于图像分割（Ronneberger 等人，2015），但最近在分数估计中取得了成功（Song &amp; Ermon，2019；Ho 等人，2020）。UNet 由一组下采样块、一组上采样块以及两组之间的长跳跃连接组成。示意图见图1。在扩散模型的UNet架构中（Dhariwal &amp; Nichol，2021），它包含16层从底部到顶部的连接，其中来自下采样组件的跳跃向量 $d$ 与相应的上采样向量 $u$ 连接。在这16层中，有10层的跳跃向量与相应上采样组件中的向量具有相同的通道数。在这项工作中，我们揭示了在采样过程中调整跳跃向量的大小所带来的显著改进，并对此进行了详细解释。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f1.png" width="50%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>UNet示意图</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="3-用于扩散采样的Skip-Tuning"><a href="#3-用于扩散采样的Skip-Tuning" class="headerlink" title="3. 用于扩散采样的Skip-Tuning"></a>3. 用于扩散采样的Skip-Tuning</h3><p>考虑单步映射直接从随机噪声生成图像的极端情况。尽管这种情况在扩散蒸馏场景中已被广泛研究（Salimans &amp; Ho, 2022; Song等人, 2023; Luo等人, 2023），但仅通过纯采样方法而不进行额外训练时，性能远非最优。这种限制可能源于UNet架构的容量。在单步采样设置中，UNet的作用类似于生成对抗网络（GAN）的生成器（Goodfellow等人, 2014），进行前推生成。由于输入分布与数据无关，所需的变换复杂度可能极高，尤其是当目标分布为多模态或支撑在低维流形上时（Hu等人, 2023）。UNet中连接下采样和上采样组件的跳跃连接可能对前推变换有害。为了证明这一点，我们检查了每层中下采样跳跃向量d与上采样向量u之间的$l_2$范数比率，即：</p>
+<script type="math/tex; mode=display">prop_{i} = \frac{\|d_{i}\|_{2}}{\|u_{i}\|_{2}}.</script><p>图2比较了EDM、CD蒸馏EDM（Song等人, 2023）和DI蒸馏EDM（Luo等人, 2023）的逐层$prop_i$。我们发现，蒸馏后的UNet的编码器下采样组件的影响较小。具体而言，基础EDM模型的平均逐层$l_2$范数比率（即$\frac{1}{k}\sum_{i}^{k}(\frac{|d_{i}|_{2}}{|u_{i}|_{2}})$）为0.446，而DI蒸馏模型为0.433，CD蒸馏模型为0.404，这证实了我们的假设。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f2.png" width="50%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>下采样跳跃与上采样向量的逐层$l_2$范数比例</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>此外，我们在表1中验证了ImageNet 64上蒸馏EDM网络（CD和DI）与原始EDM相比的整体模型复杂度增加。具体来说，我们选择模型梯度的$l_2$范数来反映公式3中EDM网络U的复杂度。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t1.png" width="50%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>EDM和蒸馏EDM（CD：一致性蒸馏，DI：Diff-Instruct）的梯度范数比较。由于两个蒸馏模型的初始sigma设置不同，因此σ值（噪声标准差）也不同。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<script type="math/tex; mode=display">gradient\ norm\ (U) = \mathbb{E}_{x}\|\text{autograd}_{x}(U(x))\|_{2}.\ (3)</script><p>受此观察启发，我们考虑以无训练的方式手动减少跳跃连接，以改善少样本扩散采样。</p>
+<p><strong>定义3.1（Skip-Tuning）</strong> 我们引入跳跃系数$\rho_i$来控制下采样输出$d_i$的相对强度。具体来说，我们在$d_i$和$u_i$的拼接中添加$\rho_i$，即拼接$(d_{i} \cdot \rho_{i}, u_{i})$。在这项工作中，我们仅考虑$\rho &lt; 1$。</p>
+<p>通过为预训练UNet适当选择$\rho$，我们可以模拟图2中观察到的近似递减的$l_2$范数比率。具体来说，我们采用底层和顶层的$\rho_{\text{bottom}}$和$\rho_{\text{top}}$的线性插值来匹配该模式（例如，将$\rho_{\text{bottom}}$设为0.5，并向$\rho_{\text{top}}$线性增加至1.0），即：</p>
+<script type="math/tex; mode=display">\Delta \rho = \frac{(\rho_{\text{top}} - \rho_{\text{bottom}})}{k}, \quad \rho_{i} = \rho_{\text{bottom}} + \Delta \rho \cdot i.</script><p>为了展示其有效性，我们在ImageNet 64上使用预训练的EDM（Karras等人, 2022）进行了实验。我们遵循（Karras等人, 2022）中的设置进行标准类条件生成，不使用额外的引导方法（Dhariwal &amp; Nichol, 2021; Ho &amp; Salimans, 2022; Ma等人, 2023b）。表2报告了使用Heun和UniPC（Zhao等人, 2023）的少步采样结果。使用少于10次NFE，我们的Skip-Tuning可以将FID提高约100%。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t2.png" width="50%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>EDM的Skip-Tuning少步采样结果。ρ表示从底层到顶层的线性插值。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>注3.2（超越现有架构）</strong> 跳跃系数$\rho$无法被吸收到现有模型参数中，因为输入在组归一化、SiLU激活函数和前向函数中的卷积函数中的位置所致。SiLU激活函数的非线性性使得无法在卷积函数中研究跳跃系数的值。</p>
+<p>Skip-Tuning以无训练的方式为预训练扩散模型提供了额外的灵活性。除了在少样本扩散采样中的惊人效果外，我们还测试了其在蒸馏UNet单步生成中的性能。在表3中，我们可以观察到相对于基线的显著改进。值得注意的是，由于蒸馏过程中隐式减少了跳跃连接，蒸馏UNet的理想$\rho$接近1.0（CD：0.91；DI：0.98），如图2中蒸馏模型的较低跳跃范数比例所证实。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t3.png" width="50%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>蒸馏EDM（CD：一致性蒸馏，DI：Diff-Instruct）的Skip-Tuning结果。</em>：原始论文中报告的结果。†：在我们的复现中，为了更好的兼容性，我们将flash attention替换为标准注意力。*</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>在图3中，我们展示了通过在跳跃拼接中减小下采样向量d（$\rho &lt; 1$），EDM网络U的复杂度单调增加，其中模型复杂度通过公式3估计。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f3.png" width="50%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>随着跳跃系数ρ变化的梯度$l_2$范数</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="4-打破ODE采样限制"><a href="#4-打破ODE采样限制" class="headerlink" title="4. 打破ODE采样限制"></a>4. 打破ODE采样限制</h3><p>我们提出的Skip-Tuning在改善少步扩散采样方面已展现出惊人的效果。随之而来的一个自然问题是：如果增加采样步骤，这种改进是否仍然显著？当前的采样方法大多基于ODE求解器，这些求解器根据特定方案对扩散ODE进行离散化。随着采样步骤的增加，离散化误差趋近于零，FID分数也会饱和至一个极限值。</p>
+<p><strong>注4.1</strong>：目前大多数蒸馏方法（如渐进式蒸馏（Salimans &amp; Ho, 2022）、一致性模型（Song等人, 2023））学习从噪声到数据的ODE轨迹映射，该轨迹通过教师模型的ODE采样极限进行模拟。</p>
+<p>在本节中，我们进一步测试Skip-Tuning的极限，以了解其与最先进的DPM（如EDM（Karras等人, 2022）、EDM-2（Karras等人, 2023）、LDM（Rombach等人, 2022）、UViT（Bao等人, 2023））相比的表现。</p>
+<p>我们首先从ImageNet上的EDM开始实验，现有文献表明任何ODE采样器无论采用多少采样步骤，其FID都无法低于2.2（Karras等人, 2022）。令人惊讶的是，如表4所示，我们的Skip-Tuning EDM仅用19次NFE就超越了之前的ODE采样极限（FID：1.75）。此外，通过将采样步骤增加到39次NFE（表5），我们在原始EDM上应用Skip-Tuning（FID：1.57）甚至可以击败经过大量优化的EDM-2（Karras等人, 2023）（FID：1.58）。从AFHQv2（Choi等人, 2020；Karras等人, 2021）64×64的采样结果（表6）中也可以得出类似结论。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t4.png" width="50%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>ImageNet 64上EDM的ODE采样Skip-Tuning结果。括号中的ρ表示从底层到顶层的线性插值。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t6.png" width="50%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>AFHQv2 64×64上EDM的ODE采样Skip-Tuning结果。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>为了证明Skip-Tuning在提升采样性能方面的稳定性，我们在不同UniPC采样步骤下对不同跳跃系数ρ进行了实验，结果如图4所示。在不同NFE下，FID曲线均呈现U型模式。对于NFE=9，U型FID曲线的跳跃系数“最佳点”介于0.65到0.70之间。这可归因于少步设置中对网络复杂度需求的增加。对于NFE=39（此时已很好地收敛，因为ρ=1时的基线FID为2.21，与511次NFE的Heun采样结果（Karras等人, 2022）一致），ρ的最佳点约为0.85。我们将这些发现总结如下：</p>
+<ul>
+<li>在固定跳跃系数的情况下，FID分数随采样步骤的增加而单调改善。</li>
+<li>对于给定的采样步骤，存在一个最优的跳跃系数范围。</li>
+<li>随着采样步骤的增加，最优跳跃系数范围单调增加并趋近于一个小于1的极限值。</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f4.png" width="50%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>不同跳跃系数和步数的ODE UniPC采样结果</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>除了EDM之外，我们的Skip-Tuning还可以改善其他包含跳跃连接设计的DPM，包括LDM（Rombach等人, 2022）和UViT（Bao等人, 2023），如表7所示。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t7.png" width="50%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>256x256 ImageNet上LDM和UViT的Skip-Tuning结果。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>除了定量指标的显著改善外，图5和图6从视觉上展示了Skip-Tuning对物体和语义丰富度的贡献。例如，在图5中，经过Skip-Tuning处理后的花卉图像（第一行右侧）装饰有叶状细节和耀眼的黄色。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f5.png" width="50%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>左侧64x64图像采用ODE 10步采样（FID：3.64）；右侧图像采用Skip-Tuning $\rho=0.78$的ODE 10步采样（FID：1.88）</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f6.png" width="50%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>左侧256x256图像采用LDM 10步采样（FID：4.91）；右侧图像采用Skip-Tuning $\rho=0.78$的LDM 10步采样（FID：4.67）</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="5-揭秘Skip-Tuning"><a href="#5-揭秘Skip-Tuning" class="headerlink" title="5. 揭秘Skip-Tuning"></a>5. 揭秘Skip-Tuning</h3><p>在本节中，我们深入探讨Skip-Tuning如何影响扩散模型的采样过程。如前所述，DPM的训练和采样是解耦的。既然Skip-Tuning能在训练后显著提升采样效果，首先需要探究的问题是它对DPM训练损失的影响。</p>
+<h4 id="5-1-去噪分数匹配"><a href="#5-1-去噪分数匹配" class="headerlink" title="5.1 去噪分数匹配"></a>5.1 去噪分数匹配</h4><p>考虑如下去噪分数匹配损失：</p>
+<script type="math/tex; mode=display">\mathcal{L}_{pixel }=\mathbb{E}_{t}\left\{\omega_{t} \mathbb{E}_{x}\left[\left\| x_{\theta}\left(x_{t}, t\right)-x\right\| _{2}^{2}\right]\right\} .</script><p>表8对比了原始EDM及其Skip-Tuning版本（$\rho=0.8$）的分数匹配损失。第一行结果显示，Skip-Tuning使像素空间的分数匹配损失变差。这在意料之中，因为基线EDM模型是在该像素损失$\mathcal{L}_{pixel}$下优化的。但为什么验证损失更高时，生成质量却能显著提升（FID从3.64提升至1.88）？事实证明，Skip-Tuning虽然增加了原始像素空间的损失，却能降低各种判别模型$f$特征空间的去噪分数匹配损失，如下所示：</p>
+<script type="math/tex; mode=display">\mathcal{L}_{feature }=\mathbb{E}_{t}\left\{\omega_{t} \mathbb{E}_{x}\left[\left\| f\left(x_{\theta}\left(x_{t}, t\right)\right)-f(x)\right\|_{2}^{2}\right]\right\} .</script><p>表8列出了在Inception-V3（Szegedy等人，2016）、ResNet-101（He等人，2016）（在ImageNet上训练，输出维度2048）和CLIP-ViT（Radford等人，2021）图像编码器（在网络爬取的图像-文本对和公共数据集上训练，输出维度1024）特征空间中的损失。在Skip-Tuning设置下，分类器和CLIP编码器特征空间的分数匹配损失均下降，表明在判别模型特征空间中分数匹配估计得到了改善。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t8.png" width="50%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>EDM在像素、判别特征和CLIP图像编码器空间的分数匹配损失。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>表9进一步比较了不同采样$\sigma$水平下ResNet101输出空间的分数匹配损失（$\mathcal{L}_{ResNet-101}$）。结果表明，Skip-Tuning在特征空间分数匹配上的改善并非在所有时间点均匀分布（(a)），而是在中间噪声值（采样阶段）尤为明显。这一观察为下一节探索时间依赖的Skip-Tuning提供了动机。</p>
+<h4 id="5-2-噪声水平依赖性"><a href="#5-2-噪声水平依赖性" class="headerlink" title="5.2 噪声水平依赖性"></a>5.2 噪声水平依赖性</h4><p>在探索Skip-Tuning的时间依赖特性时，我们旨在确定扩散采样中哪个时间区间能带来最大的FID改善。为此，我们进行了详尽的窗口搜索：将sigma区间[0.002, 80]划分为13个不重叠的子区间，每个子区间仅包含4步采样过程，在每个子区间内单独应用Skip-Tuning，区间外则使用原始模型。图7的搜索结果显示，在sigma范围的中间阶段应用Skip-Tuning对采样性能的提升最为显著。这与表9中观察到的Skip-Tuning在中间sigma阶段ResNet101特征空间损失（$\mathcal{L}_{ResNet-101}$）更低的结果一致。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t9.png" width="50%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>基线EDM和Skip-Tuning EDM在ResNet101特征空间（$L_{ResNet-101}$）的分数匹配损失比较。σ值选自ODE采样的5个步骤。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f7.png" width="50%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>EDM Sigma（噪声信号比）的Skip区间穷举窗口搜索结果</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>此外，我们进一步验证了不同扩散模型因其训练目标不同，对Skip-Tuning的时间调度偏好也不同。附录A中的图11展示了采样时间上两种相反的$\rho$线性插值方式：“increasing $\rho$”表示$\rho$从时间0的$\rho_{0}$线性增加到时间T的1.0；“decreasing $\rho$”表示$\rho$从时间0的1.0线性减少到时间T的$\rho_{0}$。这一研究的逻辑在于：不同时间步的分数网络所需复杂度不同——对于LDM等噪声预测模型，噪声水平$\sigma$越高任务越简单；而对于EDM等数据预测模型则相反。由于降低$\rho$会增加网络复杂度，理想的$\rho$调度也应相反。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f11.png" width="50%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>跳跃系数ρ的时间依赖性线性插值</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>表10比较了不同时间依赖的$\rho$顺序对采样性能的影响：EDM模型偏好“decreasing $\rho$”顺序，即在时间T使用较小的跳跃系数（减少噪声传递），在时间0使用较大的跳跃系数（生成更清晰的图像）；而LDM和UViT模型则偏好“increasing $\rho$”顺序，表明对时间依赖的跳跃系数有相反的偏好。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t10.png" width="50%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>EDM、LDM和UViT之间ρ的时间依赖性顺序比较。递增ρ表示ρ在时间0到T期间从ρ₀线性增加到1.0，而递减ρ表示ρ在时间0到T期间从1.0线性减少到ρ₀。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="5-3-Skip-Tuning-vs-微调"><a href="#5-3-Skip-Tuning-vs-微调" class="headerlink" title="5.3 Skip-Tuning vs 微调"></a>5.3 Skip-Tuning vs 微调</h4><p>在揭示Skip-Tuning能改善判别特征空间的分数匹配后，一个自然的问题是：能否通过基于特征空间分数匹配损失对扩散模型进行微调来达到相同的改善效果？为此，我们进行了两组实验：仅微调跳跃系数$\rho$，以及使用所有模型参数进行全微调。令人惊讶的是，这两种直接微调方式均导致采样性能下降，且无法匹配Skip-Tuning的质量和无训练特性。</p>
+<p><strong>微调$\rho$</strong> 表11列出了使用ResNet101特征空间分数匹配损失微调$\rho$后的采样结果。直接微调$\rho$会导致部分跳跃系数大于1，在采样过程中引入过多噪声，导致性能显著下降。为消除$\rho&gt;1$的可能，我们随后应用Sigmoid函数将$\rho$约束在(0,1)区间，结果虽显著改善，但仍不如直接使用Skip-Tuning。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t11.png" width="50%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>使用ResNet101输出空间的分数匹配损失对EDM跳跃系数ρ进行微调的结果。采样图像为ImageNet 64x64。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>全微调</strong> 表12展示了使用原始分数匹配和特征空间分数匹配的混合损失对EDM模型所有网络参数进行微调的结果。初始阶段性能略有提升，但随着训练进行性能恶化。同样，微调无法匹配Skip-Tuning的质量和稳定性。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t12.png" width="50%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>使用Inception-V3建模分数匹配损失对EDM进行微调的结果。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>本节的对比表明，改善特征空间的分数匹配损失只是Skip-Tuning有效性的一个方面，其效果无法通过简单的微调来复现。在下一部分，我们将探讨Skip-Tuning如何影响扩散采样的逆过程。</p>
+<h4 id="5-4-逆过程"><a href="#5-4-逆过程" class="headerlink" title="5.4 逆过程"></a>5.4 逆过程</h4><p>从时间0到时间T模拟扩散ODE，我们将数据逆转为（近似）高斯噪声。这引发了一个问题：Skip-Tuning能否改善逆过程的结果？我们使用最大均值差异（MMD）作为指标，评估逆（伪）高斯噪声与真实高斯分布之间的距离（MMD细节见附录B）。具体来说，我们对10k张图像进行逆处理得到10k噪声，并计算生成噪声与真实噪声之间的MMD距离。实验重复多次，结果取平均（表13）。对于每个核，我们将基线结果归一化为1。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t13.png" width="50%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>相对MMD距离比较。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>结果表明，在大多数核下，Skip-Tuning减少了逆噪声与标准高斯噪声之间的差异，与生成过程一致。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t14.png" width="50%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>像素和频率空间的分数匹配损失。’LL’、’LH’、’HL’和’HH’分别代表频谱的’近似值’、’水平细节’、’垂直细节’、’对角线细节’。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="5-5-与随机采样的关系"><a href="#5-5-与随机采样的关系" class="headerlink" title="5.5 与随机采样的关系"></a>5.5 与随机采样的关系</h4><p>随机采样可视为扩散ODE和朗之万扩散的插值，形式如下：</p>
+<script type="math/tex; mode=display">\begin{aligned} d x_{t} & =\left[f(t) x_{t}-\frac{1}{2} g^{2}(t) \nabla_{x} \log q_{t}\left(x_{t}\right)\right] d t \\ & -\frac{\tau^{2}(t)}{2} g^{2}(t) \nabla_{x} \log q_{t}\left(x_{t}\right) d t+\tau(t) g(t) d \overline{w}_{t} . \end{aligned}</script><p>随机采样通过在采样过程中注入额外噪声，可超越ODE采样极限（Song等人, 2020b；Karras等人, 2022；Xue等人, 2023）。Karras等人（2022）指出，随机采样中隐式的朗之万扩散会将样本推向目标边际分布，纠正早期采样步骤的误差。Xue等人（2023）通过KL散度不等式证明了随机采样的优越性。</p>
+<p>然而，随机采样中的随机强度$\tau(t)$会影响采样效果。Karras等人（2022）在ImageNet-64数据集上的实证结果显示：随机采样可将基线模型的FID从2.66提升至1.55，EDM模型从2.22提升至1.36。他们还观察到EDM模型的最优随机强度远低于基线模型。我们额外进行了实验，探索跳跃系数与随机采样的结合效果。图8显示，随着跳跃系数降低，随机强度的最佳点也随之降低。我们发现，轻微的Skip-Tuning（如$\rho=0.95$对比$\rho=1$）可在所有随机强度下改善随机采样效果。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f8.png" width="50%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>跳跃调整与随机采样的结合</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t15.png" width="50%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>其他评估指标。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="7-讨论"><a href="#7-讨论" class="headerlink" title="7. 讨论"></a>7. 讨论</h3><p>我们提出的Skip-Tuning打破了ODE采样的限制，既提升了现有UNet扩散模型（教师模型）的生成质量，也增强了蒸馏扩散模型（学生模型）的单步采样效果。通过大量研究，我们将Skip-Tuning的成功归因于判别特征空间中分数匹配的改善，以及逆噪声与真实高斯噪声之间的差异减小。这些发现不仅加深了我们对UNet架构的理解，还证明了Skip-Tuning作为一种训练后方法，能显著提升扩散生成质量。  </p>
+<p>若能在更广泛的范围内探索跳跃连接，例如不同模态的模型或DiT等无手动设计长距离跳跃连接的新架构，本研究的结论将更具普适性。</p>
+<h3 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h3><h4 id="A-其他细节"><a href="#A-其他细节" class="headerlink" title="A. 其他细节"></a>A. 其他细节</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f10.png" width="50%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>跳跃向量与上采样组件的范数比例。跳跃向量与上采样权重的范数比例</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f9.png" width="50%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图像的小波变换。’LL’、’LH’、’HL’和’HH’分别代表频谱的’近似值’、’水平细节’、’垂直细节’、’对角线细节’</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="B-关于最大均值差异（MMD）的详细说明"><a href="#B-关于最大均值差异（MMD）的详细说明" class="headerlink" title="B. 关于最大均值差异（MMD）的详细说明"></a>B. 关于最大均值差异（MMD）的详细说明</h4><p>最大均值差异（MMD）（Gretton 等人，2006；2012）是一种基于核的统计检验方法，用作双样本检验以确定两个样本是否来自同一分布。MMD统计量可被视为两个分布之间的差异。给定分布P和Q，一个特征映射ϕ将P和Q映射到特征空间F。记核函数$k(x, y)=&lt;\phi(x), \phi(y)&gt;_{F}$，关于正定核k的MMD距离定义为：</p>
+<script type="math/tex; mode=display">MMD^{2}(P, Q)=\left\| \mu_{P}-\mu_{Q}\right\| _{F}^{2}=\mathbb{E}_{P}[k(X, X)]-2 \mathbb{E}_{P, Q}[k(X, Y)]+\mathbb{E}_{Q}[k(Y, Y)] 。</script><p>在实践中，我们仅有两个从P和Q独立采样得到的经验分布$\hat{P}=\sum_{i=1}^{m} \delta(x_{i})$和$\hat{Q}=\sum_{i=1}^{n} \delta(y_{i})$，此时MMD距离的无偏经验估计量如下：</p>
+<script type="math/tex; mode=display">\hat{MMD}^{2}(P, Q)=\frac{1}{m(m-1)} \sum_{i=1}^{m} \sum_{j \neq i}^{m} k(x_{i}, x_{j})+\frac{1}{n(n-1)} \sum_{i=1}^{n} \sum_{j \neq i}^{n} k(y_{i}, y_{j})-\frac{2}{m n} \sum_{i=1}^{m} \sum_{j=1}^{n} k(x_{i}, y_{j}) 。</script><h4 id="C-UNet模块中组归一化的详细说明"><a href="#C-UNet模块中组归一化的详细说明" class="headerlink" title="C. UNet模块中组归一化的详细说明"></a>C. UNet模块中组归一化的详细说明</h4><p><img src="a1.png" width="70%"></p>
+<p>组归一化（Wu &amp; He，2018）是一种归一化层，它将通道划分为多个组，并对每个组内的特征进行归一化。一个自然的问题是，在组归一化层的影响下，Skip-Tuning会产生什么效果？UNetBlock的输入是跳跃连接的下采样部分和上采样部分的线性缩放特征的拼接。在线性缩放后，除了最多一个例外组，其余部分的缩放效果会在UNetBlock的第一个组归一化层之后消失。然而，内部跳跃连接x = x.add_(self.skip(orig) if self.skip is not None else orig) 保留了Skip-Tuning的信息。</p>
+<p>我们进行了一项实验，以验证所提出的Skip-Tuning大致相当于仅改变orig变量的缩放比例。具体来说，我们保持UNetBlock的输入不变，仅对orig变量的对应通道乘以缩放因子。我们采用了表5中的设置，该设置在39次NFE下实现了1.57的FID分数。相比之下，我们没有观察到性能下降：仅改变orig变量的缩放比例会产生1.58的FID分数。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t5.png" width="50%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>ImageNet 64上的ODE采样极限。基线和Skip-Tuning的EDM检查点来自（Karras等人，2022）。EDM-2-S的结果来自（Karras等人，2023）。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>我们还从另一个方向进行了实验，即仅改变self.norm(0)变量的缩放比例，并保持orig变量不变。令人惊讶的是，我们也没有观察到性能下降：仅改变self.norm(0)变量的缩放比例会产生1.57的FID分数。</p>
+<p><strong>备注C.1.</strong> FreeU（Si等人，2023）在主干特征上添加了一个膨胀系数（&gt;1）。组归一化层对FreeU的影响是类似的。因此我们推测膨胀系数也作用于orig变量。从这个角度来看，Skip-Tuning和FreeU的操作是不同的。</p>
+<h2 id="文章总结"><a href="#文章总结" class="headerlink" title="文章总结"></a>文章总结</h2>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/diffusion/" rel="tag"># diffusion</a>
+              <a href="/tags/ICLR/" rel="tag"># ICLR</a>
+              <a href="/tags/2024/" rel="tag"># 2024</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/06/03/2024-ICLR-Consistency-Trajectory-Models-Learning-Probability-Flow-ODE-Trajectory-of-Diffusion%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" rel="prev" title="2024-ICLR-Consistency Trajectory Models Learning Probability Flow ODE Trajectory of Diffusion论文精读">
+      <i class="fa fa-chevron-left"></i> 2024-ICLR-Consistency Trajectory Models Learning Probability Flow ODE Trajectory of Diffusion论文精读
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2025/06/03/2024-NeurIPS-Faster-Diffusion-Rethinking-the-Role-of-the-Encoder%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" rel="next" title="2024-NeurIPS-Faster Diffusion-Rethinking the Role of the Encoder论文精读">
+      2024-NeurIPS-Faster Diffusion-Rethinking the Role of the Encoder论文精读 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1. 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86"><span class="nav-number">1.3.</span> <span class="nav-text">2. 预备知识</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E7%94%A8%E4%BA%8E%E6%89%A9%E6%95%A3%E9%87%87%E6%A0%B7%E7%9A%84Skip-Tuning"><span class="nav-number">1.4.</span> <span class="nav-text">3. 用于扩散采样的Skip-Tuning</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%89%93%E7%A0%B4ODE%E9%87%87%E6%A0%B7%E9%99%90%E5%88%B6"><span class="nav-number">1.5.</span> <span class="nav-text">4. 打破ODE采样限制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E6%8F%AD%E7%A7%98Skip-Tuning"><span class="nav-number">1.6.</span> <span class="nav-text">5. 揭秘Skip-Tuning</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#5-1-%E5%8E%BB%E5%99%AA%E5%88%86%E6%95%B0%E5%8C%B9%E9%85%8D"><span class="nav-number">1.6.1.</span> <span class="nav-text">5.1 去噪分数匹配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-2-%E5%99%AA%E5%A3%B0%E6%B0%B4%E5%B9%B3%E4%BE%9D%E8%B5%96%E6%80%A7"><span class="nav-number">1.6.2.</span> <span class="nav-text">5.2 噪声水平依赖性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-3-Skip-Tuning-vs-%E5%BE%AE%E8%B0%83"><span class="nav-number">1.6.3.</span> <span class="nav-text">5.3 Skip-Tuning vs 微调</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-4-%E9%80%86%E8%BF%87%E7%A8%8B"><span class="nav-number">1.6.4.</span> <span class="nav-text">5.4 逆过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-5-%E4%B8%8E%E9%9A%8F%E6%9C%BA%E9%87%87%E6%A0%B7%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">1.6.5.</span> <span class="nav-text">5.5 与随机采样的关系</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E8%AE%A8%E8%AE%BA"><span class="nav-number">1.7.</span> <span class="nav-text">7. 讨论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%84%E5%BD%95"><span class="nav-number">1.8.</span> <span class="nav-text">附录</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#A-%E5%85%B6%E4%BB%96%E7%BB%86%E8%8A%82"><span class="nav-number">1.8.1.</span> <span class="nav-text">A. 其他细节</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B-%E5%85%B3%E4%BA%8E%E6%9C%80%E5%A4%A7%E5%9D%87%E5%80%BC%E5%B7%AE%E5%BC%82%EF%BC%88MMD%EF%BC%89%E7%9A%84%E8%AF%A6%E7%BB%86%E8%AF%B4%E6%98%8E"><span class="nav-number">1.8.2.</span> <span class="nav-text">B. 关于最大均值差异（MMD）的详细说明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#C-UNet%E6%A8%A1%E5%9D%97%E4%B8%AD%E7%BB%84%E5%BD%92%E4%B8%80%E5%8C%96%E7%9A%84%E8%AF%A6%E7%BB%86%E8%AF%B4%E6%98%8E"><span class="nav-number">1.8.3.</span> <span class="nav-text">C. UNet模块中组归一化的详细说明</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E7%AB%A0%E6%80%BB%E7%BB%93"><span class="nav-number">2.</span> <span class="nav-text">文章总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zongqing Li"
+      src="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+  <p class="site-author-name" itemprop="name">Zongqing Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hqulzq" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hqulzq" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hqulzq@163.com" title="E-Mail → mailto:hqulzq@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+      
+<script type="text/javascript" charset="utf-8" src="/js/tagcloud.js"></script>
+<script type="text/javascript" charset="utf-8" src="/js/tagcanvas.js"></script>
+<div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div id="myCanvasContainer" class="widget tagcloud">
+        <canvas width="250" height="250" id="resCanvas" style="width=100%">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2023/" rel="tag">2023</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2024/" rel="tag">2024</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2025/" rel="tag">2025</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICML/" rel="tag">ICML</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ODE%E6%B1%82%E8%A7%A3/" rel="tag">ODE求解</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">36</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%85%E8%AF%BB/" rel="tag">阅读</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+        </canvas>
+    </div>
+</div>
+
+
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zongqing Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('post.copy_button').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('post.copy_success')
+          else $(this).text('post.copy_failure')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('post.copy_button')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
