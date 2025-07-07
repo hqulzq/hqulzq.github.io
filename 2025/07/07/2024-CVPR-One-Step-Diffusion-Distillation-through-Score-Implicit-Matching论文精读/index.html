@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="全文翻译摘要尽管扩散模型在许多生成任务上表现出色，但它们需要大量的采样步骤才能生成逼真的样本。这促使社区开发有效的方法，将预训练的扩散模型蒸馏为更高效的模型，但这些方法通常仍需要少步推理，或者性能明显低于基础模型。在本文中，我们提出了分数隐式匹配（SIM），这是一种将预训练扩散模型蒸馏为单步生成器模型的新方法，同时保持与原始模型几乎相同的样本生成能力，并且无需数据——蒸馏过程不需要训练样本。该方法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2024-CVPR-One-Step Diffusion Distillation through Score Implicit Matching论文精读">
+<meta property="og:url" content="https://hqulzq.github.io/2025/07/07/2024-CVPR-One-Step-Diffusion-Distillation-through-Score-Implicit-Matching%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/index.html">
+<meta property="og:site_name" content="Lzq&#39;s blog">
+<meta property="og:description" content="全文翻译摘要尽管扩散模型在许多生成任务上表现出色，但它们需要大量的采样步骤才能生成逼真的样本。这促使社区开发有效的方法，将预训练的扩散模型蒸馏为更高效的模型，但这些方法通常仍需要少步推理，或者性能明显低于基础模型。在本文中，我们提出了分数隐式匹配（SIM），这是一种将预训练扩散模型蒸馏为单步生成器模型的新方法，同时保持与原始模型几乎相同的样本生成能力，并且无需数据——蒸馏过程不需要训练样本。该方法">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-07-07T11:31:22.000Z">
+<meta property="article:modified_time" content="2025-07-07T11:51:19.519Z">
+<meta property="article:author" content="Zongqing Li">
+<meta property="article:tag" content="diffusion">
+<meta property="article:tag" content="CVPR">
+<meta property="article:tag" content="2024">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://hqulzq.github.io/2025/07/07/2024-CVPR-One-Step-Diffusion-Distillation-through-Score-Implicit-Matching%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>2024-CVPR-One-Step Diffusion Distillation through Score Implicit Matching论文精读 | Lzq's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lzq's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">48</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">86</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book">
+
+    <a href="/book" rel="section"><i class="fas fa-book fa-fw"></i>Book</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/07/07/2024-CVPR-One-Step-Diffusion-Distillation-through-Score-Implicit-Matching%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          2024-CVPR-One-Step Diffusion Distillation through Score Implicit Matching论文精读
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-07-07 19:31:22 / 修改时间：19:51:19" itemprop="dateCreated datePublished" datetime="2025-07-07T19:31:22+08:00">2025-07-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>尽管扩散模型在许多生成任务上表现出色，但它们需要大量的采样步骤才能生成逼真的样本。这促使社区开发有效的方法，将预训练的扩散模型蒸馏为更高效的模型，但这些方法通常仍需要少步推理，或者性能明显低于基础模型。<strong>在本文中，我们提出了分数隐式匹配（SIM），这是一种将预训练扩散模型蒸馏为单步生成器模型的新方法，同时保持与原始模型几乎相同的样本生成能力，并且无需数据——蒸馏过程不需要训练样本。该方法基于这样一个事实：尽管对于生成器模型来说，传统的基于分数的损失难以最小化，但在特定条件下，我们可以高效地计算扩散模型和生成器之间广泛类别的基于分数的散度的梯度。</strong>SIM在单步生成器方面表现出强大的实证性能：在CIFAR10数据集上，其无条件生成的FID为2.06，类条件生成的FID为1.96。此外，通过将SIM应用于领先的基于Transformer的扩散模型，我们蒸馏出用于文本到图像（T2I）生成的单步生成器，其美学分数达到6.42，与原始多步模型相比没有性能下降，明显优于其他单步生成器，包括SDXL-TURBO（5.33）、SDXL-LIGHTNING（5.34）和HYPER-SDXL（5.85）。我们将随本文发布这种适用于工业界的基于Transformer的单步T2I生成器。</p>
+<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1 引言"></a>1 引言</h3><p>在过去的几年里，扩散模型（DMs）[20, 66, 64]在从数据合成[24, 25, 50, 51, 21, 55, 22, 30]到密度估计[31, 7]，从文本到图像生成[53, 59, 2, 79, 6]、文本到3D创作[55, 73, 27, 33]、图像编辑[46, 8, 18, 1, 29, 48]，以及其他领域[82, 78, 4, 84, 17, 58, 13, 72, 88, 71, 41, 77, 43, 83, 12, 10, 45, 15, 70, 54, 9]等广泛的应用中取得了显著的进展。从高层次的角度来看，扩散模型（也称为基于分数的扩散模型）使用扩散过程来破坏数据分布，然后经过训练以近似不同噪声水平下噪声数据分布的分数函数。</p>
+<p>扩散模型具有多个优点，如训练灵活性、可扩展性以及生成高质量样本的能力，这使其成为现代AIGC模型的首选。训练完成后，学习到的分数函数可用于逆转数据破坏过程，这可以通过数值求解相关的随机微分方程来实现。这种数据生成机制通常需要多次神经网络评估，这导致了扩散模型的一个显著限制：当采样步骤数量减少时，扩散模型的生成性能会大幅下降。这一缺点限制了扩散模型的实际部署，尤其是在需要快速推理的场景中，例如在移动电话和边缘设备等计算能力有限的设备上，或在需要快速响应时间的应用中。</p>
+<p>这一挑战促使人们提出了各种方法，旨在加快扩散模型的采样过程，同时保留其强大的生成能力。特别是蒸馏方法，专注于应用蒸馏算法，将知识从预训练的教师扩散模型转移到高效的学生生成模型，这些学生模型能够在少数生成步骤内生成高质量的样本。</p>
+<p>一些工作从概率散度最小化的角度研究了扩散蒸馏算法。例如，Luo等人[42]、Yin等人[81]研究了最小化教师模型和单步学生模型之间KL散度的算法。Zhou等人[92]探索了使用Fisher散度进行蒸馏，取得了令人印象深刻的实证性能。尽管这些研究在理论和实证方面都为社区做出了贡献，并提供了可应用的单步生成器模型，但它们的理论是建立在特定的散度（即Kullback-Leibler散度和Fisher散度）之上的，这可能限制了蒸馏性能。目前仍然缺乏一个更通用的框架来理解和改进扩散蒸馏。</p>
+<p><strong>在这项工作中，我们引入了分数隐式匹配（SIM），这是一种将预训练扩散模型蒸馏为单步生成器网络，同时保持高质量生成的新框架。为此，我们针对生成器模型的（难以处理的）分数函数与原始扩散模型的分数函数之间的任意距离函数，提出了一类广泛而灵活的基于分数的散度。这项工作的关键技术见解是，尽管此类散度无法显式计算，但我们可以使用我们称为分数梯度定理的结果精确计算这些散度的梯度，从而实现散度的隐式最小化。这使我们能够基于此类散度高效地训练模型。</strong></p>
+<p>我们使用不同的距离函数选择来定义散度，将SIM的性能与先前的方法进行了评估。最相关的是，我们将SIM与使用基于KL散度项的Diff-Instruct（DI）[42]方法，以及Score Identity Distillation（SiD）方法[92]进行了比较。我们表明，当距离函数简单地选择为平方L₂距离时，SiD是我们方法的一个特例（尽管推导方式完全不同）。我们还通过实证表明，使用专门设计的Pseudo-Huber距离函数的SIM比L₂距离表现出更快的收敛速度和更强的超参数鲁棒性，使得所得到的方法明显优于先前的方法。</p>
+<p>最后，我们表明，相对于该领域过去在CIFAR10图像生成和文本到图像生成方面的工作，SIM在绝对性能上取得了非常强的实证结果。在CIFAR10数据集上，SIM展示了单步生成性能，无条件生成的Frechet Inception Distance（FID）为2.06，类条件生成的FID为1.96。更定性地说，蒸馏一个领先的基于扩散Transformer的[52]文本到图像扩散模型，得到了一个能力极强的单步文本到图像生成器，我们表明其在生成性能方面与教师扩散模型几乎没有损失。特别是，通过将SIM应用于PixelArt-α[6]，蒸馏出的单步生成器达到了6.42的出色美学分数，与原始多步扩散模型相比没有性能下降。这显著优于其他单步文本到图像生成器，包括SDXL-TURBO[63]（5.33）、SDXL-LIGHTNING[34]（5.34）和HYPER-SDXL[56]（5.85）。这一结果不仅标志着单步文本到图像生成的新方向，还激发了对其他领域（如视频生成）中基于扩散Transformer的AIGC模型进行蒸馏的进一步研究。</p>
+<h3 id="2-扩散模型"><a href="#2-扩散模型" class="headerlink" title="2 扩散模型"></a>2 扩散模型</h3><p>在本节中，我们介绍关于扩散模型和扩散蒸馏的预备知识和符号表示。假设我们从潜在分布 $q_d(x)$ 中观察数据，生成式建模的目标是训练模型以生成新样本 $x \sim q_d(x)$。扩散模型的前向扩散过程将任意初始分布 $q_0 = q_d$ 转换为某个简单的噪声分布，其表达式为：</p>
+<script type="math/tex; mode=display">d x_t = F(x_t, t) dt + G(t) d w_t \quad (2.1)</script><p>其中 $F$ 是预定义的漂移函数，$G(t)$ 是预定义的标量值扩散系数，$w_t$ 表示独立的维纳过程。连续索引的分数网络 $s_\varphi(x, t)$ 用于近似前向扩散过程（2.1）的边缘分数函数。分数网络的学习通过最小化加权去噪分数匹配目标来实现 [69, 66]，即：</p>
+<script type="math/tex; mode=display">\mathcal{L}_{DSM}(\varphi) = \int_{t=0}^{T} \lambda(t) \mathbb{E}_{x_0 \sim q_0, x_t | x_0 \sim q_t(x_t | x_0)} \left\| s_\varphi(x_t, t) - \nabla_{x_t} \log q_t(x_t | x_0) \right\|_2^2 dt \quad (2.2)</script><p>这里的加权函数 $\lambda(t)$ 控制不同时间水平的学习重要性，$q_t(x_t | x_0)$ 表示前向扩散（2.1）的条件转移。训练完成后，分数网络 $s_\varphi(x_t, t) \approx \nabla_{x_t} \log q_t(x_t)$ 能够很好地近似扩散数据分布的边缘分数函数。扩散模型的高质量样本可以通过模拟由学习到的分数网络实现的随机微分方程来生成 [66]。然而，随机微分方程的模拟明显慢于其他模型（如单步生成器模型）的模拟。</p>
+<h3 id="3-分数隐式匹配"><a href="#3-分数隐式匹配" class="headerlink" title="3 分数隐式匹配"></a>3 分数隐式匹配</h3><p>在本节中，我们介绍分数隐式匹配（Score Implicit Matching，SIM），这是一种专为基于分数的扩散模型单步蒸馏设计的通用方法。我们首先介绍问题设置和符号表示，然后引入一类通用的基于分数的概率散度，并展示如何使用SIM来最小化所述散度。最后，我们讨论该方法的具体选择（如距离函数的选择），并探究其对蒸馏效果的影响。  </p>
+<h4 id="3-1-问题设置"><a href="#3-1-问题设置" class="headerlink" title="3.1 问题设置"></a>3.1 问题设置</h4><p>我们的起点是一个由分数函数定义的预训练扩散模型：  </p>
+<script type="math/tex; mode=display">s_{q_t}(x_t) := \nabla_{x_t} \log q_t(x_t) \quad (3.1)</script><p>其中，$q_t(x_t)$ 是根据公式（2.1）在时间 $t$ 扩散的潜在分布。我们假设预训练扩散模型能充分近似数据分布，因此是我们方法的唯一考虑对象。  </p>
+<p>目标学生模型是单步生成器网络 $g_\theta$，它可以将初始随机噪声 $z \sim p_z$ 转换为样本 $x = g_\theta(z)$，该网络由参数 $\theta$  parameterized。令 $p_{\theta, 0}$ 表示学生模型的数据分布，$p_{\theta, t}$ 表示学生模型在相同扩散过程（2.1）下的边缘扩散数据分布。学生分布隐式诱导出分数函数：  </p>
+<script type="math/tex; mode=display">s_{p_{\theta, t}}(x_t) := \nabla_{x_t} \log p_{\theta, t}(x_t) \quad (3.2)</script><p>对其进行评估通常需要训练一个替代分数网络，如后文所述。  </p>
+<h4 id="3-2-通用基于分数的散度"><a href="#3-2-通用基于分数的散度" class="headerlink" title="3.2 通用基于分数的散度"></a>3.2 通用基于分数的散度</h4><p>单步扩散蒸馏的目标是让学生分布 $p_{\theta, 0}$ 匹配数据分布 $q_0$。为此，我们提出在所有扩散时间水平上匹配扩散边缘分布 $p_{\theta, t}$ 和 $q_t$。我们可以通过以下通用的基于分数的散度来定义这一目标：假设 $d: \mathbb{R}^d \to \mathbb{R}$ 是一个标量值的适当距离函数（即满足 $d(x) \geq 0$ 且当且仅当 $x=0$ 时 $d(x)=0$）。给定一个采样分布 $\pi_t$（其分布支撑集大于 $p_t$ 和 $q_t$），我们可以正式定义时间积分分数散度为：  </p>
+<script type="math/tex; mode=display">\mathcal{D}^{[0, T]}(p, q) := \int_{t=0}^{T} w(t) \mathbb{E}_{x_t \sim \pi_t} \left\{ d\left(s_{p_t}(x_t) - s_{q_t}(x_t)\right) \right\} dt</script><p>其中，$p_t$ 和 $q_t$ 分别表示以 $p$ 和 $q$ 为初始值的扩散过程（2.1）在时间 $t$ 的边缘密度，$w(t)$ 是积分加权函数。显然，当且仅当所有边缘分数函数一致时，$\mathcal{D}^{[0, T]}(p, q) = 0$，这意味着 $p_0(x_t) = q_0(x_t)$ 几乎处处成立（关于 $\pi_0$）。  </p>
+<h4 id="3-3-分数隐式匹配"><a href="#3-3-分数隐式匹配" class="headerlink" title="3.3 分数隐式匹配"></a>3.3 分数隐式匹配</h4><p>基于上述动机，我们希望最小化 $p_\theta$ 和 $q$ 之间的积分分数散度，以训练学生模型，即：  </p>
+<script type="math/tex; mode=display">\mathcal{L}(\theta) = \mathcal{D}^{[0, T]}(p_\theta, q) = \int_{t=0}^{T} w(t) \mathbb{E}_{x_t \sim \pi_t} \left[ d\left(s_{p_{\theta, t}}(x_t) - s_{q_t}(x_t)\right) \right] dt</script><p>其中假设分布 $\pi_t$ 不依赖于参数 $\theta$，例如 $\psi_t(x_t) = p_{sg[\theta]}(x_t)$（$sg[\theta]$ 表示截断 $\theta$ 参数依赖的停止梯度算子）。对 $\theta$ 求梯度可得：  </p>
+<script type="math/tex; mode=display">\frac{\partial}{\partial \theta} \mathcal{L}(\theta) = \int_{t=0}^{T} w(t) \mathbb{E}_{x_t \sim \pi_t} \left[ d'\left(s_{p_{\theta, t}}(x_t) - s_{q_t}(x_t)\right) \frac{\partial}{\partial \theta} s_{p_{\theta, t}(x_t)} \right] dt</script><p>其中 $d’$ 表示 $d$ 对输入的导数，即 $\nabla_y d(y)$。不幸的是，由于分数函数难以处理，直接计算 $\frac{\partial}{\partial \theta} s_{p_{\theta, t}(x_t)}$ 是不可能的，这使得直接方法不切实际。  </p>
+<p>幸运的是，本文的一个关键发现是：如果我们将采样分布选择为扩散隐式分布，即 $\pi_t = p_{sg[\theta]}$（其中 $sg[\theta]$ 表示截断 $\theta$ 参数依赖的停止梯度算子），则损失函数（3.4）及其难以处理的梯度（3.5）可以通过一个梯度等价的损失高效最小化。这依赖于定理3.1：  </p>
+<p><strong>定理3.1（分数散度梯度定理）</strong>：若分布 $p_{\theta, t}$ 满足某些温和的正则条件，则对于任意分数函数 $s_{q_t}(.)$，对所有参数 $\theta$ 成立：  </p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+& \mathbb{E}_{x_t \sim p_{sg[\theta], t}} \left[ d'\left(s_{p_{\theta, t}}(x_t) - s_{q_t}(x_t)\right) \frac{\partial}{\partial \theta} s_{p_{\theta, t}(x_t)} \right] \\
+& = -\frac{\partial}{\partial \theta} \mathbb{E}_{\substack{x_0 \sim p_{\theta, 0} \\ x_t | x_0 \sim q_t(x_t | x_0)}} \left[ \left\{ d'\left(s_{p_{sg[\theta], t}}(x_t) - s_{q_t}(x_t)\right) \right\}^T \left\{ s_{p_{sg[\theta], t}}(x_t) - \nabla_{x_t} \log q_t(x_t | x_0) \right\} \right]
+\end{aligned}</script><p>这里的关键观察是：我们用右侧更易计算的分数函数评估替换了左侧分数函数的难处理梯度，后者可以通过一个单独的近似网络更轻松地完成。该定理可通过分数投影恒等式 [69, 92] 证明，该恒等式最初用于桥接去噪分数匹配和去噪自编码器。然而，证明定理3.1的关键在于通过适当停止定理中所示的梯度，合理选择 $\theta$ 参数的（非）依赖性。详细证明见附录A.1。  </p>
+<p>现在，我们可以给出用于训练隐式生成器 $g_\theta$ 的目标函数。（3.6）的直接结果是，梯度（3.5）可以通过最小化一个可处理的损失函数来实现：  </p>
+<script type="math/tex; mode=display">\mathcal{L}_{SIM}(\theta) = \int_{t=0}^{T} w(t) \mathbb{E}_{\substack{x \sim p_z, x_0 = g_\theta(x), x_t | x_0 \sim q_t(x_t | x_0)}} \left\{ -d'(y_t) \right\}^T \left\{ s_{p_{sg[\theta], t}}(x_t) - \nabla_{x_t} \log q_t(x_t | x_0) \right\} dt \quad (3.7)</script><p>其中 $y_t := s_{p_{sg[\theta], t}}(x_t) - s_{q_t}(x_t)$。根据定理3.1，这个替代损失与原始损失的梯度相同，且无需访问分数网络的梯度。  </p>
+<p>在实践中，我们可以使用另一个在线扩散模型 $s_\psi(x_t, t)$ 逐点近似生成器模型的分数函数 $s_{p_{sg[\theta], t}}(x_t)$，这与之前的工作（如Luo等人 [42]、Zhou等人 [92] 和Yin等人 [81]）一致。我们将最小化（3.7）中目标函数 $\mathcal{L}_{SIM}(\theta)$ 的蒸馏方法称为分数隐式匹配（SIM），因为学习过程隐式地将隐式学生模型的难处理边缘分数函数 $s_{p_{\theta, t}}(.)$ 与预训练扩散模型的显式分数函数 $s_{q_t}(.)$ 进行匹配。  </p>
+<p>SIM的完整算法如算法1所示，该算法通过两个交替阶段训练学生模型：学习边缘分数函数 $s_\psi$，以及使用梯度（3.7）更新生成器模型。前一阶段遵循标准的扩散模型学习流程，即最小化去噪分数匹配损失函数（2.2），仅略微调整为从生成器生成样本。得到的 $s_\psi(x_t, t)$ 为 $s_{p_{sg[\theta], t}}(x_t)$ 提供了良好的逐点估计。后一阶段通过最小化损失函数（3.7）更新生成器参数 $\theta$，其中两个所需函数由预训练扩散模型 $s_{q_t}(x_t)$ 和学习的扩散模型 $s_\psi(x_t, t)$ 提供。  </p>
+<h4 id="3-4-分数隐式匹配的实例"><a href="#3-4-分数隐式匹配的实例" class="headerlink" title="3.4 分数隐式匹配的实例"></a>3.4 分数隐式匹配的实例</h4><p>前一节介绍了SIM算法，但未选择特定的距离函数 $d(.)$。这里我们讨论不同的选择及其对蒸馏过程的影响，并表明在SIM框架中，SiD可视为一个特例。  </p>
+<p><strong>距离函数 $d(.)$ 的设计选择</strong>：显然，不同的距离函数 $d(.)$ 会导致不同的蒸馏算法。最自然的选择可能是简单的平方距离，即 $d(y_t) = | y_t |_2^2$，其导数项为 $d’(y_t) = 2y_t$。事实上，这种损失函数重新得到了SiD [92] 中研究的delta损失，其中作者通过实验发现该损失函数效果良好（尽管推导方式截然不同）。因此，SiD实际上是SIM的一个特例，尽管SiD的推导并未暗示如何使用其他损失函数。二次形式的直接推广是 $\alpha$-范数的 $\alpha$ 次幂（$\alpha &gt; 1$ 且为偶数），此时距离函数为 $d(y_t) = \alpha y_t^{(\alpha-1)}$，对应的损失函数总结在附录A.3的表4中。  </p>
+<p><strong>Pseudo-Huber距离函数</strong>：不同于幂范数，我们引入带Pseudo-Huber距离函数的SIM，其定义为 $d(y) := \sqrt{| y_t |_2^2 + c^2} - c$，其中 $c$ 是预定义的正常数。对应的蒸馏目标为：  </p>
+<script type="math/tex; mode=display">\mathcal{L}_{SIM}(\theta) = -\left\{ \frac{y_t}{\sqrt{\| y_t \|_2^2 + c^2}} \right\}^T \left\{ s_\psi(x_t, t) - \nabla_{x_t} \log q_t(x_t | x_0) \right\} \quad (3.8)</script><p>除非另有说明，本文其余部分将Pseudo-Huber距离作为默认选择。由于篇幅限制，我们在表4中总结了不同距离函数的选择及其对应的损失函数和推导，并在附录A.3中进行了更多讨论。特别地，与SiD（表4中的 $L^2$ 情况）不同，在SIM中使用Pseudo-Huber距离时，我们观察到向量 $y_t$ 通过除以向量的平方根自然自适应归一化。这种归一化可以稳定训练损失，从而实现鲁棒且快速收敛的蒸馏过程。在4.1节中，我们通过实验展示了三个优势：对大学习率的鲁棒性、快速收敛性和改进的性能。  </p>
+<h4 id="3-5-相关工作"><a href="#3-5-相关工作" class="headerlink" title="3.5 相关工作"></a>3.5 相关工作</h4><p>扩散蒸馏 [40] 是一个旨在利用教师扩散模型降低生成成本的研究领域，主要包括三种蒸馏方法：  </p>
+<ol>
+<li><strong>轨迹蒸馏</strong>：该方法训练学生模型以更少的步骤模拟扩散模型的生成过程。直接蒸馏（[38, 14]）和渐进蒸馏（[60, 47]）变体从噪声输入预测更少噪声的数据；基于一致性的方法（[67, 28, 65, 35, 16]）最小化自一致性度量，这些方法需要真实数据样本进行训练。  </li>
+<li><strong>分布匹配</strong>：专注于使学生的生成分布与教师扩散模型的分布对齐。其中包括需要真实数据来蒸馏扩散模型的对抗训练方法（[75, 76]），以及另一类重要方法——尝试最小化KL散度（[81]）（如Diff-Instruct (DI) [44, 81]）和Fisher散度（如Score Identity Distillation (SiD) [92]），通常无需真实数据。尽管SIM从SiD和DI中获得启发，但与它们的差距显著：SIM不仅提供了坚实的数学基础（可能有助于深入理解扩散蒸馏），还提供了使用不同距离函数的灵活性，当使用特定的Pseudo-Huber距离时，可实现强大的实证性能。  </li>
+<li><strong>其他方法</strong>：算子学习（[85]）和ReFlow（[36]）为蒸馏提供了替代见解。此外，许多工作致力于将扩散蒸馏扩展到单步文本到图像生成等领域[39, 49, 68, 81, 91]。</li>
+</ol>
+<h3 id="4-实验"><a href="#4-实验" class="headerlink" title="4 实验"></a>4 实验</h3><h4 id="4-1-单步CIFAR10生成"><a href="#4-1-单步CIFAR10生成" class="headerlink" title="4.1 单步CIFAR10生成"></a>4.1 单步CIFAR10生成</h4><p><strong>实验设置</strong>：在本实验中，我们将SIM应用于CIFAR10[32]数据集，将预训练的EDM[25]扩散模型蒸馏为单步生成器模型。我们遵循与DI[42]和SiD[92]相同的设置，将扩散模型蒸馏为单步生成器，具体细节见附录B.2。我们参考SiD[92]的高质量代码库，通过在我们的设备上严格遵循其配置来复现结果，同时也在相同实验设置下重新实现了DI。</p>
+<p><strong>性能表现</strong>：我们通过Frechet Inception Distance（FID）[19]评估训练生成器的性能，FID值越低越好。我们参考[42]中的评估协议进行比较。表1和表2总结了CIFAR10数据集上生成模型的FID。我们在与SIM相同的计算环境和评估协议下复现了SiD和DI，以进行公平比较。表的上半部分模型与EDM模型架构或扩散模型不同，而下半部分模型与教师EDM扩散模型架构完全相同，因此可直接比较。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>NFE（↓）</th>
+<th>FID（↓）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>与EDM模型架构不同</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>DDPM [20]</td>
+<td>1000</td>
+<td>3.17</td>
+</tr>
+<tr>
+<td>DD-GAN(T=2) [75]</td>
+<td>2</td>
+<td>4.08</td>
+</tr>
+<tr>
+<td>KD [38]</td>
+<td>1</td>
+<td>9.36</td>
+</tr>
+<tr>
+<td>TDPM [89]</td>
+<td>1</td>
+<td>8.91</td>
+</tr>
+<tr>
+<td>DFNO [87]</td>
+<td>1</td>
+<td>4.12</td>
+</tr>
+<tr>
+<td>3-REFLOW(+DISTILL) [36]</td>
+<td>1</td>
+<td>5.21</td>
+</tr>
+<tr>
+<td>STYLEGAN2-ADA [23]</td>
+<td>1</td>
+<td>2.92</td>
+</tr>
+<tr>
+<td>STYLEGAN2-ADA+DI [42]</td>
+<td>1</td>
+<td>2.71</td>
+</tr>
+<tr>
+<td><strong>与EDM[25]模型架构相同</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>EDM [25]</td>
+<td>35</td>
+<td>1.97</td>
+</tr>
+<tr>
+<td>EDM [25]</td>
+<td>15</td>
+<td>5.62</td>
+</tr>
+<tr>
+<td>PD [60]</td>
+<td>2</td>
+<td>5.13</td>
+</tr>
+<tr>
+<td>CD [67]</td>
+<td>2</td>
+<td>2.93</td>
+</tr>
+<tr>
+<td>GET [14]</td>
+<td>1</td>
+<td>6.91</td>
+</tr>
+<tr>
+<td>CT [67]</td>
+<td>1</td>
+<td>8.70</td>
+</tr>
+<tr>
+<td>ICT-DEEP [65]</td>
+<td>2</td>
+<td>2.24</td>
+</tr>
+<tr>
+<td>DIFF-INSTRUCT [42]</td>
+<td>1</td>
+<td>4.53</td>
+</tr>
+<tr>
+<td>DMD [81]</td>
+<td>1</td>
+<td>3.77</td>
+</tr>
+<tr>
+<td>CTM [28]</td>
+<td>1</td>
+<td>1.98</td>
+</tr>
+<tr>
+<td>CTM[28]</td>
+<td>2</td>
+<td>1.87</td>
+</tr>
+<tr>
+<td>SID(α=1.0) [92]</td>
+<td>1</td>
+<td>1.92</td>
+</tr>
+<tr>
+<td>SID<a href="92">α=1.2</a></td>
+<td>1</td>
+<td>2.02</td>
+</tr>
+<tr>
+<td>DI †</td>
+<td>1</td>
+<td>3.70</td>
+</tr>
+<tr>
+<td>SID †(α=1.0)</td>
+<td>1</td>
+<td>2.20</td>
+</tr>
+<tr>
+<td>SIM(OURS)</td>
+<td>1</td>
+<td>2.06</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>表1：CIFAR10无条件样本质量。†表示我们复现的方法。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>NFE（↓）</th>
+<th>FID（↓）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>与EDM模型架构不同</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>BIG GAN [3]</td>
+<td>1</td>
+<td>14.73</td>
+</tr>
+<tr>
+<td>BIG GAN+TUNE [3]</td>
+<td>1</td>
+<td>8.47</td>
+</tr>
+<tr>
+<td>STYLE GAN2 [24]</td>
+<td>1</td>
+<td>6.96</td>
+</tr>
+<tr>
+<td>MULTI HINGE [26]</td>
+<td>1</td>
+<td>6.40</td>
+</tr>
+<tr>
+<td>FQ-GAN [86]</td>
+<td>1</td>
+<td>5.59</td>
+</tr>
+<tr>
+<td>STYLE GAN2-ADA [23]</td>
+<td>1</td>
+<td>2.42</td>
+</tr>
+<tr>
+<td>STYLE GAN2-ADA+DI [42]</td>
+<td>1</td>
+<td>2.27</td>
+</tr>
+<tr>
+<td>STYLE GAN2 + SMART [74]</td>
+<td>1</td>
+<td>2.06</td>
+</tr>
+<tr>
+<td>STYLE GAN-XL [62]</td>
+<td>1</td>
+<td>1.85</td>
+</tr>
+<tr>
+<td><strong>与EDM[25]模型架构相同</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>EDM [25]</td>
+<td>35</td>
+<td>1.82</td>
+</tr>
+<tr>
+<td>EDM [25]</td>
+<td>20</td>
+<td>2.54</td>
+</tr>
+<tr>
+<td>EDM [25]</td>
+<td>10</td>
+<td>15.56</td>
+</tr>
+<tr>
+<td>EDM [25]</td>
+<td>1</td>
+<td>314.81</td>
+</tr>
+<tr>
+<td>GET [14]</td>
+<td>1</td>
+<td>6.25</td>
+</tr>
+<tr>
+<td>DIFF-INSTRUCT [42]</td>
+<td>1</td>
+<td>4.19</td>
+</tr>
+<tr>
+<td>DMD(W.O.REG) [81]</td>
+<td>1</td>
+<td>5.58</td>
+</tr>
+<tr>
+<td>DMD(W.O.KL) [81]</td>
+<td>1</td>
+<td>3.82</td>
+</tr>
+<tr>
+<td>DMD [81]</td>
+<td>1</td>
+<td>2.66</td>
+</tr>
+<tr>
+<td>CTM [28]</td>
+<td>1</td>
+<td>1.73</td>
+</tr>
+<tr>
+<td>CTM[28]</td>
+<td>2</td>
+<td>1.63</td>
+</tr>
+<tr>
+<td>SID(α=1.0) [92]</td>
+<td>1</td>
+<td>1.93</td>
+</tr>
+<tr>
+<td>SID<a href="92">α=1.2</a></td>
+<td>1</td>
+<td>1.71</td>
+</tr>
+<tr>
+<td>SID †(α=1.0)</td>
+<td>1</td>
+<td>2.34</td>
+</tr>
+<tr>
+<td>SIM(OURS)</td>
+<td>1</td>
+<td>1.96</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>表2：CIFAR10数据集类条件样本质量。†表示我们复现的方法。</p>
+<p>如表1所示，在CIFAR10无条件生成任务中，所提出的SIM仅用单步生成就实现了2.06的FID，在相同评估设置下优于SiD和DI，性能与CTM相当，且SiD的官方实现尚未发布。对于表2中的CIFAR10类条件生成，SIM达到1.96的FID，表现处于顶级模型之列。</p>
+<p><strong>SIM蒸馏的T2I生成器优于其他工业级模型</strong>：CIFAR-10生成任务相对简单，仅在有限容量的扩散模型和简单数据集上进行。我们将在文本到图像生成任务中对顶级基于Transformer的扩散模型进行蒸馏实验，展示单步模型的能力。在此之前，我们先深入了解SIM在CIFAR-10上相比SiD和DI的优势——对大学习率的鲁棒性和更快的收敛速度，这将为蒸馏方法如何扩展到具有更大神经网络的复杂任务提供启示。</p>
+<p><strong>对大学习率的鲁棒性</strong>：我们在相同设置下应用SIM、SiD和DI，从EDM蒸馏CIFAR10无条件生成任务，学习率为1e-4，并在图2中绘制FID和Inception Score[61]。DI和SiD即使在训练早期也不稳定，而SIM即使在大学习率下也能稳定收敛。潜在原因是SIM自然地对损失目标进行归一化，使其在训练过程中规模不会突然变化。这在训练大型模型时使SIM区别于SiD，因为训练现代大型模型成本高昂，研究人员在预算内很少有机会调整超参数。</p>
+<p><strong>快速收敛</strong>：SIM的第二个优势是比SiD收敛更快。为证明这一点，我们在CIFAR10无条件生成上遵循与SiD相同的设置。如图2所示，在所有配置下，SIM在相同训练迭代次数下始终表现出更好的FID和Inception Score。由于篇幅限制，更多细节见附录B.2。</p>
+<p>CIFAR10生成实验表明，SIM是一种强大、鲁棒且收敛迅速的单步扩散蒸馏算法。然而，SIM的能力不仅限于CIFAR-10基准测试。在4.2节中，我们将SIM应用于蒸馏基于0.6B DiT[52]的文本到图像扩散模型，获得最先进的基于Transformer的单步生成器。</p>
+<h4 id="4-2-基于Transformer的单步文本到图像生成器"><a href="#4-2-基于Transformer的单步文本到图像生成器" class="headerlink" title="4.2 基于Transformer的单步文本到图像生成器"></a>4.2 基于Transformer的单步文本到图像生成器</h4><p><strong>实验设置</strong>：近年来，基于Transformer的文本到X生成模型在图像生成（如Stable Diffusion V3[11]）和视频生成（如Sora[5]）等领域备受关注。在本节中，我们将SIM应用于蒸馏近期备受关注的开源基于DiT的扩散模型之一：0.6B PixelArt-α模型[6]，其基于DiT模型[52]构建，在定量评估指标和主观用户研究方面均成为最先进的单步生成器。</p>
+<p><strong>实验设置与评估指标</strong>：单步蒸馏的目标是将扩散模型加速为单步生成，同时保持甚至超越教师扩散模型的性能。为验证我们的单步模型与扩散模型之间的性能差距，我们比较四个定量指标：美学分数、PickScore、图像奖励和用户研究比较分数。在SAM-LLaVA-Caption10M（原始PixelArt-α模型训练的数据集之一）上，我们比较SIM单步模型（称为SIM-DiT-600M）和使用14步DPM-Solver[37]的PixelArt-α模型，评估数据内性能差距。我们还在广泛使用的COCO-2017验证集上，将SIM-DiT-600M和PixelArt-α与其他少步模型（如LCM[39]、TCD[90]、PeReflow[80]和Hyper-SD[56]系列）进行比较，并参考Hyper-SD的评估协议计算评估指标。表3总结了所有模型的评估性能。对于针对PixArt-α和SIM-DiT-600M的人类偏好研究，我们从SAM Caption数据集随机选择17个提示，用PixArt-α和SIM-DiT-600M生成图像，然后让参与研究的用户根据图像质量和与提示的一致性选择偏好，图1展示了用户研究案例的可视化结果，其中难以区分PixArt-α和SIM-DiT-600M生成的图像。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th>步数</th>
+<th>类型</th>
+<th>参数</th>
+<th>美学分数</th>
+<th>图像奖励</th>
+<th>Pick分数</th>
+<th>用户偏好</th>
+<th>蒸馏成本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SD15-BASE [57]</td>
+<td>25</td>
+<td>UNET</td>
+<td>860M</td>
+<td>5.26</td>
+<td>0.18</td>
+<td>0.217</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>SD15-LCM [39]</td>
+<td>4</td>
+<td>UNET</td>
+<td>860M</td>
+<td>5.66</td>
+<td>-0.37</td>
+<td>0.212</td>
+<td></td>
+<td>8 A100×4天</td>
+</tr>
+<tr>
+<td>SD15-TCD [90]</td>
+<td>4</td>
+<td>UNET</td>
+<td>860M</td>
+<td>5.45</td>
+<td>-0.15</td>
+<td>0.214</td>
+<td></td>
+<td>8 A800×5.8天</td>
+</tr>
+<tr>
+<td>PERFLOW [80]</td>
+<td>4</td>
+<td>UNET</td>
+<td>860M</td>
+<td>5.64</td>
+<td>-0.35</td>
+<td>0.208</td>
+<td></td>
+<td>M GPU×N天</td>
+</tr>
+<tr>
+<td>HYPER-SD15[56]</td>
+<td>1</td>
+<td>UNET</td>
+<td>860M</td>
+<td>5.79</td>
+<td>0.29</td>
+<td>0.215</td>
+<td></td>
+<td>32 A100×N天</td>
+</tr>
+<tr>
+<td>SDXL-BASE [57]</td>
+<td>25</td>
+<td>UNET</td>
+<td>2.6B</td>
+<td>5.54</td>
+<td>0.87</td>
+<td>0.229</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>SDXL-LCM [39]</td>
+<td>4</td>
+<td>UNET</td>
+<td>2.6B</td>
+<td>5.42</td>
+<td>0.48</td>
+<td>0.224</td>
+<td></td>
+<td>8 A100×4天</td>
+</tr>
+<tr>
+<td>SDXL-TCD [90]</td>
+<td>4</td>
+<td>UNET</td>
+<td>2.6B</td>
+<td>5.42</td>
+<td>0.67</td>
+<td>0.226</td>
+<td></td>
+<td>8 A800×5.8天</td>
+</tr>
+<tr>
+<td>SDXL-LIGHTNING [34]</td>
+<td>4</td>
+<td>UNET</td>
+<td>2.6B</td>
+<td>5.63</td>
+<td>0.72</td>
+<td>0.229</td>
+<td></td>
+<td>64 A100×N天</td>
+</tr>
+<tr>
+<td>HYPER-SDXL[56]</td>
+<td>4</td>
+<td>UNET</td>
+<td>2.6B</td>
+<td>5.74</td>
+<td>0.93</td>
+<td>0.232</td>
+<td></td>
+<td>32 A100×N天</td>
+</tr>
+<tr>
+<td>SDXL-TURBO [63]</td>
+<td>1</td>
+<td>UNET</td>
+<td>2.6B</td>
+<td>5.33</td>
+<td>0.78</td>
+<td>0.228</td>
+<td></td>
+<td>M GPU×N天</td>
+</tr>
+<tr>
+<td>SDXL-LIGHTNING [34]</td>
+<td>1</td>
+<td>UNET</td>
+<td>2.6B</td>
+<td>5.34</td>
+<td>0.54</td>
+<td>0.223</td>
+<td></td>
+<td>64 A100×N天</td>
+</tr>
+<tr>
+<td>HYPER-SDXL[56]</td>
+<td>1</td>
+<td>UNET</td>
+<td>2.6B</td>
+<td>5.85</td>
+<td>1.19</td>
+<td>0.231</td>
+<td></td>
+<td>32 A100×N天</td>
+</tr>
+<tr>
+<td>PIXART-α [6]</td>
+<td>30</td>
+<td>DiT</td>
+<td>610M</td>
+<td>5.97</td>
+<td>0.82</td>
+<td>0.226</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>SIM-DiT-600M</td>
+<td>1</td>
+<td>DiT</td>
+<td>610M</td>
+<td>6.42</td>
+<td>0.67</td>
+<td>0.223</td>
+<td></td>
+<td>4 A100×2天</td>
+</tr>
+<tr>
+<td>PIXART-α ∗ [6]</td>
+<td>30</td>
+<td>DiT</td>
+<td>610M</td>
+<td>5.93</td>
+<td>0.53</td>
+<td>0.223</td>
+<td>54.88%</td>
+<td></td>
+</tr>
+<tr>
+<td>SIM-DiT-600M ∗</td>
+<td>1</td>
+<td>DiT</td>
+<td>610M</td>
+<td>5.91</td>
+<td>0.44</td>
+<td>0.223</td>
+<td>45.12%</td>
+<td>4 A100×2天</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>表3：在COCO-2017验证集上与前沿文本到图像模型的定量比较。用户偏好是我们的用户研究中SIM-DiT-600M相对于20步PixelArt-α的胜率。∗表示在SAM-LLaVA-Caption10M数据集上评估的结果，SIM-DiT-600M指从PixelArt-α-600M蒸馏的SIM生成器，不包括T5文本编码器。蒸馏成本M GPU×N天表示模型未报告成本。</p>
+<p><strong>近乎无损的单步蒸馏</strong>：令人惊讶的是，SIM-DiT-600M与教师扩散模型相比几乎没有性能损失。例如，在表3的SAM Caption数据集上，SIM-DiT-600M恢复了PixelArt-α模型99.6%的美学分数和100%的PickScore，但图像奖励略低，这可能通过更多训练计算进一步优化。与领先的少步文本到图像模型（如SDXL-Turbo、SDXL-lightning和Hyper-SDXL）相比，SIM-DiT-600M以显著优势展现出主导的美学分数，同时具有不错的图像奖励和Pick分数。</p>
+<p>除了顶尖性能，SIM-DiT-600M的训练成本也低得惊人。我们的最佳模型使用4个A100-80G GPU训练2天（无数据），而表3中的其他模型需要数百个A100 GPU天。我们在表3中总结了蒸馏成本，表明SIM是一种具有惊人扩展能力的超高效蒸馏方法。我们认为这种效率来自SIM的两个特性：首先，SIM是无数据的，使蒸馏过程无需真实图像数据；其次，Pseudo-Huber距离函数（3.3）的使用自适应地归一化损失函数，使其对超参数具有鲁棒性且训练稳定。</p>
+<p><strong>定性比较</strong>：图3将SIM-DiT-600M与其他领先的少步文本到图像生成模型进行了定性比较。显然，SIM-DiT-600M生成的图像美学性能高于其他模型，这与表3中SIM-DiT-600M达到高美学分数的定量结果一致。定量和定性结果均表明SIM-DiT-600M是性能最佳的单步文本到图像生成器，更多定性评估见补充材料。</p>
+<p><strong>单步SIM-DiT模型的失败案例</strong>：尽管SIM-DiT单步模型表现出色，但不可避免存在局限性。例如，我们发现0.6B的SIM-DiT单步模型有时难以生成高质量的微小人脸和正确的手臂手指，还可能生成物体数量错误或不完全符合提示的内容。我们认为扩大模型规模和教师扩散模型将有助于解决这些问题，失败案例的可视化见图4。</p>
+<h3 id="5-结论与未来工作"><a href="#5-结论与未来工作" class="headerlink" title="5 结论与未来工作"></a>5 结论与未来工作</h3><p>本文提出了一种新颖的扩散蒸馏方法——分数隐式匹配（SIM），该方法能够以无数据的方式将预训练的多步扩散模型转换为单步生成器。本文所介绍的理论基础和实用算法，使得单步生成器能够在各种领域和大规模应用中以更经济的方式部署，同时不影响基础生成模型的性能。</p>
+<p>尽管如此，SIM仍存在一些局限性，需要进一步研究：首先，随着其他强大的预训练生成模型（如流匹配模型）的不断涌现，值得探索是否有可能将SIM的应用扩展到更广泛的生成模型家族。其次，尽管无数据是SIM的一个重要特性，但在SIM中引入新数据可以进一步提升教师模型生成失败图像的质量，这一潜在优势尚未被探索，我们希望这能简化大型生成模型的训练过程。</p>
+<h3 id="致谢"><a href="#致谢" class="headerlink" title="致谢"></a>致谢</h3><p>Zhengyang Geng 得到了博世人工智能中心的资助。Zico Kolter 衷心感谢博世对实验室的资助。</p>
+<p>我们感谢 NeurIPS 2024 的审稿人及 AC/SAC/PC 成员提出的建设性建议。同时感谢 Diff-Instruct 和 Score-identity Distillation 的作者们为高质量扩散蒸馏 Python 代码所做的巨大贡献，也感谢 PixelArt-α 的作者们公开其基于 DiT 的扩散模型。</p>
+<h3 id="A-理论部分"><a href="#A-理论部分" class="headerlink" title="A 理论部分"></a>A 理论部分</h3><h4 id="A-1-定理3-1的证明"><a href="#A-1-定理3-1的证明" class="headerlink" title="A.1 定理3.1的证明"></a>A.1 定理3.1的证明</h4><p>定理3.1的证明基于所谓的分数投影恒等式，该恒等式最初由Vincent[69]提出，用于连接去噪分数匹配和去噪自编码器。后来，Zhou等人[92]将该恒等式应用于推导基于Fisher散度的蒸馏方法。感谢Zhou等人[92]的努力，我们在此重述分数投影恒等式而不加以证明。读者可以参考Zhou等人[92]以获取分数投影恒等式的完整证明。</p>
+<p><strong>定理A.1（分数投影恒等式）</strong>：设$u(\cdot, \theta)$是一个向量值函数，使用定理3.1的符号，在温和条件下，以下恒等式成立：</p>
+<script type="math/tex; mode=display">
+\mathbb{E}_{\substack{x_{0} \sim p_{\theta, 0} \\ x_{t} | x_{0} \sim q_{t}\left(x_{t} | x_{0}\right)}} u\left(x_{t}, \theta\right)^{T}\left\{s_{p_{\theta, t}}\left(x_{t}\right)-\nabla_{x_{t}} \log q_{t}\left(x_{t} | x_{0}\right)\right\}=0, \forall \theta</script><p>接下来，我们开始证明定理3.1。</p>
+<p><strong>证明</strong>：我们证明一个更一般的结果。设$u(\cdot)$是一个向量值函数，所谓的分数投影恒等式[92,69]成立：</p>
+<script type="math/tex; mode=display">
+\mathbb{E}_{\substack{x_{0} \sim p_{\theta, 0} \\ x_{t} | x_{0} \sim q_{t}\left(x_{t} | x_{0}\right)}} u\left(x_{t}, \theta\right)^{T}\left\{s_{p_{\theta, t}}\left(x_{t}\right)-\nabla_{x_{t}} \log q_{t}\left(x_{t} | x_{0}\right)\right\}=0, \forall \theta \quad (A.1)</script><p>对恒等式（A.1）两边关于$\theta$求梯度，我们有：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+&0=\mathbb{E}_{\substack{x_{0} \sim p_{\theta, 0} \\
+x_{t} | x_{0} \sim q_{t}\left(x_{t} | x_{0}\right)}} \frac{\partial}{\partial \theta}\left[u\left(x_{t}, \theta\right)^{T}\left\{s_{p_{\theta, t}}\left(x_{t}\right)-\nabla_{x_{t}} \log q_{t}\left(x_{t} | x_{0}\right)\right\}\right] \\
+&=\mathbb{E}_{\substack{x_{0} \sim p_{\theta, 0} \\
+x_{t} | x_{0} \sim q_{t}\left(x_{t} | x_{0}\right)}}\left[\frac{\partial u\left(x_{t}, \theta\right)^{T}}{\partial \theta}\left\{s_{p_{\theta, t}}\left(x_{t}\right)-\nabla_{x_{t}} \log q_{t}\left(x_{t} | x_{0}\right)\right\}\right] \\
+&+\mathbb{E}_{\substack{x_{0} \sim p_{\theta, 0} \\
+x_{t} | x_{0} \sim q_{t}\left(x_{t} | x_{0}\right)}}\left[u\left(x_{t}, \theta\right)^{T} \frac{\partial}{\partial \theta}\left\{s_{p_{\theta, t}}\left(x_{t}\right)-\nabla_{x_{t}} \log q_{t}\left(x_{t} | x_{0}\right)\right\}\right]
+\end{aligned}</script><p>因此，我们得到以下恒等式：</p>
+<script type="math/tex; mode=display">
+\mathbb{E}_{x_{t} \sim p_{\theta, t}} u\left(x_{t}, \theta\right)^{T} \frac{\partial}{\partial \theta}\left\{s_{p_{\theta, t}}\left(x_{t}\right)\right\}=-\frac{\partial}{\partial \theta} \mathbb{E}_{\substack{x_{0} \sim p_{\theta, 0} \\ x_{t} | x_{0} \sim q_{t}\left(x_{t} | x_{0}\right)}} u\left(x_{t}, \theta\right)^{T}\left\{s_{p_{sg[\theta], t}}\left(x_{t}\right)-\nabla_{x_{t}} \log q_{t}\left(x_{t} | x_{0}\right)\right\}</script><p>该恒等式对于任意函数$u(\cdot, \theta)$和参数$\theta$都成立。如果我们令</p>
+<script type="math/tex; mode=display">
+u\left(x_{t}, \theta\right)=d^{\prime}\left(y_{t}\right)</script><script type="math/tex; mode=display">
+y_{t}=s_{p_{sg[\theta], t}}\left(x_{t}\right)-s_{q_{t}}\left(x_{t}\right)</script><p>那么我们形式上有：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+&\frac{\partial}{\partial \theta} \mathbb{E}_{x_{t} \sim p_{sg[\theta], t}}\left\{d^{\prime}\left(y_{t}\right)\right\}^{T}\left\{s_{p_{\theta, t}}\left(x_{t}\right)\right\} \\
+&=\frac{\partial}{\partial \theta} \mathbb{E}_{\substack{x_{0} \sim p_{\theta, 0} \\
+x_{t} | x_{0} \sim q_{t}\left(x_{t} | x_{0}\right)}}\left\{-d^{\prime}\left(y_{t}\right)\right\}^{T}\left\{s_{p_{\theta, t}}\left(x_{t}\right)-\nabla_{x_{t}} \log q_{t}\left(x_{t} | x_{0}\right)\right\} \quad (A.11)
+\end{aligned}</script><h4 id="A-2-分数隐式匹配的PyTorch风格伪代码"><a href="#A-2-分数隐式匹配的PyTorch风格伪代码" class="headerlink" title="A.2 分数隐式匹配的PyTorch风格伪代码"></a>A.2 分数隐式匹配的PyTorch风格伪代码</h4><p>在本节中，我们给出算法1的PyTorch风格伪代码，使用Pseudo-Huber距离函数。关于CIFAR10与EDM模型的详细算法，请参见算法2。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">import</span> torch.optim <span class="keyword">as</span> optim</span><br><span class="line"></span><br><span class="line"><span class="comment"># 初始化生成器G</span></span><br><span class="line">G = Generator()</span><br><span class="line"><span class="comment"># 加载教师扩散模型</span></span><br><span class="line">Sd = DiffusionModel().load(<span class="string">&#x27;/path_to_ckpt&#x27;</span>).<span class="built_in">eval</span>().requires_grad_(<span class="literal">False</span>)</span><br><span class="line">Sg = copy.deepcopy(Sd)  <span class="comment"># 用教师扩散模型初始化在线扩散模型</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义优化器</span></span><br><span class="line">opt_G = optim.Adam(G.parameters(), lr=<span class="number">0.001</span>, betas=(<span class="number">0.0</span>, <span class="number">0.999</span>))</span><br><span class="line">opt_Sg = optim.Adam(Sg.parameters(), lr=<span class="number">0.001</span>, betas=(<span class="number">0.0</span>, <span class="number">0.999</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 训练循环</span></span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    <span class="comment"># 更新Sg</span></span><br><span class="line">    Sg.train().requires_grad_(<span class="literal">True</span>)</span><br><span class="line">    G.<span class="built_in">eval</span>().requires_grad_(<span class="literal">False</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 循环2次以更新Sg</span></span><br><span class="line">    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">2</span>):</span><br><span class="line">        z = torch.randn((<span class="number">2000</span>, <span class="number">2</span>)).to(device)</span><br><span class="line">        <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">            fake_x = G(z)</span><br><span class="line">        </span><br><span class="line">        t = torch.from_numpy(np.random.choice(np.arange(<span class="number">1</span>, Sd.T), size=fake_x.shape[<span class="number">0</span>], replace=<span class="literal">True</span>)).to(device).long()</span><br><span class="line">        fake_xt, t, noise, sigma_t, g2_t = Sd(fake_x, t=t, return_t=<span class="literal">True</span>)</span><br><span class="line">        sigma_t = sigma_t.view(-<span class="number">1</span>, <span class="number">1</span>).to(device)</span><br><span class="line">        g2_t = g2_t.to(device)</span><br><span class="line">        score = Sg(torch.cat([fake_xt, t.view(-<span class="number">1</span>, <span class="number">1</span>) / Sd.T], -<span class="number">1</span>)) / sigma_t</span><br><span class="line">        </span><br><span class="line">        batch_sg_loss = score + noise / sigma_t</span><br><span class="line">        batch_sg_loss = (g2_t * batch_sg_loss.square().<span class="built_in">sum</span>(-<span class="number">1</span>)).mean() * Sd.T</span><br><span class="line">        </span><br><span class="line">        optimizer_Sg.zero_grad()</span><br><span class="line">        batch_sg_loss.backward()</span><br><span class="line">        optimizer_Sg.step()</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 更新G</span></span><br><span class="line">    Sg.<span class="built_in">eval</span>().requires_grad_(<span class="literal">False</span>)</span><br><span class="line">    G.train().requires_grad_(<span class="literal">True</span>)</span><br><span class="line">    </span><br><span class="line">    z = torch.randn((<span class="number">2000</span>, <span class="number">2</span>)).to(device)</span><br><span class="line">    fake_x = G(z)</span><br><span class="line">    </span><br><span class="line">    t = torch.from_numpy(np.random.choice(np.arange(<span class="number">1</span>, diffusion.T), size=fake_x.shape[<span class="number">0</span>], replace=<span class="literal">True</span>)).to(device).long()</span><br><span class="line">    fake_xt, t, noise, sigma_t, g2_t = diffusion(fake_x, t=t, return_t=<span class="literal">True</span>)</span><br><span class="line">    sigma_t = sigma_t.view(-<span class="number">1</span>, <span class="number">1</span>).to(device)</span><br><span class="line">    g2_t = g2_t.to(device)</span><br><span class="line">    </span><br><span class="line">    score_true = Sd(torch.cat([fake_xt, t.view(-<span class="number">1</span>, <span class="number">1</span>) / diffusion.T], -<span class="number">1</span>)) / sigma_t</span><br><span class="line">    score_fake = Sg(torch.cat([fake_xt, t.view(-<span class="number">1</span>, <span class="number">1</span>) / diffusion.T], -<span class="number">1</span>)) / sigma_t</span><br><span class="line">    </span><br><span class="line">    score_diff = score_true - score_fake</span><br><span class="line">    </span><br><span class="line">    offset_coeff = denoise_diff / torch.sqrt(denoise_diff.square().<span class="built_in">sum</span>([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>], keepdims=<span class="literal">True</span>) + self.phuber_c ** <span class="number">2</span>)</span><br><span class="line">    weight = <span class="number">1.0</span></span><br><span class="line">    </span><br><span class="line">    batch_g_loss = weight * offset_coeff * (fake_denoise - images)</span><br><span class="line">    batch_g_loss = batch_g_loss.<span class="built_in">sum</span>([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]).mean()</span><br><span class="line">    </span><br><span class="line">    optimizer_G.zero_grad()</span><br><span class="line">    batch_g_loss.backward()</span><br><span class="line">    optimizer_G.step()</span><br></pre></td></tr></table></figure>
+<h4 id="A-3-不同距离函数下的SIM实例"><a href="#A-3-不同距离函数下的SIM实例" class="headerlink" title="A.3 不同距离函数下的SIM实例"></a>A.3 不同距离函数下的SIM实例</h4><p>在3.3节中，我们讨论了将幂范数作为距离函数。对于其他选择，如Huber距离，其定义为：</p>
+<script type="math/tex; mode=display">
+\forall 1 \leq d \leq D, L_{\delta}(y)_{d}:= \begin{cases}y_{d}^{2} / 2 & \text { for } y_{d} \geq \delta \\ \delta\left(\left|y_{d}\right|-\delta / 2\right) & \text { otherwise }\end{cases}</script><p>对于其他距离函数选择，如$L_1$范数和带幂范数的指数函数，我们将其列在表4中。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>$d(.)$的选择</th>
+<th>$d’(y_t)$</th>
+<th>损失函数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$\left\</td>
+<td>y_t\right\</td>
+<td>_2^2$</td>
+<td>$2y_t$</td>
+<td>$-2y_t^T\{s_\psi(x_t,t)-\nabla_{x_t}\log q_t(x_t</td>
+<td>x_0)\}$</td>
+</tr>
+<tr>
+<td>$\left\</td>
+<td>y_t\right\</td>
+<td>_\alpha^\alpha$，$\alpha\geq1$，$\alpha$为偶数</td>
+<td>$\alpha y_t^{(\alpha-1)}$</td>
+<td>$-\alpha\{y_t^{(\alpha-1)}\}^T\{s_\psi(x_t,t)-\nabla_{x_t}\log q_t(x_t</td>
+<td>x_0)\}$</td>
+</tr>
+<tr>
+<td>$\exp(\beta\left\</td>
+<td>y_t\right\</td>
+<td>_\alpha^\alpha)-1$，$\alpha\geq1$，$\alpha$为偶数</td>
+<td>$\alpha\exp(\beta\left\</td>
+<td>y_t\right\</td>
+<td>_\alpha^\alpha)y_t^{(\alpha-1)}$</td>
+<td>$-\alpha\exp(\beta\le</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="B-实证部分"><a href="#B-实证部分" class="headerlink" title="B 实证部分"></a>B 实证部分</h3><h4 id="B-1-人类偏好研究答案"><a href="#B-1-人类偏好研究答案" class="headerlink" title="B.1 人类偏好研究答案"></a>B.1 人类偏好研究答案</h4><p>图1中人类偏好研究的答案如下：</p>
+<ul>
+<li>第一行中间的图像由单步SIM-DiT-600M生成；</li>
+<li>第二行最左侧的图像由单步SIM-DiT-600M生成；</li>
+<li>第三行最左侧的图像由单步SIM-DiT-600M生成。</li>
+</ul>
+<h4 id="B-2-CIFAR10数据集实验细节"><a href="#B-2-CIFAR10数据集实验细节" class="headerlink" title="B.2 CIFAR10数据集实验细节"></a>B.2 CIFAR10数据集实验细节</h4><p>我们遵循SiD和DI在CIFAR10上的实验设置。首先简要介绍EDM模型[25]。</p>
+<p>EDM模型依赖于如下扩散过程：</p>
+<script type="math/tex; mode=display">dx_t = t dw_t, t \in [0, T] \quad (B.1)</script><p>前向过程（B.1）的样本可通过向生成器函数的输出添加随机噪声生成，即$x_t = x_0 + t\epsilon$，其中$\epsilon \sim N(0, I)$是高斯向量。EDM模型还将扩散模型的分数匹配目标重新表述为去噪回归目标，表达式为：</p>
+<script type="math/tex; mode=display">\mathcal{L}(\psi) = \int_{t=0}^{T} \lambda(t) \mathbb{E}_{x_0 \sim p_0, x_t | x_0 \sim p_t(x_t | x_0)} \left\| d_\psi(x_t, t) - x_0 \right\|_2^2 dt \quad (B.2)</script><p>其中$d_\psi(\cdot)$是一个去噪器网络，试图通过输入噪声样本预测干净样本。最小化损失（B.2）可得到训练好的去噪器，它与边缘分数函数有简单关系：</p>
+<script type="math/tex; mode=display">s_\psi(x_t, t) = \frac{d_\psi(x_t, t) - x_t}{t^2} \quad (B.3)</script><p>在这种表述下，我们实际上有用于实验的预训练去噪器模型。因此，后续部分将使用EDM符号。</p>
+<p><strong>单步生成器的构建</strong>：设$d_\theta(\cdot)$为预训练EDM去噪器模型。由于EDM模型的去噪器表述，我们构建的生成器与预训练EDM去噪器具有相同架构，并带有预先选择的索引$t^_$，表达式为：</p>
+<script type="math/tex; mode=display">x_0 = g_\theta(z) := d(z, t^_), z \sim \mathcal{N}(0, (t^*)^2 I) \quad (B.4)</script><p>我们使用教师EDM去噪器模型的相同参数初始化生成器。</p>
+<p><strong>时间索引分布</strong>：训练EDM扩散模型和生成器时，需要随机选择时间$t$以近似损失函数（B.2）的积分。EDM模型训练扩散（去噪器）模型时，$t$的默认分布为对数正态分布，即：</p>
+<script type="math/tex; mode=display">t \sim p_{EDM}(t) : t = \exp(s) \quad (B.5)</script><script type="math/tex; mode=display">s \sim \mathcal{N}(P_{mean}, P_{std}^2), P_{mean} = -1.2, P_{std} = 1.2 \quad (B.6)</script><p>以及加权函数：</p>
+<script type="math/tex; mode=display">\lambda_{EDM}(t) = \frac{(t^2 + \sigma_{data}^2)}{(t \times \sigma_{data})^2} \quad (B.7)</script><p>在我们的算法中，更新在线扩散（去噪器）模型时遵循与EDM模型相同的设置。</p>
+<p>在SiD中，他们提出使用一种特殊的离散时间分布，表达式为：</p>
+<script type="math/tex; mode=display">\sigma_k = \left( \sigma_{max}^{\frac{1}{\rho}} + \frac{i}{K-1} (\sigma_{min}^{\frac{1}{\rho}} - \sigma_{max}^{\frac{1}{\rho}}) \right)^\rho</script><script type="math/tex; mode=display">\sigma_{max} = 80.0, \sigma_{min} = 0.002, \rho = 7.0, K = 1000</script><p>他们提出从以下分布中均匀选择$t$：</p>
+<script type="math/tex; mode=display">t \sim p_{SiD}(t) : k \sim Unif[0, 800], t = \sigma_k \quad (B.8)</script><p>我们在图2中将这种时间分布称为Karr分布，因为这种调度最初是在Karras的EDM工作中为采样提出的。</p>
+<p>然而，在实践中，我们发现Karr分布（B.8）实证效果并不好。相反，我们发现使用修改后的对数正态时间分布更新SIM的生成器时，效果比Karr分布更好。我们的SIM时间分布表达式为：</p>
+<script type="math/tex; mode=display">t \sim p_{SIM}(t) : t = \exp(s) \quad (B.9)</script><script type="math/tex; mode=display">s \sim \mathcal{N}(P_{mean}, P_{std}^2), P_{mean} = -3.5, P_{std} = 2.5 \quad (B.10)</script><p><strong>加权函数</strong>：如前所述，更新去噪器模型时，我们使用与EDM相同的$\lambda_{EDM}(t)$（B.7）加权函数。更新生成器时，SiD使用一种特殊设计的加权函数，表达式为：</p>
+<script type="math/tex; mode=display">w_{SiD}(t) = \frac{C \times t^4}{\| x_0 - d_{q_t}(x_t) \|_{1, sg}} \quad (B.11)</script><script type="math/tex; mode=display">x_t = x_0 + t\epsilon, \epsilon \sim \mathcal{N}(0, I) \quad (B.12)</script><p>符号sg表示停止梯度，$C$是数据维度。他们声称这种加权函数有助于稳定训练。然而，在我们的实验中，由于SIM本身已经对损失进行了归一化（见第4节），我们没有使用这种特定的加权函数，而是将所有时间的加权函数都设为1。我们在图2中将SiD的加权函数称为sidwgt，将我们的加权函数称为nowgt。</p>
+<p>在图2中，我们比较了使用不同时间分布和加权函数的SiD和SIM。发现SIM+nowgt+对数正态时间分布的性能明显更好，因此我们的最终实验采用这种配置。表5记录了我们在CIFAR10 EDM蒸馏上使用SIM的详细配置。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>超参数</th>
+<th>CIFAR-10（无条件）</th>
+<th></th>
+<th>CIFAR-10（有条件）</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>DM $s_\psi$</td>
+<td>生成器 $g_\theta$</td>
+<td>DM $s_\psi$</td>
+<td>生成器 $g_\theta$</td>
+</tr>
+<tr>
+<td>学习率</td>
+<td>1e-5</td>
+<td>1e-5</td>
+<td>1e-5</td>
+<td>1e-5</td>
+</tr>
+<tr>
+<td>批大小</td>
+<td>256</td>
+<td>256</td>
+<td>256</td>
+<td>256</td>
+</tr>
+<tr>
+<td>$\sigma(t^*)$</td>
+<td>2.5</td>
+<td>2.5</td>
+<td>2.5</td>
+<td>2.5</td>
+</tr>
+<tr>
+<td>Adam $\beta_0$</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+<tr>
+<td>Adam $\beta_1$</td>
+<td>0.999</td>
+<td>0.999</td>
+<td>0.999</td>
+<td>0.999</td>
+</tr>
+<tr>
+<td>时间分布</td>
+<td>$p_{EDM}(t)$（B.5）</td>
+<td>$p_{SIM}(t)$（B.9）</td>
+<td>$p_{EDM}(t)$（B.5）</td>
+<td>$p_{SIM}(t)$（B.9）</td>
+</tr>
+<tr>
+<td>加权</td>
+<td>$\lambda_{EDM}(t)$（B.7）</td>
+<td>1</td>
+<td>$\lambda_{EDM}(t)$（B.7）</td>
+<td>1</td>
+</tr>
+<tr>
+<td>损失函数</td>
+<td>（B.2）</td>
+<td>（B.13）</td>
+<td>（B.2）</td>
+<td>（B.13）</td>
+</tr>
+<tr>
+<td>GPU数量</td>
+<td>4 A100-40G</td>
+<td>4 A100-40G</td>
+<td>4 A100-40G</td>
+<td>4 A100-40G</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>表5：CIFAR10 EDM蒸馏中SIM使用的超参数</p>
+<p>在最优设置和EDM表述下，我们可以在算法2中以EDM风格重写我们的算法。</p>
+<h4 id="B-3-文本到图像蒸馏实验细节"><a href="#B-3-文本到图像蒸馏实验细节" class="headerlink" title="B.3 文本到图像蒸馏实验细节"></a>B.3 文本到图像蒸馏实验细节</h4><p>在文本到图像蒸馏部分，为了与CIFAR10上的实验保持一致，我们用EDM表述重写PixArt-α模型：</p>
+<script type="math/tex; mode=display">d(x; t) = x - t F_\theta \quad (B.14)</script><p>这里，遵循EDM中的iDDPM+DDIM预处理，PixArt-α用$F_\theta$表示，$x_c$是带有标准差为$t$的噪声的图像数据，对于其余参数如$C_1$和$C_2$，我们保持不变以匹配EDM中的定义。与原始模型不同，我们只保留了该模型输出的图像通道。由于我们在EDM中采用了iDDPM+DDIM的预处理，每个σ值传入模型后会被四舍五入到最接近的1000个区间。对于PixArt-α中使用的实际值，beta_start设为0.0001，beta_end设为0.02。因此，根据EDM的表述，我们的噪声分布范围是[0.01, 156.6155]，这将用于截断我们采样的$t$。我们的单步生成器表述为：</p>
+<script type="math/tex; mode=display">g_\theta(z) = d(z, t^_) = z - t^_ F_\theta \quad (B.15)</script><p>这里遵循SiD，$t^* = 2.5$且$z \sim N(0, (t^_)^2 I)$，我们在实践中观察到，较大的$t^_$值会导致模型收敛更快，但对于完整的模型训练过程，收敛速度的差异可以忽略不计，对最终结果的影响也很小。</p>
+<p><strong>算法2：用于蒸馏EDM教师的带Pseudo-Huber距离的SIM（PyTorch风格）</strong><br>输入：预训练EDM去噪器$d_{q_t}(.)$、生成器$g_\theta$、先验分布$p_z$、在线EDM去噪器$d_\psi(.)$；可微距离函数$d(.)$和前向扩散（2.1）。<br>while 未收敛 do<br>// 冻结$\theta$，更新$\psi$：<br>// $t \sim p_{SIM}(t)$，$x_t = x_0 + t\epsilon$，$\epsilon \sim N(0, I)$<br>$L(\psi) = \lambda_{EDM}(t) \times | d_\psi(x_t, t) - x_0 |_2^2$<br>$x_0 = g_\theta(z).detach()$，$z \sim p_z$<br>$t \sim p_{EDM}(t)$，$x_t = x_0 + t\epsilon$，$\epsilon \sim N(0, I)$<br>$L(\psi).backward()$；更新$\psi$<br>$x_0 = g_\theta(z)$，$z \sim p_z$<br>// 冻结$\psi$，更新$\theta$：</p>
+<p><script type="math/tex">L(\theta) = -\frac{y_t}{\sqrt{\| y_t \|_2^2 + c^2}}^T \left\{ d_\psi(x_t, t) - x_0 \right\}</script>，其中$y_t := d_\psi(x_t, t) - d_{q_t}(x_t)$ （B.13）<br>$L(\theta).backward()$；更新$\theta$<br>end<br>return $\theta$，$\psi$。</p>
+<p>我们使用了SAM-LLaVA-Caption10M数据集，该数据集包含由LLaVA模型在SAM数据集上生成的提示。这些提示为图像提供了详细描述，从而为我们的蒸馏实验提供了具有挑战性的样本集。</p>
+<p>本节所有实验均在4个A100-40G GPU上进行，采用bfloat16精度，使用PixArt-XL-2-512x512模型版本，并采用相同的超参数。两个优化器都使用Adam，学习率为5e-6，betas=[0, 0.999]。此外，为了实现1024的批大小，我们采用了梯度检查点，并将梯度累积设为8。最后，关于训练噪声分布，我们没有遵循原始的iDDPM调度，而是从均值为-2.0、标准差为2.0的对数正态分布中采样σ，我们对两个优化步骤使用相同的噪声分布，并将两个损失权重设为常数1。我们最好的模型在SAM Caption数据集上训练了约16k次迭代，相当于不到2个epoch。这个训练过程在4个A100-40G GPU上花费了大约2天时间。</p>
+<p>我们还测试了不同噪声分布对蒸馏过程的影响。当噪声分布高度集中在较小值附近时，我们观察到生成的样本出现过暗现象。另一方面，当我们使用稍大的噪声分布时，发现生成样本的结构往往不稳定。</p>
+<h4 id="B-4-人类偏好研究说明"><a href="#B-4-人类偏好研究说明" class="headerlink" title="B.4 人类偏好研究说明"></a>B.4 人类偏好研究说明</h4><p>我们的用户研究主要关注蒸馏模型和教师模型的输出比较。每张图像都经过严格的人工审核，以确保调查参与者的安全。我们通过问卷进行研究，向用户展示由蒸馏模型和教师模型生成的两张随机排序的图像，让他们选择与文本描述最匹配且图像质量更高的样本。最后，我们将收集到的对蒸馏模型和教师模型的投票作为用户偏好的指标。用于进行这些评估的问卷网站如图5所示。</p>
+<p>具体来说，我们随机选择了17个提示词，使用学生模型和教师模型生成512x512分辨率的图像。为了便于比较，我们将两张图像随机排序并排展示。在问卷中，除了生成的图像外，我们还提供了完整的提示词供参考。最终，我们总共收集了约30份调查回复。</p>
+<h4 id="B-5-CIFAR10上的生成样本"><a href="#B-5-CIFAR10上的生成样本" class="headerlink" title="B.5 CIFAR10上的生成样本"></a>B.5 CIFAR10上的生成样本</h4><h4 id="B-6-CIFAR10无条件生成的FID收敛"><a href="#B-6-CIFAR10无条件生成的FID收敛" class="headerlink" title="B.6 CIFAR10无条件生成的FID收敛"></a>B.6 CIFAR10无条件生成的FID收敛</h4><h4 id="B-7-图3的提示词"><a href="#B-7-图3的提示词" class="headerlink" title="B.7 图3的提示词"></a>B.7 图3的提示词</h4><ul>
+<li>图3第一行提示词：撒哈拉沙漠中一株带着笑脸的小仙人掌。</li>
+<li>图3第二行提示词：一张翡翠绿和金色的法贝热彩蛋图像，16k分辨率，细节丰富，产品摄影，在ArtStation上流行，焦点清晰，工作室照片，复杂细节，背景较暗，完美光线，完美构图，清晰特征，Miki Asai微距摄影，特写，超细节，在ArtStation上流行，焦点清晰，工作室照片，复杂细节，细节丰富，由Greg Rutkowski创作。</li>
+<li>图3第三行提示词：婴儿在雪地里玩玩具。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/diffusion/" rel="tag"># diffusion</a>
+              <a href="/tags/CVPR/" rel="tag"># CVPR</a>
+              <a href="/tags/2024/" rel="tag"># 2024</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/07/07/2023-ICCV-AutoDiffusion-Training-Free-Optimization-of-Time-Steps-and-Architectures-for-Automated-Diffusion-Model-Acceleration%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" rel="prev" title="2023-ICCV-AutoDiffusion Training-Free Optimization of Time Steps and Architectures for Automated Diffusion Model Acceleration论文精读">
+      <i class="fa fa-chevron-left"></i> 2023-ICCV-AutoDiffusion Training-Free Optimization of Time Steps and Architectures for Automated Diffusion Model Acceleration论文精读
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2025/07/07/Boosting-Diffusion-Models-with-an-Adaptive-Momentum-Sampler%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" rel="next" title="Boosting Diffusion Models with an Adaptive Momentum Sampler论文精读">
+      Boosting Diffusion Models with an Adaptive Momentum Sampler论文精读 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.3.</span> <span class="nav-text">2 扩散模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%88%86%E6%95%B0%E9%9A%90%E5%BC%8F%E5%8C%B9%E9%85%8D"><span class="nav-number">1.4.</span> <span class="nav-text">3 分数隐式匹配</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E9%97%AE%E9%A2%98%E8%AE%BE%E7%BD%AE"><span class="nav-number">1.4.1.</span> <span class="nav-text">3.1 问题设置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E9%80%9A%E7%94%A8%E5%9F%BA%E4%BA%8E%E5%88%86%E6%95%B0%E7%9A%84%E6%95%A3%E5%BA%A6"><span class="nav-number">1.4.2.</span> <span class="nav-text">3.2 通用基于分数的散度</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-%E5%88%86%E6%95%B0%E9%9A%90%E5%BC%8F%E5%8C%B9%E9%85%8D"><span class="nav-number">1.4.3.</span> <span class="nav-text">3.3 分数隐式匹配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-%E5%88%86%E6%95%B0%E9%9A%90%E5%BC%8F%E5%8C%B9%E9%85%8D%E7%9A%84%E5%AE%9E%E4%BE%8B"><span class="nav-number">1.4.4.</span> <span class="nav-text">3.4 分数隐式匹配的实例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-5-%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.4.5.</span> <span class="nav-text">3.5 相关工作</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.5.</span> <span class="nav-text">4 实验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E5%8D%95%E6%AD%A5CIFAR10%E7%94%9F%E6%88%90"><span class="nav-number">1.5.1.</span> <span class="nav-text">4.1 单步CIFAR10生成</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E5%9F%BA%E4%BA%8ETransformer%E7%9A%84%E5%8D%95%E6%AD%A5%E6%96%87%E6%9C%AC%E5%88%B0%E5%9B%BE%E5%83%8F%E7%94%9F%E6%88%90%E5%99%A8"><span class="nav-number">1.5.2.</span> <span class="nav-text">4.2 基于Transformer的单步文本到图像生成器</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E7%BB%93%E8%AE%BA%E4%B8%8E%E6%9C%AA%E6%9D%A5%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.6.</span> <span class="nav-text">5 结论与未来工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%B4%E8%B0%A2"><span class="nav-number">1.7.</span> <span class="nav-text">致谢</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#A-%E7%90%86%E8%AE%BA%E9%83%A8%E5%88%86"><span class="nav-number">1.8.</span> <span class="nav-text">A 理论部分</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#A-1-%E5%AE%9A%E7%90%863-1%E7%9A%84%E8%AF%81%E6%98%8E"><span class="nav-number">1.8.1.</span> <span class="nav-text">A.1 定理3.1的证明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#A-2-%E5%88%86%E6%95%B0%E9%9A%90%E5%BC%8F%E5%8C%B9%E9%85%8D%E7%9A%84PyTorch%E9%A3%8E%E6%A0%BC%E4%BC%AA%E4%BB%A3%E7%A0%81"><span class="nav-number">1.8.2.</span> <span class="nav-text">A.2 分数隐式匹配的PyTorch风格伪代码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#A-3-%E4%B8%8D%E5%90%8C%E8%B7%9D%E7%A6%BB%E5%87%BD%E6%95%B0%E4%B8%8B%E7%9A%84SIM%E5%AE%9E%E4%BE%8B"><span class="nav-number">1.8.3.</span> <span class="nav-text">A.3 不同距离函数下的SIM实例</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#B-%E5%AE%9E%E8%AF%81%E9%83%A8%E5%88%86"><span class="nav-number">1.9.</span> <span class="nav-text">B 实证部分</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#B-1-%E4%BA%BA%E7%B1%BB%E5%81%8F%E5%A5%BD%E7%A0%94%E7%A9%B6%E7%AD%94%E6%A1%88"><span class="nav-number">1.9.1.</span> <span class="nav-text">B.1 人类偏好研究答案</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B-2-CIFAR10%E6%95%B0%E6%8D%AE%E9%9B%86%E5%AE%9E%E9%AA%8C%E7%BB%86%E8%8A%82"><span class="nav-number">1.9.2.</span> <span class="nav-text">B.2 CIFAR10数据集实验细节</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B-3-%E6%96%87%E6%9C%AC%E5%88%B0%E5%9B%BE%E5%83%8F%E8%92%B8%E9%A6%8F%E5%AE%9E%E9%AA%8C%E7%BB%86%E8%8A%82"><span class="nav-number">1.9.3.</span> <span class="nav-text">B.3 文本到图像蒸馏实验细节</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B-4-%E4%BA%BA%E7%B1%BB%E5%81%8F%E5%A5%BD%E7%A0%94%E7%A9%B6%E8%AF%B4%E6%98%8E"><span class="nav-number">1.9.4.</span> <span class="nav-text">B.4 人类偏好研究说明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B-5-CIFAR10%E4%B8%8A%E7%9A%84%E7%94%9F%E6%88%90%E6%A0%B7%E6%9C%AC"><span class="nav-number">1.9.5.</span> <span class="nav-text">B.5 CIFAR10上的生成样本</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B-6-CIFAR10%E6%97%A0%E6%9D%A1%E4%BB%B6%E7%94%9F%E6%88%90%E7%9A%84FID%E6%94%B6%E6%95%9B"><span class="nav-number">1.9.6.</span> <span class="nav-text">B.6 CIFAR10无条件生成的FID收敛</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B-7-%E5%9B%BE3%E7%9A%84%E6%8F%90%E7%A4%BA%E8%AF%8D"><span class="nav-number">1.9.7.</span> <span class="nav-text">B.7 图3的提示词</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zongqing Li"
+      src="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+  <p class="site-author-name" itemprop="name">Zongqing Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">86</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">48</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hqulzq" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hqulzq" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hqulzq@163.com" title="E-Mail → mailto:hqulzq@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+      
+<script type="text/javascript" charset="utf-8" src="/js/tagcloud.js"></script>
+<script type="text/javascript" charset="utf-8" src="/js/tagcanvas.js"></script>
+<div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div id="myCanvasContainer" class="widget tagcloud">
+        <canvas width="250" height="250" id="resCanvas" style="width=100%">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2023/" rel="tag">2023</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2024/" rel="tag">2024</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2025/" rel="tag">2025</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">14</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICCV/" rel="tag">ICCV</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICML/" rel="tag">ICML</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IJCAI/" rel="tag">IJCAI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ODE%E6%B1%82%E8%A7%A3/" rel="tag">ODE求解</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">50</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%85%E8%AF%BB/" rel="tag">阅读</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+        </canvas>
+    </div>
+</div>
+
+
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zongqing Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('post.copy_button').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('post.copy_success')
+          else $(this).text('post.copy_failure')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('post.copy_button')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
