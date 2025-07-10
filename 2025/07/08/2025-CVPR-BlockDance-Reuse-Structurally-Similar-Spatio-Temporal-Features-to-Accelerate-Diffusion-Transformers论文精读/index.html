@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="全文翻译摘要扩散模型已展现出令人印象深刻的生成能力，特别是在最近借助Transformer架构来提升视觉和艺术质量的进展中。然而，扩散Transformer（DiTs）仍面临推理速度慢的挑战，这主要是由其迭代去噪过程导致的。为解决这一问题，我们提出了BlockDance，这是一种无需训练的方法，它通过探索相邻时间步的特征相似性来加速DiTs。与以往那些缺乏针对不同尺度特征的定制化重用策略的特征重用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2025-CVPR-BlockDance Reuse Structurally Similar Spatio-Temporal Features to Accelerate Diffusion Transformers论文精读">
+<meta property="og:url" content="https://hqulzq.github.io/2025/07/08/2025-CVPR-BlockDance-Reuse-Structurally-Similar-Spatio-Temporal-Features-to-Accelerate-Diffusion-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/index.html">
+<meta property="og:site_name" content="Lzq&#39;s blog">
+<meta property="og:description" content="全文翻译摘要扩散模型已展现出令人印象深刻的生成能力，特别是在最近借助Transformer架构来提升视觉和艺术质量的进展中。然而，扩散Transformer（DiTs）仍面临推理速度慢的挑战，这主要是由其迭代去噪过程导致的。为解决这一问题，我们提出了BlockDance，这是一种无需训练的方法，它通过探索相邻时间步的特征相似性来加速DiTs。与以往那些缺乏针对不同尺度特征的定制化重用策略的特征重用">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/08/2025-CVPR-BlockDance-Reuse-Structurally-Similar-Spatio-Temporal-Features-to-Accelerate-Diffusion-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/08/2025-CVPR-BlockDance-Reuse-Structurally-Similar-Spatio-Temporal-Features-to-Accelerate-Diffusion-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f2.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/08/2025-CVPR-BlockDance-Reuse-Structurally-Similar-Spatio-Temporal-Features-to-Accelerate-Diffusion-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f3.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/08/2025-CVPR-BlockDance-Reuse-Structurally-Similar-Spatio-Temporal-Features-to-Accelerate-Diffusion-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f4.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/08/2025-CVPR-BlockDance-Reuse-Structurally-Similar-Spatio-Temporal-Features-to-Accelerate-Diffusion-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f6.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/08/2025-CVPR-BlockDance-Reuse-Structurally-Similar-Spatio-Temporal-Features-to-Accelerate-Diffusion-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f5.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/08/2025-CVPR-BlockDance-Reuse-Structurally-Similar-Spatio-Temporal-Features-to-Accelerate-Diffusion-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/08/2025-CVPR-BlockDance-Reuse-Structurally-Similar-Spatio-Temporal-Features-to-Accelerate-Diffusion-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t2.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/08/2025-CVPR-BlockDance-Reuse-Structurally-Similar-Spatio-Temporal-Features-to-Accelerate-Diffusion-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t3.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/08/2025-CVPR-BlockDance-Reuse-Structurally-Similar-Spatio-Temporal-Features-to-Accelerate-Diffusion-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f7.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/08/2025-CVPR-BlockDance-Reuse-Structurally-Similar-Spatio-Temporal-Features-to-Accelerate-Diffusion-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t4.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/08/2025-CVPR-BlockDance-Reuse-Structurally-Similar-Spatio-Temporal-Features-to-Accelerate-Diffusion-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f8.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/08/2025-CVPR-BlockDance-Reuse-Structurally-Similar-Spatio-Temporal-Features-to-Accelerate-Diffusion-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f9.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/08/2025-CVPR-BlockDance-Reuse-Structurally-Similar-Spatio-Temporal-Features-to-Accelerate-Diffusion-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f10.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/08/2025-CVPR-BlockDance-Reuse-Structurally-Similar-Spatio-Temporal-Features-to-Accelerate-Diffusion-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f11.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/08/2025-CVPR-BlockDance-Reuse-Structurally-Similar-Spatio-Temporal-Features-to-Accelerate-Diffusion-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t5.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/08/2025-CVPR-BlockDance-Reuse-Structurally-Similar-Spatio-Temporal-Features-to-Accelerate-Diffusion-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t6.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/08/2025-CVPR-BlockDance-Reuse-Structurally-Similar-Spatio-Temporal-Features-to-Accelerate-Diffusion-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t7.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/08/2025-CVPR-BlockDance-Reuse-Structurally-Similar-Spatio-Temporal-Features-to-Accelerate-Diffusion-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t8.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/08/2025-CVPR-BlockDance-Reuse-Structurally-Similar-Spatio-Temporal-Features-to-Accelerate-Diffusion-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f12.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/08/2025-CVPR-BlockDance-Reuse-Structurally-Similar-Spatio-Temporal-Features-to-Accelerate-Diffusion-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f13.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/08/2025-CVPR-BlockDance-Reuse-Structurally-Similar-Spatio-Temporal-Features-to-Accelerate-Diffusion-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f14.png">
+<meta property="article:published_time" content="2025-07-08T08:40:44.000Z">
+<meta property="article:modified_time" content="2025-07-08T14:36:30.085Z">
+<meta property="article:author" content="Zongqing Li">
+<meta property="article:tag" content="diffusion">
+<meta property="article:tag" content="CVPR">
+<meta property="article:tag" content="2025">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hqulzq.github.io/2025/07/08/2025-CVPR-BlockDance-Reuse-Structurally-Similar-Spatio-Temporal-Features-to-Accelerate-Diffusion-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f1.png">
+
+<link rel="canonical" href="https://hqulzq.github.io/2025/07/08/2025-CVPR-BlockDance-Reuse-Structurally-Similar-Spatio-Temporal-Features-to-Accelerate-Diffusion-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>2025-CVPR-BlockDance Reuse Structurally Similar Spatio-Temporal Features to Accelerate Diffusion Transformers论文精读 | Lzq's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lzq's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">48</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">88</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book">
+
+    <a href="/book" rel="section"><i class="fas fa-book fa-fw"></i>Book</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/07/08/2025-CVPR-BlockDance-Reuse-Structurally-Similar-Spatio-Temporal-Features-to-Accelerate-Diffusion-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          2025-CVPR-BlockDance Reuse Structurally Similar Spatio-Temporal Features to Accelerate Diffusion Transformers论文精读
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-07-08 16:40:44 / 修改时间：22:36:30" itemprop="dateCreated datePublished" datetime="2025-07-08T16:40:44+08:00">2025-07-08</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散模型已展现出令人印象深刻的生成能力，特别是在最近借助Transformer架构来提升视觉和艺术质量的进展中。然而，扩散Transformer（DiTs）仍面临推理速度慢的挑战，这主要是由其迭代去噪过程导致的。为解决这一问题，我们提出了BlockDance，这是一种无需训练的方法，<strong>它通过探索相邻时间步的特征相似性来加速DiTs。与以往那些缺乏针对不同尺度特征的定制化重用策略的特征重用方法不同，BlockDance优先识别那些结构性最相似的特征，即结构相似的时空（STSS）特征。这些特征主要位于Transformer中专注于结构的块内，且出现在去噪的后期阶段。BlockDance对这些高度相似的特征进行缓存和重用，以减少冗余计算，从而在加速DiTs的同时，最大程度地保证与原始模型生成结果的一致性。此外，考虑到生成内容的多样性以及冗余特征分布的差异性，我们引入了BlockDance-Ada，这是一种轻量级决策网络，专为特定实例的加速而设计。BlockDance-Ada能够动态分配资源，并提供更优的内容质量。</strong>事实证明，BlockDance和BlockDance-Ada在各种生成任务和模型上均有效，在保持生成质量的同时，实现了25%至50%的加速。<br><span id="more"></span></p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f1.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图1. BlockDance分别将DiT模型DiT-XL/2、PixArt-α和Open-Sora加速了37.4%、25.4%和34.8%，同时保持了生成内容的保真度以及与原始图像的高度一致性。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1. 引言"></a>1. 引言</h3><p>扩散模型凭借其令人印象深刻的能力，已被公认为图像和视频生成任务的关键进展。近年来，人们越来越关注将扩散模型的架构从U-Net转向Transformer[8,18,30,58]，即扩散Transformer（DiT）。这种改进的架构不仅使这些模型能够生成视觉上令人信服且具有艺术感染力的图像和视频，还能更好地遵循缩放定律。</p>
+<p>然而，尽管扩散Transformer（DiTs）性能卓越，但由于其迭代去噪过程导致推理速度较慢，在实时场景中应用受限。<strong>现有的加速方法主要集中在两个范式：一是通过新的调度器设计[24,43]或步骤蒸馏[22,36]减少采样步骤；二是通过模型剪枝[10,15]、模型蒸馏[11,53]或减少冗余计算[26,47]降低每步的计算开销。本文旨在通过减少冗余计算来加速扩散Transformer（DiTs），因为这种范式可以即插即用于各种模型和任务。尽管特征冗余在视觉任务中已得到广泛认可[12,29]，且最近的研究也发现扩散模型的去噪过程中存在特征冗余[20,26]，但扩散Transformer（DiTs）中的特征冗余问题以及减轻这种冗余计算的潜在策略仍不明确。</strong></p>
+<p>为此，我们重新<strong>审视了图2（a）中扩散Transformer（DiT）块在相邻时间步之间的特征间距离，并提出了BlockDance——一种无需训练的加速方法，</strong>通过缓存和重用高度相似的特征来减少冗余计算。<strong>以往的特征重用方法缺乏针对不同尺度、不同相似程度特征的定制化重用策略。因此，重用集合中往往包含低相似性特征，导致图像出现结构失真和与提示词不符的情况。</strong>相比之下，BlockDance改进了重用策略，专注于最相似的特征，即结构相似的时空（STSS）特征。具体而言，<strong>在去噪过程中，结构内容通常在噪声水平较高的初始步骤中生成，而纹理和细节内容则在噪声水平较低的后续步骤中生成[13,14]。因此，我们假设一旦结构稳定，结构特征的变化将微乎其微。为了验证这一假设，我们对不同尺度的扩散Transformer（DiT）特征进行了解耦，如图2（b）所示。观察发现，专注于粗粒度结构内容的浅层和中层块在相邻步骤间的变化极小。相比之下，专注于细粒度纹理和复杂图案的深层块则表现出更明显的变化。</strong>因此，我们认为投入大量计算资源重新生成这些结构特征收益甚微，但会产生较高的计算成本。为解决这一问题，我们提出了一种在结构稳定后缓存和重用高度相似的结构特征的策略，以加速扩散Transformer（DiTs），同时最大程度地保证与原始模型生成结果的一致性。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f2.png" width="50%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图2. DiT中的特征相似性和冗余。(a)在去噪过程中，DiT块的输出在相邻步骤中表现出高度相似性，特别是在结构稳定的灰色阴影区域。(b)这种高相似性主要集中在Transformer的浅层和中层块中，即0到20块之间，这些块专注于低级结构。因此，通过重用去噪过程中与高度相似的结构特征相关的冗余计算，可以在保持质量的同时加速DiT推理。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>考虑到生成内容的多样性以及冗余特征分布的差异性，我们引入了BlockDance-Ada，这是一种为BlockDance量身定制的轻量级决策网络，用于特定实例的加速。<strong>在对象数量有限的简单内容中，我们观察到冗余特征的存在更多。因此，在这种情况下，频繁的特征重用足以获得令人满意的结果，同时还能带来更高的加速收益。相反，在具有大量对象和复杂相互关系的复杂构图中，可用于重用的高相似性特征较少。学习这种自适应策略并非易事，因为它涉及不可微分的决策过程。因此，BlockDance-Ada基于强化学习框架构建。BlockDance-Ada利用策略梯度方法来驱动基于提示词和中间潜在变量的特征缓存和重用策略，最大化精心设计的奖励函数，该函数鼓励在保持质量的同时最小化计算量。</strong>因此，BlockDance-Ada能够自适应地分配资源。</p>
+<p>BlockDance已在多种数据集（包括ImageNet、COCO和MSR-VTT）上得到验证。它在类条件生成、文本到图像和文本到视频等各种生成任务以及DiT-XL/2、Pixart-α和Open-Sora等模型上进行了测试。实验结果表明，我们的方法在保持生成质量的同时，能够实现25%至50%的加速。</p>
+<h3 id="2-相关工作"><a href="#2-相关工作" class="headerlink" title="2. 相关工作"></a>2. 相关工作</h3><p>扩散Transformer：扩散模型凭借其出色的能力，已成为生成领域的核心力量[7,14,44]。此前，基于U-Net的扩散模型[38]在图像生成[33,37]和视频生成[2,41,49,50]等多种应用中展现了卓越性能。近年来，一些研究[4,18,21,27,32,57,58]将扩散模型的架构从U-Net转向Transformer，即扩散Transformer（DiT）。这种框架不仅能生成视觉上逼真且具有艺术感染力的内容，还能更好地遵循缩放定律，并且在高效整合和生成多模态内容方面展现出潜力。然而，扩散Transformer模型仍受限于扩散过程固有的迭代特性，这限制了其在实时应用中的使用。</p>
+<p>扩散模型的加速：研究人员已在加速扩散模型推理过程方面做出诸多努力，这些努力可归纳为两种范式：减少采样步骤数量和降低每步计算量。第一种范式通常涉及设计更快的采样器[24,43,54,56]或进行步骤蒸馏[22,25,28,36,39,40]。第二种范式则侧重于模型级蒸馏[11,53]、剪枝[10,15]或减少冗余计算[3,20,26,42,47,55]。多项研究[20,26]已发现基于U-Net的扩散模型中存在冗余特征，但它们的粗粒度特征重用策略会包含低相似性特征，导致结构失真和文本-图像错位。相比之下，我们研究了扩散Transformer中的特征冗余，并提出重用结构相似的时空特征来实现加速，同时保持与基础模型结果的高度一致性。</p>
+<p>扩散模型中的强化学习：已有研究致力于利用强化学习[45]微调扩散模型，使其输出与人类偏好或精心设计的奖励函数对齐。通常，这些模型[1,9,17,19,34,52]旨在提高生成内容的提示词对齐度和视觉美感。本文探索通过强化学习来学习特定实例的加速策略。</p>
+<h3 id="3-方法"><a href="#3-方法" class="headerlink" title="3. 方法"></a>3. 方法</h3><h4 id="3-1-预备知识"><a href="#3-1-预备知识" class="headerlink" title="3.1. 预备知识"></a>3.1. 预备知识</h4><p>扩散模型中的正向与反向过程：扩散模型通过逐渐向数据中添加噪声，然后学习逆转这一过程，从噪声生成所需的无噪声数据。本文聚焦于文献[37]提出的在潜在空间中进行加噪和去噪的公式。在正向过程中，时间步t处带噪潜在变量$z_t$的后验概率具有闭合形式：</p>
+<script type="math/tex; mode=display">q\left(z_{t} | z_{0}\right)=\mathcal{N}\left(z_{t} ; \sqrt{\alpha_{t}} z_{0},\left(1-\overline{\alpha}_{t}\right) I\right), \tag{1}</script><p>其中$\bar{\alpha}_{t}=\prod_{i=0}^{t} \alpha_{i}=\prod_{i=0}^{t}(1-\beta_{i})$，$\beta_{i} \in(0,1)$表示噪声方差调度。推理过程，即从噪声生成数据的反向过程，是扩散模型框架的关键部分。一旦扩散模型$\epsilon_{\theta}(z_{t}, t)$完成训练，在反向过程中，传统采样器DDPM[14]会对$z_T \sim N(0, I)$逐步去噪，共进行T步。也可以使用更快的采样器（如DDIM[43]）通过以下过程加速采样：</p>
+<script type="math/tex; mode=display">
+\begin{aligned} z_{t-1}= & \sqrt{\alpha_{t-1}}\left(\frac{z_{t}-\sqrt{1-\alpha_{t}} \epsilon_{\theta}\left(z_{t}, t\right)}{\sqrt{\alpha_{t}}}\right)+ \\ & \sqrt{1-\alpha_{t-1}-\sigma_{t}^{2}} \cdot \epsilon_{\theta}\left(z_{t}, t\right)+\sigma_{t} \epsilon_{t} . \end{aligned} \tag{2}</script><p>在去噪过程中，模型在早期阶段生成图像的粗略结构，然后在后续阶段通过添加纹理和细节信息逐步细化。Transformer中的特征：去噪步骤的数量与DiT架构中的网络推理次数相关，该架构通常由多个堆叠的块组成。每个块根据前一个块的输入依次计算其输出。靠近输入的浅层块倾向于捕捉数据的全局结构和粗略轮廓。相比之下，靠近输出的深层块会逐渐细化特定细节，以生成既逼真又具有视觉吸引力的输出[31,35,48]。</p>
+<h4 id="3-2-扩散Transformer中的特征相似性与冗余"><a href="#3-2-扩散Transformer中的特征相似性与冗余" class="headerlink" title="3.2. 扩散Transformer中的特征相似性与冗余"></a>3.2. 扩散Transformer中的特征相似性与冗余</h4><p>扩散Transformer的推理速度受限于其固有的迭代推理特性。本文旨在通过减少冗余计算来加速扩散Transformer。</p>
+<p>在重新研究各种扩散Transformer模型（包括DiT-XL/2[32]、PixArt-α[4]和OpenSora[57]）的去噪过程后，得出了两个关键发现：</p>
+<ol>
+<li><strong>连续步骤之间存在显著的特征相似性，这表明去噪过程中存在冗余计算，如图2（a）所示；</strong></li>
+<li><strong>这种高相似性主要体现在Transformer的浅层和中层块（0到20块之间），而深层块（21到27块之间）则表现出更多变化，如图2（b）所示。</strong></li>
+</ol>
+<p>我们将这种现象归因于结构内容通常在初始步骤生成，而纹理和细节则在后续步骤生成。</p>
+<p><strong>为了证实这一点，我们使用主成分分析（PCA）对PixArt-α的块特征进行可视化，如图3所示。在去噪的初始阶段，网络主要专注于生成结构内容，如人体姿态和其他基本形态。随着去噪过程的推进，网络的浅层和中层块仍然专注于生成低频结构内容，而深层块则将重点转向生成更复杂的高频纹理信息，如景深中的云和人群。因此，在结构确立后，图3中蓝色框突出显示的特征图在相邻步骤间表现出高度一致性。我们将这种计算定义为冗余计算，它与Transformer浅层和中层块所关注的低级结构相关。</strong>基于这些观察，我们认为投入大量计算资源重新生成这些相似特征收益甚微，但会导致更高的计算成本。因此，我们的目标是设计一种策略，利用这些高度相似的特征来减少冗余计算并加速去噪过程。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f3.png" width="60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图3. PixArt-α块的可视化。带有蓝色边框的特征图在相邻步骤中表现出高度相似性。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="3-3-无需训练的加速方法"><a href="#3-3-无需训练的加速方法" class="headerlink" title="3.3. 无需训练的加速方法"></a>3.3. 无需训练的加速方法</h4><p>我们提出了BlockDance，这是一种简单而有效的方法，通过利用去噪过程中步骤之间的特征相似性来加速扩散Transformer。通过有策略地缓存高度相似的结构特征并在后续步骤中重用它们，我们减少了冗余计算。</p>
+<p>具体而言，<strong>我们将去噪步骤设计为两种类型：缓存步骤和重用步骤，如图4所示。在连续的时间步中，缓存步骤首先基于$z_{t+1}$进行标准的网络前向计算，输出$z_t$，并保存第i个块的特征$F_t^i$。对于接下来的时间步（即重用步骤），我们不进行完整的网络前向计算，而是执行部分推理。更具体地说，我们将缓存步骤中缓存的特征$F_t^i$重用为重用步骤中第（i+1）个块的输入。</strong>因此，由于Transformer块的顺序推理特性，重用步骤中前i个块的计算可以省去，只需重新计算比i更深的块。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f4.png" width="60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图4. BlockDance概述。重用步骤基于缓存步骤中的结构特征生成zt-1，节省了前i个块的计算量以加速推理。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>为此，确定最佳的块索引以及应集中进行重用的去噪过程阶段至关重要。</strong>基于图2和图3的见解，我们将索引设置为20，并将重用集中在去噪过程的后60%（结构稳定之后）。这些设置能够实现特征重用的解耦，并专门重用结构相似的时空特征。因此，我们将去噪步骤的前40%设置为缓存步骤，并将剩余60%的去噪步骤平均分为若干组，每组包含N个步骤。每组的第一个步骤指定为缓存步骤，后续的N-1个步骤为重用步骤，以加速推理。当新组到来时，新的缓存步骤会更新缓存的特征，这些特征随后将用于该组内的重用步骤。此过程重复进行，直到去噪过程结束。N越大，表示重用频率越高。我们将这种缓存和重用策略称为BlockDance-N，它采用无需训练的范式，能够在保持生成内容质量的同时有效加速多种扩散Transformer。</p>
+<h4 id="3-4-特定实例的加速方法"><a href="#3-4-特定实例的加速方法" class="headerlink" title="3.4. 特定实例的加速方法"></a>3.4. 特定实例的加速方法</h4><p><strong>然而，生成内容的特征相似性分布各不相同，如图6所示。我们可视化了每个去噪步骤中块索引i≤20的特征与其他步骤特征的余弦相似性矩阵。发现相似特征的分布与生成内容的结构复杂度相关。</strong>在图6中，随着结构复杂度从左到右增加，适合重用的相似特征数量减少。为了改进BlockDance策略，我们引入了BlockDance-Ada，这是一种为特定实例加速量身定制的轻量级决策网络。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f6.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图6. 生成图像特征的余弦相似性。随着结构复杂性的增加，红色框突出显示的高相似性步骤特征减少。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>BlockDance-Ada利用强化学习来处理不可微分的二元决策（即顺序选通），以动态确定去噪过程中的每个步骤是缓存步骤还是重用步骤。如图5所示，对于总共s个去噪步骤，给定潜在变量$z_T \sim N(0, I)$和提示词P的文本嵌入$c=\tau(p)$，我们首先执行ρ步常规计算（即缓存步骤）以获得中间潜在变量$z_ρ$。状态空间定义为$z_ρ$和c，决策模型中的动作定义为确定后续s-ρ步中的每一步是否为缓存步骤。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f5.png" width="90%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图5. BlockDance-Ada概述。给定中间潜在变量和提示词嵌入，重用决策网络学习每个样本的结构复杂性并得出相应的重用策略。这些策略决定了DiT中的每个后续步骤是缓存步骤还是重用步骤。奖励函数平衡了图像质量和速度。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>更正式地说，由参数w控制的决策网络$f_d$学习特征相似性的分布，然后将其映射到向量$m \in \mathbb{R}^{(s-ρ)}$：</p>
+<script type="math/tex; mode=display">m=\text{sigmoid}\left(f_{d}\left(z_{\rho}, c ; w\right)\right).\tag{3}</script><p>这里，m中的每个元素都归一化到[0,1]范围内，表示执行缓存步骤的可能性。我们定义了一个具有（s-ρ）维伯努利分布的重用策略$\pi^f(u | z_ρ, c)$：</p>
+<script type="math/tex; mode=display">
+\pi^{f}\left(u | z_{\rho}, c\right)=\prod_{t=1}^{s-\rho} m_{t}^{u_{t}}\left(1-m_{t}\right)^{1-u_{t}}, \tag{4}</script><p>其中$u \in \{0,1\}^{(s-ρ)}$是基于m的动作，$u_t=1$表示第t步是缓存步骤，u中的零元素表示重用步骤。在训练期间，通过从相应策略中采样生成u，在测试时则采用贪心方法。通过这种方法，扩散Transformer基于重用策略生成潜在变量$z_0$，然后解码器D将潜在变量解码为像素级图像x。</p>
+<p>基于此，我们设计了一个奖励函数，以激励$f_d$在保持质量的同时最大化计算节省。该奖励函数由两个主要部分组成：图像质量奖励和计算奖励，用于平衡生成质量和推理速度。对于图像质量奖励Q(u)，我们使用质量奖励模型[52]$f_q$基于视觉美感和提示词一致性对生成的图像进行评分，即$Q(u)=f_q(x)$。计算奖励C(u)定义为重用步骤的归一化数量，由以下公式给出：</p>
+<script type="math/tex; mode=display">
+\mathcal{C}(u)=1-\frac{\left(\sum_{t=1}^{s-\rho} u_{t}\right)}{(s-\rho)}. \tag{5}</script><p>最后，总体奖励函数形式化为$R(u)=C(u)+\lambda Q(u)$，其中λ调节图像质量的重要性。此时，决策网络$f_d$可以通过最大化预期奖励来进行优化。</p>
+<h3 id="4-实验"><a href="#4-实验" class="headerlink" title="4. 实验"></a>4. 实验</h3><h4 id="4-1-实验细节"><a href="#4-1-实验细节" class="headerlink" title="4.1. 实验细节"></a>4.1. 实验细节</h4><h5 id="4-1-1-模型、数据集与评估指标"><a href="#4-1-1-模型、数据集与评估指标" class="headerlink" title="4.1.1. 模型、数据集与评估指标"></a>4.1.1. 模型、数据集与评估指标</h5><p>我们在类条件生成、文本到图像生成以及文本到视频生成任务上进行了评估。对于类条件生成，我们使用DiT-XL/2[32]在ImageNet[6]数据集上每个类别生成50张512×512的图像，采用DDIM采样器[43]，引导尺度为4.0。对于文本到图像生成，我们使用PixArt-α[4]在COCO2017[23]的25K验证集上生成1024×1024的图像，采用DPMSolver采样器[24]，引导尺度为4.5。对于文本到视频生成，我们使用Open-Sora[57]在MSR-VTT[51]的2990测试集上生成16帧512×512分辨率的视频，采用DDIM采样器，引导尺度为7.0。我们遵循先前的工作[4,32,57]评估这些任务，并报告文本到图像生成的IQS分数[52]和Pickscore[17]。我们在A100 GPU上通过生成延迟（即每张图像/每个视频的生成时间）来衡量推理速度。</p>
+<h5 id="4-1-2-实现细节"><a href="#4-1-2-实现细节" class="headerlink" title="4.1.2. 实现细节"></a>4.1.2. 实现细节</h5><p>对于BlockDance，PixArt-α中的缓存和重用步骤主要在去噪过程的40%到95%之间进行，而在DiT-XL/2和Open-Sora中，这些步骤主要在去噪过程的25%到95%之间进行。这三个模型生成每个内容时缓存的特征大小分别为18MB、4.5MB和72MB。默认的块索引设置为20。对于BlockDance-Ada，我们将决策网络设计为轻量级架构，由三个Transformer块和一个多层感知机构成。决策网络的参数为0.08B。我们将ρ设置为去噪总步数的40%。奖励函数中的参数λ设置为2。对于PixArt-α，我们在其训练数据集的10,000个子集上训练步骤选择网络，共训练100个 epoch，批大小为16。我们使用Adam优化器，学习率为10⁻⁵。</p>
+<h4 id="4-2-主要结果"><a href="#4-2-主要结果" class="headerlink" title="4.2. 主要结果"></a>4.2. 主要结果</h4><h5 id="4-2-1-无训练范式的实验"><a href="#4-2-1-无训练范式的实验" class="headerlink" title="4.2.1. 无训练范式的实验"></a>4.2.1. 无训练范式的实验</h5><p>加速PixArt-α用于文本到图像生成。表1中COCO2017的25k验证集结果证明了BlockDance的有效性。我们将ToMe[3]和DeepCache[26]扩展到PixArt-α作为基线。对于ToMe，我们通过合并操作移除25%的标记以减少计算成本。对于DeepCache，我们在整个去噪过程中以2为间隔重用特征，具体而言，重用PixArt-α中28个块的前14个块的输出。当N=2时，BlockDance在保持图像质量（包括视觉美感和提示词遵循度）的同时，将PixArt-α加速了25.4%。不同的N值可实现不同的速度-质量权衡。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t1.png" width="60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表1. PixArt-α的文本到图像生成结果</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>与ToMe相比，无论重用频率N如何，BlockDance的性能都明显优于ToMe。这是因为DiT与基于U-Net的架构相比，具有更强的注意力密集型架构，因此在DiT中持续使用标记合并会加剧质量下降。与DeepCache相比，BlockDance通过专注于高相似性特征，在相近速度下在所有图像指标上都取得了更好的性能。我们专门减少去噪后期的冗余结构计算，避免重用不相似的特征，最大限度地减少图像质量损失。然而，DeepCache在整个去噪过程中都重用特征，并且没有专门针对高相似性特征进行重用。这导致重用集中包含不相似的特征，从而导致结构失真和提示词对齐度下降。与通过减少交叉注意力计算中的冗余来加速的TGATE[55]相比，BlockDance支持不包含交叉注意力的DiT，例如SD3[8]和Flux[18]。此外，实验结果表明，在相同的加速收益下，BlockDance在各种指标上都优于TGATE。与通过一致性蒸馏训练获得的PixArt-LCM[5]相比，尽管BlockDance需要更多的推理时间，但无需额外训练就能在多个指标上实现更高的生成质量。值得注意的是，由于我们有针对性的重用策略，BlockDance生成的图像与基础模型具有更高的一致性，这体现在与基线相比显著更好的SSIM性能上。</p>
+<p>加速DiT/XL-2用于类条件生成。ImageNet的50k图像结果如表2所示。我们将ToMe和DeepCache扩展到DiT/XL-2作为基线。当N=2时，BlockDance在保持图像质量的同时将DiT/XL-2加速了37.4%，并且与DeepCache相比性能更优，同时与基础模型生成的图像保持更高的一致性。通过增大N，BlockDance的加速比可高达57.5%，并且在图像质量上始终优于ToMe。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t2.png" width="60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表2. DiT-XL/2的类条件生成结果</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>加速Open-Sora用于文本到视频生成。BlockDance在加速视频生成任务方面同样有效。MSR-VTT上的加速结果如表3所示。当N=2时，BlockDance在保持视频质量（包括视觉质量和时间一致性）的同时，将Open-Sora加速了34.8%。增大N可实现不同的质量-速度权衡。相比之下，DeepCache的质量显著下降，如FVD等指标的恶化所证明。这是因为DeepCache重用了低相似性特征，例如去噪早期阶段的结构信息。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t3.png" width="60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表3. Open-Sora的文本到视频生成结果</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>定性结果。我们在图7中进一步对我们的方法进行了定性分析。ToMe通过合并相邻相似标记来节省自注意力计算，但这种方法对 transformer 密集型架构不太友好，导致生成低质量图像并出现“块状伪影”。虽然DeepCache和TGATE实现了约27%的加速，但在某些复杂情况下，它们可能导致与原始图像的显著结构差异，并出现伪影和语义丢失。PixArt-LCM通过额外的一致性蒸馏训练加速PixArt-α，虽然加速显著，但视觉美感和提示词遵循度明显下降。相比之下，BlockDance在没有额外训练成本的情况下实现了25.4%的加速，在结构和细节上与原始图像保持高度一致。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f7.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图7. 定性结果。BlockDance生成的内容保真度高，与原始图像保持一致性。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h5 id="4-2-2-BlockDance-Ada的评估"><a href="#4-2-2-BlockDance-Ada的评估" class="headerlink" title="4.2.2. BlockDance-Ada的评估"></a>4.2.2. BlockDance-Ada的评估</h5><p>PixArt-α上的动态推理。表4详细展示了BlockDance-Ada的性能。通过基于特定实例策略为每个样本动态分配计算资源，BlockDance-Ada在实现接近BlockDance（N=3）的加速的同时，提供了更优的图像质量。与BlockDance（N=2）相比，BlockDance-Ada在相似质量下提供了更大的加速收益。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t4.png" width="60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表4. BlockDance-Ada在速度和质量之间实现了更好的权衡</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="4-3-讨论"><a href="#4-3-讨论" class="headerlink" title="4.3. 讨论"></a>4.3. 讨论</h4><p>4.3.1. 消融研究<br>重用频率的影响。如图8所示，我们展示了随着N的增加，生成图像的变化情况。随着生成时间的减少，图像的主要主题保持一致，但细节的保真度逐渐下降，这与表1中的见解一致。不同的N值为各种速度-质量权衡提供了灵活的选择。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f8.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图8. 重用频率影响的消融研究。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>在不同去噪阶段使用BlockDance的效果。如图9所示，我们研究了在去噪过程的不同阶段（初始阶段（0%-40%）和后期阶段（40%-95%））应用BlockDance的影响。BlockDance主要重用结构特征，因此在专注于结构的初始阶段应用它可能会导致结构变化或伪影（图9（a）中的红框突出显示），因为结构尚未稳定。相反，在后期阶段，结构信息已经稳定，重点转向纹理细节，此时重用结构特征可在加速推理的同时使质量损失最小化，如图9（b）所示。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f9.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图9. 在去噪不同阶段使用BlockDance的效果。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>重用不同深度块的影响。我们研究了仅重用浅层和中层块与同时重用更深层块的影响，如图10所示。由于深层块的特征相似性较低，重用它们会导致与细节相关的计算损失，从而导致纹理细节退化，如图10（b）中的红框所示。相反，重用专注于结构信息的高相似性浅层和中层块，质量退化最小。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f10.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图10. 重用不同深度块的影响。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="5-结论"><a href="#5-结论" class="headerlink" title="5. 结论"></a>5. 结论</h3><p>在本文中，我们提出了BlockDance，这是一种新型的无需训练的加速方法，通过缓存和重用结构稳定后的结构级特征（即结构相似的时空特征），BlockDance在最大限度减少质量损失的同时显著加速了扩散Transformer，并与基础模型保持高度一致性。此外，我们还引入了BlockDance-Ada，它通过根据特定实例的重用策略动态分配计算资源来增强BlockDance的性能。</p>
+<p>局限性：尽管BlockDance能够以即插即用的方式加速各种扩散Transformer模型，但在去噪步骤极少的场景（例如1到4步）中，其效果有限，这是由于相邻步骤之间的相似性降低所致。</p>
+<h3 id="BlockDance：重用结构相似的时空特征以加速扩散Transformer的补充材料"><a href="#BlockDance：重用结构相似的时空特征以加速扩散Transformer的补充材料" class="headerlink" title="BlockDance：重用结构相似的时空特征以加速扩散Transformer的补充材料"></a>BlockDance：重用结构相似的时空特征以加速扩散Transformer的补充材料</h3><h4 id="5-1-关于BlockDance设计的更多说明"><a href="#5-1-关于BlockDance设计的更多说明" class="headerlink" title="5.1. 关于BlockDance设计的更多说明"></a>5.1. 关于BlockDance设计的更多说明</h4><p>我们补充了（步骤、块、L2距离）的3D表面图，如图11（a）所示。BlockDance专注于重用蓝色框内高相似性的时空特征。相比之下，其他方法不加区分地重用紫色框所框住的所有时空区域的特征，这会因重用低相似性特征而导致质量下降。为了进一步证明蓝色框内的特征主要是结构相似的，我们根据每个步骤预测的噪声直接计算$x_{0}^{t}=VAE_{decoder}(\frac{z_{t}-\sqrt{1-\alpha_{t}} \cdot \epsilon_{\theta}(z_{t}, t)}{\sqrt{\alpha_{t}}})$，然后计算相邻时间步图像$x_{0}^{t}$的SSIM分数以衡量结构相似性。如图11（b）所示，与那些不加区分地重用特征的方法相比，我们在结构稳定后重用专注于结构特征（即扩散Transformer中的浅层和中层块）的计算，从而与原始内容保持高度一致性。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f11.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图11. 左：（步骤、块、L2距离）的3D表面图。右：相邻时间步图像x0t的SSIM分数。BlockDance仅在结构稳定后重用结构特征的计算。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="5-2-额外实验"><a href="#5-2-额外实验" class="headerlink" title="5.2. 额外实验"></a>5.2. 额外实验</h4><p>在任意步数下加速。我们提出的加速范式与其他加速技术具有互补性，可在其基础上进一步提升性能。在此，我们验证了BlockDance在不同采样步数下对各模型的加速效果。如表5、表6和表7所示，BlockDance在各种步数下均能有效加速，同时保持生成内容的质量。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t5.png" width="60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表5. 在不同步数下加速PixArt-α的结果（所有方法均采用DPM-Solver采样器）</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t6.png" width="60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表6. 在不同步数下加速DiT-XL/2的结果（所有方法均采用DDIM采样器）</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t7.png" width="60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表7. 在不同步数下加速Open-Sora的结果（所有方法均采用DDIM采样器）</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>加速SD3用于文本到图像生成。为了验证我们提出的范式在不同扩散Transformer架构变体上的有效性，我们将BlockDance应用于基于MMDiT的扩散Transformer模型[8,18]，例如Stable Diffusion 3[8]。实验在COCO2017的25k验证集上进行，结果如表8所示。实验结果表明，当N=2时，BlockDance在保持图像质量（包括视觉美感和提示词遵循度）的同时，将SD3加速了25.3%。不同的N值可实现不同的速度-质量权衡。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t8.png" width="60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表8. SD3的文本到图像生成结果</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>更多定性结果。为了全面验证我们提出的方法，我们为每个扩散Transformer模型提供了额外的定性结果，如图12、图13和图14所示。我们的方法在与原始模型生成内容高度一致的同时，实现了显著的加速，且保持了高质量。</p>
+<p>图12展示了使用30步DPM-Solver采样的PixArt-α生成样本（上排）和使用30步DPM-Solver采样加N=2的BlockDance生成样本（下排）。我们的方法在保持视觉美感和提示词遵循度的同时，实现了25.4%的加速。这里的提示词选自COCO2017验证集。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f12.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图12. PixArt-α：使用30步DPM-Solver采样的样本（上排）和使用30步DPM-Solver采样加N=2的BlockDance的样本（下排）。我们的方法在保持视觉美感和提示词遵循度的同时，加速了25.4%。这里的提示词选自COCO2017验证集。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>图13展示了使用50步DDIM采样的DiT-XL/2在ImageNet上的生成样本（上排）和使用50步DDIM采样加N=2的BlockDance生成样本（下排）。我们的方法在保持图像质量的同时，实现了37.4%的加速。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f13.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图13. DiT-XL/2在ImageNet上的结果：使用50步DDIM采样的样本（上排）和使用50步DDIM采样加N=2的BlockDance的样本（下排）。我们的方法在保持图像质量的同时，实现了37.4%的加速。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>图14展示了使用100步DDIM采样的Open-Sora生成样本（上排）和使用100步DDIM采样加N=2的BlockDance生成样本（下排）。我们的方法在保持视觉质量以及与原始视频高度运动一致性的同时，实现了34.8%的加速。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f14.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图14. Open-Sora：使用100步DDIM采样的样本（上排）和使用100步DDIM采样加N=2的BlockDance的样本（下排）。我们的方法在保持视觉质量和与原始视频高度运动一致性的同时，实现了34.8%的加速。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>加速原理</p>
+<ul>
+<li>探索相邻时间步的特征相似性</li>
+<li>缓存和重用结构相似的STSS特征</li>
+<li>引入BlockDance-Ada，利用强化学习构建</li>
+<li>缓存前一时间步的Transformer块的而调整，但是重用多深的特征需要BlockDance-Ada进行决定。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/diffusion/" rel="tag"># diffusion</a>
+              <a href="/tags/CVPR/" rel="tag"># CVPR</a>
+              <a href="/tags/2025/" rel="tag"># 2025</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/07/07/2024-IJCAI-Boosting-Diffusion-Models-with-an-Adaptive-Momentum-Sampler%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" rel="prev" title="2024-IJCAI-Boosting-Diffusion-Models-with-an-Adaptive-Momentum-Sampler论文精读">
+      <i class="fa fa-chevron-left"></i> 2024-IJCAI-Boosting-Diffusion-Models-with-an-Adaptive-Momentum-Sampler论文精读
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2025/07/09/2025-CVPR-CacheQuant-Comprehensively-Accelerated-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" rel="next" title="2025-CVPR-CacheQuant Comprehensively Accelerated Diffusion Models论文精读">
+      2025-CVPR-CacheQuant Comprehensively Accelerated Diffusion Models论文精读 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1. 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.3.</span> <span class="nav-text">2. 相关工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.</span> <span class="nav-text">3. 方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86"><span class="nav-number">1.4.1.</span> <span class="nav-text">3.1. 预备知识</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E6%89%A9%E6%95%A3Transformer%E4%B8%AD%E7%9A%84%E7%89%B9%E5%BE%81%E7%9B%B8%E4%BC%BC%E6%80%A7%E4%B8%8E%E5%86%97%E4%BD%99"><span class="nav-number">1.4.2.</span> <span class="nav-text">3.2. 扩散Transformer中的特征相似性与冗余</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-%E6%97%A0%E9%9C%80%E8%AE%AD%E7%BB%83%E7%9A%84%E5%8A%A0%E9%80%9F%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.3.</span> <span class="nav-text">3.3. 无需训练的加速方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-%E7%89%B9%E5%AE%9A%E5%AE%9E%E4%BE%8B%E7%9A%84%E5%8A%A0%E9%80%9F%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.4.</span> <span class="nav-text">3.4. 特定实例的加速方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.5.</span> <span class="nav-text">4. 实验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E5%AE%9E%E9%AA%8C%E7%BB%86%E8%8A%82"><span class="nav-number">1.5.1.</span> <span class="nav-text">4.1. 实验细节</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#4-1-1-%E6%A8%A1%E5%9E%8B%E3%80%81%E6%95%B0%E6%8D%AE%E9%9B%86%E4%B8%8E%E8%AF%84%E4%BC%B0%E6%8C%87%E6%A0%87"><span class="nav-number">1.5.1.1.</span> <span class="nav-text">4.1.1. 模型、数据集与评估指标</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-1-2-%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82"><span class="nav-number">1.5.1.2.</span> <span class="nav-text">4.1.2. 实现细节</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E4%B8%BB%E8%A6%81%E7%BB%93%E6%9E%9C"><span class="nav-number">1.5.2.</span> <span class="nav-text">4.2. 主要结果</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#4-2-1-%E6%97%A0%E8%AE%AD%E7%BB%83%E8%8C%83%E5%BC%8F%E7%9A%84%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.5.2.1.</span> <span class="nav-text">4.2.1. 无训练范式的实验</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-2-2-BlockDance-Ada%E7%9A%84%E8%AF%84%E4%BC%B0"><span class="nav-number">1.5.2.2.</span> <span class="nav-text">4.2.2. BlockDance-Ada的评估</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-%E8%AE%A8%E8%AE%BA"><span class="nav-number">1.5.3.</span> <span class="nav-text">4.3. 讨论</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E7%BB%93%E8%AE%BA"><span class="nav-number">1.6.</span> <span class="nav-text">5. 结论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BlockDance%EF%BC%9A%E9%87%8D%E7%94%A8%E7%BB%93%E6%9E%84%E7%9B%B8%E4%BC%BC%E7%9A%84%E6%97%B6%E7%A9%BA%E7%89%B9%E5%BE%81%E4%BB%A5%E5%8A%A0%E9%80%9F%E6%89%A9%E6%95%A3Transformer%E7%9A%84%E8%A1%A5%E5%85%85%E6%9D%90%E6%96%99"><span class="nav-number">1.7.</span> <span class="nav-text">BlockDance：重用结构相似的时空特征以加速扩散Transformer的补充材料</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#5-1-%E5%85%B3%E4%BA%8EBlockDance%E8%AE%BE%E8%AE%A1%E7%9A%84%E6%9B%B4%E5%A4%9A%E8%AF%B4%E6%98%8E"><span class="nav-number">1.7.1.</span> <span class="nav-text">5.1. 关于BlockDance设计的更多说明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-2-%E9%A2%9D%E5%A4%96%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.7.2.</span> <span class="nav-text">5.2. 额外实验</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">2.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zongqing Li"
+      src="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+  <p class="site-author-name" itemprop="name">Zongqing Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">88</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">48</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hqulzq" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hqulzq" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hqulzq@163.com" title="E-Mail → mailto:hqulzq@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+      
+<script type="text/javascript" charset="utf-8" src="/js/tagcloud.js"></script>
+<script type="text/javascript" charset="utf-8" src="/js/tagcanvas.js"></script>
+<div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div id="myCanvasContainer" class="widget tagcloud">
+        <canvas width="250" height="250" id="resCanvas" style="width=100%">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2023/" rel="tag">2023</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2024/" rel="tag">2024</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2025/" rel="tag">2025</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">16</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICCV/" rel="tag">ICCV</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICML/" rel="tag">ICML</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IJCAI/" rel="tag">IJCAI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ODE%E6%B1%82%E8%A7%A3/" rel="tag">ODE求解</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">52</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%85%E8%AF%BB/" rel="tag">阅读</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+        </canvas>
+    </div>
+</div>
+
+
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zongqing Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('post.copy_button').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('post.copy_success')
+          else $(this).text('post.copy_failure')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('post.copy_button')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
