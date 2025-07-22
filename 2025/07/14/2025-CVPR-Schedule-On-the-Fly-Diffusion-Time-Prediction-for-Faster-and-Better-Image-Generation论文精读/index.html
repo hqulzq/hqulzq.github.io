@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="全文翻译摘要扩散模型和流匹配模型在文本到图像生成任务中取得了显著成功。然而，这些模型通常依赖于为所有提示词预先设定的去噪调度方案。多步反向扩散过程可以看作是一种逐步生成高质量图像的“思维链”。因此，扩散模型应该为每个实例进行推理，自适应地确定最优噪声调度方案，以实现高效采样的同时保证高生成质量。在本文中，我们为此引入了时间预测扩散模型（TPDM）。 TPDM采用了一个即插即用的时间预测模块（TPM">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2025-CVPR-Schedule On the Fly Diffusion Time Prediction for Faster and Better Image Generation论文精读">
+<meta property="og:url" content="https://hqulzq.github.io/2025/07/14/2025-CVPR-Schedule-On-the-Fly-Diffusion-Time-Prediction-for-Faster-and-Better-Image-Generation%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/index.html">
+<meta property="og:site_name" content="Lzq&#39;s blog">
+<meta property="og:description" content="全文翻译摘要扩散模型和流匹配模型在文本到图像生成任务中取得了显著成功。然而，这些模型通常依赖于为所有提示词预先设定的去噪调度方案。多步反向扩散过程可以看作是一种逐步生成高质量图像的“思维链”。因此，扩散模型应该为每个实例进行推理，自适应地确定最优噪声调度方案，以实现高效采样的同时保证高生成质量。在本文中，我们为此引入了时间预测扩散模型（TPDM）。 TPDM采用了一个即插即用的时间预测模块（TPM">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-07-14T08:03:45.000Z">
+<meta property="article:modified_time" content="2025-07-14T08:11:59.804Z">
+<meta property="article:author" content="Zongqing Li">
+<meta property="article:tag" content="diffusion">
+<meta property="article:tag" content="CVPR">
+<meta property="article:tag" content="2025">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://hqulzq.github.io/2025/07/14/2025-CVPR-Schedule-On-the-Fly-Diffusion-Time-Prediction-for-Faster-and-Better-Image-Generation%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>2025-CVPR-Schedule On the Fly Diffusion Time Prediction for Faster and Better Image Generation论文精读 | Lzq's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lzq's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">49</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">100</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book">
+
+    <a href="/book" rel="section"><i class="fas fa-book fa-fw"></i>Book</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/07/14/2025-CVPR-Schedule-On-the-Fly-Diffusion-Time-Prediction-for-Faster-and-Better-Image-Generation%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          2025-CVPR-Schedule On the Fly Diffusion Time Prediction for Faster and Better Image Generation论文精读
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-07-14 16:03:45 / 修改时间：16:11:59" itemprop="dateCreated datePublished" datetime="2025-07-14T16:03:45+08:00">2025-07-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散模型和流匹配模型在文本到图像生成任务中取得了显著成功。然而，这些模型通常依赖于为所有提示词预先设定的去噪调度方案。多步反向扩散过程可以看作是一种逐步生成高质量图像的“思维链”。因此，扩散模型应该为每个实例进行推理，自适应地确定最优噪声调度方案，以实现高效采样的同时保证高生成质量。在本文中，我们为此引入了时间预测扩散模型（TPDM）。</p>
+<p>TPDM采用了一个即插即用的时间预测模块（TPM），该模块在每个去噪步骤中根据当前的潜在特征预测下一个噪声水平。我们使用强化学习来训练TPM，以最大化一个奖励值，该奖励值鼓励生成高质量的最终图像，同时惩罚过多的去噪步骤。通过这种自适应调度器，TPDM不仅能生成与人类偏好高度一致的高质量图像，还能动态调整扩散时间和去噪步骤数量，从而同时提升性能和效率。</p>
+<p>基于Stable Diffusion 3 Medium架构，TPDM的美学评分达到5.44，人类偏好评分（HPS）达到29.59，同时使用约50%的去噪步骤就能实现更优的性能。</p>
+<span id="more"></span>
+<h3 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h3><p>近年来，深度生成模型（包括扩散模型[13, 50, 52]）在多种任务中取得了非凡的性能，涵盖图像合成[18, 19, 43, 44, 47]、视频生成[4, 14, 64]以及其他任务[21, 36, 40, 49]。作为一种多步去噪框架，扩散模型通过迭代采样逐步将随机噪声细化为连贯的数据，这是其能够生成高质量、多样化输出的基础。</p>
+<p>扩散模型的推理过程需要选择一个噪声调度器，例如从高斯噪声中去噪时噪声水平如何逐步变化。这自然形成了一种“思维链”[59]，因为它决定了模型如何逐步生成真实图像。许多研究表明，不同的噪声调度方案会极大地影响模型性能[19]。领先的流匹配模型（如Stable Diffusion 3[10]和FLUX[22]）会根据目标分辨率提供推荐的噪声调度器。Sabour[46]和Xia[61]探索了微调模型调度方案的方法，以提高效率或整体性能。此外，一些单步生成器[16, 33-35]也取得了令人印象深刻的性能。尽管这些方法性能优异，但它们大多假设存在一种普遍适用的调度方案，对所有提示词和图像都是最优的，这一点值得怀疑。</p>
+<p>我们来看图4中的一些例子。最右侧的图像包含由更长提示词生成的更复杂视觉结构。这些例子表明，扩散模型需要更长的采样步骤链来生成更丰富的内容。相比之下，左侧的图像结构更简单（例如，单个物体和统一背景），可以通过更短的步骤链生成。此外，正如后文所讨论的，每个步骤的扩散时间t所设定的噪声水平，对于正确决定样本在各个步骤中应如何去噪以最终生成高质量图像至关重要。因此，我们提出疑问：是否有可能为每个反向扩散步骤链自适应地确定去噪步骤的数量和每个步骤的噪声水平？</p>
+<p>在本文中，我们提出了时间预测扩散模型（TPDM），它能在推理过程中自适应地调整每个步骤的噪声水平和总步骤数。这是通过一个即插即用的时间预测模块（TPM）实现的，该模块可以根据当前步骤的潜在特征预测下一个扩散时间。通过将反向扩散过程视为每个步骤对扩散时间的一系列决策，我们采用强化学习来最大化与人类偏好一致的奖励模型[63]所计算的奖励值。该奖励不仅反映生成图像的质量，还会根据去噪步骤的数量进行惩罚。因此，TPDM直接优化以生成高质量图像，同时减少去噪步骤。</p>
+<p>我们在多个最先进的模型（包括Stable Diffusion 3和Flux）上实现了TPDM。通过自适应噪声调度器，TPDM平均可以减少50%的步骤，同时保持相当或更优的质量（CLIP-T为0.322，美学评分为5.445，Pick评分为22.33，HPS v2.1为29.59）。我们在图1中展示了一些生成的图像以及所使用的步骤数。这些结果表明，TPDM有潜力在追求高质量图像生成的同时提高模型效率。</p>
+<p>我们的贡献总结如下：</p>
+<ul>
+<li>我们引入了时间预测扩散模型（TPDM）。它可以在每个去噪步骤预测下一个扩散时间，为每个推理实例确定最优噪声调度方案。</li>
+<li>我们使用强化学习训练TPDM，并最大化一个同时考虑图像质量和步骤数量的奖励，直接优化最终性能和效率。</li>
+<li>TPDM在多个评估基准上表现出改进的性能，使用更少的推理步骤取得了更好的结果。</li>
+</ul>
+<h3 id="2-相关工作"><a href="#2-相关工作" class="headerlink" title="2. 相关工作"></a>2. 相关工作</h3><h4 id="2-1-扩散模型"><a href="#2-1-扩散模型" class="headerlink" title="2.1. 扩散模型"></a>2.1. 扩散模型</h4><p>扩散概率模型（DPMs）[13, 50]通过学习不同噪声水平下的数据分布，从纯高斯噪声中恢复原始数据。凭借对复杂数据分布的强适应性，扩散模型在图像[15, 20, 39, 40, 42]、视频[4, 14, 28, 64]等多个领域取得了显著性能，极大地推动了人工智能生成内容的发展。</p>
+<h4 id="2-2-噪声调度"><a href="#2-2-噪声调度" class="headerlink" title="2.2. 噪声调度"></a>2.2. 噪声调度</h4><p>为了生成图像，模型必须确定每个步骤的扩散时间。这可以通过离散时间调度器[13, 51]或连续时间调度器[25, 29]实现，具体取决于模型。通常，扩散时间反映了每个步骤的噪声水平，而大多数现有方法依赖于预先确定的调度器。目前，领先的流匹配模型（Stable Diffusion 3[10]和FLUX[22]）会根据目标分辨率提供推荐的调度器。</p>
+<p>一些方法通过优化调度器来加速采样或提升图像质量。Xia等人[61]通过预测每个步骤的新扩散时间来找到更准确的积分方向，Sabour等人[46]利用随机微积分为不同调度器和模型寻找最优采样方案。Wang等人[56]借助强化学习自动搜索扩散概率模型的最优采样调度器。此外，调整调度器在分子生成等其他领域也被证明是有效的[17]。一些单步生成器[16, 34, 35]通过扩散蒸馏[31]也实现了令人印象深刻的性能。</p>
+<p>尽管上述方法性能优异，但它们大多假设存在一种适用于所有提示词和图像的通用最优调度器，这一假设值得怀疑。相反，TPDM能够在推理过程中自适应调整噪声调度，为每个生成任务选择具有合适步骤数的最优采样方案，从而同时提升图像质量和模型效率。</p>
+<h4 id="2-3-强化学习与人类反馈学习"><a href="#2-3-强化学习与人类反馈学习" class="headerlink" title="2.3. 强化学习与人类反馈学习"></a>2.3. 强化学习与人类反馈学习</h4><p>基于人类反馈的强化学习（RLHF）近年来在大型语言模型（LLMs）领域受到广泛关注[1, 48, 53]，并逐渐扩展到其他领域。扩散模型的研究也越来越多地融入奖励模型，以增强与人类偏好的一致性[23, 60, 63]。通过将潜在变量视为动作，扩散模型可以通过策略梯度（DDPO[3]、DPOK[11]）、actor-critic框架（DACER[58]）、直接偏好优化（Diffusion-DPO[55]）等强化学习算法进行优化。一些近期工作还研究了少步生成模型的RLHF方法[32, 37]。</p>
+<p>然而，这些方法依赖于扩散SDE采样器的高斯反向过程，难以应用于流匹配模型。相比之下，本文将扩散时间视为动作而非潜在变量，旨在通过调整调度来以更少步骤实现更优质量，提供了一种更通用、灵活的解决方案。</p>
+<h3 id="3-所提方法"><a href="#3-所提方法" class="headerlink" title="3. 所提方法"></a>3. 所提方法</h3><p>本节首先简要回顾扩散模型的基本原理，随后介绍时间预测扩散模型（TPDM），最后详细阐述TPDM的训练算法。</p>
+<h4 id="3-1-基础知识"><a href="#3-1-基础知识" class="headerlink" title="3.1. 基础知识"></a>3.1. 基础知识</h4><p>扩散模型通过一个反向过程学习生成图像，该过程逐步从样本中去除噪声。目前主流的范式是流匹配[10, 25]。因此，我们在此介绍流匹配模型的工作原理以及当前最先进模型的内部详细结构。</p>
+<p>我们考虑一个生成模型，该模型建立了从噪声分布(p_1)中抽取的样本(x_1)与数据分布(p_0)中抽取的样本(x_0)之间的映射。流匹配的目标是直接回归一个向量场(v_t)，该向量场生成一个概率流，实现从(p_1)到(p_0)的转换。</p>
+<p>[<br>\mathcal{L}_{FM}(\theta) = \mathbb{E}_{t, p_t(x)} \left| v_{\theta}(x_t, t) - u(x_t, t) \right|^2<br>]</p>
+<p>具有参数(\theta)的流匹配模型旨在预测噪声预测函数(v_{\theta}(x_t, t))，该函数逼近引导扩散过程从噪声分布到生成样本的干净分布的真实速度场(u(x_t, t))。由此，我们可以得到扩散常微分方程（ODE）：</p>
+<p>[<br>\frac{dx_t}{dt} = v_{\theta}(x_t, t)<br>]</p>
+<p>在推理过程中，假设我们用(N)个步骤生成一幅图像，每个步骤都有一个对应的时间(t_n)，该时间与噪声水平相关。那么，第(n)个生成步骤可表示为：</p>
+<p>[<br>x_{t_n} = x_{t_{n-1}} + (t_n - t_{n-1}) \cdot v_{\theta}(x_{t_{n-1}}, t_{n-1})<br>]</p>
+<p>也就是说，在最终生成干净图像(x_{t_N})之前，模型会形成一系列中间结果(\{x_{t_n}\}_{n=1}^{N-1})。通常，在典型的流匹配算法中，每个(t_n)都有一个预先确定的调度，而所提的TPDM将为单个样本动态确定该调度。</p>
+<p>当前，许多最先进的扩散模型都基于DiT架构[8, 10, 22]构建。它们在去噪步骤中使用多层Transformer，使网络同时以扩散时间和文本提示为条件。在本文中，为了进行公平比较，我们将在DiT架构上构建TPDM。</p>
+<h4 id="3-2-时间预测扩散模型（TPDM）"><a href="#3-2-时间预测扩散模型（TPDM）" class="headerlink" title="3.2. 时间预测扩散模型（TPDM）"></a>3.2. 时间预测扩散模型（TPDM）</h4><p>为了使模型能够动态调整噪声调度，TPDM在每个去噪步骤预测下一个扩散时间，如图2所示。这可以通过在扩散模型中添加一个轻量级的时间预测模块（TPM）来实现，如图3所示。该模块将DiT块前后的潜在特征拼接作为输入，从而同时考虑该步骤的原始含噪输入和去噪结果。随后，经过多个卷积层后，TPM对潜在特征进行池化，得到一个单一的特征向量用于预测。此外，我们在TPM中还使用了自适应归一化层[41]，使模型能够感知当前的扩散时间。</p>
+<p>扩散时间决定了噪声水平，在整个去噪过程中应单调递减。为了避免时间倒退，在每个步骤中，TPM改为预测衰减率(r)，该衰减率量化了相邻步骤之间扩散时间(t)的减少程度。由于3.3节中的基于强化学习的训练算法需要预测时间的概率分布，TPM的最后阶段使用两个线性层处理池化后的特征，预测(r)的分布参数，而非预测一个确定性的值。</p>
+<p>假设我们处于第(n)个去噪步骤。衰减率(r_n)的分布被建模为区间((0, 1))上的Beta分布，其两个参数(\alpha_n)和(\beta_n)由TPDM预测。需要注意的是，确保(\alpha_n &gt; 1)和(\beta_n &gt; 1)会得到一个单峰分布，这是理想的，因为它可以避免TPDM从多峰Beta分布中采样出可能不合理的衰减率。为了强制执行这一约束，我们对模型进行重参数化，使TPDM预测两个实值参数(a_n)和(b_n)，并通过式（4）由这两个参数确定(\alpha_n)和(\beta_n)。因此，衰减率(r_n)和下一个扩散时间(t_n)可以通过式（5）和式（6）采样得到：</p>
+<p>[<br>\alpha_n = 1 + e^{a_n}, \quad \beta_n = 1 + e^{b_n} \quad (4)<br>]</p>
+<p>[<br>r_n \sim \text{Beta}(\alpha_n, \beta_n) \quad (5)<br>]</p>
+<p>[<br>t_n = r_n \cdot t_{n-1} \quad (6)<br>]</p>
+<p>在训练过程中，我们冻结原始扩散模型的参数，只更新新引入的TPM参数。因此，模型在学习预测下一个扩散时间的同时，保留了原始的图像生成能力。</p>
+<h4 id="3-3-训练算法"><a href="#3-3-训练算法" class="headerlink" title="3.3. 训练算法"></a>3.3. 训练算法</h4><p>为了训练TPM，我们至少需要执行两个去噪步骤：第一步预测下一个扩散时间，第二步使用该时间进行去噪。一种朴素的方法是将一幅含噪图像作为第一步的输入，并使用第二步计算的重建损失来训练模型。梯度会通过预测的(t_n)反向传播，以更新第一步中的TPM。然而，我们发现经过训练的模型在推理时往往倾向于用极少的步骤完成去噪过程，导致图像质量较差。我们推测，通过监督两个步骤后的损失，模型会学习在两个步骤后生成完全去噪的图像，并为了最小化损失函数而提前停止。但问题在于，整个扩散反向过程结束后生成的最终图像才是关键，而这种方法忽略了这一点。</p>
+<p>总结上述失败经验后，我们对TPM进行优化，以最大化整个去噪过程结束后生成的图像质量，从而实现精确的时间预测。图像质量由图像奖励模型[63]衡量。考虑到整个推理过程的计算图过深，梯度难以反向传播，因此我们使用近端策略优化（PPO）[48]训练模型，其损失函数为：</p>
+<p>[<br>\mathcal{L}(\theta) = -\left[ \frac{\pi_{\theta}(y | s)}{\pi_{\text{old}}(y | s)} \hat{A}(s, y) - \lambda \text{KL} \left[ \pi_{\text{ref}}(\cdot | s), \pi_{\theta}(\cdot | s) \right] \right] \quad (7)<br>]</p>
+<p>在我们的任务中，(s = (c, \epsilon))表示初始状态，包括输入提示(c)和高斯噪声(\epsilon \sim \mathcal{N}(0, 1))；(\pi_{\theta})表示策略网络（例如我们的TPDM模型）；(\pi_{\text{old}})表示用于采样轨迹的旧策略；(\pi_{\text{ref}})表示用于正则化的参考策略；(y)表示我们的策略所采取的动作（即调度时间）；(\hat{A}(s, y))表示在状态(s)下采取动作(y)的优势值。我们将在下文对这些概念进行具体说明。</p>
+<p>将整个调度视为一个动作：通常，当模型进行一系列预测时，PPO会将每个单独的预测视为一个动作，并对这些动作进行批量优化。最近，RLOO[1]提出，当奖励只在序列末尾出现且给定序列元素后状态转移完全确定时，我们可以将整个序列视为一个动作，而不会影响性能。因此，为简单起见，我们将整个生成过程（包括调度中的所有预测时间）视为一个单一的优化动作。</p>
+<p>因此，在计算式（7）的期望时，我们将整个轨迹作为优化中的一个训练样本。然而，TPDM只输出每个单独时间预测的分布，我们将第(n)步的分布记为(\pi_{\theta}^{(n)})。</p>
+<p>根据链式法则，整个生成过程的概率可以计算为每个预测的乘积：</p>
+<p>[<br>\pi_{\theta}(t_1, \ldots, t_N | s) = \prod_{n=1}^{N} \pi_{\theta}^{(n)}(t_n | s, t_1, \ldots, t_{n-1}) \quad (8)<br>]</p>
+<p>其中(N)表示生成步骤的总数。在我们的模型中，每个因子(\pi_{\theta}^{(n)})是基于TPM在相应步骤输出的Beta分布计算得到的。</p>
+<h4 id="经步骤数量折扣的图像奖励"><a href="#经步骤数量折扣的图像奖励" class="headerlink" title="经步骤数量折扣的图像奖励"></a>经步骤数量折扣的图像奖励</h4><p>在为策略梯度训练生成样本时，我们通过使用当前的TPDM策略从高斯噪声生成图像来获取轨迹。由于这些生成的图像没有真实标签，我们选择ImageReward[63]仅根据最后一个去噪步骤的最终图像分配奖励分数。我们的目标是提升最终图像质量，同时避免无限制地增加去噪步骤，因此我们使用一个折扣因子(\gamma &lt; 1)（一个超参数）对中间扩散步骤的奖励进行折扣，并对去噪步骤的总数(N)取平均值。该轨迹的最终奖励如下式（9）所示：</p>
+<p>[<br>R(s, y) = \frac{1}{N} \sum_{n=1}^{N} \gamma^{N-n} \text{IR}(y, s)<br>]</p>
+<p>其中(\text{IR}(y, s))表示根据初始状态(s)和预测动作(y)生成的图像的奖励。关于如何直接从一批(R(s, y))中计算优势值(\hat{A}(s, y))而无需价值模型进行优化，我们建议读者参考RLOO[1]。</p>
+<h3 id="4-实验"><a href="#4-实验" class="headerlink" title="4. 实验"></a>4. 实验</h3><h4 id="4-1-实现细节"><a href="#4-1-实现细节" class="headerlink" title="4.1. 实现细节"></a>4.1. 实现细节</h4><p><strong>数据集</strong>：我们收集文本提示来训练模型。这些提示要么来自COCO 2017[24]训练集，要么是通过Florence-2[62]和Llava-Next[26]对Laion-Art[54]和COYO-700M[5]数据集中的图像进行 caption 得到的。更多细节见附录A。</p>
+<p><strong>训练配置</strong>：我们使用AdamW优化器，beta系数为(0.9, 0.99)，学习率固定为1×10⁻⁵，最大梯度范数为1.0。我们的TPM模块通常只需200个训练步骤。每步中，我们采样256条轨迹的批次，并据此更新模型参数4次。</p>
+<p><strong>评估指标</strong>：我们使用FID、CLIP-T、Aesthetic v2和Pick Score作为评估指标，测试采用COCO 2017验证集的5000个提示。对于HPS v2.1，我们使用基准测试[60]提供的3200个提示。</p>
+<h4 id="4-2-主要结果"><a href="#4-2-主要结果" class="headerlink" title="4.2. 主要结果"></a>4.2. 主要结果</h4><p><strong>不同图像的自适应调度</strong>：在图4中，我们展示了不同提示生成的图像及其对应的TPDM预测调度。当向TPDM输入更短、更简单的提示时，生成图像所需的物体和细节更少，因此扩散时间下降更快，并在相对较少的步骤内降至0。相反，当提供更复杂的提示时，模型需要更多中间步骤进行推理，以便在早期和中期生成更精细的细节，因此扩散时间下降更慢，此时TPDM在生成过程中需要更多去噪步骤。附录C提供了更多预测调度的示例供分析。</p>
+<p><strong>调整γ以控制步骤数量</strong>：式（9）中的γ控制奖励从最后一步传播到中间步骤时的衰减速度（如图2所示），从而影响收敛后TPDM的平均去噪步骤数。</p>
+<p><strong>γ对平均推理步骤数和性能的影响</strong>：如图6所示，当我们将γ从0.97降至0.85时，TPDM倾向于更快地减少扩散时间，导致去噪步骤从15.0减少到7.5。此外，与基线（黄线）相比，TPDM（紫线）在相同推理步骤数下始终获得显著更高的美学分数。</p>
+<p><strong>视觉对比</strong>：图5展示了TPDM-SD3-Medium与使用推荐步骤数和等效步骤数的SD3-Medium的对比，前者在细节处理能力和生成准确性上表现更优。例如，在图5（c）中，TPDM生成的图像具有比15步和28步的SD3-Medium更逼真的笔记本键盘；在图5（d）中，TPDM去除了多余的棒球棒，使图像更自然。总体而言，TPDM能够生成更准确、更逼真的图像。</p>
+<h4 id="4-3-定量结果"><a href="#4-3-定量结果" class="headerlink" title="4.3. 定量结果"></a>4.3. 定量结果</h4><p>我们将TPM应用于多个最先进的扩散模型，包括SD3-Medium、SD3.5-Large和Flux 1.0-dev，并展示了TPM如何提升其性能。除了常用指标（如FID、CLIP-T和人类偏好分数Aesthetic Score v2、HPSv2.1），我们还进行了用户研究。</p>
+<p><strong>定量指标</strong>：我们在表1中比较了TPDM与上述模型。在保持性能竞争力的同时，TPDM平均可在推荐步骤数的约一半内生成图像。</p>
+<p>在所有指标中，代表人类偏好的指标提升最为显著。例如，TPDM-SD3-Medium平均仅用15.28步生成图像，HPS分数达29.59，比相同步骤的Stable Diffusion 3高1.07，也比原始28步结果高0.47。这种提升可能归功于与人类偏好高度一致的奖励模型——通过基于这种一致性优化图像生成，TPDM产生了更符合审美需求的结果。此外，由于其他调度优化方法大多在Stable Diffusion 1.5[45]等经典扩散模型上进行实验，我们在附录B中也与它们进行了严格对比。</p>
+<p><strong>用户研究</strong>：为更好地反映人类对这些模型的偏好，我们开展了用户研究，邀请志愿者对比不同模型生成的图像。具体而言，对于每个提示，我们提供SD3-Medium（15步和28步）和TPDM-SD3-Medium生成的图像各一张，共生成50组对比图像，并邀请15名志愿者进行选择。表2的结果表明，我们的模型生成的图像更符合人类偏好。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/diffusion/" rel="tag"># diffusion</a>
+              <a href="/tags/CVPR/" rel="tag"># CVPR</a>
+              <a href="/tags/2025/" rel="tag"># 2025</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/07/14/2025-CVPR-Scaling-Inference-Time-Compute-for-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" rel="prev" title="2025-CVPR-Scaling Inference Time Compute for Diffusion Models论文精读">
+      <i class="fa fa-chevron-left"></i> 2025-CVPR-Scaling Inference Time Compute for Diffusion Models论文精读
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2025/07/14/2025-ICML-Differentiable-Solver-Search-for-Fast-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" rel="next" title="2025-ICML-Differentiable Solver Search for Fast Diffusion Sampling论文精读">
+      2025-ICML-Differentiable Solver Search for Fast Diffusion Sampling论文精读 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.3.</span> <span class="nav-text">2. 相关工作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.3.1.</span> <span class="nav-text">2.1. 扩散模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E5%99%AA%E5%A3%B0%E8%B0%83%E5%BA%A6"><span class="nav-number">1.3.2.</span> <span class="nav-text">2.2. 噪声调度</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%E4%B8%8E%E4%BA%BA%E7%B1%BB%E5%8F%8D%E9%A6%88%E5%AD%A6%E4%B9%A0"><span class="nav-number">1.3.3.</span> <span class="nav-text">2.3. 强化学习与人类反馈学习</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%89%80%E6%8F%90%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.</span> <span class="nav-text">3. 所提方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86"><span class="nav-number">1.4.1.</span> <span class="nav-text">3.1. 基础知识</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E6%97%B6%E9%97%B4%E9%A2%84%E6%B5%8B%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B%EF%BC%88TPDM%EF%BC%89"><span class="nav-number">1.4.2.</span> <span class="nav-text">3.2. 时间预测扩散模型（TPDM）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-%E8%AE%AD%E7%BB%83%E7%AE%97%E6%B3%95"><span class="nav-number">1.4.3.</span> <span class="nav-text">3.3. 训练算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%8F%E6%AD%A5%E9%AA%A4%E6%95%B0%E9%87%8F%E6%8A%98%E6%89%A3%E7%9A%84%E5%9B%BE%E5%83%8F%E5%A5%96%E5%8A%B1"><span class="nav-number">1.4.4.</span> <span class="nav-text">经步骤数量折扣的图像奖励</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.5.</span> <span class="nav-text">4. 实验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82"><span class="nav-number">1.5.1.</span> <span class="nav-text">4.1. 实现细节</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E4%B8%BB%E8%A6%81%E7%BB%93%E6%9E%9C"><span class="nav-number">1.5.2.</span> <span class="nav-text">4.2. 主要结果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-%E5%AE%9A%E9%87%8F%E7%BB%93%E6%9E%9C"><span class="nav-number">1.5.3.</span> <span class="nav-text">4.3. 定量结果</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zongqing Li"
+      src="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+  <p class="site-author-name" itemprop="name">Zongqing Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">100</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hqulzq" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hqulzq" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hqulzq@163.com" title="E-Mail → mailto:hqulzq@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+      
+<script type="text/javascript" charset="utf-8" src="/js/tagcloud.js"></script>
+<script type="text/javascript" charset="utf-8" src="/js/tagcanvas.js"></script>
+<div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div id="myCanvasContainer" class="widget tagcloud">
+        <canvas width="250" height="250" id="resCanvas" style="width=100%">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2023/" rel="tag">2023</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2024/" rel="tag">2024</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2025/" rel="tag">2025</a><span class="tag-list-count">22</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">25</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICCV/" rel="tag">ICCV</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICML/" rel="tag">ICML</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IJCAI/" rel="tag">IJCAI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ODE%E6%B1%82%E8%A7%A3/" rel="tag">ODE求解</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">62</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%80%BB%E7%BB%93/" rel="tag">总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%85%E8%AF%BB/" rel="tag">阅读</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+        </canvas>
+    </div>
+</div>
+
+
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zongqing Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('post.copy_button').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('post.copy_success')
+          else $(this).text('post.copy_failure')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('post.copy_button')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>

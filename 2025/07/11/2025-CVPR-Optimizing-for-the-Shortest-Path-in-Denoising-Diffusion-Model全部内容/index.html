@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="全文翻译摘要在本研究中，我们提出了一种基于最短路径建模的新型去噪扩散模型，该模型通过优化残差传播来同时提升去噪效率和质量。借鉴去噪扩散隐式模型（DDIM）和图论的见解，我们的模型被称为最短路径扩散模型（ShortDF），它将去噪过程视为一个以最小化重建误差为目标的最短路径问题。通过优化初始残差，我们提高了反向扩散过程的效率和生成样本的质量。在多个标准基准上的大量实验表明，与现有技术相比，Short">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2025-CVPR-Optimizing for the Shortest Path in Denoising Diffusion Model全部内容">
+<meta property="og:url" content="https://hqulzq.github.io/2025/07/11/2025-CVPR-Optimizing-for-the-Shortest-Path-in-Denoising-Diffusion-Model%E5%85%A8%E9%83%A8%E5%86%85%E5%AE%B9/index.html">
+<meta property="og:site_name" content="Lzq&#39;s blog">
+<meta property="og:description" content="全文翻译摘要在本研究中，我们提出了一种基于最短路径建模的新型去噪扩散模型，该模型通过优化残差传播来同时提升去噪效率和质量。借鉴去噪扩散隐式模型（DDIM）和图论的见解，我们的模型被称为最短路径扩散模型（ShortDF），它将去噪过程视为一个以最小化重建误差为目标的最短路径问题。通过优化初始残差，我们提高了反向扩散过程的效率和生成样本的质量。在多个标准基准上的大量实验表明，与现有技术相比，Short">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/11/2025-CVPR-Optimizing-for-the-Shortest-Path-in-Denoising-Diffusion-Model%E5%85%A8%E9%83%A8%E5%86%85%E5%AE%B9/a1.png">
+<meta property="article:published_time" content="2025-07-11T13:54:58.000Z">
+<meta property="article:modified_time" content="2025-07-13T09:16:08.843Z">
+<meta property="article:author" content="Zongqing Li">
+<meta property="article:tag" content="diffusion">
+<meta property="article:tag" content="CVPR">
+<meta property="article:tag" content="2025">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hqulzq.github.io/2025/07/11/2025-CVPR-Optimizing-for-the-Shortest-Path-in-Denoising-Diffusion-Model%E5%85%A8%E9%83%A8%E5%86%85%E5%AE%B9/a1.png">
+
+<link rel="canonical" href="https://hqulzq.github.io/2025/07/11/2025-CVPR-Optimizing-for-the-Shortest-Path-in-Denoising-Diffusion-Model%E5%85%A8%E9%83%A8%E5%86%85%E5%AE%B9/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>2025-CVPR-Optimizing for the Shortest Path in Denoising Diffusion Model全部内容 | Lzq's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lzq's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">49</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">100</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book">
+
+    <a href="/book" rel="section"><i class="fas fa-book fa-fw"></i>Book</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/07/11/2025-CVPR-Optimizing-for-the-Shortest-Path-in-Denoising-Diffusion-Model%E5%85%A8%E9%83%A8%E5%86%85%E5%AE%B9/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          2025-CVPR-Optimizing for the Shortest Path in Denoising Diffusion Model全部内容
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-07-11 21:54:58" itemprop="dateCreated datePublished" datetime="2025-07-11T21:54:58+08:00">2025-07-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-07-13 17:16:08" itemprop="dateModified" datetime="2025-07-13T17:16:08+08:00">2025-07-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>在本研究中，我们提出了一种基于<strong>最短路径建模</strong>的新型去噪扩散模型，该模型通过<strong>优化残差传播</strong>来同时提升去噪效率和质量。<strong>借鉴去噪扩散隐式模型（DDIM）和图论的见解，我们的模型被称为最短路径扩散模型（ShortDF），它将去噪过程视为一个以最小化重建误差为目标的最短路径问题。通过优化初始残差，我们提高了反向扩散过程的效率和生成样本的质量。</strong>在多个标准基准上的大量实验表明，与现有技术相比，ShortDF显著减少了扩散时间（或步骤），同时提高了生成样本的视觉保真度。我们认为，这项工作为基于扩散的交互式应用铺平了道路，并为快速数据生成奠定了基础。代码可在<a target="_blank" rel="noopener" href="https://github.com/UnicomAI/ShortDF">https://github.com/UnicomAI/ShortDF</a>获取。<br><span id="more"></span></p>
+<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1. 引言"></a>1. 引言</h3><p>近年来，生成模型取得了显著的进展，其中去噪扩散模型在多个领域展现出卓越的性能，例如语音合成、2D或3D视觉资产生成以及其他应用场景[2,4,26,27]。这些模型通过向数据中逐渐添加随机噪声并学习其反向过程来捕捉数据的固有分布。</p>
+<p>尽管生成质量和多样性得到了极大的提升，但模型仍存在计算负荷大、耗时久的问题[28,34]。这限制了扩散模型在实时场景中的进一步应用，特别是在需要快速响应的情况下，如交互式图形编辑和实时视频处理（尽管我们很少考虑这些场景）[1,12]。为解决这些问题，研究人员一直在积极探索更高效的策略。传统的扩散模型通常需要数百次迭代才能获得高质量的结果，这导致了相当高的计算成本[8,23]。最近的研究致力于通过知识蒸馏等技术降低模型复杂度，将多步扩散采样过程压缩到单步学生网络中[15,19,28]。然而，准确逼近这种高维度、复杂的采样过程仍然是一项具有挑战性的任务。</p>
+<p>与基于蒸馏的方法相结合，其他研究人员提出了更快的数值求解器，这些求解器依靠当前的步长来估计下一个解[34]。虽然扩散步骤的数量从1000步减少到了不到20步，但这些方法[18,22,30]面临着生成质量下降的困境。此外，进一步减少采样步骤往往会导致性能下降[3]。总之，在快速采样和高生成质量之间取得良好的平衡并非易事，这也是本文的研究重点。</p>
+<p>在本文中，我们提出了ShortDF模型，<strong>该模型通过一种新颖的优化框架实现了上述平衡，该框架在传播残差的同时保持了较高的生成质量。基于去噪扩散概率模型（DDPM）和去噪扩散隐式模型（DDIM），我们整合了图论技术以减少重建误差。通过将去噪过程构建为图论中的最短路径优化问题，我们能够在不影响生成质量的前提下提高过程的效率。</strong>图1清晰地说明了本文提出的概念。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "f1.png" width = "80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图1. 对每个反向步骤进行建模时，需要找到一个数据节点$x_{t}$，使累积转换成本$dist(x_{t}, t)$最小化（类似于加权图中的最短路径$P_{i}$）。通过放宽严格的“直线”类比，转而考虑扩散图中的最小成本路径，我们将初始残差$\mid R(t, 0) \mid$视为一个备选路径候选。这种放宽被嵌入到损失函数中，使反向图能够迭代地将残差朝着更短的路径优化（例如，将$x_{0} \to x_{k} \to x_{t}$简化为$x_{0} \to x_{t}$），从而通过动态路径压缩来优化重建路径。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>具体而言，去噪扩散概率模型（DDPM）通过向原始数据中逐渐添加高斯噪声，然后进行反向去噪来生成样本。相比之下，去噪扩散隐式模型（DDIM）通过引入更灵活的采样路径来加速这一过程[8,22]。然而，这些方法在处理多步反向过程时，往往存在效率低下和残差累积的问题。相反，我们的方法通过将去噪过程构建为残差传播，提出了一种新颖的优化视角。这种方法通过优化初始残差，提高了反向扩散路径的整体效率。<strong>据我们所知，我们是第一个分析去噪过程中残差传播动态并构建反向步骤图的团队，该图能够实现任意步骤对之间的最优转换。这种基于图的建模使我们能够更有效地捕捉误差传播。通过基于最短路径建模的损失函数所代表的迭代松弛，我们逐渐减少残差。</strong>我们的方法加快了去噪过程，并确保了每一步都具有较高的重建保真度，从而克服了最近快速采样方法中出现的质量下降问题。另一个创新点是，在保持采样器任务无关性的同时，我们的方法允许对生成器和采样器进行端到端优化，并在文本到图像生成等领域获得了鲁棒性。</p>
+<p>为总结本研究的贡献，我们重点强调以下三点：</p>
+<ul>
+<li>提出了一种新颖的去噪方法（ShortDF），通过最短路径优化框架在快速采样和高质量生成之间取得平衡。</li>
+<li>将图论技术整合到去噪过程中，在不影响质量的前提下减少重建误差并提高效率。</li>
+<li>实现了生成器和采样器的端到端优化，大量实验证明了其在不同领域的鲁棒性和有效性。</li>
+</ul>
+<h3 id="2-相关工作"><a href="#2-相关工作" class="headerlink" title="2. 相关工作"></a>2. 相关工作</h3><p>尽管去噪扩散模型取得了当前最优（SOTA）的结果，但其固有的迭代过程带来了高昂的计算成本，这在实时应用中往往难以承受[28]。加速扩散模型的推理过程一直是该领域的重点研究方向，目前主要有两个研究方向：快速扩散采样器和扩散蒸馏[28,34]。</p>
+<p>扩散蒸馏。这类方法将扩散蒸馏视为知识蒸馏的一种形式[28]，通过训练一个学生网络，将原始扩散模型的多步输出压缩为单步输出。一种直接的方法是预先计算去噪轨迹，然后在像素空间中训练相应的学生模型[32]。然而，这种方法面临着计算和拟合完整去噪轨迹的高昂计算成本这一重大挑战。渐进式蒸馏（PD）模型[19,20]有效地将采样步骤数量减少了一半。InstaFlow[15,16]通过逐步学习更直接的流，确保单步预测在更大距离上保持准确性。此外，一致性蒸馏（CD）[24]、TRACT[3]和BOOT[6]通过将常微分方程（ODE）流的不同时间步与其输出对齐，实现了高效的扩散加速。变分分数蒸馏（VSD）可以利用预训练的文本到图像扩散模型作为分布匹配损失[25]。基于VSD，Yin等人[28]提出了一种称为分布匹配蒸馏的方法，用于从复杂数据集中生成高度逼真的图像。</p>
+<p>加速扩散采样。大量关于更快扩散采样器的研究都基于求解概率流常微分方程（ODE）[26]。去噪扩散隐式模型（DDIM）[22]是最早致力于加速扩散模型采样的方法之一，它将原始的去噪扩散概率模型（DDPM）扩展到非马尔可夫场景。在此基础上，广义去噪扩散隐式模型（gDDIM）[31]引入了评分网络的改进参数化，为更广泛的扩散过程提供了确定性采样。高效去噪模型（EDM）[9]提出了一个设计框架，明确了优化扩散过程的具体设计选择。Liu等人提出的伪数值扩散模型（PNDM）[14]采用带有非线性转移组件的数值求解器来解决流形上的微分方程。扩散指数积分器采样器[30]和DPM-Solver[18]利用概率流ODE的半线性结构，构建了性能优于通用龙格-库塔方法的专用ODE求解器。在近似平均方向求解器（AMED-Solver）[34]中，研究发现几乎每个采样轨迹都位于嵌入环境空间的二维子空间内。这种方法通过直接学习平均方向消除截断误差，实现了快速扩散采样。残差去噪扩散模型（RDDM）[13]将传统的单个去噪扩散过程解耦为残差扩散和噪声扩散。残差扩散组件表示目标图像与退化输入图像相比的方向扩散，明确指导图像恢复的反向生成过程。这些数值方法本身会引入一定程度的近似误差，可能会影响图像生成的质量。</p>
+<h3 id="3-所提方法"><a href="#3-所提方法" class="headerlink" title="3. 所提方法"></a>3. 所提方法</h3><p>基于DDPM和DDIM，我们采用图论方法，通过在扩散模型中寻找最短路径来最小化重建误差。</p>
+<h4 id="3-1-背景：DDPM与DDIM"><a href="#3-1-背景：DDPM与DDIM" class="headerlink" title="3.1. 背景：DDPM与DDIM"></a>3.1. 背景：DDPM与DDIM</h4><p>扩散与逆扩散：基于马尔可夫链，DDPM在正向过程中逐渐向干净数据$x_0$中添加噪声，在时间步$t$得到含噪样本$x_t$。在反向过程中，$x_t$中的噪声被逐步消除，以还原出$x_0$。正向过程定义如[8]中所述：</p>
+<script type="math/tex; mode=display">x_t=\sqrt{\overline{\alpha}_t} \cdot x_0+\sqrt{1-\overline{\alpha}_t} \cdot \epsilon, \epsilon \sim N(0, I) \tag{1}</script><p>其中，$t \in[1, T]$，$\overline{\alpha}_t=\prod_{i=1}^{t} \alpha_i$，$\alpha_t$是预先定义的方差调度参数，用于控制在时间步$t$添加的噪声强度。在反向过程中，模型利用神经网络$\epsilon_\theta(x_t, t)$估计噪声，时间步$t$时的估计干净样本$\hat{x}_0$为：</p>
+<script type="math/tex; mode=display">\hat{x}_{0|t}=\frac{x_t-\sqrt{1-\overline{\alpha}_t} \cdot \hat{\epsilon}_t}{\sqrt{\overline{\alpha}_t}} \tag{2}</script><p>其中，$\hat{\epsilon}_t=\epsilon_\theta(x_t, t)$表示网络对噪声的预测。噪声损失为：</p>
+<script type="math/tex; mode=display">L_\epsilon=\mathbb{E}_{t, x_0, \epsilon}\left[\left\| \epsilon-\hat{\epsilon}_t \right\| _2\right] \tag{3}</script><p>该损失项确保模型能准确预测噪声，从而在整个反向路径的多个步骤中有效对样本进行去噪。</p>
+<p>通过灵活路径加速采样：DDIM通过在反向扩散路径中引入灵活性来加速采样过程[22]。与DDPM采用完全随机的反向过程不同，DDIM的采样过程是确定性的或部分随机的，由方差项$\sigma_n$控制。DDIM的采样方程为：</p>
+<script type="math/tex; mode=display">\begin{aligned} \hat{x}_k &=DDIM\left(\hat{x}_{0|t}, \hat{\epsilon}_t, k, \sigma_n\right) \\ &=\sqrt{\overline{\alpha}_k} \cdot \hat{x}_{0|t}+\sqrt{1-\overline{\alpha}_k-\sigma_n^2} \cdot \hat{\epsilon}_t+\sigma_n \cdot \epsilon \end{aligned} \tag{4}</script><p>其中，$k \leq t$。DDIM使用估计值$\hat{x}_{0|t}$替代干净数据$x_0$，减少了反向扩散的步骤数。</p>
+<h4 id="3-2-作为路径表示的残差传播"><a href="#3-2-作为路径表示的残差传播" class="headerlink" title="3.2. 作为路径表示的残差传播"></a>3.2. 作为路径表示的残差传播</h4><p>在DDIM中，当$\sigma_n=0$时，反向过程完全确定，这使我们能够分析反向扩散路径上的残差。我们假设采样路径为$k_1 \to \cdots \to k_n \to 0$，其中$k_i \in[1, T]$且$k_i \geq k_{i+1}$。</p>
+<p>残差传播：令$R(k_i, k_j)$表示从步骤$k_i$到$k_j$的残差变化。在时间步$k_1$，初始残差$R(k_1, 0)$是从$k_1$到0的单步采样估计误差。它量化了$x_0$与其直接估计值$\hat{x}_{0|k_1}$之间的差异。参考式(1)和式(2)，我们可得：</p>
+<script type="math/tex; mode=display">R\left(k_1, 0\right)=x_0-\hat{x}_{0|k_1}=\frac{\sqrt{1-\overline{\alpha}_{k_1}}}{\sqrt{\overline{\alpha}_{k_1}}}\left(\epsilon_\theta\left(x_{k_1}, k_1\right)-\epsilon\right) \tag{5}</script><p>当从步骤$k_i$过渡到更小的步骤$k_j$时，基于式(4)和式(5)，残差传播定义为：</p>
+<script type="math/tex; mode=display">R\left(k_i, k_j\right)=\frac{\sqrt{1-\overline{\alpha}_{k_j}}}{\sqrt{\overline{\alpha}_{k_j}}}\left(\epsilon_\theta\left(\hat{x}_{k_j}, k_j\right)-\epsilon_\theta\left(\hat{x}_{k_i}, k_i\right)\right) \tag{6}</script><p>其中，$\hat{x}_{k_j}=DDIM(\hat{x}_{0|k_i}, \epsilon_\theta(\hat{x}_{k_i}, k_i), k_j, 0)$，$\hat{x}_{k_1}=x_{k_1}$。</p>
+<p>路径残差：整个反向扩散路径（从$k_1 \to \cdots \to k_n \to 0$）的累积残差为：</p>
+<script type="math/tex; mode=display">R\left(k_n, 0\right)=R\left(k_1, 0\right)-\sum_{i=1}^{n-1} R\left(k_i, k_{i+1}\right) \tag{7}</script><p>根据式(7)，优化路径残差需要平衡路径上的累积残差，同时抵消初始残差。然而，由于管理多步残差的复杂性，直接优化路径残差并不可行。相反，<strong>我们将重点放在优化初始残差这一目标代理上。在反向过程中，从较后步骤过渡到较早步骤会逐步优化$x_0$的估计值。$k_1$处的初始残差越小，整个路径的残差就越小，因为每个后续时间步都建立在这个初始估计的基础上。因此，优化初始残差$R(k_1, 0)$可以显著减少累积残差，提高优化的整体可追踪性。</strong></p>
+<h4 id="3-3-最短路径优化"><a href="#3-3-最短路径优化" class="headerlink" title="3.3. 最短路径优化"></a>3.3. 最短路径优化</h4><p>基于3.2节的见解，直接优化路径上的累积残差面临巨大挑战。然而，如果已知较早步骤$k$的最优解，则可以反向传播以获得较后步骤$t$的最优解。这一过程改进了初始残差，从而优化了整个反向扩散路径。为实现这一点，我们构建了一个步骤反向图，其中在任意步骤$k$和$t$（$k &lt; t$）之间初始化边。一条连接$k$到$t$的边，采用最短路径优化作为目标代理，以最小化反向扩散路径上的累积残差误差。</p>
+<p>残差消除与图构建：然而，基于残差传播（例如$R(t, k)$）直接定义边权重并不可行。理想情况下，步骤$k$的最优解不应受较后步骤$t$的残差影响。使用残差定义边权重会在步骤之间引入干扰，使最优残差传播变得不可追踪。</p>
+<p>为解决这一问题，我们从干净数据$x_0$开始（因为它提供了精确的参考），然后利用$x_0$从$t$过渡到$k$（通过式(4)），消除$t \to k$路径上的残差。因此，$t \to k$路径上的残差被有效抵消。</p>
+<p>我们使用估计的$\hat{x}_0$和真实值$x_0$计算的残差差来定义步骤$k$和$t$之间的边权重。该边权重量化了使用含噪估计$\hat{x}_{0|t}$相比于真实干净数据$x_0$所累积的误差。具体而言，边权重定义如下：</p>
+<script type="math/tex; mode=display">edge(k, t)=\left|x_0-\hat{x}_{0|k}'\right|-\left|x_0-\hat{x}_{0|k}\right| \tag{8}</script><p>其中，$\hat{x}_{0|k}’$和$\hat{x}_{0|k}$分别表示步骤$k$处$x_0$的估计值，但来自两种不同的转换。$\hat{x}_{0|k}’$是利用$\hat{x}_k$估计得到的，其中：</p>
+<script type="math/tex; mode=display">\hat{x}_k=DDIM\left(\hat{x}_{0|t}, \epsilon_\theta\left(x_t, t\right), k, 0\right)</script><p>对应于从时间步$t$到$k$的基于估计的转换。类似地，$\hat{x}_{0|k}$是利用$x_k$计算得到的，其中：</p>
+<script type="math/tex; mode=display">x_k=DDIM\left(x_0, \epsilon_\theta\left(x_t, t\right), k, 0\right)</script><p>表示基于真实干净数据$x_0$的转换。$\hat{x}_{0|k}’$和$\hat{x}_{0|k}$均通过式(2)所述的反向过程计算得到。</p>
+<p>通过这种方式定义边权重，我们确保了使用真实$x_0$时残差被消除，并且较早步骤$k$的残差传播不会影响较后步骤$t$的最优解。$edge(k, t)$表示从步骤$t$到步骤$k$的残差误差，说明了反向扩散过程中步骤$t$的估计误差对步骤$k$残差的额外影响。</p>
+<p>松弛：通过利用准确的干净数据$x_0$，我们消除了扩散路径上的残差，确保步骤$k$的结果是最优的。有了步骤$k$的这个最优结果，我们现在可以采用最短路径优化来确定步骤$t$的最优残差。</p>
+<p>引入松弛方法以迭代优化每个步骤的残差。给定含噪数据$x_t$，目标是最小化步骤$t$的残差误差，定义为$dist(x_t, t)$。它被表述为初始残差$R(t, 0)$的绝对值，即$dist(x_t, t)=|R(t, 0)|=|x_0-\hat{x}_{0|t}|$。这代表了所有可能路径中的近似最优误差。为了确保步骤$t$更好的优化，我们利用以下松弛条件传播步骤$k$的最优结果：</p>
+<script type="math/tex; mode=display">cond : dist\left(x_t, t\right)>dist\left(x_k, k\right)+edge(k, t) \tag{9}</script><p>当满足该条件时，图模型选择直接从$k$过渡到$t$，因为它提供了关于残差误差的更优路径。因此，步骤$t$的残差误差被更新为：$dist(x_t, t) \leftarrow dist(x_k, k)+edge(k, t)$。通过松弛和更新过程，我们迭代优化图模型内的路径选择，调整每个步骤的残差以最小化残差误差。</p>
+<h4 id="3-4-损失函数"><a href="#3-4-损失函数" class="headerlink" title="3.4. 损失函数"></a>3.4. 损失函数</h4><p>基于最短路径优化，我们设计的总优化损失如下：</p>
+<script type="math/tex; mode=display">L=\lambda \cdot L_\epsilon+cond \cdot L_r \tag{10}</script><script type="math/tex; mode=display">L_r=\left\| dist\left(x_k, k\right)+edge(k, t)-dist\left(x_t, t\right)\right\|_2 \tag{1})</script><p>其中，$\lambda$是噪声损失权重，$cond$是式(9)中的松弛条件项，$L_r$是松弛损失，它允许步骤$k$的最优解指导步骤$t$的优化。本质上，这相当于在图中添加一条从$t$到0的反向边，其权重为$edge(t, 0)=dist(x_k, k)+edge(k, t)$。</p>
+<p>优化步骤$t$的模型参数有效地为图添加了一条新边，将$t$直接连接到0。这条“捷径”边整合了来自含噪输入$x_t$的贡献。利用步骤$k$的最优解，更新减少了步骤$t$的残差，从而改进了干净数据$x_0$的重建。虽然图论的最优解定义明确，但噪声的随机性和普遍存在使得显式图构建和最优解的数学推导具有挑战性。然而，直观地说，网络参数可以通过学习隐式地构建图，使我们能够近似最优解。</p>
+<h4 id="3-5-优化策略"><a href="#3-5-优化策略" class="headerlink" title="3.5. 优化策略"></a>3.5. 优化策略</h4><p>为了有效地优化模型并稳定去噪过程，如算法1所示，我们采用多状态优化策略，利用模型的三个实例：</p>
+<p><img src="a1.png" width="50%"></p>
+<p>基础模型$\epsilon_\theta$、EMA模型$\epsilon_{\theta, ema}$和图模型$\epsilon_{\theta, graph}$。该策略提高了在存在随机噪声情况下训练的稳定性。</p>
+<p>基础模型$\epsilon_\theta$处理噪声预测和残差更新，作为重建的基本逻辑。EMA模型$\epsilon_{\theta, ema}$通过平滑更新来稳定训练，并提供时间步$k$处更准确的最优误差估计。图模型$\epsilon_{\theta, graph}$通过采用延迟更新来捕获全局信息并提高误差累积的稳定性，从而计算最短路径优化的边权重。这些模型的组合确保了在最短路径框架内提高重建质量的稳定性和有效性。</p>
+<p>整个优化过程如下：首先，利用$\epsilon_\theta$计算$dist(x_t, t)$，利用$\epsilon_{\theta, ema}$计算$dist(x_k, k)$，利用$\epsilon_{\theta, graph}$计算边权重$edge(k, t)$。然后，基于总损失函数式(10)更新模型参数。每隔一定间隔，将$\epsilon_{\theta, graph}$的参数同步到$\epsilon_{\theta, ema}$的参数，以保持边权重计算的稳定性，确保准确的最短路径优化。这种多状态策略不仅提高了对随机噪声的鲁棒性，还提高了步骤间误差传播的准确性，从而获得更好的去噪性能。值得注意的是，如果没有图建模，ShortDF就退化为DDIM。</p>
+<h4 id="3-6-来自最短路径优化的见解"><a href="#3-6-来自最短路径优化的见解" class="headerlink" title="3.6. 来自最短路径优化的见解"></a>3.6. 来自最短路径优化的见解</h4><p>本节将展示多状态优化如何有效地实现最短路径。通过举例说明一个实际的生成案例，我们验证了所提出优化策略的理论基础，并深入了解其运行机制。</p>
+<p>我们研究使用少量生成步骤的案例。例如，在迭代之前，假设$t = 10$且$k = 2$：路径$10 \to 0$和$10 \to 2 \to 0$分别代表单步生成和两步生成。</p>
+<p>在迭代1中，如果满足松弛条件，则路径（$10 \to 0$）的重建能力变得与路径（$10 \to 2 \to 0$）相当，从而使单步生成等同于原始的两步生成。</p>
+<p>在迭代2中，假设$t = 100$且$k = 10$，并且仍然满足松弛条件，则路径（$100 \to 0$）变得与路径（$100 \to 10 \to 0$）相当。同样，我们可以推断路径（$100 \to 0$）等同于（$100 \to 10 \to 2 \to 0$），使单步生成等同于原始的三步生成。通过迭代$n$继续这种推理，路径（$T \to 0$）成为各种路径的最优误差的代表。</p>
+<h3 id="4-实验"><a href="#4-实验" class="headerlink" title="4. 实验"></a>4. 实验</h3><h4 id="4-1-实验设置"><a href="#4-1-实验设置" class="headerlink" title="4.1. 实验设置"></a>4.1. 实验设置</h4><p>数据集：我们在多个广泛使用的基准数据集上对所提方法进行了评估，包括CIFAR-10（32×32）[11]、CelebA（名人面部属性数据集）（64×64）[17]和LSUN Churches（256×256）[29]。采用弗雷歇 inception 距离（FID）[7]来评估图像质量。</p>
+<p>我们的实现基于DDIM的官方代码和配置[22]，在单张NVIDIA A100 80GB GPU上运行。我们将设计的最短路径损失与DDIM的原始损失相结合来训练模型。在随后的三个数据集实验中，我们分别使用相同的噪声输入来生成DDIM样本和所提方法的输出结果。这种方式解释了为什么生成的样本之间存在高度相似性。</p>
+<p>对比模型：我们与目前最先进的加速扩散模型进行了对比，例如DDIM[22]、DPM-solver[18]、DPM-solver++[33]、iPNDM[14]、DEIS[30]、D-ODE[10]、SDDPM[5]、Resfusion[21]和gDDIM[31]。</p>
+<h4 id="4-2-实验结果"><a href="#4-2-实验结果" class="headerlink" title="4.2. 实验结果"></a>4.2. 实验结果</h4><h5 id="4-2-1-CIFAR-10数据集上的质量分析"><a href="#4-2-1-CIFAR-10数据集上的质量分析" class="headerlink" title="4.2.1 CIFAR-10数据集上的质量分析"></a>4.2.1 CIFAR-10数据集上的质量分析</h5><p>为了评估所提方法的有效性，我们在CIFAR-10数据集上对数据生成的质量和速度进行了全面分析。结果如表1和图2所示。</p>
+<p>如表1所示，与DDIM基准相比，我们提出的ShortDF方法在速度和质量上都有显著提升。具体而言，在表1的A部分中，ShortDF将步骤数从10减少到2，同时实现了9.08的较低FID分数，而DDIM的FID分数为11.14。这意味着在FID上提高了18.5%，同时生成过程加速了5.0倍。这些结果证明了ShortDF在以更少步骤生成高质量图像方面的效率和有效性。</p>
+<p>在表1的B部分中，我们提供了不同步骤（NFE）下的定量比较。我们的方法在每个步骤级别上都始终优于现有方法。例如，在2步时，ShortDF的FID为9.08，显著低于其他方法，同时保持了较快的生成速度。在10步时，ShortDF的FID达到3.75，优于gDDIM（DDPM）的4.17。这表明ShortDF能够以更少的步骤生成高质量图像，使其在低分辨率图像生成任务中具有很高的效率。</p>
+<p>图2直观地展示了ShortDF在不同步骤（1、5和10步）下在CIFAR-10数据集上生成的图像质量。结果表明，与DDIM相比，我们的方法即使在步骤更少的情况下，也能生成具有更高真实性和清晰度的图像。例如，ShortDF在5步生成的图像质量与DDIM在10步生成的图像质量相当。这进一步凸显了ShortDF在加速扩散模型数据生成过程的同时保持或提高图像质量的能力。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "f2.png" width = "80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图2. CIFAR-10数据集上1、5和10步生成的样本图像。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "t1.png" width = "80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表1. NVIDIA A100上CIFAR-10的性能指标</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h5 id="4-2-2-CelebA数据集上的质量分析"><a href="#4-2-2-CelebA数据集上的质量分析" class="headerlink" title="4.2.2 CelebA数据集上的质量分析"></a>4.2.2 CelebA数据集上的质量分析</h5><p>在图像尺寸更大的CelebA数据集上，我们的方法取得了优异的数据生成结果，如表2所示。由于CelebA数据集的图像尺寸更大，在2步生成策略下，FID值明显高于CIFAR-10数据集。与基准方法DDIM相比，所提方法在10步内的数据生成策略中，FID值显著降低。即使在20步生成过程中，本研究获得的FID值仍然只有DDIM的一半。所提方法的FID值降低程度与DPM-Solver++观察到的相当。与本研究相比，iPNDM和DEIS等更先进的技术在10步生成策略中表现略好，但在其他步骤配置中则表现出明显更高的值。</p>
+<p>部分样本的可视化结果如图3和图4所示。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "f3.png" width = "80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图3. 在初始残差优化后，我们的方法与DDIM在CelebA数据集上同一条采样路径的每个时间节点（共20个节点）的性能比较。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>如图3所示，我们比较了我们的方法和DDIM在CelebA数据集上同一条采样路径的每个时间节点的性能。该图清楚地表明，当使用相同的步骤生成方法时，ShortDF比DDIM具有更快的生成速度和更高的清晰度。具体而言，本文中第8次采样（8步）达到的图像质量与DDIM的第15次和第20次采样相当。这证明了我们的方法在以更少步骤生成高质量图像方面的效率和有效性。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "t2.png" width = "80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表2. CelebA数据集在不同步骤（NFE）下的比较结果</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>图4展示了我们的方法在CelebA数据集上通过10步生成的更多高质量采样实例。这些样本进一步说明了ShortDF在图像质量和生成速度方面的优越性能。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "f4.png" width = "80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图4. 使用我们的方法仅用10步扩散生成的高质量CelebA图像样本。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h5 id="4-2-3-Church数据集上的质量分析"><a href="#4-2-3-Church数据集上的质量分析" class="headerlink" title="4.2.3 Church数据集上的质量分析"></a>4.2.3 Church数据集上的质量分析</h5><p>Church数据集是一个大型图像集合，其规模超过CIFAR-10和CelebA。它的图像通常包含天空和植被等额外元素，这些元素会显著影响生成图像的质量。因此，在该数据集上进行的研究相对有限。在本文中，我们选择DDIM和PNDM方法进行对比分析，如表3所示。由于图像尺寸较大，所有方法在少于5步的情况下都产生相对较高的FID值。在比较2步和4步策略时，我们提出的方法的FID值显著低于DDIM，在5步策略中略低于DPM-Solver++，但优于PNDM方法。随着步骤数的增加，FID值显著降低，在10、20和50步时，FID值明显低于PNDM方法。</p>
+<p>如图5所示，DDIM方法在第一个采样节点（1步）处噪声较大，使得物体轮廓几乎不可见。此外，在我们的方法中，教堂投下了细微的阴影。所提方法在第8个采样节点的图像质量与DDIM在第15个采样节点的图像质量非常相似。值得强调的是，本文采用的从第10到第20个采样节点的过程在教堂背景区域（包括草地和蓝天）产生了更好的生成效果。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "f5.png" width = "80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图5. 在初始残差优化后，我们的方法与DDIM在Church数据集上同一条采样路径的每个时间节点的去噪质量比较。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "t3.png" width = "80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表3. Churches数据集在不同步骤（NFE）下的比较结果</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>同样，如图6所示，ShortDF仅用10步扩散就实现了高质量的教堂图像生成，使生成的样本与目标数据非常接近。这进一步凸显了我们的方法在以最小计算开销生成视觉连贯结果方面的效率和有效性。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "f6.png" width = "80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图6. 使用我们的方法仅用10步扩散生成的高质量教堂图像样本。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="5-结论"><a href="#5-结论" class="headerlink" title="5. 结论"></a>5. 结论</h3><p>本文提出了一种基于最短路径建模的新型去噪扩散方法，该方法通过优化残差传播，同时提升了去噪过程的效率和质量。这种方法在显著减少采样时间的同时，保持了（在某些情况下甚至提升了）生成样本的质量。为验证该方法，我们在多个基准数据集上进行了大量实验，结果表明其在解决扩散模型通常存在的计算开销问题上达到了当前领先水平。本研究证明了将图论融入扩散过程的有效性，为未来的研究和开发提供了宝贵见解。它不仅推动了生成建模领域的发展，还为实时应用奠定了坚实基础。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/diffusion/" rel="tag"># diffusion</a>
+              <a href="/tags/CVPR/" rel="tag"># CVPR</a>
+              <a href="/tags/2025/" rel="tag"># 2025</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/07/10/2025-CVPR-NitroFusion-High-Fidelity-Single-Step-Diffusion-through-Dynamic-Adversarial-Training%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" rel="prev" title="2025-CVPR-NitroFusion High-Fidelity Single-Step Diffusion through Dynamic Adversarial Training论文精读">
+      <i class="fa fa-chevron-left"></i> 2025-CVPR-NitroFusion High-Fidelity Single-Step Diffusion through Dynamic Adversarial Training论文精读
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2025/07/14/2025-CVPR-Random-Conditioning-for-Diffusion-Model-Compression-with-Distillation%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" rel="next" title="2025-CVPR-Random Conditioning for Diffusion Model Compression with Distillation论文精读">
+      2025-CVPR-Random Conditioning for Diffusion Model Compression with Distillation论文精读 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1. 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.3.</span> <span class="nav-text">2. 相关工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%89%80%E6%8F%90%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.</span> <span class="nav-text">3. 所提方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E8%83%8C%E6%99%AF%EF%BC%9ADDPM%E4%B8%8EDDIM"><span class="nav-number">1.4.1.</span> <span class="nav-text">3.1. 背景：DDPM与DDIM</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E4%BD%9C%E4%B8%BA%E8%B7%AF%E5%BE%84%E8%A1%A8%E7%A4%BA%E7%9A%84%E6%AE%8B%E5%B7%AE%E4%BC%A0%E6%92%AD"><span class="nav-number">1.4.2.</span> <span class="nav-text">3.2. 作为路径表示的残差传播</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84%E4%BC%98%E5%8C%96"><span class="nav-number">1.4.3.</span> <span class="nav-text">3.3. 最短路径优化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0"><span class="nav-number">1.4.4.</span> <span class="nav-text">3.4. 损失函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-5-%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5"><span class="nav-number">1.4.5.</span> <span class="nav-text">3.5. 优化策略</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-6-%E6%9D%A5%E8%87%AA%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84%E4%BC%98%E5%8C%96%E7%9A%84%E8%A7%81%E8%A7%A3"><span class="nav-number">1.4.6.</span> <span class="nav-text">3.6. 来自最短路径优化的见解</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.5.</span> <span class="nav-text">4. 实验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E5%AE%9E%E9%AA%8C%E8%AE%BE%E7%BD%AE"><span class="nav-number">1.5.1.</span> <span class="nav-text">4.1. 实验设置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C"><span class="nav-number">1.5.2.</span> <span class="nav-text">4.2. 实验结果</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#4-2-1-CIFAR-10%E6%95%B0%E6%8D%AE%E9%9B%86%E4%B8%8A%E7%9A%84%E8%B4%A8%E9%87%8F%E5%88%86%E6%9E%90"><span class="nav-number">1.5.2.1.</span> <span class="nav-text">4.2.1 CIFAR-10数据集上的质量分析</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-2-2-CelebA%E6%95%B0%E6%8D%AE%E9%9B%86%E4%B8%8A%E7%9A%84%E8%B4%A8%E9%87%8F%E5%88%86%E6%9E%90"><span class="nav-number">1.5.2.2.</span> <span class="nav-text">4.2.2 CelebA数据集上的质量分析</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-2-3-Church%E6%95%B0%E6%8D%AE%E9%9B%86%E4%B8%8A%E7%9A%84%E8%B4%A8%E9%87%8F%E5%88%86%E6%9E%90"><span class="nav-number">1.5.2.3.</span> <span class="nav-text">4.2.3 Church数据集上的质量分析</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E7%BB%93%E8%AE%BA"><span class="nav-number">1.6.</span> <span class="nav-text">5. 结论</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zongqing Li"
+      src="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+  <p class="site-author-name" itemprop="name">Zongqing Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">100</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hqulzq" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hqulzq" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hqulzq@163.com" title="E-Mail → mailto:hqulzq@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+      
+<script type="text/javascript" charset="utf-8" src="/js/tagcloud.js"></script>
+<script type="text/javascript" charset="utf-8" src="/js/tagcanvas.js"></script>
+<div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div id="myCanvasContainer" class="widget tagcloud">
+        <canvas width="250" height="250" id="resCanvas" style="width=100%">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2023/" rel="tag">2023</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2024/" rel="tag">2024</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2025/" rel="tag">2025</a><span class="tag-list-count">22</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">25</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICCV/" rel="tag">ICCV</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICML/" rel="tag">ICML</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IJCAI/" rel="tag">IJCAI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ODE%E6%B1%82%E8%A7%A3/" rel="tag">ODE求解</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">62</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%80%BB%E7%BB%93/" rel="tag">总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%85%E8%AF%BB/" rel="tag">阅读</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+        </canvas>
+    </div>
+</div>
+
+
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zongqing Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('post.copy_button').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('post.copy_success')
+          else $(this).text('post.copy_failure')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('post.copy_button')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>

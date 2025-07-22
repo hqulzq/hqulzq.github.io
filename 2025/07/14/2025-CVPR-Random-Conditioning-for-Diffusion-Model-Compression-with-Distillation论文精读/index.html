@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="全文翻译摘要扩散模型通过渐进式去噪生成高质量图像，但由于模型规模庞大且采样过程重复，其计算成本较高。知识蒸馏——将知识从复杂的教师模型迁移到更简单的学生模型——已在识别任务中得到广泛研究，尤其适用于迁移学生训练过程中未见过的概念。然而，其在扩散模型中的应用仍未得到充分探索，特别是在使学生模型能够生成训练图像中未涵盖的概念方面。在本研究中，我们提出了“随机条件调节”（Random Condition">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2025-CVPR-Random Conditioning for Diffusion Model Compression with Distillation论文精读">
+<meta property="og:url" content="https://hqulzq.github.io/2025/07/14/2025-CVPR-Random-Conditioning-for-Diffusion-Model-Compression-with-Distillation%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/index.html">
+<meta property="og:site_name" content="Lzq&#39;s blog">
+<meta property="og:description" content="全文翻译摘要扩散模型通过渐进式去噪生成高质量图像，但由于模型规模庞大且采样过程重复，其计算成本较高。知识蒸馏——将知识从复杂的教师模型迁移到更简单的学生模型——已在识别任务中得到广泛研究，尤其适用于迁移学生训练过程中未见过的概念。然而，其在扩散模型中的应用仍未得到充分探索，特别是在使学生模型能够生成训练图像中未涵盖的概念方面。在本研究中，我们提出了“随机条件调节”（Random Condition">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-07-14T06:48:38.000Z">
+<meta property="article:modified_time" content="2025-07-14T07:52:19.609Z">
+<meta property="article:author" content="Zongqing Li">
+<meta property="article:tag" content="diffusion">
+<meta property="article:tag" content="CVPR">
+<meta property="article:tag" content="2025">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://hqulzq.github.io/2025/07/14/2025-CVPR-Random-Conditioning-for-Diffusion-Model-Compression-with-Distillation%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>2025-CVPR-Random Conditioning for Diffusion Model Compression with Distillation论文精读 | Lzq's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lzq's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">49</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">100</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book">
+
+    <a href="/book" rel="section"><i class="fas fa-book fa-fw"></i>Book</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/07/14/2025-CVPR-Random-Conditioning-for-Diffusion-Model-Compression-with-Distillation%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          2025-CVPR-Random Conditioning for Diffusion Model Compression with Distillation论文精读
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-07-14 14:48:38 / 修改时间：15:52:19" itemprop="dateCreated datePublished" datetime="2025-07-14T14:48:38+08:00">2025-07-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散模型通过渐进式去噪生成高质量图像，但由于模型规模庞大且采样过程重复，其计算成本较高。知识蒸馏——将知识从复杂的教师模型迁移到更简单的学生模型——已在识别任务中得到广泛研究，尤其适用于迁移学生训练过程中未见过的概念。然而，其在扩散模型中的应用仍未得到充分探索，特别是在使学生模型能够生成训练图像中未涵盖的概念方面。在本研究中，我们提出了“随机条件调节”（Random Conditioning）这一新颖方法，通过将带噪图像与随机选择的文本条件配对，实现高效的无图像知识蒸馏。实验表明，借助该技术，学生模型能够生成训练图像中未出现过的概念。将其应用于条件扩散模型蒸馏时，该方法允许学生模型在无需生成特定条件图像的情况下探索条件空间，从而在生成质量和效率上均取得显著提升。这一成果推动了生成式扩散模型的资源高效部署，拓宽了其在研究和实际应用中的可及性。代码、模型和数据集可访问：<a target="_blank" rel="noopener" href="https://dohyun-as.github.io/Random-Conditioning/">https://dohyun-as.github.io/Random-Conditioning/</a></p>
+<span id="more"></span>
+<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1. 引言"></a>1. 引言</h3><p>扩散模型已成为强大的生成框架，能够在多个领域（如图像[17, 51, 54-57, 60]、视频[1, 2, 11, 18, 19, 76]和音频[20, 34, 80]）生成高质量输出，其原理是通过一系列学习步骤对随机噪声进行渐进式去噪。特别是，在大规模数据集上训练的文本到图像扩散模型（如Stable Diffusion[51, 55-57]）擅长生成与文本提示精准对齐的视觉吸引力图像。尽管这些模型性能令人印象深刻，但由于采样步骤繁多且模型参数庞大，它们的计算需求极高。因此，开发更高效的模型版本已成为研究热点。在本研究中，我们专注于压缩条件扩散模型以提高其效率，尤其针对现实生活中常见的场景——由于硬件限制、隐私问题和许可限制，获取大规模数据存在困难。</p>
+<p>知识蒸馏是一种将知识从一个已训练的网络（通常是更复杂的模型，称为教师模型）迁移到另一个通常更简单的网络（称为学生模型）的技术。通过使用教师模型的软目标[15, 81, 86, 88]或中间特征[6, 31, 58, 85]（这些特征捕捉了概念之间的关系），蒸馏技术不仅能将已见概念的知识迁移给学生模型，还能迁移未见概念的知识。例如，文献[15]表明，即使在蒸馏过程中从未提供过数字“3”的图像，学生模型也能学会识别MNIST[26]数据集中的数字“3”。同样，文献[44]的详细分析显示，教师模型在多个领域的知识可以迁移到学生模型，即使蒸馏仅使用单一领域的数据。这种迁移未见概念知识的能力提高了学生模型的训练效率，使其在数据有限的情况下也能实现有效学习。</p>
+<p>然而，正如我们在3.2节和图2中所展示的，在条件扩散模型中，并未观察到识别模型中存在的这种现象。条件扩散模型中的生成函数将语义条件空间映射到更大的图像空间，这使得学生模型更难泛化到未见概念。输出噪声也特定于当前输入，几乎无法捕捉不同输出图像之间的关系。此外，每个去噪步骤不仅依赖于输入条件，还依赖于中间的带噪图像，这进一步复杂化了映射函数。因此，学生模型很难通过蒸馏有效推断未见概念，这就需要使用大量的条件-图像对来探索整个条件空间，以充分蒸馏教师模型的生成能力。然而，获取如此大规模的文本-图像对往往因版权、隐私以及处理图像数据相关的存储限制等问题而变得复杂。此外，即使使用仅含文本的数据集通过教师模型生成图像，为所有可能的文本提示合成图像在计算资源和时间方面的成本也高得令人望而却步。</p>
+<p>为了应对这些挑战，我们提出了一种名为随机条件调节的新技术，即在训练过程中将带噪图像与随机选择的、可能不相关的文本条件配对。这种方法使模型能够学习可泛化的模式，而无需为数据集中的每个文本提示生成图像，从而实现高效的无图像蒸馏。通过减少与完整图像-文本映射相关的计算和存储需求，随机条件调节在保持良好性能的同时，显著降低了资源需求。我们的初步实验为随机条件调节的有效性提供了见解，而大量的主要实验表明，它使学生模型能够探索更广泛的条件空间。因此，如图1所示，即使在蒸馏过程中从未提供过某些概念（如图1中的动物）的图像，学生模型也能学会生成包含这些未见概念的图像。</p>
+<p>我们的主要贡献有三点：</p>
+<ul>
+<li>我们提出了一个新颖的见解：条件扩散模型无法通过蒸馏学习教师模型中那些在蒸馏过程中未被明确探索的条件所对应的知识。</li>
+<li>我们提出了一种新颖的技术——随机条件调节，它允许学生模型在无需配对图像的情况下探索条件。</li>
+<li>利用这项技术，我们实现了条件扩散模型的高效、无图像蒸馏，生成了具有竞争力的生成质量的紧凑模型。</li>
+</ul>
+<p><strong>2. 相关工作</strong></p>
+<p><strong>用于模型压缩的知识蒸馏</strong> 知识蒸馏是一种常见的模型压缩方法，通过让较小的模型学习较大模型的软输出[15, 81, 86, 88]或中间特征[6, 31, 58, 85]，在实现显著压缩的同时将性能损失降至最低。这项技术已在多个领域得到有效应用[28, 48, 77]，包括大型语言模型（LLMs）[22, 63, 73]和视觉Transformer（ViTs）[12, 74]，从而能够创建适用于资源受限环境的模型。在这些应用中，学生模型能够成功泛化到蒸馏过程中未明确接触过的输入[15, 44]。然而，在条件扩散模型中，通过蒸馏迁移未涵盖概念的知识仍未得到充分探索。因此，我们在扩散模型的数据高效模型压缩范围内研究这一方面。</p>
+<p><strong>减小规模的扩散模型</strong> 尽管基于扩散的生成模型[3-5, 51, 55-57]表现出优异性能，但它们庞大的参数数量和模型规模使其难以在资源受限的环境中部署。为了应对这些挑战，多项研究[7, 9, 79]专注于通过量化[67, 68]、架构进化[30]和知识蒸馏[24, 27]等技术来减小模型规模。值得注意的是，BK-SDM[24]通过应用块剪枝和特征蒸馏，将稳定扩散模型[55, 56]压缩为更小的版本；而KOALA[27]则通过采用逐层移除和基于自注意力的知识蒸馏，对SDXL[32, 51, 64]进行压缩。我们在以往研究的基础上，分析知识蒸馏在条件扩散模型中的有效性，并提出一种更高效的扩散模型蒸馏通用方法。</p>
+<p><strong>扩散加速</strong> 最近关于扩散模型加速的研究主要集中在减少采样步骤上，这源于扩散模型的迭代优化过程。一系列研究旨在无需训练即可加速扩散模型的去噪过程[23, 38, 87]，从而将采样步骤从一千步大幅减少到10-25步。然而，进一步的减少往往会导致性能急剧下降。基于蒸馏的加速方法[10, 25, 35, 36, 39, 40, 61, 71, 83, 84]通过知识蒸馏来应对这一挑战，使学生模型能够将多步输出整合为单步预测。例如，一致性蒸馏[25, 39, 71]训练模型在不同时间步产生自洽的输出，从而实现准确的单步预测。这些工作并不专注于压缩模型规模，而是旨在基于基础模型创建少步或单步模型。另一方面，我们的研究旨在开发一种压缩的基础扩散模型，它可以作为步骤加速方法的补充基础，提高其有效性。</p>
+<h3 id="3-方法"><a href="#3-方法" class="headerlink" title="3. 方法"></a>3. 方法</h3><p>在本节中，我们将介绍一种将条件扩散模型蒸馏为更小的学生模型的新方法。3.1节概述了我们旨在解决的问题以及在此过程中遇到的相关挑战。3.2节描述了一种用于解决该问题的朴素基线方法，3.3节则介绍了我们提出的名为随机条件调节的方法，包括其动机和主要观察结果。</p>
+<p><strong>3.1. 用于压缩的扩散模型蒸馏</strong></p>
+<p>我们的任务是对条件扩散模型进行压缩，在这项工作中，我们以用于文本到图像生成的Stable Diffusion模型[51,55-57]为例进行展示，因为它是最广泛使用的条件扩散模型之一。换句话说，我们将经过大规模训练的教师扩散模型T中的知识蒸馏到一个任意的学生模型S中，该学生模型可以采用不同的架构，且参数数量显著减少。值得注意的是，这项任务不同于通过知识蒸馏实现的扩散加速[10,25,35,36,39,40,61,71,83,84]，后者的主要目的是通过蒸馏减少推理所需的扩散步骤数量。我们在无图像的环境下进行这项任务，即只使用文本提示，不获取任何图像。这种配置特别有用，因为收集大规模的图像-文本对非常具有挑战性。这个过程成本高昂，需要大量的人力进行准确标注，而且还因隐私问题和许可限制而进一步复杂化，这些因素限制了对多样化、高质量数据集的获取。在某些领域，这些问题更为突出，数据稀缺或隐私问题加剧使得获取标注良好的图像-文本对变得尤其困难。</p>
+<p>由于去噪过程的迭代性质，在没有图像的情况下将知识蒸馏应用于扩散模型会带来额外的挑战。在扩散模型中，正向和反向过程定义在某个时间区间[0,T]上，教师模型在给定文本条件c的情况下，预测每个时间步t∈[0,T]需要从xₜ中移除的噪声εₜ(xₜ,t,c)。因此，知识从教师模型到学生模型的迁移必须在每个时间步t进行。然而，在没有图像的情况下，生成中间带噪输入xₜ（通常是通过向原始图像x₀添加噪声来创建[17,69]）变得很困难。这种限制使得我们无法在t≠T（其中T是去噪步骤的总数）时进行知识蒸馏，因为我们缺乏中间时间步所需的输入图像。</p>
+<p><strong>3.2. 朴素基线方法</strong></p>
+<p>一种用于无图像蒸馏的朴素方法是为所有可用的文本提示生成图像，以构建一个配对数据集D={(xⁿ,cⁿ)}ₙ₌₁ᴺ，其中xⁿ是为文本条件cⁿ生成的图像，作为原始图像x₀，从而允许我们为任何时间步t和条件cⁿ构建带噪输入图像xₜ。由于扩散模型生成图像耗时，我们需要提前生成并缓存这些图像来构建数据集。然后，教师模型可以通过以下损失函数蒸馏到学生模型中：</p>
+<p>$\mathcal{L}_{\text{out}}=\mathbb{E}_{\left(x_{t}, c\right) \in \mathcal{D}, t}\left[\left| \epsilon_{\mathcal{T}}\left(x_{t}, c, t\right)-\epsilon_{\mathcal{S}}\left(x_{t}, c, t\right)\right| _{2}^{2}\right],$ (1)</p>
+<p>其中，εₜ和εₛ分别是教师模型和学生模型预测的噪声。这里，(xₜ,c)是从数据集D中采样的样本对，图像中注入的噪声基于t，t在0到T之间均匀分布。此外，我们还可以加入特征级别的知识蒸馏损失函数：</p>
+<p>$\mathcal{L}_{\text{feat}}=\mathbb{E}_{\left(x_{t}, c\right) \in \mathcal{D}, t}\left[\sum_{l}\left| f_{\mathcal{T}}^{l}\left(x_{t}, c, t\right)-f_{\mathcal{S}}^{l}\left(x_{t}, c, t\right)\right| _{2}^{2}\right],$</p>
+<p>其中，fᵀˡ是教师模型第l层的特征图，fˢˡ表示学生模型对应层的特征图。需要注意的是，T和S不需要具有相同的架构；我们可以加入额外的临时蒸馏模块，将S的任意中间特征投影到与对应特征fᵀˡ维度相同的fˢˡ。这些额外的投影模块在蒸馏过程结束后会被丢弃。这种特征级损失与噪声预测损失相结合，促使学生模型复制教师模型的外部输出和内部处理过程。它允许学生学习并复制教师模型在蒸馏过程中遇到的文本条件c下的去噪行为。</p>
+<p>虽然这种朴素方法能够实现从教师模型到学生模型的有效知识迁移，但它存在一些局限性。该方法需要为大量不同的文本提示生成图像x₀，以充分覆盖文本条件空间。如果不能覆盖整个条件空间，学生模型可能无法为那些在蒸馏过程中从未见过的条件生成图像。我们在图2中对MNIST[26]进行的初步实验说明了覆盖条件空间的重要性。尽管教师模型能够生成数字“3”，但当学生模型在蒸馏过程中没有接触过这个条件时，就无法生成该数字。由于文本条件空间极其庞大——不像MNIST中的10个数字空间——为所有可能的提示合成x₀在计算、时间和存储方面的成本高得令人望而却步。对于依赖推理过程中多个时间步的扩散模型来说，这一挑战尤为突出，这进一步增加了每个生成图像的计算需求。</p>
+<p><strong>3.3. 随机条件调节</strong></p>
+<p>为了解决上述挑战，我们提出了如图4所示的随机条件调节方法，该方法允许我们只缓存从一部分文本提示生成的图像（蓝色框）。具体来说，给定大量的M个文本提示c，我们构建一个包含N个图像-文本对的数据集D=(xⁿ,cⁿ)，其中N≪M。如上所述，在这个配对数据集D上训练学生模型会限制蒸馏过程中的知识迁移，因为文本条件空间中存在许多未被这些文本覆盖的部分。需要注意的是，这种限制源于带噪输入图像xₜ的缺失，这些图像通常是从原始图像x₀构建而来，而D中生成的图像充当了这些原始图像。在我们的方法中，我们不仅利用包含有限生成图像的D，还利用c，使学生模型能够探索所有文本条件。这种方法增强了蒸馏的知识，使模型能够在整个条件空间上进行泛化。</p>
+<p>准确地说，我们首先从D中采样一个配对数据xⁿ和cⁿ，并从xⁿ构建xₜ。然后，在进行蒸馏之前，我们应用一个预定义的随机条件调节概率p(t)从c中采样一个随机文本。具体来说，文本条件ĉ由下式确定：</p>
+<p>$\hat{c}= \begin{cases}c^{n} &amp; \text { with probability } 1-p(t), \\ \bar{c} \in \mathcal{C} &amp; \text { with probability } p(t),\end{cases}$</p>
+<p>其中，$\bar{c}$是从c中随机采样的。最后，将ĉ与xₜ配对，以计算式(1)和式(2)中定义的两种蒸馏损失。</p>
+<p><strong>观察结果和动机</strong> 虽然所提出的随机条件调节技术最初可能看起来有些反直觉，但其依据是我们的经验观察，即扩散模型以一种随时间步t变化的方式整合条件信息。图3展示了在MNIST[26]和MS-COCO[33]数据集上，从不同时间步t的xₜ开始的去噪过程中生成的输出。在每一行中，xₜ都来自同一个初始图像x₀（对应最左侧一列），生成的输出具有相同的条件（显示在最右侧一列）。值得注意的是，这个条件与原始图像x₀相关联的标签不同。生成的图像主要与原始图像标签或条件值一致，只有在较窄的t范围内才会产生有明显伪影的输出。具体来说，当t较小时，由于去噪过程后期的噪声量较低，生成的图像往往反映原始图像标签（红色框）。相反，当t较大时，由于输入xₜ几乎与纯噪声无法区分，生成的图像主要遵循条件值（蓝色框）。这些结果还表明，条件c不需要与带噪输入xₜ有很强的相关性，这为所提出的随机条件调节技术提供了支持。这是因为：(1)当t较大时，x₀的原始语义几乎丢失，模型几乎完全依赖于输入条件c；(2)当t较小时，模型主要专注于对输入xₜ进行去噪，而忽略条件c。此外，图5表明，随着正向过程中噪声水平或时间步t的增加，p(xₜ|cⁿ)和p(xₜ|$\tilde{c}$)的分布会变得更加接近，最终在t接近T时合并为相同的高斯分布。这一观察结果意味着输入图像和条件不需要在每个时间步都直接对齐。它证明了我们的随机条件调节方法的有效性和合理性，突显了其在将条件与各种输入相关联方面的灵活性。基于这些观察结果和动机，我们对p(t)进行了经验探索。当p(t)设置为恒定值（如p(t)=1）时，结果并不理想。特别是，在图像和条件的配对相对更重要的中间时间步减小p(t)，会带来性能的提升。在这些探索中，我们在实验中使用了指数函数作为p(t)。关于p(t)的更多实验在补充材料的D节中提供。</p>
+<p><strong>条件空间的扩展探索</strong> 正如在图2中所探讨的，学生模型能够有效地学习生成在蒸馏过程中被配对数据集D明确覆盖的条件对应的图像，但为c中的每个文本提示生成图像会带来显著的瓶颈。随机条件调节通过允许使用未包含在D中的条件（无需对应的图像对）缓解了这一问题。因此，即使条件的数量远远超过可用图像的数量，学生也能够探索除了与图像配对的文本提示之外的其他文本提示。这种设置有助于学生复制教师在新条件下的行为，从而拓宽其生成能力。</p>
+<h3 id="4-实验"><a href="#4-实验" class="headerlink" title="4. 实验"></a>4. 实验</h3><h4 id="4-1-数据集"><a href="#4-1-数据集" class="headerlink" title="4.1. 数据集"></a>4.1. 数据集</h4><ul>
+<li><strong>LAION</strong>：我们使用包含4亿图像-文本对的LAION数据集[65, 66]。参照[24]，我们选取LAION-Aesthetics V2（L-Aes）6.5+子集[65]中的21.2万样本。为模拟无图像训练场景，我们仅从这些21.2万样本中提取文本提示并生成对应图像。对于随机条件调节，我们从LAION的4亿样本中额外随机抽取2000万文本提示。需要注意的是，基线方法仍使用LAION的原始图像，因为这些方法适用于需要图像访问的场景。</li>
+<li><strong>MS-COCO</strong>：MS-COCO数据集[33]是大规模图像-文本配对数据集，包含80个目标类别，标注丰富多样。遵循以往实践[53, 57, 60]，我们从MS-COCO验证集中选取3万图像-文本对（该验证集含4.1万张图像，每张图像配有5个人工标注的标题）。每张图像使用[24]中预先选定的一个标题进行评估。</li>
+</ul>
+<h4 id="4-2-实验设置"><a href="#4-2-实验设置" class="headerlink" title="4.2. 实验设置"></a>4.2. 实验设置</h4><ul>
+<li><strong>模型</strong>：实验中，我们使用Stable Diffusion（SD）v1.4模型[55]作为教师模型。BK-SDM[24]作为基线方法，代表当前扩散模型压缩领域中基于知识蒸馏的最先进技术。与我们的无图像设置不同，BK-SDM同时使用原始图像和文本。BK-SDM通过选择性移除教师网络的块实现压缩，提出了Base、Small、Tiny三种压缩架构。为公平比较，我们的方法采用相同的压缩架构。此外，我们还评估了四种进一步压缩的架构：通过减少通道数而非移除层实现压缩，其中三种架构的参数规模与BK-SDM的Base、Small、Tiny匹配，第四种（C-Micro）比Tiny更小，压缩程度更高。</li>
+<li><strong>评估指标</strong>：我们使用文本到图像生成任务的标准指标进行评估：Fréchet Inception距离（FID）[14]、Inception分数（IS）[62]和CLIP分数[13, 52]。FID和IS用于衡量生成图像的视觉保真度和多样性，CLIP分数评估生成图像与文本提示的对齐程度。FID和IS基于Inception-v3模型计算，CLIP分数基于ViT-g/14模型计算。</li>
+<li><strong>实现细节</strong>：除空条件比例[16]设为10%外，我们采用[24]中的所有超参数。蒸馏过程使用4台40GB NVIDIA A100 GPU，批处理大小为256。模型训练采用AdamW优化器[37]，学习率为5e-5。同时使用式(1)和式(2)的损失函数，权重均为1。对于式(2)，每经过U-Net[8, 59]的一个块后计算特征距离。</li>
+</ul>
+<h4 id="4-3-结果"><a href="#4-3-结果" class="headerlink" title="4.3. 结果"></a>4.3. 结果</h4><ul>
+<li><strong>随机条件调节的效果</strong>：表1展示了随机条件调节的有效性。前三行是未使用随机条件调节的结果，后三行是使用该方法的对应结果。特别地，对比第1行和第4行，随机条件调节使FID降低14.72%，IS提高8.29%，效果显著。以往研究[24]表明，用教师权重初始化学生模型可提升性能。此处对比第1行与第2行、第4行与第5行，也观察到类似提升。值得注意的是，即使使用教师初始化，随机条件调节仍能带来显著性能增益。此外，使用随机条件调节和随机初始化的模型性能，与使用教师初始化但无随机条件调节的模型相当甚至更优，突显了随机条件调节的强大作用。</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>随机条件调节</th>
+<th>教师初始化</th>
+<th>真实图像</th>
+<th>FID（↓）</th>
+<th>IS（↑）</th>
+<th>CLIP（↑）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>✗</td>
+<td>✓</td>
+<td>✗</td>
+<td>18.13</td>
+<td>31.84</td>
+<td>0.2728</td>
+</tr>
+<tr>
+<td>2</td>
+<td>✗</td>
+<td>✗</td>
+<td>✓</td>
+<td>18.15</td>
+<td>33.81</td>
+<td>0.2864</td>
+</tr>
+<tr>
+<td>3</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>15.76</td>
+<td>33.79</td>
+<td>0.2878</td>
+</tr>
+<tr>
+<td>4</td>
+<td>✓</td>
+<td>✓</td>
+<td>✗</td>
+<td>15.46</td>
+<td>34.48</td>
+<td>0.2834</td>
+</tr>
+<tr>
+<td>5</td>
+<td>✓</td>
+<td>✗</td>
+<td>✗</td>
+<td>15.76</td>
+<td>36.03</td>
+<td>0.2895</td>
+</tr>
+<tr>
+<td>6</td>
+<td>✓</td>
+<td>✗</td>
+<td>✓</td>
+<td>15.00</td>
+<td>36.14</td>
+<td>0.2933</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><em>表1. 随机条件调节的影响。比较不同设置（教师初始化和真实图像可用性）下有无随机条件调节的模型性能，基于MS COCO-30k数据集。所有模型采用B-Base架构。“随机条件调节”表示是否使用该方法，“教师初始化”表示是否用教师模型权重初始化，“真实图像”表示训练时是否使用真实图像。第3行与BK-SDM[24]结果一致</em>。</p>
+<p>第5行和第6行的分数几乎相同，表明我们的方法在不使用真实图像时仍能保持高性能。随机条件调节对分数提升的贡献超过真实图像的影响，是性能提升的关键因素。通过有效蒸馏教师模型知识，我们的方法无需真实图像即可达到相当性能，为无法获取实际图像数据时的条件扩散模型知识蒸馏提供了实用且稳健的解决方案。</p>
+<ul>
+<li><strong>未见概念的知识迁移</strong>：为验证随机条件调节在迁移未见过概念（即配对训练数据集D中排除的条件）知识方面的效果，我们在排除所有动物图像的数据集上训练学生模型（动物为未见概念）。通过GPT[47]、BLIP[29]和关键词过滤，从原始21.2万LAION数据集[65]中筛选出18.8万非动物文本提示。模型在这些提示生成的图像上训练，使用随机条件调节的模型额外引入未生成图像的文本提示。评估分为三个子集：3.3万非动物提示、0.8万动物相关提示，以及MS-COCO的3万样本。动物相关数据的过滤细节见补充材料J节。</li>
+</ul>
+<p>表2展示了该配置下的结果。未使用随机条件调节时（第1行），模型无法学习动物这一未见概念，性能较差，但在已见概念生成上性能相当。使用随机条件调节后（第2行），通过引入2.4万过滤后的文本（无需对应图像），模型在FID和CLIP分数上显著提升。进一步引入LAION的文本提示后（第3行），已见和未见概念的IS和CLIP分数均进一步提高。</p>
+<p>除未见类别外，我们的模型在已见概念的所有指标上均优于未使用随机条件调节的Base模型，性能接近教师模型。这表明随机条件调节不仅增强了未见概念的知识，还提升了整体生成质量。使用更多文本数据的模型整体性能更优。图1的定性结果进一步显示，使用随机条件调节时，未见概念的生成图像质量明显更优。额外文本数据集规模的影响及更多定性示例见补充材料C节和M节。</p>
+<ul>
+<li><p><strong>无数据蒸馏</strong>：表3评估了随机条件调节在完全无数据设置（蒸馏时无文本数据）中的有效性。该设置下（第3行），文本提示由LLM自动生成（详见补充材料A节），从中选取21.2万样本合成图像，构建配对数据集。值得注意的是，即使没有真实文本数据，第3行的模型不仅优于未使用随机条件调节的基线（第1行），还达到了使用真实文本数据和随机条件调节的模型（第2行）相当的性能。这证明了我们的方法在资源受限场景中的可扩展性和适应性。此外，该设置中LLM生成的标题可针对目标领域定制，有望引导学生模型生成特定风格或完成特定任务。</p>
+</li>
+<li><p><strong>与其他文本到图像模型的比较</strong>：我们的模型采用两种压缩策略：块压缩（移除UNet块）和通道压缩（减少通道宽度）。块压缩模型（B-Base、B-Small、B-Tiny）遵循[24]，使用预训练教师权重，在大幅减少参数的同时性能损失极小。通道压缩支持更高压缩率，设计了与块压缩模型参数规模相当的C-Base、C-Small、C-Tiny，以及参数比B-Tiny少30%的C-Micro。由于通道尺寸不匹配，通道压缩模型无法复用教师权重。UNet的乘加操作（MACs）、参数数量及模型对比细节见补充材料B节。</p>
+</li>
+</ul>
+<p>表4对比了我们的压缩模型与其他扩散模型的参数数量、训练用真实图像数量和性能。我们的B-Base、B-Small、B-Tiny与BK-SDM对应架构相同，且基于同一教师模型蒸馏，但我们的增强蒸馏方法性能更优。值得注意的是，我们的高压缩率模型优于BK-SDM的更大模型，尽管BK-SDM使用教师权重和真实图像训练。例如，我们最小的C-Micro模型在所有指标上均优于BK-SDM Small，且UNet参数仅为后者的50%（见表A）。需注意，BK-SDM Small受益于教师权重和真实图像，而C-Micro从零开始训练且不使用任何真实图像。此外，B-Base在相同架构下全面优于BK-SDM Base，性能接近教师模型（SDM-v1.4）。图6对比了B-Base、C-Micro与教师模型、BK-SDM Base和Tiny的生成图像，可见C-Micro虽紧凑但生成质量高。与依赖数亿训练图像的大型扩散模型相比，我们的模型参数更少且无需真实图像，通过蒸馏训练良好的教师模型知识即可达到相当性能。这些结果突显了我们方法的有效性，提供了一种保持高性能的高效压缩方案至。</p>
+<ul>
+<li><strong>生成图像数量的影响</strong>：图7对比了B-Base模型在使用和不使用随机条件调节时，生成图像数量为1万、10万和21.2万的性能。在FID、IS和CLIP分数上，使用随机条件调节的模型始终更优。值得注意的是，生成图像越少（如1万），性能差距越大，表明随机条件调节在数据有限时仍能实现有效蒸馏。使用1万图像加随机条件调节的模型，性能优于使用21.2万图像但无随机条件调节的模型，突显了所提方法的优势。</li>
+</ul>
+<h3 id="5-结论"><a href="#5-结论" class="headerlink" title="5. 结论"></a>5. 结论</h3><p>我们的研究表明，随机条件调节能够使学生模型学会生成训练图像数据集中未包含的概念的图像。这种能力让学生模型在条件扩散模型蒸馏过程中能够探索更广泛的文本条件空间，从而提升性能。该方法有效地将大型扩散模型压缩为更小、更高效的版本。此外，我们开发的紧凑型基础扩散模型支持在资源受限的环境中使用，并为进一步的研究进展提供了可能。</p>
+<p>在本研究中，我们实验所用的教师模型基于Stable Diffusion v1.4。我们预计，使用更先进的版本（如SDXL）可能会因它们更强的能力而带来性能提升。尽管我们的随机条件调节方法广泛适用于条件扩散模型的蒸馏，但我们的实验仅在文本到图像模型上进行。为了推广我们的发现，未来的工作将包括把这种方法扩展到其他模态的扩散模型。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/diffusion/" rel="tag"># diffusion</a>
+              <a href="/tags/CVPR/" rel="tag"># CVPR</a>
+              <a href="/tags/2025/" rel="tag"># 2025</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/07/11/2025-CVPR-Optimizing-for-the-Shortest-Path-in-Denoising-Diffusion-Model%E5%85%A8%E9%83%A8%E5%86%85%E5%AE%B9/" rel="prev" title="2025-CVPR-Optimizing for the Shortest Path in Denoising Diffusion Model全部内容">
+      <i class="fa fa-chevron-left"></i> 2025-CVPR-Optimizing for the Shortest Path in Denoising Diffusion Model全部内容
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2025/07/14/2025-CVPR-RayFlow-Instance-Aware-Diffusion-Acceleration-via-Adaptive-Flow-Trajectories%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" rel="next" title="2025-CVPR-RayFlow Instance-Aware Diffusion Acceleration via Adaptive Flow Trajectories论文精读">
+      2025-CVPR-RayFlow Instance-Aware Diffusion Acceleration via Adaptive Flow Trajectories论文精读 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1. 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%96%B9%E6%B3%95"><span class="nav-number">1.3.</span> <span class="nav-text">3. 方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.4.</span> <span class="nav-text">4. 实验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="nav-number">1.4.1.</span> <span class="nav-text">4.1. 数据集</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E5%AE%9E%E9%AA%8C%E8%AE%BE%E7%BD%AE"><span class="nav-number">1.4.2.</span> <span class="nav-text">4.2. 实验设置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-%E7%BB%93%E6%9E%9C"><span class="nav-number">1.4.3.</span> <span class="nav-text">4.3. 结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E7%BB%93%E8%AE%BA"><span class="nav-number">1.5.</span> <span class="nav-text">5. 结论</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zongqing Li"
+      src="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+  <p class="site-author-name" itemprop="name">Zongqing Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">100</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hqulzq" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hqulzq" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hqulzq@163.com" title="E-Mail → mailto:hqulzq@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+      
+<script type="text/javascript" charset="utf-8" src="/js/tagcloud.js"></script>
+<script type="text/javascript" charset="utf-8" src="/js/tagcanvas.js"></script>
+<div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div id="myCanvasContainer" class="widget tagcloud">
+        <canvas width="250" height="250" id="resCanvas" style="width=100%">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2023/" rel="tag">2023</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2024/" rel="tag">2024</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2025/" rel="tag">2025</a><span class="tag-list-count">22</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">25</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICCV/" rel="tag">ICCV</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICML/" rel="tag">ICML</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IJCAI/" rel="tag">IJCAI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ODE%E6%B1%82%E8%A7%A3/" rel="tag">ODE求解</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">62</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%80%BB%E7%BB%93/" rel="tag">总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%85%E8%AF%BB/" rel="tag">阅读</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+        </canvas>
+    </div>
+</div>
+
+
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zongqing Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('post.copy_button').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('post.copy_success')
+          else $(this).text('post.copy_failure')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('post.copy_button')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>

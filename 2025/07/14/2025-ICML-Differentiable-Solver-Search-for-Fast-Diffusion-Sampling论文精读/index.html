@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="全文翻译摘要扩散模型已展现出卓越的生成质量，但其代价是需要大量的函数评估。最近，基于常微分方程（ODE）的高级求解器被开发出来，旨在减轻有限采样步骤下反向扩散求解的巨大计算需求。然而，这些求解器深受亚当斯（Adams）类多步法的启发，仅依赖于与时间$t$相关的拉格朗日插值。我们发现，与时间$t$相关的拉格朗日插值对于扩散模型而言并非最优，并揭示了一个由时间步长和求解器系数构成的紧凑搜索空间。基于这">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2025-ICML-Differentiable Solver Search for Fast Diffusion Sampling论文精读">
+<meta property="og:url" content="https://hqulzq.github.io/2025/07/14/2025-ICML-Differentiable-Solver-Search-for-Fast-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/index.html">
+<meta property="og:site_name" content="Lzq&#39;s blog">
+<meta property="og:description" content="全文翻译摘要扩散模型已展现出卓越的生成质量，但其代价是需要大量的函数评估。最近，基于常微分方程（ODE）的高级求解器被开发出来，旨在减轻有限采样步骤下反向扩散求解的巨大计算需求。然而，这些求解器深受亚当斯（Adams）类多步法的启发，仅依赖于与时间$t$相关的拉格朗日插值。我们发现，与时间$t$相关的拉格朗日插值对于扩散模型而言并非最优，并揭示了一个由时间步长和求解器系数构成的紧凑搜索空间。基于这">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-07-14T08:29:22.000Z">
+<meta property="article:modified_time" content="2025-07-22T08:24:26.020Z">
+<meta property="article:author" content="Zongqing Li">
+<meta property="article:tag" content="diffusion">
+<meta property="article:tag" content="CVPR">
+<meta property="article:tag" content="2025">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://hqulzq.github.io/2025/07/14/2025-ICML-Differentiable-Solver-Search-for-Fast-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>2025-ICML-Differentiable Solver Search for Fast Diffusion Sampling论文精读 | Lzq's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lzq's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">49</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">100</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book">
+
+    <a href="/book" rel="section"><i class="fas fa-book fa-fw"></i>Book</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/07/14/2025-ICML-Differentiable-Solver-Search-for-Fast-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          2025-ICML-Differentiable Solver Search for Fast Diffusion Sampling论文精读
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-07-14 16:29:22" itemprop="dateCreated datePublished" datetime="2025-07-14T16:29:22+08:00">2025-07-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-07-22 16:24:26" itemprop="dateModified" datetime="2025-07-22T16:24:26+08:00">2025-07-22</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散模型已展现出卓越的生成质量，但其代价是需要大量的函数评估。最近，基于常微分方程（ODE）的高级求解器被开发出来，旨在减轻有限采样步骤下反向扩散求解的巨大计算需求。然而，<strong>这些求解器深受亚当斯（Adams）类多步法的启发，仅依赖于与时间$t$相关的拉格朗日插值。我们发现，与时间$t$相关的拉格朗日插值对于扩散模型而言并非最优，并揭示了一个由时间步长和求解器系数构成的紧凑搜索空间。</strong>基于这一分析，我们提出了一种新颖的可微求解器搜索算法，以识别更优的求解器。配备所搜索到的求解器后，整流流（rectified-flow）模型（如SiT-XL/2和FlowDCN-XL/2）在ImageNet-256×256数据集上仅用10步就能分别达到2.40和2.35的FID分数。同时，DDPM模型DiT-XL/2在仅10步的情况下达到了2.33的FID分数。值得注意的是，我们搜索到的求解器显著优于传统求解器（甚至一些蒸馏方法）。此外，该求解器在各种模型架构、分辨率和模型大小上都表现出良好的通用性。<br><span id="more"></span></p>
+<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1. 引言"></a>1. 引言</h3><p>图像生成是计算机视觉研究中的一项基础任务，其目标是捕捉原始图像数据集的固有数据分布，并通过分布采样生成高质量的合成图像。扩散模型（Ho 等人，2020；Song 等人，2020b；Karras 等人，2022；Liu 等人，2022；Lipman 等人，2022；Wang 等人，2025）近年来已成为学习图像生成中潜在数据分布的极具前景的解决方案，其性能显著优于基于 GAN 的模型（Brock 等人，2018；Sauer 等人，2022）和自回归模型（Chang 等人，2022）。</p>
+<p>然而，扩散模型在推理过程中需要大量的去噪步骤，这会带来巨大的计算成本，从而限制了预训练扩散模型的广泛部署。为了实现快速扩散采样，现有研究探索了两种不同的方法。一种是基于训练的技术，通过将快速 ODE 轨迹蒸馏到模型参数中，从而规避冗余的优化步骤。另一种是基于求解器的方法（Lu 等人，2023；Zhang 和 Chen，2023；Song 等人，2020a），通过设计高阶数值 ODE 求解器来解决快速采样问题。</p>
+<p>在基于训练的加速方法中，（Salimans 和 Ho，2022）将单步学生去噪器与多步教师输出对齐，从而减轻推理负担。（Song 等人，2023）提出的一致性模型概念，直接教会模型在任意时间步产生一致的预测。在（Song 等人，2023）的基础上，后续工作（Zheng 等人，2024；Kim 等人，2023；Wang 等人，2024a；Song 等人，2025）提出了改进技术，以减轻 LCM 训练中的离散误差。此外，（Lin 等人，2024；Kang 等人，2024；Yin 等人，2024；Zhou 等人，2024；Wang 等人，2023）利用对抗训练和分布匹配来提高生成样本的质量。为了提高分布匹配的训练效率。然而，基于训练的方法会改变模型参数，导致无法充分利用预训练性能。</p>
+<p>基于求解器的方法严重依赖反向扩散动力学中的 ODE 公式和手工设计的多步求解器。（Lu 等人，2023；2022）和（Zhang 和 Chen，2023）指出了扩散 ODE 的半线性结构，并提出了指数积分器来解决扩散模型中的快速采样问题。（Zhao 等人，2023）通过借鉴预测-校正结构进一步提高了采样质量。得益于基于多步的 ODE 求解器方法，只需 10 步即可生成高质量样本。为了进一步提高效率，（Gao 等人，2023）跟踪反向误差并确定自适应步长。此外，（Karras 等人，2022；Lu 等人，2022）提出了一种手工设计的时间步调度器来对重新间隔的时间步进行采样。（Xue 等人，2024）认为（Karras 等人，2022；Lu 等人，2022）中采样的时间步是次优的，因此提出了一种在线优化算法来寻找生成的最佳采样时间步。除了时间步优化外，（Shaul 等人，2023）还学习了特定的路径转换以提高采样效率。</p>
+<p>与基于训练的加速方法相比，基于求解器的方法不需要调整参数，并保留了预训练模型的最佳性能。此外，求解器可以无缝应用于任何使用类似噪声调度器训练的扩散模型，具有高度的灵活性和适应性。这促使我们从扩散求解器的角度研究预训练扩散模型在有限步骤内的生成能力。</p>
+<p>当前最先进的扩散求解器（Lu 等人，2023；Zhao 等人，2023）采用类 Adams 多步方法，该方法使用拉格朗日插值函数来最小化积分误差。我们认为，最优求解器应该针对特定的预训练去噪函数及其相应的噪声调度器进行定制。在本文中，我们通过使用数据驱动的方法改进扩散求解器，在不破坏扩散模型预训练内部结构的情况下，探索基于求解器的快速扩散采样方法。受（Xue 等人，2024）的启发，我们研究了扩散 ODE 中的误差来源，发现插值函数的形式并不重要，可以简化为系数。此外，我们定义了一个与时间步和求解器系数相关的紧凑搜索空间。因此，我们提出了一种可微求解器搜索方法来识别紧凑搜索空间中的最优参数。</p>
+<p>基于我们提出的新型可微求解器搜索算法，我们研究了预训练扩散模型在有限步骤下的上限性能。我们搜索到的求解器显著提高了预训练扩散模型的性能，并大幅优于传统求解器。在 ImageNet-256×256 上，配备我们的求解器后，整流流模型 SiT-XL/2 和 FlowDCN-XL/2 在 10 步内分别达到 2.40 和 2.35 的 FID，而 DDPM 模型 DiT-XL/2 达到 2.33 的 FID。令人惊讶的是，我们的研究结果表明，在配备优化的高阶求解器后，在类似的 NFE 约束下，DDPM 可以达到甚至超过整流流模型的性能。</p>
+<p>综上所述，我们的贡献如下：</p>
+<ul>
+<li>我们揭示了插值函数的选择并不重要，通过预积分技术可以将其简化为系数。我们证明了反向扩散 ODE 中离散化误差的上限与时间步和求解器系数都相关，并定义了一个紧凑的求解器搜索空间。</li>
+<li>基于我们的分析，我们提出了一种新型可微求解器搜索算法，为给定的扩散模型找到最优的求解器参数。</li>
+<li>对于 DDPM/VP 时间调度，配备我们搜索到的求解器后，DiT-XL/2 在 10 步内达到 2.33 的 FID，显著优于 DPM-Solver++/UniPC。</li>
+<li>对于整流流模型，配备我们搜索到的求解器后，SiT-XL/2 和 FlowDCN-XL/2 在 ImageNet-256×256 上 10 步内分别达到 2.40 和 2.35 的 FID。</li>
+<li>对于文本到图像的扩散模型，如 FLUX、SD3、PixArt-Σ，我们在 ImageNet-256×256 上搜索到的求解器在相同的 CFG 尺度下，始终能生成比传统求解器更好的图像。</li>
+</ul>
+<h3 id="2-相关工作"><a href="#2-相关工作" class="headerlink" title="2. 相关工作"></a>2. 相关工作</h3><p>扩散模型通过向$x_0$逐渐添加高斯噪声$\epsilon$，将相应的已知数据分布$p(x_0)$扰动为简单的高斯分布。每个时刻$t$的离散扰动函数满足$N(x_t|\alpha_t x_0,\sigma_t^2 I)$，其中$\alpha_t$、$\sigma_t&gt;0$。这也可以写成公式（1）的形式：</p>
+<script type="math/tex; mode=display">x_t=\alpha_t x_{\text{real}}+\sigma_t \epsilon \quad (1)</script><p>此外，如公式（2）所示，公式（1）可以用前向连续SDE来描述，其中$f(t)=\frac{d \log \alpha_t}{dt}$，$g(t)=\frac{d \sigma_t^2}{dt}-\frac{d \log \alpha_t}{dt}\sigma_t^2$。（Anderson, 1982）确立了一个关键定理，即前向SDE存在一个等价的反向时间扩散过程，如公式（3）所示，因此生成过程等价于求解扩散SDE。通常，扩散模型采用神经网络和不同的预测参数化方法来估计采样轨迹上的得分函数$\nabla \log_x p_{x_t}(x_t)$（Song等人, 2020b；Karras等人, 2022；Ho等人, 2020）。</p>
+<script type="math/tex; mode=display">dx_t=f(t)x_t dt+g(t)dw \quad (2)</script><script type="math/tex; mode=display">dx_t=\left[f(t)x_t - g(t)^2 \nabla_x \log p(x_t)\right]dt + g(t)dw \quad (3)</script><p>（Song等人, 2020b）还表明，存在一个相应的确定性过程（公式4），其轨迹与公式（3）具有相同的边缘概率密度。</p>
+<script type="math/tex; mode=display">dx_t=\left[f(t)x_t - \frac{1}{2}g(t)^2 \nabla_{x_t} \log p(x_t)\right]dt</script><p>整流流模型在公式（2）和公式（3）的框架下对扩散模型进行了简化。与（Ho等人, 2020）引入的非线性转换调度不同，整流流模型采用线性函数将数据转换为标准高斯噪声：</p>
+<script type="math/tex; mode=display">x_t=tx_{\text{real}}+(1-t)\epsilon</script><p>整流流模型不估计得分函数$\nabla_{x_t} \log p_t(x_t)$，而是直接学习一个神经网络$v_\theta(x_t,t)$来预测速度场$v_t=dx_t=(x_{\text{real}}-\epsilon)$：</p>
+<script type="math/tex; mode=display">\mathcal{L}(\theta)=\mathbb{E}\left[\int_0^1 \left\|v_\theta(x_t,t)-v_t\right\|^2 dt\right]</script><p>基于求解器的快速采样方法不需要调整参数，并保留了预训练模型的最佳性能。它可以无缝应用于任何使用类似噪声调度器训练的扩散模型，具有高度的灵活性和适应性。求解器在很大程度上依赖于公式（4）中的反向扩散ODE。当前的求解器主要集中在DDPM/VP噪声调度上。（Lu等人, 2022；Zhang和Chen, 2023）发现了DDPM/VP反向ODE中的半线性结构。此外，（Zhao等人, 2023）通过借鉴预测-校正结构提高了采样质量。得益于多步ODE求解器，仅用10步就能生成高质量的样本。为了进一步提高效率，（Gao等人, 2023）跟踪反向误差并确定自适应步长。此外，（Karras等人, 2022；Lu等人, 2022）提出了一种手工设计的时间步调度器来对重新间隔的时间步进行采样。然而，（Xue等人, 2024；Sabour等人, 2024；Chen等人, 2024a）认为手工设计的时间步是次优的，因此提出了一种在线优化算法来寻找生成的最佳采样时间步。除了时间步优化外，（Shaul等人, 2023）还学习了特定的路径转换以提高采样效率。</p>
+<h3 id="3-问题定义"><a href="#3-问题定义" class="headerlink" title="3. 问题定义"></a>3. 问题定义</h3><p>由于整流流（rectified-flow）是扩散模型家族中一种简单而优雅的形式，为了提高可读性，我们选择整流流作为本文讨论的主要对象。重要的是，我们提出的算法并不局限于整流流模型。我们会在第6节探讨其在其他扩散模型（如DDPM/VP）上的适用性。</p>
+<p>回顾公式（7）中反向扩散的连续积分，其中预定义的区间为$\{t_0, t_1, …, t_N\}$。给定预训练的扩散模型及其在公式（4）中定义的相应常微分方程（ODE），在处理区间$[t_i, t_{i+1}]$的积分之前，我们已经获得了前一时间步的采样速度场$\{(x_j, t_j, v_j = v_\theta(x_j, t_j)\}_{j=0}^i$。为了表述清晰，我们将$x_{t_i}$直接记为$x_i$：</p>
+<script type="math/tex; mode=display">x_{i+1} = x_i + \int_{t_i}^{t_{i+1}} v_\theta(x_t, t) dt</script><p>如公式（8）所示，我们致力于开发一种更优的求解器，在有限的采样步骤（NFE）下最小化积分误差，同时提高图像质量，且不需要对预训练模型的参数进行任何调整：</p>
+<script type="math/tex; mode=display">\Phi = \arg\min \mathbb{E}\left[\left\| \Phi(\epsilon, v_\theta) - \left(\epsilon + \int_0^1 v_\theta(x_t, t) dt\right) \right\| \right] \quad (8)</script><h3 id="4-反向扩散ODE采样分析"><a href="#4-反向扩散ODE采样分析" class="headerlink" title="4. 反向扩散ODE采样分析"></a>4. 反向扩散ODE采样分析</h3><p>首先，我们回顾（Zhao等人，2023；Zhang和Chen，2023；Lu等人，2023）常用的多步方法，并指出其潜在局限性。具体而言，我们认为Adams-Bashforth方法中使用的拉格朗日插值函数对于扩散模型而言并非最优。此外，我们还表明，由于预积分和期望估计最终会将插值函数简化为一组系数，因此插值函数的具体形式并不重要。受（Xue等人，2024）的启发，我们证明了时间步和这些系数实际上构成了我们的搜索空间。</p>
+<h4 id="4-1-多步方法回顾"><a href="#4-1-多步方法回顾" class="headerlink" title="4.1. 多步方法回顾"></a>4.1. 多步方法回顾</h4><p>如公式（9）所示，欧拉方法在整个区间$[t_i, t_{i+1}]$内使用$v_i$作为公式（9）的估计值。高阶多步求解器通过引入插值函数并利用先前的采样值，进一步提高了积分的估计质量。</p>
+<script type="math/tex; mode=display">x_{i+1} = x_i + (t_{i+1} - t_i) v_\theta(x_i, t_i) \quad (9)</script><p>最经典的多步求解器Adams-Bashforth方法（Bashforth &amp; Adams, 1883）（为简洁起见称为Adams）引入了拉格朗日多项式，以提高给定区间内的估计精度。</p>
+<script type="math/tex; mode=display">x_{i+1} \approx x_i + \int_{t_i}^{t_{i+1}} \sum_{j=0}^{i} \left( \prod_{k=0, k \neq j}^{i} \frac{t - t_k}{t_j - t_k} \right) v_j dt</script><script type="math/tex; mode=display">x_{i+1} \approx x_i + \sum_{j=0}^{i} v_j \int_{t_i}^{t_{i+1}} \left( \prod_{k=0, k \neq j}^{i} \frac{t - t_k}{t_j - t_k} \right) dt \quad (11)</script><p>如公式（11）所示，拉格朗日多项式的$\int_{t_i}^{t_{i+1}} (\prod_{k=0, k \neq j}^{i} \frac{t - t_k}{t_j - t_k}) dt$可以预积分为一个常数系数，因此ODE求解只需简单的求和运算。当前最先进的多步求解器（Lu等人，2023；Zhao等人，2023）深受Adams-Bashforth类多步求解器的启发。这些求解器采用拉格朗日插值函数或差分公式来估计给定区间内的值。</p>
+<p>然而，拉格朗日插值函数和其他类似方法只考虑了$t$，而$v(x, t)$还需要$x$作为输入。通过在$x_i$处对$x$进行一阶泰勒展开，并在$t_i$处对$t$进行高阶展开，我们可以很容易地推导出估计的误差界限。</p>
+<h4 id="4-2-关注求解器系数而非插值函数"><a href="#4-2-关注求解器系数而非插值函数" class="headerlink" title="4.2. 关注求解器系数而非插值函数"></a>4.2. 关注求解器系数而非插值函数</h4><p>与典型的常微分方程求解问题不同，当考虑反向扩散ODE以及预训练模型时，存在一个紧凑的搜索空间。我们定义了一个通用插值函数$\mathcal{P}$，它没有明确的形式。$\mathcal{P}$通过测量$(x_t, t)$与先前采样点$\{(x_j, t_j)\}_{j=0}^{i}$之间的距离，来确定$\{v_j\}_{j=0}^{i}$的插值权重：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+x_{i+1} &\approx x_i + \int_{t_i}^{t_{i+1}} \sum_{j=0}^{i} \mathcal{P}(x_t, t, x_j, t_j) v_j dt. \\
+&\approx x_i + \sum_{j=0}^{i} v_j \int_{t_i}^{t_{i+1}} \mathcal{P}(x_t, t, x_j, t_j) dt.
+\end{aligned}</script><p><strong>假设4.1.</strong> 我们假设通用插值函数$\sum_{j=0}^{i} \mathcal{P}(x_t, t, x_j, t_j) v_j$对$v(x, t)$的余项有界，为$O(dx^m) + O(dt^n)$，其中$O(dx^m)$是关于$dx$的m阶无穷小，$O(dt^n)$是关于$dt$的n阶无穷小。</p>
+<p>公式（13）存在递归依赖关系，因为$x_t$也依赖于$\sum_{j=0}^{i} \mathcal{P}(x_t, t, x_j, t_j) v_j dt$。为了消除这种递归依赖，如公式（14）所示，我们简单地使用$x(t)$在$x_i$处的一阶泰勒展开来替代原始形式。注意，$v_i$已经由$x_i$和$t_i$确定，因此公式（14）的部分积分可以表示为公式（15）。与朴素的拉格朗日插值不同，$\mathcal{C}_j(x_i)$是当前$x_i$的函数，而不是常数标量。学习$\mathcal{C}_j(x_i)$函数会导致泛化能力的丧失，这限制了其在扩散模型采样中的实际应用。</p>
+<script type="math/tex; mode=display">x_{i+1} \approx x_i + \sum_{j=0}^{i} v_j \int_{t_i}^{t_{i+1}} \mathcal{P}(x_i + v_i(t - t_i), t, x_j, t_j) dt</script><script type="math/tex; mode=display">x_{i+1} \approx x_i + \sum_{j=0}^{i} v_j \mathcal{C}_j(x_i) (t_{i+1} - t_i)</script><p><strong>定理4.2.</strong> 给定采样时间区间$[t_i, t_{i+1}]$，并假设$\mathcal{C}_j(x_i) = g_j(x_i) + b_i^j$，类Adams线性多步方法的误差期望为$(t_{i+1} - t_i) \mathbb{E}_{x_i} \left| \sum_{j=0}^{i} v_j g_j(x_i) \right|$。用$\mathbb{E}_{x_i} [\mathcal{C}_j(x_i)]$替代$\mathcal{C}_j(x)$是最优选择，其误差期望为$(t_{i+1} - t_i) \mathbb{E}_{x_i} \left| \sum_{j=0}^{i} v_j [g_j(x_i) - \mathbb{E}_{x_i} g_j(x_i)] \right|$。证明见附录H。</p>
+<p>根据定理4.2，我们选择用$\mathcal{C}_j(x_i)$的期望$\mathbb{E}_{x_i} [\mathcal{C}_j(x_i)]$替代$\mathcal{C}_j(x_i)$，从而获得与扩散调度相关的系数，同时保持泛化能力。</p>
+<p>最后，给定预定义的时间间隔，我们得到优化目标公式（16），其中$c_i^j = \mathbb{E}_{x_i} [\mathcal{C}_j(x_i)]$。该期望可以通过大量数据和梯度下降来优化。</p>
+<script type="math/tex; mode=display">x_{i+1} \approx x_i + \sum_{j=0}^{i} v_j c_i^j (t_{i+1} - t_i)</script><h4 id="4-3-求解器的最优搜索空间"><a href="#4-3-求解器的最优搜索空间" class="headerlink" title="4.3. 求解器的最优搜索空间"></a>4.3. 求解器的最优搜索空间</h4><p><strong>假设4.3.</strong> 如公式（17）所示，预训练的速度模型$v_\theta$并非完美，$v_\theta$与理想速度场$\hat{v}$之间的误差是L1有界的，其中$\eta$是一个常数标量。</p>
+<script type="math/tex; mode=display">\|\hat{v} - v_\theta\| \leq \eta \ll \|\hat{v}\| \quad (17)</script><p>前面的讨论假设我们拥有完美的速度函数。然而，理想的速度很难获得，我们只有预训练的速度模型。根据公式（16），我们可以将公式（16）从$t_{i=0}$扩展到$t_{i=N}$，以获得由非理想速度估计引起的误差界限。</p>
+<p><strong>定理4.4.</strong> 非理想速度估计模型引起的误差可以用以下公式表示。我们可以采用三角不等式来获得$|x_N - \hat{x}_N|$的误差界限（L1），证明见附录I。</p>
+<script type="math/tex; mode=display">\|x_N - \hat{x}_N\| \leq \eta \sum_{i=0}^{N-1} \sum_{j=0}^{i} |c_i^j (t_{i+1} - t_i)|</script><p>基于定理4.4，由于误差界限与时间步和求解器系数相关，我们可以定义一个更紧凑的搜索空间，包括$\{c_i^j\}_{j &lt; i, j=0, i=1}^{N}$和$\{t_i\}_{i=0}^{N}$。</p>
+<p><strong>定理4.5.</strong> 基于定理4.4和定理4.2，我们可以推导出我们的求解器搜索方法和其他对应方法的总误差上界（L1）。</p>
+<p>我们的求解器搜索的总误差上界为：</p>
+<script type="math/tex; mode=display">
+\begin{gathered}
+\sum_{i=0}^{N-1} (t_{i+1} - t_i) \left( \sum_{j=0}^{i} \eta |\mathbb{E}_{x_i} g_j(x_i) + b_i^j| \right. \\
+\left. + \mathbb{E}_{x_i} \left\| \sum_{j=0}^{i} v_j g_j(x_i) - \mathbb{E}_{x_i} g_j(x_i) \right\| \right)
+\end{gathered}</script><p>与类Adams线性多步方法相比，我们搜索到的求解器具有更小的误差上界。证明见附录I。</p>
+<p>通过定理4.5，我们搜索到的求解器拥有相对较小的误差上界。因此，理论上我们可以保证其优于类Adams方法。</p>
+<h3 id="5-可微求解器搜索"><a href="#5-可微求解器搜索" class="headerlink" title="5. 可微求解器搜索"></a>5. 可微求解器搜索</h3><p>通过前面的讨论和分析，我们确定$\{c_{i}^{j}\}_{j &lt; i, j=0, i=1}^{N}$和$\{t_{i}\}_{i=0}^{N}$为目标搜索项。为此，我们提出一种可微的数据驱动求解器搜索方法来确定这些可搜索项。</p>
+<p><strong>时间步参数化</strong>：如算法1所示，我们采用无界参数$\{r_{i}\}_{i=0}^{N-1}$作为优化对象，由于积分区间是从0到1，我们使用softmax归一化函数将$r_{i}$转换为时间空间增量$\Delta t_{i}$，以迫使它们的总和为1。我们可以通过$t_{i+1}=t_{i}+\Delta t_{i}$得到时间步$t_{i+1}$。我们将$\{r_{i}\}_{i=0}^{N-1}$初始化为1.0，以获得均匀的时间步分布。</p>
+<p><strong>系数参数化</strong>：受（Xue等人，2024）的启发，根据公式（16）和公式（7），当速度场$v_{\theta}(x,t)$产生恒定值时，会出现一个隐式约束$\sum_{k=0}^{i}c_{k}^{i}=1$。这一观察促使我们将M的对角线值重新参数化为$\{1-\sum_{j=0}^{i-1}c_{i}^{j}\}_{i=0}^{N-1}$。我们将$\{c_{i}^{k}\}$初始化为零，以模拟欧拉求解器的行为。</p>
+<p><strong>单对齐监督</strong>：我们将L步欧拉求解器的ODE轨迹$\{\tilde{x}_{l=0}^{L}\}$作为参考。我们使用MSE损失最小化目标轨迹和源轨迹之间的差距。我们还对$x_{t_{N}}$采用Huber损失作为辅助监督。</p>
+<h3 id="6-扩展到DDPM-VP框架"><a href="#6-扩展到DDPM-VP框架" class="headerlink" title="6. 扩展到DDPM/VP框架"></a>6. 扩展到DDPM/VP框架</h3><p>将我们的可微求解器搜索应用于DDPM是不可行的。然而，（Song等人，2020b）指出，存在一个连续的SDE过程，其中$f(t)=-\frac{1}{2}\beta_{t}$、$g(t)=\sqrt{\beta_{t}}$，与离散的DDPM相对应。这促使我们将搜索空间从不可行的离散空间转换为其连续的SDE对应空间。（Lu等人，2022）和（Zhang与Chen，2023）发现了扩散的半线性结构，并提出了带有$\epsilon$参数化的指数积分器来解决DDPM模型的快速采样问题，其中$\alpha_{t}=e^{\int_{0}^{t}-\frac{1}{2}\bar{\beta}_{s}ds}$、$\sigma_{t}=\sqrt{1-e^{\int_{0}^{t}-\beta_{s}ds}}$以及$\lambda_{t}=\log\frac{\alpha_{t}}{\sigma_{t}}$。（Lu等人，2023）进一步发现，在有限步骤下，$\bar{x}$参数化对于扩散采样更有效，其中$\bar{x}=\frac{x_{t}-\sigma\epsilon}{\alpha_{t}}$：</p>
+<script type="math/tex; mode=display">x_{t}=\frac{\sigma_{t}}{\sigma_{s}}x_{s}+\sigma_{t}\int_{\lambda_{s}}^{\lambda_{t}}e^{\lambda}\bar{x}_{\theta}(x_{t(\lambda)},t(\lambda))d\lambda</script><p>我们选择遵循$\bar{x}$参数化，如同DPM-Solver++那样。然而，我们发现直接对$e^{\lambda}x_{\theta}(x_{t},t)$整体进行插值以进行搜索是困难的，且会产生较差的结果。为了避免将插值系数与指数积分混为一谈，我们采用$\omega_{t}=\frac{\alpha_{t}}{\sigma_{t}}$，并将公式（18）转换为公式（19），使其具有与公式（15）类似的插值形式，其中$t(\omega)$将$\omega$映射到时间步：</p>
+<script type="math/tex; mode=display">x_{t}\approx\frac{\sigma_{t}}{\sigma_{s}}\bar{x}_{s}+\sigma_{t}(\omega_{t}-\omega_{s})\sum_{k=1}^{i}c_{i}^{k}x_{\theta}(\bar{x}_{k},t_{k})</script><h3 id="7-实验"><a href="#7-实验" class="headerlink" title="7. 实验"></a>7. 实验</h3><p>我们通过在公开可用的扩散模型上进行实验，验证了可微求解器搜索的有效性。具体来说，我们使用了采用DDPM调度训练的DiT-XL/2（Peebles &amp; Xie, 2023）以及整流流模型SiT-XL/2（Ma等人, 2024）和FlowDCN-XL/2（Wang等人, 2024b）。我们的默认训练设置采用Lion优化器（Chen等人, 2024c），学习率固定为0.01，不使用权重衰减。整个搜索过程中，我们采样了50,000张图像。值得注意的是，使用FlowDCN-B/2在50,000个样本上进行搜索，在8×H20计算卡上大约需要30分钟。搜索过程中，我们特意避免使用CFG来构建参考轨迹和源轨迹，以防止出现错位。</p>
+<p><strong>算法2 可微求解器搜索</strong><br>需要：$v_\theta$模型、$\{\Delta t_i\}_{i=0}^{N-1}$、$M$、一个缓冲区$Q$。<br>计算$\{\tilde{x}_l\}_{l=0}^{L} = \text{Euler}(\epsilon, v_\theta)$。<br>对于$i = 0$到$N-1$：<br>$Q$缓冲区 ￩ $v_\theta(x_{t_i}, t_i)$<br>计算$v = \sum_{j=0}^{i} M_{ij} Q_j$。<br>$t_{i+1} = t_i + \Delta t_i$<br>$x_{t_{i+1}} = x_{t_i} + v \Delta t_i$<br>返回：$\tilde{x}_{t_{n-1}}$、$\mathcal{L}(\{\tilde{x}_l\}_{l=0}^{L}, \{x_i\}_{i=0}^{N})$</p>
+<h4 id="7-1-整流流模型"><a href="#7-1-整流流模型" class="headerlink" title="7.1. 整流流模型"></a>7.1. 整流流模型</h4><p>我们使用FlowDCN-B/2、FlowDCN-S/2和SiT-XL/2搜索求解器。我们在SiT-XL/2、在ImageNet 256×256上训练的FlowDCN-XL/2以及在ImageNet 512×512上训练的FlowDCN-XL/2上，将搜索到的求解器性能与二阶和四阶Adam多步法进行了比较。</p>
+<p><strong>搜索模型</strong>：我们在不同大小和架构的模型中尝试了不同的搜索模型。我们在图3a中报告了SiT-XL/2的FID性能。令人惊讶的是，我们发现SiT-XL/2配备使用FlowDCN-B/2搜索到的求解器时，其FID性能优于使用自身搜索到的求解器。如预期的那样，Euler-250步生成的采样结果之间的重建误差（见附录）也体现了这一点。这些发现表明，在当前的求解器设计中，FID与对最小误差的追求之间存在轻微差异。</p>
+<p><strong>参考轨迹的步数</strong>：我们为可微求解器搜索提供了不同采样步数$L$的参考轨迹$\{\tilde{x}_l\}_{l=0}^{L}$。我们使用FlowDCN-B/2作为搜索模型，并在图3b中报告了在SiT-XL/2上测量的FID。随着参考轨迹采样步数的增加，SiT-XL/2的FID进一步改善并变得更好。然而，当步数为5或6时，性能提升并不显著，这表明在极少数步数下，可实现的改进存在限制。</p>
+<p><strong>ImageNet 256×256</strong>：我们在SiT-XL/2和FlowDCN-XL/2上验证了搜索到的求解器。我们为预训练模型配备了1.375的CFG。如图4a所示，我们搜索到的求解器显著提高了FID性能，在10步下达到2.40的FID。如图4b所示，我们搜索到的求解器在10步下达到2.35的FID，大幅优于传统求解器。</p>
+<p>我们还在表1中与最近的基于求解器的蒸馏方法（Zhao等人, 2024）进行了比较，以证明我们搜索到的求解器的效率。在相似的NFE下，我们搜索到的求解器以少得多的参数实现了更好的指标性能。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>SiT-XL-R256</th>
+<th>NFE-CFG</th>
+<th>参数</th>
+<th>FID</th>
+<th>IS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Heun</td>
+<td>16×2</td>
+<td>0</td>
+<td>3.68</td>
+<td>/</td>
+</tr>
+<tr>
+<td>Heun</td>
+<td>22×2</td>
+<td>0</td>
+<td>2.79</td>
+<td>/</td>
+</tr>
+<tr>
+<td>Heun</td>
+<td>30×2</td>
+<td>0</td>
+<td>2.42</td>
+<td>/</td>
+</tr>
+<tr>
+<td>Adam2</td>
+<td>15×2</td>
+<td>/</td>
+<td>2.49</td>
+<td>236</td>
+</tr>
+<tr>
+<td>Adam2</td>
+<td>16×2</td>
+<td>0</td>
+<td>2.42</td>
+<td>237</td>
+</tr>
+<tr>
+<td>Adam4</td>
+<td>15×2</td>
+<td>/</td>
+<td>2.33</td>
+<td>242</td>
+</tr>
+<tr>
+<td>Adam4</td>
+<td>16×2</td>
+<td>0</td>
+<td>2.27</td>
+<td>243</td>
+</tr>
+<tr>
+<td>FlowTurbo</td>
+<td>(7+3)×2</td>
+<td>2.9×10⁷</td>
+<td>3.93</td>
+<td>224</td>
+</tr>
+<tr>
+<td>FlowTurbo</td>
+<td>(8+2)×2</td>
+<td>2.9×10⁷</td>
+<td>3.63</td>
+<td>/</td>
+</tr>
+<tr>
+<td>FlowTurbo</td>
+<td>(12+2)×2</td>
+<td>2.9×10⁷</td>
+<td>2.69</td>
+<td>/</td>
+</tr>
+<tr>
+<td>FlowTurbo</td>
+<td>(17+3)×2</td>
+<td>2.9×10⁷</td>
+<td>2.22</td>
+<td>248</td>
+</tr>
+<tr>
+<td>我们的方法</td>
+<td>6×2</td>
+<td>21</td>
+<td>3.57</td>
+<td>214</td>
+</tr>
+<tr>
+<td>我们的方法</td>
+<td>7×2</td>
+<td>28</td>
+<td>2.78</td>
+<td>229</td>
+</tr>
+<tr>
+<td>我们的方法</td>
+<td>8×2</td>
+<td>36</td>
+<td>2.65</td>
+<td>234</td>
+</tr>
+<tr>
+<td>我们的方法</td>
+<td>10×2</td>
+<td>55</td>
+<td>2.40</td>
+<td>238</td>
+</tr>
+<tr>
+<td>我们的方法</td>
+<td>15×2</td>
+<td>55</td>
+<td>2.24</td>
+<td>244</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>表1</strong>：与蒸馏方法的比较。在相同的NFE下，我们搜索到的求解器以少得多的参数实现了更好的结果。</p>
+<p><strong>ImageNet 512×512</strong>：由于（Ma等人, 2024）尚未发布在512×512分辨率上训练的SiT-XL/2，我们直接报告了FlowDCN-XL/2的性能。我们为FlowDCN-XL/2配备了1.375的CFG和四个通道。我们搜索到的求解器在10步下达到2.77的FID，大幅优于传统求解器，甚至略优于50步的Euler求解器（2.81 FID）。</p>
+<p><strong>文本到图像</strong>：如图2所示，我们将在FlowDCN-B/2和SiT-XL/2上搜索到的求解器应用于最先进的整流流模型Flux.1-dev和SD3（Esser等人, 2024）。我们发现Flux.1-Dev在生成过程中会产生网格点。为了减轻网格图案，我们将速度场分解为均值和方向，仅将我们的求解器应用于方向，并将均值替换为指数衰减的均值。详细信息见附录。</p>
+<h4 id="7-2-DDPM-VP模型"><a href="#7-2-DDPM-VP模型" class="headerlink" title="7.2. DDPM/VP模型"></a>7.2. DDPM/VP模型</h4><p>我们选择在ImageNet 256×256上训练的开源DiT-XL/2（Peebles &amp; Xie, 2023）模型作为搜索模型进行实验。我们在ImageNet 256×256和ImageNet 512×512上，将搜索到的求解器性能与DPM-Solver++和UniPC进行了比较。</p>
+<p><strong>ImageNet 256×256</strong>：遵循（Peebles &amp; Xie, 2023）和（Xue等人, 2024），我们为预训练的DiT-XL/2配备了1.5的CFG，并仅在前三通道上应用CFG。如表2所示，我们搜索到的求解器显著提高了FID性能，在10步下达到2.33的FID。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>方法 \  NFEs</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DPM-Solver++ 带 uniform-λ（Lu等人, 2023）</td>
+<td>38.04</td>
+<td>20.96</td>
+<td>14.69</td>
+<td>11.09</td>
+<td>8.32</td>
+<td>6.47</td>
+</tr>
+<tr>
+<td>DPM-Solver++ 带 uniform-t（Lu等人, 2023）</td>
+<td>31.32</td>
+<td>14.36</td>
+<td>7.62</td>
+<td>4.93</td>
+<td>3.77</td>
+<td>3.23</td>
+</tr>
+<tr>
+<td>DPM-Solver++ 带 uniform-λ-opt（Xue等人, 2024）</td>
+<td>12.53</td>
+<td>5.44</td>
+<td>3.58</td>
+<td>7.54</td>
+<td>5.97</td>
+<td>4.12</td>
+</tr>
+<tr>
+<td>DPM-Solver++ 带 uniform-t-opt（Xue等人, 2024）</td>
+<td>12.53</td>
+<td>5.44</td>
+<td>3.89</td>
+<td>3.81</td>
+<td>3.13</td>
+<td>2.79</td>
+</tr>
+<tr>
+<td>UniPC 带 uniform-λ（Zhao等人, 2023）</td>
+<td>41.89</td>
+<td>30.51</td>
+<td>19.72</td>
+<td>12.94</td>
+<td>8.49</td>
+<td>6.13</td>
+</tr>
+<tr>
+<td>UniPC 带 uniform-t（Zhao等人, 2023）</td>
+<td>23.48</td>
+<td>10.31</td>
+<td>5.73</td>
+<td>4.06</td>
+<td>3.39</td>
+<td>3.04</td>
+</tr>
+<tr>
+<td>UniPC 带 uniform-λ-opt（Xue等人, 2024）</td>
+<td>8.66</td>
+<td>4.46</td>
+<td>3.57</td>
+<td>3.72</td>
+<td>3.40</td>
+<td>3.01</td>
+</tr>
+<tr>
+<td>UniPC 带 uniform-t-opt（Xue等人, 2024）</td>
+<td>8.66</td>
+<td>4.46</td>
+<td>3.74</td>
+<td>3.29</td>
+<td>3.01</td>
+<td>2.74</td>
+</tr>
+<tr>
+<td>搜索到的求解器</td>
+<td>7.40</td>
+<td>3.94</td>
+<td>2.79</td>
+<td>2.51</td>
+<td>2.37</td>
+<td>2.33</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>表2</strong>：DiT-XL/2-R256在不同NFEs下的FID（↓）。-opt表示时间步调度器的在线优化。</p>
+<p><strong>ImageNet 512×512</strong>：我们直接将在256×256分辨率上搜索到的求解器应用于ImageNet 512×512。结果在一定程度上也很理想，DiT-XL/2（512×512）在10步下达到3.64的FID，大幅优于DPM-Solver++和UniPC。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>方法 \  NFEs</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UniPC 带 uniform-λ（Zhao等人, 2023）</td>
+<td>41.14</td>
+<td>19.81</td>
+<td>13.01</td>
+<td>9.83</td>
+<td>8.31</td>
+<td>7.01</td>
+</tr>
+<tr>
+<td>UniPC 带 uniform-t（Zhao等人, 2023）</td>
+<td>20.28</td>
+<td>10.47</td>
+<td>6.57</td>
+<td>5.13</td>
+<td>4.46</td>
+<td>4.14</td>
+</tr>
+<tr>
+<td>UniPC 带 uniform-λ-opt（Xue等人, 2024）</td>
+<td>11.40</td>
+<td>5.95</td>
+<td>4.82</td>
+<td>4.68</td>
+<td>6.93</td>
+<td>6.01</td>
+</tr>
+<tr>
+<td>UniPC 带 uniform-t-opt（Xue等人, 2024）</td>
+<td>11.40</td>
+<td>5.95</td>
+<td>4.64</td>
+<td>4.36</td>
+<td>4.05</td>
+<td>3.81</td>
+</tr>
+<tr>
+<td>搜索到的求解器（在DiT-XL/2-R256上搜索）</td>
+<td>10.28</td>
+<td>6.02</td>
+<td>4.31</td>
+<td>3.74</td>
+<td>3.54</td>
+<td>3.64</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>表3</strong>：DiT-XL/2-R512在不同NFEs下的FID（↓）。-opt表示时间步调度器的在线优化。</p>
+<p><strong>文本到图像</strong>：由于我们使用DiT及其相应的噪声调度器搜索求解器，因此将我们的求解器应用于具有不同$\beta_{min}$和$\beta_{max}$的其他DDPM模型是不可行的。幸运的是，我们发现（Chen等人, 2024b）和（Chen等人, 2023）也采用了与DiT相同的$\beta_{min}$和$\beta_{max}$。因此，我们可以提供我们搜索到的求解器在PixArt-Σ和PixArt-α上的可视化结果。我们的可视化结果是在CFG为2的情况下生成的。我们使用PixArt-alpha作为文本到图像模型。我们遵循ADM的评估流程，并使用COCO17-Val作为参考批次。我们使用DPM-Solver++、UniPC和我们在DiT-XL/2-R256上搜索到的求解器生成了5k张图像。此外，我们在7.2节中提供了在GenEval基准（Ghosh等人, 2023）上的性能结果。</p>
+<h4 id="7-3-求解器参数的可视化"><a href="#7-3-求解器参数的可视化" class="headerlink" title="7.3. 求解器参数的可视化"></a>7.3. 求解器参数的可视化</h4><p>搜索到的系数在图1中可视化。DDPM/VP对应的搜索系数的绝对值呈现出不同的模式，DDPM/VP中的系数更集中在对角线上，而整流流则呈现出更平坦的分布。这表明与整流流相比，DDPM/VP中存在更弯曲的采样路径。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src = "f1.png" width = "50%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图1：DDPM/VP和整流流（Rectified Flow）的搜索到的求解器参数可视化。对于5/6个函数评估次数（NFE），我们限制了最后两步的求解器系数阶数。左侧图像展示了搜索到的系数{cj i}的绝对值。右侧图像展示了不同NFE下搜索到的时间步长及拟合曲线。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>搜索到的时间步在图1中可视化。与DDPM/VP相比，整流流模型更关注噪声更大的区域，在开始时表现出较小的时间增量。我们用多项式拟合不同NFE的搜索时间步，并在公式（20）和公式（21）中提供了重新间隔的曲线。$t \in [0,1]$，且$t=0$表示噪声最大的时间步。</p>
+<script type="math/tex; mode=display">
+\text{ReFlow}: -1.96t^4 + 3.51t^3 - 0.97t^2 + 0.43t \quad (20)</script><script type="math/tex; mode=display">
+\text{DDPM/VP}: -2.73t^4 + 6.30t^3 - 4.744t^2 + 2.17t \quad (21)</script><h3 id="8-结论"><a href="#8-结论" class="headerlink" title="8. 结论"></a>8. 结论</h3><p>我们找到了一个紧凑的求解器搜索空间，并提出了一种新颖的可微求解器搜索算法来确定最优求解器。我们搜索到的求解器显著优于传统求解器。配备该搜索到的求解器后，DDPM/VP和整流流模型在有限的采样步骤下性能得到显著提升。然而，我们提出的求解器仍存在一些局限性，我们计划在未来的工作中解决这些问题。</p>
+<h3 id="9-局限性"><a href="#9-局限性" class="headerlink" title="9. 局限性"></a>9. 局限性</h3><p>在正文中，我们展示了使用较小CFG值的文本到图像可视化结果。然而，直观来看，使用更大的CFG值会产生更优的图像质量。我们将求解器在大CFG值下表现不佳的原因归结为当前简单求解器结构和搜索技术的局限性。我们推测，引入预测-校正求解器结构将增强数值稳定性并生成更好的图像。此外，结合CFG进行训练可能也会有所帮助。</p>
+<h3 id="A-搜索到的求解器的更多指标"><a href="#A-搜索到的求解器的更多指标" class="headerlink" title="A. 搜索到的求解器的更多指标"></a>A. 搜索到的求解器的更多指标</h3><p>我们遵循ADM和DM-nonuniform提供的评估指南，在图4a中仅将FID作为标准指标进行报告。需要说明的是，我们并未选择性地报告整流流模型的结果；我们提供了SiT-XL（R256）、FlowDCN-XL/2（R256）和FlowDCN-B/2（R256）的sFID、IS、PR和Recall指标。我们在FlowDCN-B/2上搜索到的求解器，在FID、sFID、IS和Recall指标上均一致优于手工设计的求解器。</p>
+<h3 id="B-与其他方法的计算复杂度比较"><a href="#B-与其他方法的计算复杂度比较" class="headerlink" title="B. 与其他方法的计算复杂度比较"></a>B. 与其他方法的计算复杂度比较</h3><p>在采样方面，当对π个时间步进行采样时，我们的求解器会缓存所有预采样的预测结果，因此内存复杂度为$O(n)$。模型函数评估的复杂度也为$O(n)$（启用CFG时为$O(2×n)$）。需要注意的是，缓存预测结果所需的内存与模型权重和激活值所用的内存相比可以忽略不计。除了经典方法外，我们还纳入了与最新发表在NeurIPS24上的FlowTurbo的比较。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>步骤</th>
+<th>NFE</th>
+<th>NFE-CFG</th>
+<th>缓存预测</th>
+<th>阶数</th>
+<th>搜索样本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Adam2</td>
+<td>n</td>
+<td>n</td>
+<td>2n</td>
+<td>2</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Adam4</td>
+<td>n</td>
+<td>n</td>
+<td>2n</td>
+<td>4</td>
+<td>4</td>
+</tr>
+<tr>
+<td>heun</td>
+<td>n</td>
+<td>2n</td>
+<td>4n</td>
+<td>2</td>
+<td>2</td>
+</tr>
+<tr>
+<td>DPM-Solver++</td>
+<td>n</td>
+<td>n</td>
+<td>2n</td>
+<td>2</td>
+<td>2</td>
+</tr>
+<tr>
+<td>UniPC</td>
+<td>n</td>
+<td>n</td>
+<td>2n</td>
+<td>3</td>
+<td>3</td>
+</tr>
+<tr>
+<td>FlowTurbo</td>
+<td>n</td>
+<td>&gt;n</td>
+<td>&gt;2n</td>
+<td>2</td>
+<td>540000（真实数据）</td>
+</tr>
+<tr>
+<td>我们的方法</td>
+<td>n</td>
+<td>n</td>
+<td>2n</td>
+<td>n</td>
+<td>50000（生成数据）</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>在搜索方面，由于可搜索参数规模的限制，基于求解器的算法在少步设置（5/6步）下的性能明显低于基于蒸馏的算法，因此直接比较并不合适。因此，我们选择了既能在ImageNet上加速又性能相当的算法，包括DPM-Solver++、UniPC等流行方法以及经典的类Adams线性多步方法。由于我们的实验主要使用在ImageNet数据集上训练的SiT、DiT和FlowDCN，我们还通过纳入最新的加速方法FlowTurbo进行了公平比较。此外，我们还纳入了FlowTurbo中报告的heun方法的结果。</p>
+<h3 id="C-关于搜索样本的消融实验"><a href="#C-关于搜索样本的消融实验" class="headerlink" title="C. 关于搜索样本的消融实验"></a>C. 关于搜索样本的消融实验</h3><p>我们在10步和8步求解器设置下对搜索样本的数量进行了消融实验。样本数指的是被搜索求解器见过的总训练样本数。唯一样本数指的是被搜索求解器见过的总不同样本数。我们搜索到的求解器收敛速度较快，在30000个样本左右达到饱和。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>迭代次数（10步求解器）</th>
+<th>样本数</th>
+<th>唯一样本数</th>
+<th>FID</th>
+<th>IS</th>
+<th>PR</th>
+<th>召回率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>313</td>
+<td>10000</td>
+<td>10000</td>
+<td>2.54</td>
+<td>239</td>
+<td>0.79</td>
+<td>0.59</td>
+</tr>
+<tr>
+<td>626</td>
+<td>20000</td>
+<td>10000</td>
+<td>2.38</td>
+<td>239</td>
+<td>0.79</td>
+<td>0.60</td>
+</tr>
+<tr>
+<td>939</td>
+<td>30000</td>
+<td>10000</td>
+<td>2.49</td>
+<td>240</td>
+<td>0.79</td>
+<td>0.59</td>
+</tr>
+<tr>
+<td>1252</td>
+<td>40000</td>
+<td>10000</td>
+<td>2.29</td>
+<td>239</td>
+<td>0.80</td>
+<td>0.60</td>
+</tr>
+<tr>
+<td>1565</td>
+<td>50000</td>
+<td>10000</td>
+<td>2.41</td>
+<td>240</td>
+<td>0.80</td>
+<td>0.59</td>
+</tr>
+<tr>
+<td>626</td>
+<td>20000</td>
+<td>20000</td>
+<td>2.47</td>
+<td>237</td>
+<td>0.78</td>
+<td>0.60</td>
+</tr>
+<tr>
+<td>939</td>
+<td>30000</td>
+<td>30000</td>
+<td>2.40</td>
+<td>238</td>
+<td>0.79</td>
+<td>0.60</td>
+</tr>
+<tr>
+<td>1252</td>
+<td>40000</td>
+<td>40000</td>
+<td>2.48</td>
+<td>237</td>
+<td>0.80</td>
+<td>0.59</td>
+</tr>
+<tr>
+<td>1565</td>
+<td>50000</td>
+<td>50000</td>
+<td>2.41</td>
+<td>239</td>
+<td>0.80</td>
+<td>0.59</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>迭代次数（8步求解器）</th>
+<th>样本数</th>
+<th>唯一样本数</th>
+<th>FID</th>
+<th>IS</th>
+<th>PR</th>
+<th>召回率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>313</td>
+<td>10000</td>
+<td>10000</td>
+<td>2.99</td>
+<td>228</td>
+<td>0.78</td>
+<td>0.59</td>
+</tr>
+<tr>
+<td>626</td>
+<td>20000</td>
+<td>10000</td>
+<td>2.78</td>
+<td>229</td>
+<td>0.79</td>
+<td>0.60</td>
+</tr>
+<tr>
+<td>939</td>
+<td>30000</td>
+<td>10000</td>
+<td>2.72</td>
+<td>235</td>
+<td>0.79</td>
+<td>0.60</td>
+</tr>
+<tr>
+<td>1252</td>
+<td>40000</td>
+<td>10000</td>
+<td>2.67</td>
+<td>228</td>
+<td>0.79</td>
+<td>0.60</td>
+</tr>
+<tr>
+<td>1565</td>
+<td>50000</td>
+<td>10000</td>
+<td>2.69</td>
+<td>235</td>
+<td>0.79</td>
+<td>0.59</td>
+</tr>
+<tr>
+<td>626</td>
+<td>20000</td>
+<td>20000</td>
+<td>2.70</td>
+<td>231</td>
+<td>0.79</td>
+<td>0.59</td>
+</tr>
+<tr>
+<td>939</td>
+<td>30000</td>
+<td>30000</td>
+<td>2.82</td>
+<td>232</td>
+<td>0.79</td>
+<td>0.59</td>
+</tr>
+<tr>
+<td>1252</td>
+<td>40000</td>
+<td>40000</td>
+<td>2.79</td>
+<td>231</td>
+<td>0.79</td>
+<td>0.60</td>
+</tr>
+<tr>
+<td>1565</td>
+<td>50000</td>
+<td>50000</td>
+<td>2.65</td>
+<td>234</td>
+<td>0.79</td>
+<td>0.60</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="D-不同方差调度下的求解器"><a href="#D-不同方差调度下的求解器" class="headerlink" title="D. 不同方差调度下的求解器"></a>D. 不同方差调度下的求解器</h3><p>由于我们的求解器是在特定的噪声调度器及其相应的预训练模型上搜索得到的，将搜索到的系数和时间步应用于其他噪声调度器会产生无意义的结果。我们尝试将搜索到的求解器应用于SiT（整流流）和DiT（具有$\beta_{min}=0.1$、$\beta_{max}=20$的DDPM）到SD1.5（具有$\beta_{min}=0.085$、$\beta_{max}=129$的DDPM），但结果并不明确。值得注意的是，尽管都名为DDPM，DiT和SD1.5采用的$\beta_{min}$、$\beta_{max}$值不同，因此具有不同的噪声调度器。关于这些实验的更深入讨论可以在“扩展到DDPM/VP”部分找到。</p>
+<h3 id="E-适用于不同方差调度的求解器"><a href="#E-适用于不同方差调度的求解器" class="headerlink" title="E. 适用于不同方差调度的求解器"></a>E. 适用于不同方差调度的求解器</h3><p>由于每个DDPM都有一个对应的连续VP调度器，因此我们可以将离散的DDPM转换为连续的VP，从而成功搜索到比DPM求解器更好的求解器。详情见第6节。简而言之，在我们的高阶求解器的支持下，DDPM和FM的性能在（8、9、10步）时差异并不显著，这与“FM在有限采样步骤下性能更强”这一普遍观点相悖。</p>
+<h3 id="F-文本到图像蒸馏实验"><a href="#F-文本到图像蒸馏实验" class="headerlink" title="F. 文本到图像蒸馏实验"></a>F. 文本到图像蒸馏实验</h3><p>我们将蒸馏与求解器搜索相结合，以获得高质量的多步生成模型。我们采用对抗训练和轨迹监督。我们将开源这种联合训练技术的代码。</p>
+<p><strong>表6</strong>：COCO-2017验证集上的性能比较。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>分辨率</th>
+<th>时间（↓）</th>
+<th>步数</th>
+<th>参数数量</th>
+<th>FID（↓）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SDv1-5+DPM求解器（上限）（Lu等人, 2022）</td>
+<td>512</td>
+<td>0.88秒</td>
+<td>25</td>
+<td>0.9B</td>
+<td>20.1</td>
+</tr>
+<tr>
+<td>整流流</td>
+<td>512</td>
+<td>0.88秒</td>
+<td>25</td>
+<td>0.9B</td>
+<td>21.65</td>
+</tr>
+<tr>
+<td>整流扩散</td>
+<td>512</td>
+<td>0.88秒</td>
+<td>25</td>
+<td>0.9B</td>
+<td>21.28</td>
+</tr>
+<tr>
+<td>整流流</td>
+<td>512</td>
+<td>0.21秒</td>
+<td>4</td>
+<td>0.9B</td>
+<td>103.48</td>
+</tr>
+<tr>
+<td>PeRFlow</td>
+<td>512</td>
+<td>0.21秒</td>
+<td>4</td>
+<td>0.9B</td>
+<td>22.97</td>
+</tr>
+<tr>
+<td>整流扩散</td>
+<td>512</td>
+<td>0.21秒</td>
+<td>4</td>
+<td>0.9B</td>
+<td>20.64</td>
+</tr>
+<tr>
+<td>我们的方法（蒸馏+求解器搜索）</td>
+<td>512</td>
+<td>0.21秒</td>
+<td>4</td>
+<td>0.9B</td>
+<td>18.99</td>
+</tr>
+<tr>
+<td>PeRFlow-SDXL</td>
+<td>1024</td>
+<td>0.71秒</td>
+<td>4</td>
+<td>3B</td>
+<td>27.06</td>
+</tr>
+<tr>
+<td>整流扩散-SDXL</td>
+<td>1024</td>
+<td>0.71秒</td>
+<td>4</td>
+<td>3B</td>
+<td>25.81</td>
+</tr>
+<tr>
+<td>我们的方法（LORA+蒸馏+求解器搜索）</td>
+<td>1024</td>
+<td>0.71秒</td>
+<td>4</td>
+<td>3B</td>
+<td>21.3</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="G-局限性"><a href="#G-局限性" class="headerlink" title="G. 局限性"></a>G. 局限性</h3><p>我们将局限性内容放在附录中，以便提供更多的讨论空间，并从评审意见中获得更多见解。我们复制了原始的局限性内容并补充了更多信息。</p>
+<p><strong>重建损失与性能的错位</strong>：我们提出的方法专为在有限步数内最小化积分误差而设计。然而，消融研究表明，FID性能与重建误差之间存在不匹配。为解决这一问题，我们计划通过引入分布匹配监督来增强我们搜索到的求解器，从而更好地对齐采样质量。</p>
+<p><strong>更大CFG值的推理</strong>：在正文中，我们展示了使用较小CFG值的文本到图像可视化结果。然而，直观而言，使用更大的CFG值会产生更优的图像质量。我们将求解器在大CFG值下表现不佳的原因归结为当前简单求解器结构和搜索技术的局限性。我们推测，引入预测-校正求解器结构将增强数值稳定性并生成更好的图像。此外，结合CFG进行训练可能也会有所帮助。</p>
+<p><strong>资源消耗</strong>：我们可以将搜索到的系数和时间步硬编码到程序文件中。然而，与手工设计的求解器相比，我们的求解器仍然需要一个搜索过程。</p>
+<h3 id="H-预积分误差期望的证明"><a href="#H-预积分误差期望的证明" class="headerlink" title="H. 预积分误差期望的证明"></a>H. 预积分误差期望的证明</h3><p><strong>定理 H.1</strong>：给定采样时间区间$[t_i, t_{i+1}]$，并假设$C_j(x) = g_j(x) + b_i^j$，类Adams线性多步方法将引入一个误差上界$(t_{i+1}-t_i)\mathbb{E}_{x_i}\left|\sum_{j=0}^i v_j g_j(x_i)\right|$，</p>
+<p>我们的求解器搜索（用$\mathbb{E}_{x_i}[C_j(x_i)]$替换$C_j(x)$）拥有一个误差上界$(t_{i+1}-t_i)\mathbb{E}_{x_i}\left|\sum_{j=0}^i v_j [g_j(x_i) - \mathbb{E}_{x_i}g_j(x_i)]\right|$</p>
+<p><strong>证明</strong>：假设$C_j(x_i) = g_j(x_i) + b_i^j$。类Adams线性多步方法不会考虑与$x$相关的插值，因此类Adams线性多步方法的预积分系数只会简化为$b$，</p>
+<p>我们得到类Adams线性多步方法的预积分误差期望：</p>
+<script type="math/tex; mode=display">\mathbb{E}_{x_i}\left\|\sum_{j=0}^i v_j [C_j(x_i)](t_{i+1}-t_i) - \sum_{j=0}^i v_j b_i^j (t_{i+1}-t_i)\right\|$$ (22)
+
+$$= \mathbb{E}_{x_i}\left\|\sum_{j=0}^i v_j (t_{i+1}-t_i) [C_j(x_i) - b_i^j]\right\|$$ (23)
+
+$$= (t_{i+1}-t_i)\mathbb{E}_{x_i}\left\|\sum_{j=0}^i v_j g_j(x_i)\right\|$$ (24)
+
+我们得到我们的求解器搜索方法的预积分误差期望：
+$$\begin{aligned} &\mathbb{E}_{x_i}\left\|\sum_{j=0}^i v_j [C_j(x_i)](t_{i+1}-t_i) - \sum_{j=0}^i v_j \mathbb{E}_{x_i}[C_j(x_i)](t_{i+1}-t_i)\right\| \\ =& \mathbb{E}_{x_i}\left\|\sum_{j=0}^i v_j (t_{i+1}-t_i) [C_j(x_i) - \mathbb{E}_{x_i}C_j(x_i)]\right\| \\ =& (t_{i+1}-t_i)\mathbb{E}_{x_i}\left\|\sum_{j=0}^i v_j [g_j(x_i) - \mathbb{E}_{x_i}g_j(x_i)]\right\| \end{aligned}</script><p>接下来，定义优化问题：</p>
+<script type="math/tex; mode=display">E = \mathbb{E}_{x_i}\left\|\sum_{j=0}^i v_j [g_j(x_i) - a_j]\right\|_2^2.</script><p>我们假设不同的$v_j$是正交的，且$|v_j|_2^2 = 1$。由于我们将$c_j^i$作为$C_j(x_i)$的期望，我们将证明这种选择是最优的。</p>
+<script type="math/tex; mode=display">\frac{\partial E}{\partial a_j} = -2\mathbb{E}_{x_i}\left(\|v_j\|_2^2 (g_j(x_i) - a_j)\right)</script><p>令$\frac{\partial E}{\partial a_j} = 0$，我们得到：$a_j = \frac{\mathbb{E}_{x_i}g_j(x_i)|v_j|_2^2}{\mathbb{E}_{x_i}|v_j|_2^2} = \mathbb{E}_{x_i}g_j(x_i) = \mathbb{E}_{x_i}C_j(x_i) - b_i^j$</p>
+<p>因此，我们搜索到的求解器具有更低且最优的误差期望：</p>
+<script type="math/tex; mode=display">(t_{i+1}-t_i)\mathbb{E}_{x_i}\left\|\sum_{j=0}^i v_j [g_j(x_i) - \mathbb{E}_{x_i}g_j(x_i)]\right\| \leq (t_{i+1}-t_i)\mathbb{E}_{x_i}\left\|\sum_{j=0}^i v_j g_j(x_i)\right\|$$ (29)
+
+回顾假设4.1，通用插值$P$的积分误差上界为：
+$$\left\|\int_{t_i}^{t_{i+1}} v(x_t, t)dt - \sum_{j=0}^i v_j \int_{t_i}^{t_{i+1}} P(x_t, t, x_j, t_j)dt\right\|$$ (30)
+
+$$= \left\|\int_{t_i}^{t_{i+1}} v(x_t, t)dt - \int_{t_i}^{t_{i+1}} \sum_{j=0}^i P(x_t, t, x_j, t_j)v_j dt\right\|$$ (31)
+
+$$= \left\|\int_{t_i}^{t_{i+1}} [v(x_t, t) - \sum_{j=0}^i P(x_t, t, x_j, t_j)v_j]dt\right\|$$ (32)
+
+$$< \int_{t_i}^{t_{i+1}} \left\|v(x_t, t) - \sum_{j=0}^i P(x_t, t, x_j, t_j)v_j\right\|dt$$ (33)
+
+$$< [t_{i+1}-t_i](\mathcal{O}(dx^m) + \mathcal{O}(dt^n))$$ (34)
+
+结合公式(34)和预积分部分的误差期望，我们将得到求解器搜索的总误差界。
+$$\left\|\int_{t_i}^{t_{i+1}} v(x_t, t)dt - \sum_{j=0}^i v_j \mathbb{E}_{x_i}[C_j(x_i)](t_{i+1}-t_i)\right\|$$ (35)
+
+$$= \left\|\int_{t_i}^{t_{i+1}} v(x_t, t)dt - \sum_{j=0}^i v_j \int_{t_i}^{t_{i+1}} P(x_t, t, x_j, t_j)dt + \sum_{j=0}^i v_j \int_{t_i}^{t_{i+1}} P(x_t, t, x_j, t_j)dt - \sum_{j=0}^i v_j \mathbb{E}_{x_i}[C_j(x_i)](t_{i+1}-t_i)\right\|$$ (36)(37)
+
+$$= \left\|\int_{t_i}^{t_{i+1}} v(x_t, t)dt - \sum_{j=0}^i v_j \int_{t_i}^{t_{i+1}} P(x_t, t, x_j, t_j)dt\right\| + \left\|\sum_{j=0}^i v_j \int_{t_i}^{t_{i+1}} P(x_t, t, x_j, t_j)dt - \sum_{j=0}^i v_j \mathbb{E}_{x_i}[C_j(x_i)](t_{i+1}-t_i)\right\|$$ (38)(39)(40)(41)
+
+$$< [t_{i+1}-t_i](\mathcal{O}(dx^m) + \mathcal{O}(dt^n)) + (t_{i+1}-t_i)\mathbb{E}_{x_i}\left\|\sum_{j=0}^i v_j [g_j(x_i) - \mathbb{E}_{x_i}g_j(x_i)]\right\|</script><script type="math/tex; mode=display">< (t_{i+1}-t_i)\left([\mathcal{O}(dx^m) + \mathcal{O}(dt^n)] + \mathbb{E}_{x_i}\left\|\sum_{j=0}^i v_j [g_j(x_i) - \mathbb{E}_{x_i}g_j(x_i)]\right\|\right)</script><p>由于$(\mathcal{O}(dx^m) + \mathcal{O}(dt^n))$远小于$\mathbb{E}_{x_i}\left|\sum_{j=0}^i v_j [g_j(x_i) - \mathbb{E}_{x_i}g_j(x_i)]\right|$，我们可以忽略$(\mathcal{O}(dx^m) + \mathcal{O}(dt^n))$项。</p>
+<h3 id="I-总误差上界的证明"><a href="#I-总误差上界的证明" class="headerlink" title="I. 总误差上界的证明"></a>I. 总误差上界的证明</h3><p><strong>定理 I.1</strong>：与类Adams线性多步方法相比，我们的求解器搜索具有更小的误差上界。</p>
+<p>类Adams线性多步方法的总误差上界为：</p>
+<script type="math/tex; mode=display">
+\sum_{i=0}^{N-1} \left( \frac{1}{N} \right) \left( \sum_{j=0}^{i} \eta |b_i^j| + \mathbb{E}_{x_i} \left\| \sum_{j=0}^{i} v_j [g_j(x_i)] \right\| \right)</script><p>我们的求解器搜索的总误差上界为：</p>
+<script type="math/tex; mode=display">
+\sum_{i=0}^{N-1} (t_{i+1} - t_i) \left( \sum_{j=0}^{i} \eta |\mathbb{E}_{x_i} g_j(x_i) + b_i^j| + \mathbb{E}_{x_i} \left\| \sum_{j=0}^{i} v_j g_j(x_i) - \mathbb{E}_{x_i} g_j(x_i) \right\| \right)</script><p><strong>证明</strong>：我们将理想速度场$\hat{v}$的连续积分结果记为$\hat{x}$，理想速度场$\hat{v}$的求解积分结果记为$\hat{x}_N$，预训练速度模型$v_\theta$的连续积分结果记为$\hat{x}$，预训练速度模型$v_\theta$的求解积分结果记为$x_N$：</p>
+<script type="math/tex; mode=display">
+x_N = \epsilon + \sum_{i=0}^{N-1} \sum_{j=0}^{i} v_j c_i^j (t_{i+1} - t_i)</script><p>非理想速度估计模型引起的误差可表示为以下公式。我们可以采用三角不等式得到$|x_N - \hat{x}_N|$的误差界，该误差界与求解器系数和时间步选择相关：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\|x_N - \hat{x}_N\| & = \left| \sum_{i=0}^{N-1} \sum_{j=0}^{i} (v_j - \hat{v}_j) c_i^j (t_{i+1} - t_i) \right| \\
+& \leq \sum_{i=0}^{N-1} \sum_{j=0}^{i} \left| (v_j - \hat{v}_j) c_i^j (t_{i+1} - t_i) \right| \\
+& \leq \sum_{i=0}^{N-1} \sum_{j=0}^{i} \left| v_j - \hat{v}_j \right| \times \left| c_i^j (t_{i+1} - t_i) \right| \\
+& \leq \eta \sum_{i=0}^{N-1} \sum_{j=0}^{i} \left| c_i^j (t_{i+1} - t_i) \right|
+\end{aligned}</script><p>我们搜索到的求解器的总误差为：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+& \|x_N - \hat{x}\| \\
+= & \|x_N - \hat{x}_N + \hat{x}_N - \hat{x}\| \\
+\leq & \|x_N - \hat{x}_N\| + \|\hat{x}_N - \hat{x}\| \\
+\leq & \eta \sum_{i=0}^{N-1} (t_{i+1} - t_i) \left( \mathcal{O}(dx^m) + \mathcal{O}(dt^n) + \mathbb{E}_{x_i} \left\| \sum_{j=0}^{i} v_j [g_j(x_i) - \mathbb{E}_{x_i} g_j(x_i)] \right\| \right) \\
+\approx & \sum_{i=0}^{N-1} \left( \eta \sum_{j=0}^{i} \left| c_i^j (t_{i+1} - t_i) \right| + (t_{i+1} - t_i) \mathbb{E}_{x_i} \left\| \sum_{j=0}^{i} v_j [g_j(x_i) - \mathbb{E}_{x_i} g_j(x_i)] \right\| \right)
+\end{aligned}</script><p>类Adams线性多步方法的总误差为：</p>
+<script type="math/tex; mode=display">
+\sum_{i=0}^{N-1} \left( \frac{1}{N} \right) \left( \sum_{j=0}^{i} \eta |b_i^j| + \mathbb{E}_{x_i} \left\| \sum_{j=0}^{i} v_j [g_j(x_i)] \right\| \right)</script><p>显然，由于不同时间步区间的$\left( \sum_{j=0}^{i} \eta |b_i^j| + \mathbb{E}_{x_i} \left| \sum_{j=0}^{i} v_j [g_j(x_i)] \right| \right)$并不相等，优化后的时间步比均匀时间步具有更小的误差上界。</p>
+<p>注意到$\eta \ll |v_j|$，误差主要由$\mathbb{E}_{x_i} \left| \sum_{j=0}^{i} v_j [g_j(x_i)] \right|$决定。</p>
+<p>注意到$\mathbb{E}_{x_i} \left| \sum_{j=0}^{i} v_j [g_j(x_i) - \mathbb{E}_{x_i} g_j(x_i)] \right| \leq \mathbb{E}_{x_i} \left| \sum_{j=0}^{i} v_j [g_j(x_i)] \right|$，因此我们的求解器搜索具有最小的误差上界，因为我们同时搜索系数和时间步。</p>
+<h3 id="J-搜索到的参数"><a href="#J-搜索到的参数" class="headerlink" title="J. 搜索到的参数"></a>J. 搜索到的参数</h3><p>我们提供了搜索到的参数$\Delta t$和$c_i^j$。注意，需要按照算法1将$c_i^j$转换为$M$。</p>
+<h4 id="J-1-在SiT-XL-2上搜索到的求解器"><a href="#J-1-在SiT-XL-2上搜索到的求解器" class="headerlink" title="J.1. 在SiT-XL/2上搜索到的求解器"></a>J.1. 在SiT-XL/2上搜索到的求解器</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>NFE</th>
+<th>时间增量$\Delta t$</th>
+<th>系数$c_i^j$</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5</td>
+<td>$\begin{bmatrix}0.0424\\0.1225\\0.2144\\0.3073\\0.3135\end{bmatrix}$</td>
+<td>$\begin{bmatrix}0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\-1.17&amp;0.0&amp;0.0&amp;0.0&amp;0.0\\1.07&amp;-1.83&amp;0.0&amp;0.0&amp;0.0\\0.0&amp;0.0&amp;-0.93&amp;0.0&amp;0.0\\0.0&amp;0.0&amp;0.0&amp;-0.71&amp;0.0\end{bmatrix}$</td>
+</tr>
+<tr>
+<td>6</td>
+<td>$\begin{bmatrix}0.0389\\0.0976\\0.161\\0.2046\\0.2762\\0.2217\end{bmatrix}$</td>
+<td>$\begin{bmatrix}0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\-1.04&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\\1.62&amp;-2.98&amp;0.0&amp;0.0&amp;0.0&amp;0.0\-1.32&amp;2.52&amp;-2.04&amp;0.0&amp;0.0&amp;0.0\\0.0&amp;0.0&amp;0.0&amp;-0.76&amp;0.0&amp;0.0\\0.0&amp;0.0&amp;0.0&amp;0.0&amp;-0.66&amp;0.0\end{bmatrix}$</td>
+</tr>
+<tr>
+<td>7</td>
+<td>$\begin{bmatrix}0.0299\\0.0735\\0.1119\\0.1451\\0.1959\\0.2698\\0.1738\end{bmatrix}$</td>
+<td>$\begin{bmatrix}0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\-0.93&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\\1.23&amp;-2.31&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\-0.59&amp;1.53&amp;-2.09&amp;0.0&amp;0.0&amp;0.0&amp;0.0\-0.09&amp;-0.07&amp;0.99&amp;-1.91&amp;0.0&amp;0.0&amp;0.0\\0.05&amp;-0.21&amp;0.09&amp;0.55&amp;-1.47&amp;0.0&amp;0.0\-0.05&amp;0.19&amp;-0.31&amp;0.37&amp;0.67&amp;-1.79&amp;0.0\end{bmatrix}$</td>
+</tr>
+<tr>
+<td>8</td>
+<td>$\begin{bmatrix}0.0303\\0.0702\\0.0716\\0.1112\\0.1501\\0.1833\\0.2475\\0.1358\end{bmatrix}$</td>
+<td>$\begin{bmatrix}0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\-0.92&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\\0.78&amp;-1.7&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\\0.06&amp;0.52&amp;-1.76&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\-0.02&amp;-0.16&amp;0.98&amp;-1.8&amp;0.0&amp;0.0&amp;0.0&amp;0.0\-0.02&amp;-0.12&amp;0.22&amp;0.24&amp;-1.36&amp;0.0&amp;0.0&amp;0.0\-0.1&amp;0.06&amp;-0.02&amp;0.18&amp;0.12&amp;-1.1&amp;0.0&amp;0.0\-0.16&amp;0.14&amp;-0.02&amp;-0.02&amp;0.38&amp;0.32&amp;-1.72&amp;0.0\end{bmatrix}$</td>
+</tr>
+<tr>
+<td>9</td>
+<td>$\begin{bmatrix}0.028\\0.0624\\0.0717\\0.0894\\0.1092\\0.1307\\0.1729\\0.2198\\0.1159\end{bmatrix}$</td>
+<td>$\begin{bmatrix}0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\-0.93&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\\0.63&amp;-1.29&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\\0.39&amp;-0.11&amp;-1.41&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\-0.07&amp;-0.05&amp;0.83&amp;-1.59&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\\0.07&amp;-0.11&amp;0.27&amp;0.27&amp;-1.53&amp;0.0&amp;0.0&amp;0.0&amp;0.0\-0.05&amp;0.03&amp;0.01&amp;0.15&amp;0.17&amp;-1.15&amp;0.0&amp;0.0&amp;0.0\-0.21&amp;0.27&amp;-0.07&amp;-0.03&amp;0.19&amp;0.09&amp;-0.99&amp;0.0&amp;0.0\-0.15&amp;0.15&amp;0.03&amp;-0.09&amp;0.25&amp;0.25&amp;0.21&amp;-1.71&amp;0.0\end{bmatrix}$</td>
+</tr>
+<tr>
+<td>10</td>
+<td>$\begin{bmatrix}0.0279\\0.0479\\0.0646\\0.0659\\0.1045\\0.1066\\0.1355\\0.1622\\0.1942\\0.0908\end{bmatrix}$</td>
+<td>$\begin{bmatrix}0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\-0.95&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\\0.59&amp;-1.17&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\\0.35&amp;-0.11&amp;-1.45&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\-0.13&amp;0.01&amp;0.75&amp;-1.49&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\\0.05&amp;-0.05&amp;0.31&amp;0.29&amp;-1.59&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\\0.05&amp;-0.03&amp;-0.09&amp;0.23&amp;0.17&amp;-1.19&amp;0.0&amp;0.0&amp;0.0&amp;0.0\-0.03&amp;0.07&amp;-0.09&amp;-0.03&amp;0.27&amp;-0.03&amp;-0.91&amp;0.0&amp;0.0&amp;0.0\-0.15&amp;0.17&amp;0.03&amp;-0.09&amp;0.05&amp;0.09&amp;0.05&amp;-0.79&amp;0.0&amp;0.0\\0.17&amp;0.11&amp;0.15&amp;0.03&amp;0.05&amp;0.25&amp;0.05&amp;0.07&amp;-1.49&amp;0.0\end{bmatrix}$</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="J-2-在FlowDCN-B-2上搜索到的求解器"><a href="#J-2-在FlowDCN-B-2上搜索到的求解器" class="headerlink" title="J.2. 在FlowDCN-B/2上搜索到的求解器"></a>J.2. 在FlowDCN-B/2上搜索到的求解器</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>NFE</th>
+<th>时间增量$\Delta t$</th>
+<th>系数$c_i^j$</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5</td>
+<td>$\begin{bmatrix}0.0521\\0.1475\\0.2114\\0.2797\\0.3092\end{bmatrix}$</td>
+<td>$\begin{bmatrix}0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\-1.26&amp;0.0&amp;0.0&amp;0.0&amp;0.0\\1.38&amp;-2.26&amp;0.0&amp;0.0&amp;0.0\\0.0&amp;0.0&amp;-0.92&amp;0.0&amp;0.0\\0.0&amp;0.0&amp;0.0&amp;-0.7&amp;0.0\end{bmatrix}$</td>
+</tr>
+<tr>
+<td>6</td>
+<td>$\begin{bmatrix}0.0391\\0.0924\\0.165\\0.2015\\0.2511\\0.2511\end{bmatrix}$</td>
+<td>$\begin{bmatrix}0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\-1.22&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\\1.12&amp;-2.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\-0.3&amp;0.9&amp;-1.56&amp;0.0&amp;0.0&amp;0.0\\0.0&amp;0.0&amp;0.0&amp;-0.74&amp;0.0&amp;0.0\\0.0&amp;0.0&amp;0.0&amp;0.0&amp;-0.62&amp;0.0\end{bmatrix}$</td>
+</tr>
+<tr>
+<td>7</td>
+<td>$\begin{bmatrix}0.0387\\0.0748\\0.103\\0.1537\\0.184\\0.234\\0.2117\end{bmatrix}$</td>
+<td>$\begin{bmatrix}0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\-1.11&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\\1.03&amp;-1.99&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\\0.07&amp;0.43&amp;-1.57&amp;0.0&amp;0.0&amp;0.0&amp;0.0\-0.21&amp;-0.15&amp;1.53&amp;-2.29&amp;0.0&amp;0.0&amp;0.0\-0.05&amp;0.07&amp;-0.23&amp;0.61&amp;-1.33&amp;0.0&amp;0.0\-0.17&amp;0.31&amp;-0.41&amp;0.17&amp;0.59&amp;-1.31&amp;0.0\end{bmatrix}$</td>
+</tr>
+<tr>
+<td>8</td>
+<td>$\begin{bmatrix}0.0071\\0.0613\\0.078\\0.1163\\0.1421\\0.188\\0.2077\\0.1996\end{bmatrix}$</td>
+<td>$\begin{bmatrix}0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\-2.43&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\\0.61&amp;-1.55&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\\0.99&amp;-0.11&amp;-2.07&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\\0.05&amp;-0.49&amp;1.33&amp;-1.93&amp;0.0&amp;0.0&amp;0.0&amp;0.0\\0.05&amp;-0.33&amp;0.23&amp;0.73&amp;-1.71&amp;0.0&amp;0.0&amp;0.0\-0.09&amp;0.25&amp;-0.29&amp;0.05&amp;0.61&amp;-1.45&amp;0.0&amp;0.0\-0.23&amp;0.21&amp;-0.01&amp;-0.25&amp;0.25&amp;0.41&amp;-1.25&amp;0.0\end{bmatrix}$</td>
+</tr>
+<tr>
+<td>9</td>
+<td>$\begin{bmatrix}0.0017\\0.051\\0.0636\\0.0911\\0.1007\\0.1443\\0.1694\\0.191\\0.1872\end{bmatrix}$</td>
+<td>$\begin{bmatrix}0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\-6.19&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\-0.11&amp;-0.81&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\\0.73&amp;-0.17&amp;-1.37&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\\0.31&amp;-0.05&amp;0.19&amp;-1.45&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\\0.03&amp;-0.23&amp;0.29&amp;0.35&amp;-1.35&amp;0.0&amp;0.0&amp;0.0&amp;0.0\-0.19&amp;0.05&amp;0.01&amp;0.21&amp;0.25&amp;-1.23&amp;0.0&amp;0.0&amp;0.0\-0.23&amp;0.21&amp;-0.13&amp;0.17&amp;0.09&amp;0.09&amp;-1.09&amp;0.0&amp;0.0\-0.17&amp;0.15&amp;0.11&amp;-0.19&amp;0.03&amp;0.23&amp;0.17&amp;-1.21&amp;0.0\end{bmatrix}$</td>
+</tr>
+<tr>
+<td>10</td>
+<td>$\begin{bmatrix}0.0016\\0.0538\\0.0347\\0.0853\\0.0853\\0.1198\\0.1351\\0.165\\0.1788\\0.1406\end{bmatrix}$</td>
+<td>$\begin{bmatrix}0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\-7.8801&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\-0.4&amp;-0.74&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\\0.48&amp;-0.18&amp;-0.86&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\\0.26&amp;-0.04&amp;-0.04&amp;-1.28&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\\0.0&amp;-0.06&amp;0.26&amp;0.26&amp;-1.42&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\-0.1&amp;-0.06&amp;0.08&amp;0.2&amp;0.22&amp;-1.24&amp;0.0&amp;0.0&amp;0.0&amp;0.0\-0.18&amp;0.14&amp;-0.08&amp;0.1&amp;0.08&amp;0.14&amp;-1.06&amp;0.0&amp;0.0&amp;0.0\-0.12&amp;0.16&amp;-0.1&amp;0.04&amp;0.08&amp;0.06&amp;0.08&amp;-1.02&amp;0.0&amp;0.0\-0.16&amp;0.02&amp;0.14&amp;0.0&amp;-0.14&amp;0.08&amp;0.14&amp;0.34&amp;-1.38&amp;0.0\end{bmatrix}$</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="J-3-在DiT-XL-2上搜索到的求解器"><a href="#J-3-在DiT-XL-2上搜索到的求解器" class="headerlink" title="J.3. 在DiT-XL/2上搜索到的求解器"></a>J.3. 在DiT-XL/2上搜索到的求解器</h4><p>（因原表格格式复杂，此处保留核心参数结构示意）</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>时间增量$\Delta t$</th>
+<th>系数$c_i^j$</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$\begin{bmatrix}0.1731\\0.2483\\0.1506\\0.1476\\0.1568\\0.1733\\0.1233\end{bmatrix}$</td>
+<td>$\begin{bmatrix}0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\-1.36&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\\0.9&amp;-1.84&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\-0.08&amp;0.5&amp;-1.08&amp;0.0&amp;0.0&amp;0.0&amp;0.0\\0.0&amp;0.0&amp;-0.56&amp;0.0&amp;0.0&amp;0.0&amp;0.0\\0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0\\0.0&amp;0.0&amp;0.0&amp;0.0&amp;0.0&amp;-0.69&amp;0.0\end{bmatrix}$</td>
+</tr>
+<tr>
+<td>（更多参数结构省略，同原格式）</td>
+<td>（更多系数矩阵省略，同原格式）</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/diffusion/" rel="tag"># diffusion</a>
+              <a href="/tags/CVPR/" rel="tag"># CVPR</a>
+              <a href="/tags/2025/" rel="tag"># 2025</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/07/14/2025-CVPR-Schedule-On-the-Fly-Diffusion-Time-Prediction-for-Faster-and-Better-Image-Generation%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" rel="prev" title="2025-CVPR-Schedule On the Fly Diffusion Time Prediction for Faster and Better Image Generation论文精读">
+      <i class="fa fa-chevron-left"></i> 2025-CVPR-Schedule On the Fly Diffusion Time Prediction for Faster and Better Image Generation论文精读
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2025/07/20/%E8%AF%95%E9%AA%8C%E8%AE%B0%E5%BD%95/" rel="next" title="试验记录">
+      试验记录 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1. 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.3.</span> <span class="nav-text">2. 相关工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E9%97%AE%E9%A2%98%E5%AE%9A%E4%B9%89"><span class="nav-number">1.4.</span> <span class="nav-text">3. 问题定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%8F%8D%E5%90%91%E6%89%A9%E6%95%A3ODE%E9%87%87%E6%A0%B7%E5%88%86%E6%9E%90"><span class="nav-number">1.5.</span> <span class="nav-text">4. 反向扩散ODE采样分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E5%A4%9A%E6%AD%A5%E6%96%B9%E6%B3%95%E5%9B%9E%E9%A1%BE"><span class="nav-number">1.5.1.</span> <span class="nav-text">4.1. 多步方法回顾</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E5%85%B3%E6%B3%A8%E6%B1%82%E8%A7%A3%E5%99%A8%E7%B3%BB%E6%95%B0%E8%80%8C%E9%9D%9E%E6%8F%92%E5%80%BC%E5%87%BD%E6%95%B0"><span class="nav-number">1.5.2.</span> <span class="nav-text">4.2. 关注求解器系数而非插值函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-%E6%B1%82%E8%A7%A3%E5%99%A8%E7%9A%84%E6%9C%80%E4%BC%98%E6%90%9C%E7%B4%A2%E7%A9%BA%E9%97%B4"><span class="nav-number">1.5.3.</span> <span class="nav-text">4.3. 求解器的最优搜索空间</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E5%8F%AF%E5%BE%AE%E6%B1%82%E8%A7%A3%E5%99%A8%E6%90%9C%E7%B4%A2"><span class="nav-number">1.6.</span> <span class="nav-text">5. 可微求解器搜索</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E6%89%A9%E5%B1%95%E5%88%B0DDPM-VP%E6%A1%86%E6%9E%B6"><span class="nav-number">1.7.</span> <span class="nav-text">6. 扩展到DDPM&#x2F;VP框架</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.8.</span> <span class="nav-text">7. 实验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#7-1-%E6%95%B4%E6%B5%81%E6%B5%81%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.8.1.</span> <span class="nav-text">7.1. 整流流模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#7-2-DDPM-VP%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.8.2.</span> <span class="nav-text">7.2. DDPM&#x2F;VP模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#7-3-%E6%B1%82%E8%A7%A3%E5%99%A8%E5%8F%82%E6%95%B0%E7%9A%84%E5%8F%AF%E8%A7%86%E5%8C%96"><span class="nav-number">1.8.3.</span> <span class="nav-text">7.3. 求解器参数的可视化</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-%E7%BB%93%E8%AE%BA"><span class="nav-number">1.9.</span> <span class="nav-text">8. 结论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-%E5%B1%80%E9%99%90%E6%80%A7"><span class="nav-number">1.10.</span> <span class="nav-text">9. 局限性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#A-%E6%90%9C%E7%B4%A2%E5%88%B0%E7%9A%84%E6%B1%82%E8%A7%A3%E5%99%A8%E7%9A%84%E6%9B%B4%E5%A4%9A%E6%8C%87%E6%A0%87"><span class="nav-number">1.11.</span> <span class="nav-text">A. 搜索到的求解器的更多指标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#B-%E4%B8%8E%E5%85%B6%E4%BB%96%E6%96%B9%E6%B3%95%E7%9A%84%E8%AE%A1%E7%AE%97%E5%A4%8D%E6%9D%82%E5%BA%A6%E6%AF%94%E8%BE%83"><span class="nav-number">1.12.</span> <span class="nav-text">B. 与其他方法的计算复杂度比较</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#C-%E5%85%B3%E4%BA%8E%E6%90%9C%E7%B4%A2%E6%A0%B7%E6%9C%AC%E7%9A%84%E6%B6%88%E8%9E%8D%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.13.</span> <span class="nav-text">C. 关于搜索样本的消融实验</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#D-%E4%B8%8D%E5%90%8C%E6%96%B9%E5%B7%AE%E8%B0%83%E5%BA%A6%E4%B8%8B%E7%9A%84%E6%B1%82%E8%A7%A3%E5%99%A8"><span class="nav-number">1.14.</span> <span class="nav-text">D. 不同方差调度下的求解器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#E-%E9%80%82%E7%94%A8%E4%BA%8E%E4%B8%8D%E5%90%8C%E6%96%B9%E5%B7%AE%E8%B0%83%E5%BA%A6%E7%9A%84%E6%B1%82%E8%A7%A3%E5%99%A8"><span class="nav-number">1.15.</span> <span class="nav-text">E. 适用于不同方差调度的求解器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#F-%E6%96%87%E6%9C%AC%E5%88%B0%E5%9B%BE%E5%83%8F%E8%92%B8%E9%A6%8F%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.16.</span> <span class="nav-text">F. 文本到图像蒸馏实验</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#G-%E5%B1%80%E9%99%90%E6%80%A7"><span class="nav-number">1.17.</span> <span class="nav-text">G. 局限性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#H-%E9%A2%84%E7%A7%AF%E5%88%86%E8%AF%AF%E5%B7%AE%E6%9C%9F%E6%9C%9B%E7%9A%84%E8%AF%81%E6%98%8E"><span class="nav-number">1.18.</span> <span class="nav-text">H. 预积分误差期望的证明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#I-%E6%80%BB%E8%AF%AF%E5%B7%AE%E4%B8%8A%E7%95%8C%E7%9A%84%E8%AF%81%E6%98%8E"><span class="nav-number">1.19.</span> <span class="nav-text">I. 总误差上界的证明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#J-%E6%90%9C%E7%B4%A2%E5%88%B0%E7%9A%84%E5%8F%82%E6%95%B0"><span class="nav-number">1.20.</span> <span class="nav-text">J. 搜索到的参数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#J-1-%E5%9C%A8SiT-XL-2%E4%B8%8A%E6%90%9C%E7%B4%A2%E5%88%B0%E7%9A%84%E6%B1%82%E8%A7%A3%E5%99%A8"><span class="nav-number">1.20.1.</span> <span class="nav-text">J.1. 在SiT-XL&#x2F;2上搜索到的求解器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#J-2-%E5%9C%A8FlowDCN-B-2%E4%B8%8A%E6%90%9C%E7%B4%A2%E5%88%B0%E7%9A%84%E6%B1%82%E8%A7%A3%E5%99%A8"><span class="nav-number">1.20.2.</span> <span class="nav-text">J.2. 在FlowDCN-B&#x2F;2上搜索到的求解器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#J-3-%E5%9C%A8DiT-XL-2%E4%B8%8A%E6%90%9C%E7%B4%A2%E5%88%B0%E7%9A%84%E6%B1%82%E8%A7%A3%E5%99%A8"><span class="nav-number">1.20.3.</span> <span class="nav-text">J.3. 在DiT-XL&#x2F;2上搜索到的求解器</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zongqing Li"
+      src="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+  <p class="site-author-name" itemprop="name">Zongqing Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">100</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hqulzq" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hqulzq" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hqulzq@163.com" title="E-Mail → mailto:hqulzq@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+      
+<script type="text/javascript" charset="utf-8" src="/js/tagcloud.js"></script>
+<script type="text/javascript" charset="utf-8" src="/js/tagcanvas.js"></script>
+<div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div id="myCanvasContainer" class="widget tagcloud">
+        <canvas width="250" height="250" id="resCanvas" style="width=100%">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2023/" rel="tag">2023</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2024/" rel="tag">2024</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2025/" rel="tag">2025</a><span class="tag-list-count">22</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">25</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICCV/" rel="tag">ICCV</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICML/" rel="tag">ICML</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IJCAI/" rel="tag">IJCAI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ODE%E6%B1%82%E8%A7%A3/" rel="tag">ODE求解</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">62</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%80%BB%E7%BB%93/" rel="tag">总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%85%E8%AF%BB/" rel="tag">阅读</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+        </canvas>
+    </div>
+</div>
+
+
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zongqing Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('post.copy_button').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('post.copy_success')
+          else $(this).text('post.copy_failure')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('post.copy_button')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>

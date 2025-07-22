@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="全文翻译摘要扩散Transformer（DiTs）已实现了最先进（SOTA）的图像生成质量，但存在延迟高和内存效率低的问题，使其难以在资源受限的设备上部署。一个主要的效率瓶颈是，现有的DiTs在图像的所有区域上应用了同等的计算量。然而，并非所有图像令牌都同等重要，某些局部区域（如物体）需要更多计算。为解决这一问题，我们提出了DiffCR，这是一种具有可微分压缩比的动态DiT推理框架，它能自动学习为">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2025-CVPR-Layer and Timestep-Adaptive Differentiable Token Compression Ratios for Efficient Diffusion Transformers 论文精读">
+<meta property="og:url" content="https://hqulzq.github.io/2025/07/10/2025-CVPR-Layer-and-Timestep-Adaptive-Differentiable-Token-Compression-Ratios-for-Efficient-Diffusion-Transformers-%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/index.html">
+<meta property="og:site_name" content="Lzq&#39;s blog">
+<meta property="og:description" content="全文翻译摘要扩散Transformer（DiTs）已实现了最先进（SOTA）的图像生成质量，但存在延迟高和内存效率低的问题，使其难以在资源受限的设备上部署。一个主要的效率瓶颈是，现有的DiTs在图像的所有区域上应用了同等的计算量。然而，并非所有图像令牌都同等重要，某些局部区域（如物体）需要更多计算。为解决这一问题，我们提出了DiffCR，这是一种具有可微分压缩比的动态DiT推理框架，它能自动学习为">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-07-10T13:28:34.000Z">
+<meta property="article:modified_time" content="2025-07-10T14:53:43.609Z">
+<meta property="article:author" content="Zongqing Li">
+<meta property="article:tag" content="diffusion">
+<meta property="article:tag" content="CVPR">
+<meta property="article:tag" content="2025">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://hqulzq.github.io/2025/07/10/2025-CVPR-Layer-and-Timestep-Adaptive-Differentiable-Token-Compression-Ratios-for-Efficient-Diffusion-Transformers-%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>2025-CVPR-Layer and Timestep-Adaptive Differentiable Token Compression Ratios for Efficient Diffusion Transformers 论文精读 | Lzq's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lzq's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">49</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">100</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book">
+
+    <a href="/book" rel="section"><i class="fas fa-book fa-fw"></i>Book</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/07/10/2025-CVPR-Layer-and-Timestep-Adaptive-Differentiable-Token-Compression-Ratios-for-Efficient-Diffusion-Transformers-%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          2025-CVPR-Layer and Timestep-Adaptive Differentiable Token Compression Ratios for Efficient Diffusion Transformers 论文精读
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-07-10 21:28:34 / 修改时间：22:53:43" itemprop="dateCreated datePublished" datetime="2025-07-10T21:28:34+08:00">2025-07-10</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散Transformer（DiTs）已实现了最先进（SOTA）的图像生成质量，但存在延迟高和内存效率低的问题，使其难以在资源受限的设备上部署。<strong>一个主要的效率瓶颈是，现有的DiTs在图像的所有区域上应用了同等的计算量。然而，并非所有图像令牌都同等重要，某些局部区域（如物体）需要更多计算。为解决这一问题，我们提出了DiffCR，这是一种具有可微分压缩比的动态DiT推理框架，它能自动学习为每个图像令牌跨层和跨时间步动态分配计算资源，从而实现高效的DiTs。具体而言，DiffCR集成了三个特性：（1）令牌级路由机制，其中每个DiT层包含一个路由器，该路由器与模型权重联合微调以预测令牌重要性分数。通过这种方式，不重要的令牌可以绕过整个层的计算；（2）层级可微分比率机制，不同的DiT层从零初始化开始自动学习不同的压缩比，使得冗余层的压缩比较大，而其他层的压缩比较小甚至不压缩；（3）时间步级可微分比率机制，每个去噪时间步学习其自身的压缩比。由此产生的模式显示，在噪声较大的时间步压缩比较高，而随着图像变得更清晰，压缩比逐渐降低。</strong>在文本到图像和图像修复任务上的大量实验表明，DiffCR有效地捕捉了令牌、层和时间步三个维度的动态性，与先前的工作相比，在生成质量和效率之间取得了更优的权衡。</p>
+<span id="more"></span>
+<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1. 引言"></a>1. 引言</h3><p>扩散模型最近在图像生成方面展现出了卓越的性能，其架构从U-Net[13, 30, 34, 41]发展到了Transformer[1, 3, 4, 29]。其中，扩散Transformer（DiTs）[1, 29]因其出色的可扩展性而脱颖而出。然而，扩散模型，特别是DiTs，受到大量计算和内存需求的限制，这降低了它们在生成和部署方面的效率。例如，在单个A100 GPU上以完整上下文生成一张1024像素的图像可能需要19.48秒，并且需要超过40GB的GPU内存[28, 30]。大多数DiTs的一个主要效率瓶颈源于在所有图像区域上均匀地应用计算，尽管不同区域的复杂程度存在差异[28, 32, 57]。这种效率瓶颈表明，理想的DiT推理框架可以在DiTs的三个关键维度（令牌、层和时间步）上进行自适应和动态的计算。</p>
+<p>已经提出了多种技术来解决上述三个关键维度上的效率瓶颈：（1）令牌合并[2]、剪枝[45]和下采样[39]；（2）层[17]或通道[9]剪枝；（3）少步蒸馏和采样[23, 35, 46, 56]。尽管这些技术很有前景，但（1-2）中的技术在很大程度上依赖于启发式方法，例如用于令牌重要性的启发式规则以及通道和层剪枝规则。此外，压缩比在各层之间通常是统一的，或者是根据先前的经验凭经验调整的。另外，大多数方法只关注单一的效率维度，忽略了在所有三个维度上结合优化所产生的复合效应。</p>
+<p>为了实现一个统一的、可学习的动态DiT推理框架，使其在层和时间步上具有可微分的压缩比，必须解决三个关键挑战：（1）令牌视角：开发一种可学习的、适应视觉内容的令牌重要性度量，因为并非所有令牌都同等重要。（2）层视角：设计能够自主学习每个层的自适应压缩比的机制，以优化处理效率，因为并非所有层的贡献都同等重要。（3）时间步视角：开发能够跨时间步有效学习和应用压缩比模式的方法，因为并非所有时间步都同等重要。为了应对这些挑战，我们做出了以下贡献：</p>
+<ul>
+<li>我们提出了一种具有可微分压缩比的动态DiT推理框架，称为DiffCR，它能自动为每个图像令牌学习跨层和跨时间步的最优动态计算，从而为内容生成任务得到高效的DiT模型。</li>
+</ul>
+<p><strong>支撑技术1</strong>：我们采用了一种受深度混合（MoD）[33]启发的令牌级路由机制，该机制能自动学习令牌重要性分数。每个DiT层都包含一个轻量级路由器，该路由器与模型权重联合微调。根据压缩比，不太重要的令牌会绕过整个层的计算。据我们所知，我们是第一个将MoD应用于视觉领域的。我们的路由分析表明，令牌重要性在不同层和时间步上存在差异。</p>
+<p><strong>支撑技术2</strong>：基于我们的分析，我们引入了一种新颖的DiffCR模块，该模块使令牌路由机制相对于压缩比具有可微分性，从而允许模型从零初始化开始学习每个层的自适应压缩比。冗余层会学习到更高的压缩比，而重要层则保持较低的压缩率甚至完全不压缩。</p>
+<p><strong>支撑技术3</strong>：我们进一步提出了一种时间步级可微分比率机制，使每个层和去噪时间步都能学习自身的压缩比。这形成了一种模式：噪声较大的时间步采用较高的压缩比，而图像较清晰的阶段则保持较低的压缩比。</p>
+<p>我们在图像修复和文本到图像（T2I）任务上进行的大量实验一致表明，与最具竞争力的基线相比，DiffCR在生成质量和效率之间取得了更优的权衡，在保持相当的延迟和内存使用的同时，FID平均降低了8.51。</p>
+<h3 id="2-相关工作"><a href="#2-相关工作" class="headerlink" title="2. 相关工作"></a>2. 相关工作</h3><h4 id="2-1-扩散模型"><a href="#2-1-扩散模型" class="headerlink" title="2.1. 扩散模型"></a>2.1. 扩散模型</h4><p>扩散模型[13, 40]在图像合成任务中展现出了优于以往最先进的生成对抗网络（GANs）的性能[7]。早期的扩散模型主要采用U-Net架构。后续研究带来了多项改进，例如先进的采样方法[16, 23, 41]和无分类器引导[12]。尽管这些模型效果显著，但由于直接在像素空间中进行处理，它们存在生成延迟高的问题，从而限制了其实际应用。潜在扩散模型（LDMs）[34]的引入标志着一项重大进步，它通过训练变分自编码器（VAE）将像素空间编码到更紧凑的潜在空间中。这降低了扩散过程的计算成本，为诸如稳定扩散模型（SDMs）[30]等广泛使用的模型铺平了道路。最近，研究人员探索了将Transformer[43]架构用于扩散模型，进而开发出了扩散Transformer（DiTs）[1, 29]，该模型采用纯Transformer骨干网络，并表现出更好的可扩展性。我们提出的DiffCR是一种新颖的、具有可微分压缩比的动态DiT推理框架，并且与所有最新的DiT模型兼容。</p>
+<h4 id="2-2-高效扩散模型和DiT模型"><a href="#2-2-高效扩散模型和DiT模型" class="headerlink" title="2.2. 高效扩散模型和DiT模型"></a>2.2. 高效扩散模型和DiT模型</h4><p>由于采用Transformer架构，DiTs[29]对资源的需求很大，其注意力模块的复杂度与令牌数量呈二次关系。先前的工作主要集中在从三个维度优化DiTs的部署效率：令牌、层和时间步。在令牌方面，研究人员引入了诸如令牌合并[2]（合并相似令牌）、令牌剪枝[45]或图像分辨率下采样[39]（移除冗余令牌）以及LazyDiffusion[28]（专门用于修复任务，绕过背景令牌的生成）等技术。在层方面，已经提出了诸如层剪枝[17]、通道剪枝[9]以及中间特征缓存[22, 25, 54]等方法来跳过冗余计算。在时间步方面，策略包括蒸馏以减少所需的时间步数量（这一方法已在UNets上进行了探索[15, 23, 35, 36, 55, 56]，尽管没有理由认为这些技术不能应用于Transformer），以及非对称采样（已应用于Transformer架构，为采样不足的阶段分配更多样本，为已经收敛的阶段分配更少样本[31, 46]）。此外，为了加速扩散文本到图像模型，还引入了更多专门的技术[3, 4]。相比之下，我们提出的DiffCR是一种可学习的、统一的动态DiT推理框架，在层和时间步上具有可微分的压缩比，探索了在所有三个维度上进行压缩所产生的复合效应。然而，在本文中我们没有探索少步蒸馏（例如[55]），因为它是一种与我们的方法互补的正交加速方法。</p>
+<h4 id="2-3-动态推理"><a href="#2-3-动态推理" class="headerlink" title="2.3. 动态推理"></a>2.3. 动态推理</h4><p>模型压缩[6]提供了一种静态方法来提高推理效率，而动态推理[33, 48, 49, 52, 58]则允许根据输入、层或其他条件进行自适应压缩。例如，早期退出方法[14, 24, 42]预测中间层内的最佳提前终止点，使模型能够在完成所有计算之前退出。动态层跳过方法[48, 49, 52]为每个输入选择性地执行层的子集，通常利用门控网络实时做出决策。在更精细的粒度上，研究人员还探索了通道跳过[9, 26]和深度混合（MoD）方法[33]，这些方法为单个令牌选择特定的层子集，而不是对整个输入进行统一处理。相比之下，我们的DiffCR是第一个引入统一的动态DiT推理框架的方法，该框架在三个维度（令牌、层和时间步）上进行优化。它还支持与网络联合微调的可微分压缩比，从而提高了适应性和效率。</p>
+<h3 id="3-所提出的DiffCR框架"><a href="#3-所提出的DiffCR框架" class="headerlink" title="3. 所提出的DiffCR框架"></a>3. 所提出的DiffCR框架</h3><p>在本节中，我们将介绍所提出的DiffCR框架。首先，我们会对该方法进行概述。然后，详细阐述三个支撑技术：（1）第3.2节中的令牌级路由机制；（2）第3.3节中的层级可微分压缩比机制；（3）第3.4节中的时间步级可微分压缩比机制。</p>
+<h4 id="3-1-DiffCR概述"><a href="#3-1-DiffCR概述" class="headerlink" title="3.1. DiffCR概述"></a>3.1. DiffCR概述</h4><p>出于在DiT推理过程中实现统一且动态压缩的需求，DiffCR引入了一种令牌级路由机制，以动态学习每个令牌的重要性。如图1（a）所示，与先前用于自然语言处理任务的深度混合（MoD）工作[33]类似，每个DiT层都包含一个轻量级路由器，该路由器使用单个线性层，基于输入图像/噪声和文本嵌入来预测每个令牌的重要性。这使我们能够在每个层中绕过不太重要的令牌的计算，并将它们的激活直接传递到层的输出。因此，每个令牌仅由一部分选定的层进行处理。对这些路由器预测结果的可视化显示，不同的层或时间步倾向于不同的压缩比——例如，某些层优先生成物体，而其他层则专注于背景——这凸显了跨层和跨时间步进行自适应压缩的必要性。为了实现这种动态压缩，DiffCR集成了一种可微分压缩比机制，如图1（b）所示。该机制包括一个表示连续压缩比的可学习标量参数，以及作为代理比率的预定义离散比率区间。该标量查询这些区间以确定较低和较高的区间比率，从而创建具有不同压缩比的两条独立路径。最终输出是这两条路径的线性组合，其权重由学习到的比率与每个区间的接近程度决定。我们应用均方误差（MSE）损失，以确保跨层或跨时间步的平均学习比率收敛到目标比率。通过这种方式，DiffCR以可微分的方式学习自适应压缩比，从而得到高效且动态的深度混合DiT。</p>
+<h4 id="3-2-支撑技术1：令牌级路由机制"><a href="#3-2-支撑技术1：令牌级路由机制" class="headerlink" title="3.2. 支撑技术1：令牌级路由机制"></a>3.2. 支撑技术1：令牌级路由机制</h4><p><strong>动机</strong>：不同令牌的计算需求存在差异，许多令牌只需较少的层即可进行高效处理，这是我们开展此项研究的动机。我们的研究始于与MoD[33]相同的令牌级路由机制。我们移除了MoD中两个专门针对非因果自然语言处理任务的特性：具体而言，我们移除了其论文3.5节中的辅助损失和辅助MLP预测器。据我们所知，本文是首次将MoD应用于视觉领域，因此我们接下来将回顾该路由机制，进行一些可视化，并报告在视觉任务中的见解。</p>
+<p><strong>令牌级路由</strong>：DiT将噪声和条件文本嵌入作为输入，旨在以端到端的方式对图像进行去噪和生成。为了预测令牌的重要性，我们采用了来自MoD[33]的一种简单但有效的令牌级路由机制。如图1（a）所示，每个DiT层都包含一个轻量级路由器，该路由器由单个带有sigmoid激活函数的线性层组成，可在0到1的范围内预测每个令牌的重要性。经过路由器后，我们选择前k个最重要的令牌进行该层的处理，而其他令牌的激活则被缓存并与层输出连接，绕过包括注意力和MLP在内的整个层计算。为了在与预训练DiT模型联合微调期间使梯度能够流向路由器的权重，与MoD[33]相同，我们通过将前k个令牌的输出激活乘以路由器的预测结果来对其进行重新缩放。这种重新缩放确保了在反向传播过程中梯度能够有效地传播到路由器。k的值根据压缩比确定；我们通过实验发现，20%或30%的压缩率在延迟/内存效率和生成质量的最小下降之间实现了最佳权衡。与先前的令牌合并技术[2]不同，如图3所示，由于额外开销的存在，其计算节省与合并比率并不直接成比例，而我们方法中的MoD由于开销可忽略不计，实际延迟和内存使用量得到了更大幅度的减少。</p>
+<h4 id="3-3-支撑技术2：层级可微分比率"><a href="#3-3-支撑技术2：层级可微分比率" class="headerlink" title="3.3. 支撑技术2：层级可微分比率"></a>3.3. 支撑技术2：层级可微分比率</h4><p><strong>动机</strong>：鉴于不同的层优先处理不同的物体或背景元素，因此它们受益于不同的压缩比，我们提出了一种新颖的层级可微分压缩比机制。这种方法以可微分的方式从零初始化开始自动学习每个层的压缩比，以适应不同层的冗余程度差异。</p>
+<p><strong>设计选择</strong>：在设计DiffCR之前，我们需要解决一个关键选择：是采用离散代理还是连续比率表示。先前的工作[5]使用具有多个压缩比候选和可学习概率的离散代理，但这种方法对于MoD存在三个挑战：（1）它缺乏有效的初始化，因为最终比率依赖于候选和概率的乘积，这使得将所有比率初始化为零变得困难；（2）MoD需要一个可微分且可学习的路由器，与需要多组前k个令牌的离散代理不兼容；（3）它引入了大量可学习参数，使训练和可解释性变得复杂，并导致难以解释的比率分布。相比之下，我们使用单个连续标量参数来表示每个层的压缩比，将参数数量减少到DiT的28层[3]所需的28个，并直接表示压缩比。</p>
+<p><strong>层级DiffCR</strong>：如图1（b）所示，我们为每个层分配一个可学习参数，并引入间隔为10%、范围从0%到100%的离散MoD压缩比区间。在训练期间，可学习的MoD比率查询最近的两个离散区间，以获取较低和较高的区间比率。例如，22%的可学习比率将对应20%的较低区间和30%的较高区间。然后，我们使用每个区间比率通过DiT层（带有MoD路由器）进行前向传播，产生两个输出分支。最终输出是这些分支的加权线性组合，其中权重由可学习比率与每个区间的接近程度决定——例如，对于12%的比率，输出将80%权重分配给10%的分支，20%权重分配给20%的分支。尽管这种方法在训练期间使前向传播的成本增加了一倍，但在推理期间我们只需选择最近的区间作为最终压缩比，从而消除了任何开销。为了确保比率收敛到我们的目标值，我们在批次中所有层的当前学习平均比率与作为超参数的目标比率之间引入了一个额外的MSE损失。</p>
+<h4 id="3-4-支撑技术3：时间步级可微分比率"><a href="#3-4-支撑技术3：时间步级可微分比率" class="headerlink" title="3.4. 支撑技术3：时间步级可微分比率"></a>3.4. 支撑技术3：时间步级可微分比率</h4><p><strong>动机</strong>：除了层级比率差异外，我们还观察到模型在不同时间步上表现出不同程度的冗余。这促使我们也探索时间步级压缩比的方法。</p>
+<p><strong>时间步级可微分比率</strong>：在层级DiffCR的基础上，我们引入了特定于不同时间步区域的可学习参数。对于图像修复任务，遵循先前的最先进方法LazyDiffusion[28]，我们使用1000个训练时间步和100个采样时间步，并将它们均匀地划分为10个区域。我们相应地为每个层分配10个可学习比率，总共得到280个可学习参数。同样，对于文本到图像任务，遵循PixArt-Σ[4]的20个时间步，我们将它们划分为4个区域，为每个层分配4个可学习比率，得到112个可学习参数。与之前一样，我们在批次内的平均学习比率与目标比率之间应用MSE损失，以确保收敛。</p>
+<h3 id="4-实验"><a href="#4-实验" class="headerlink" title="4. 实验"></a>4. 实验</h3><h4 id="4-1-实验设置"><a href="#4-1-实验设置" class="headerlink" title="4.1. 实验设置"></a>4.1. 实验设置</h4><p><strong>任务、数据集和模型</strong>。任务与数据集：我们在两个具有代表性的图像生成任务上，使用相应的基准数据集对DiffCR进行评估：（1）基于包含2.2亿张高质量图像的内部数据集的图像修复任务，掩码和文本提示的生成遵循[28,53]；（2）基于LAION-5B数据集[38]的文本到图像（T2I）任务，该数据集仅限于具有高美学分数、英文文本且文本相似度分数不低于0.24的图像样本。模型：我们将提出的DiffCR与最先进的模型相结合。对于图像修复任务，我们使用Lazy Diffusion（一种经过适配的PixArt-α模型，带有额外的ViT编码器）生成1024×1024分辨率的图像。对于文本到图像任务，我们使用PixArt-Σ生成512×512分辨率的图像。</p>
+<p><strong>训练和采样设置</strong>。对于图像修复任务，我们使用AdamW优化器[20]对模型参数进行微调直至收敛，学习率为10⁻⁴，权重衰减为3×10⁻²。在采样时，使用IDDPM[27]生成图像，采用100个时间步和4.5的CFG因子。对于文本到图像任务，我们使用秩为32的LoRA适配器对模型进行微调，直至训练损失和验证损失均收敛，且DiffCR模型的当前压缩比与目标压缩比之间的MSE损失降至接近零。在训练过程中，我们使用IDDPM[27]在1000个时间步上计算扩散损失。在采样时，使用DPM-solver[21]生成图像，采用20个时间步和4.5的CFG因子。所有训练均在8×A100-80GB GPU集群上进行。</p>
+<p><strong>基线和评估指标</strong>。基线：在文本到图像和图像修复任务中，我们将提出的DiffCR与最先进的基线进行比较，包括ToMe[2]、AT-EDM[45]以及我们适配的具有统一MoD压缩比的模型。对于图像修复任务，我们还与RegenerateCrop和RegenerateImage进行了比较，其中RegenerateCrop围绕掩码区域生成一个紧凑的方形裁剪区域，与主流软件框架[44,50]类似，RegenerateImage生成整个图像，这在相关文献中较为常见[30,34,47,53]。评估指标：我们使用FID分数[11]评估生成图像的质量，使用CLIP分数[10]评估文本-图像对齐程度，并在A100 GPU上通过推理FLOPs、延迟和内存使用量评估效率。对于图像修复模型和文本到图像模型，我们分别在LAION-400M[37]和LAION-5B[38]的10K张图像上进行评估，均排除了训练样本。</p>
+<h4 id="4-2-DiffCR与最先进基线的比较"><a href="#4-2-DiffCR与最先进基线的比较" class="headerlink" title="4.2. DiffCR与最先进基线的比较"></a>4.2. DiffCR与最先进基线的比较</h4><p><strong>文本到图像</strong>。为了评估我们提出的DiffCR的有效性，我们将其应用于一般的文本到图像任务，并与先前的令牌合并[2]和剪枝[45]基线进行比较。具体而言，我们在PixArt-Σ上应用这些压缩方法，PixArt-Σ是一种最先进的公开可访问的文本到图像模型，以其高分辨率图像生成质量和效率权衡而闻名。如表1所示，配备DiffCR的PixArt-Σ显著提高了生成质量，与ToMe[2]和AT-EDM[45]相比，FID分别降低了57.83和241.11，同时延迟（降低8.59%~20.15%）和内存使用量（降低-2.71%~0.72%）相当甚至更低。此外，在与具有20%压缩比的ToMe[2]延迟相近的情况下，DiffCR实现了335.23的FID降低。此外，配备DiffCR的PixArt-Σ还实现了与未压缩的PixArt-Σ相当的图像生成质量，同时实现了20.68%和8.33%的延迟和内存节省。请注意，为了进行公平比较，我们与在LAION数据集上微调的PixArt-Σ进行了比较。这组实验证明了DiffCR在一般文本到图像任务中的有效性。</p>
+<p><strong>图像修复</strong>。我们进一步将DiffCR扩展到图像修复任务。具体而言，我们将其应用于最先进的Lazy Diffusion（LD）[28]之上，Lazy Diffusion使用DiT解码器仅生成掩码区域而非整个图像，并利用单独的ViT编码器捕获输入掩码图像的全局上下文。我们将我们的DiffCR方法与两类基线进行比较：（1）RegenerateImage和RegenerateCrop；（2）采用先前的令牌合并[2]或剪枝[45]技术的LD。如表2所示，我们的DiffCR在精度-效率权衡方面始终优于所有基线。例如，配备DiffCR的LD与配备ToME[2]或AT-EDM[45]的LD相比，FID分别降低了47.35和189.93，同时实现了相当或高达23.61%和13.63%的延迟和内存节省。此外，在与具有30%压缩比的ToMe[2]内存使用量相近的情况下，配备DiffCR的LD实现了265.94的FID降低，同时实现了高达21.54%的延迟节省。此外，与RegenerateImage相比，我们的方法在修复1024²图像中的256掩码大小时，实现了73.51%/60.26%的FLOPs和延迟节省。值得注意的是，与Lazy Diffusion一样，我们的方法的复杂度随掩码大小而变化，而RegenerateImage基于完整图像分辨率进行生成，这使其在较小的掩码大小下效率较低。与RegenerateCrop相比，我们的方法实现了显著更高的图像生成质量（+41.01 FID），同时实现了22.96%的内存节省。请注意，所有内存测量均在批处理大小为128的情况下进行。这组实验验证了我们的DiffCR在应用于图像修复任务时的有效性。</p>
+<h4 id="4-3-DiffCR的消融研究"><a href="#4-3-DiffCR的消融研究" class="headerlink" title="4.3. DiffCR的消融研究"></a>4.3. DiffCR的消融研究</h4><p>我们对DiffCR进行了消融研究，分析了第3节中描述的三个支撑技术的贡献。如表格1和表格2所示，我们分别报告了在文本到图像和图像修复任务中，配备MoD路由器（第3.2节）、DiffCR-L（第3.3节）、DiffCR-LT（第3.4节）的LD或PixArt-Σ的性能。结果一致表明，我们的DiffCR的所有组件都对最终性能有贡献。具体而言，仅MoD就比ToMe[2]和AT-EDM[45]在文本到图像任务上平均降低了323.13和229.01的FID，同时延迟和内存使用量相当甚至更低。DiffCR-L和DiffCR-LT进一步提高了生成质量，在图像修复任务上额外降低了4.81/4.92的FID，在文本到图像任务上额外降低了10.5/12.1的FID。</p>
+<p>我们的DiffCR的一个关键优势是，在微调过程中，所有层的平均压缩比逐渐收敛到目标比，从而产生一系列具有不同压缩比的“副产品”模型。如图7所示，我们可视化了图像修复和文本到图像任务的模型轨迹以及相应的FID分数和压缩比。观察结果表明，对于文本到图像任务，FID随着压缩比的增加而逐渐增加，达到了预期结果。相比之下，对于图像修复任务，FID逐渐降低。这种差异的产生是因为与文本到图像任务相比，图像修复任务和LD模型对剪枝更敏感，需要更长时间的微调来提高生成质量。这也反映在表格2和表格1中，图像修复任务在剪枝后FID增加，而文本到图像任务的FID甚至降低。</p>
+<h4 id="4-4-定性视觉示例"><a href="#4-4-定性视觉示例" class="headerlink" title="4.4. 定性视觉示例"></a>4.4. 定性视觉示例</h4><p><strong>视觉示例</strong>。我们选择具有挑战性的输入提示来评估我们提出的DiffCR的定性结果。如图6所示，这些示例表明，在图像修复和文本到图像任务中，DiffCR实现了与RegenerateCrop基线甚至未压缩的LD或PixArt-Σ相当甚至更优的生成质量。请注意，此处省略了ToMe和AT-EDM，因为即使在仅10%的压缩比下，它们在应用于DiTs时生成质量也很差。</p>
+<p><strong>人类偏好分数</strong>。我们使用计算机视觉模型来估计可能的人类偏好，并评估模型生成高质量、上下文相关图像的能力。具体而言，我们为文本到图像任务生成了2K个样本，并使用HPSv2[51]评估不同方法生成的图像的人类偏好。如表5所示，对于文本到图像任务，我们将所有压缩方法应用于PixArt-Σ[4]。与先前的压缩方法ToMe[2]和 vanilla MoD[33]相比，DiffCR实现了更高的人类偏好分数，分别为4.685/0.847。</p>
+<h3 id="5-结论"><a href="#5-结论" class="headerlink" title="5. 结论"></a>5. 结论</h3><p>在这项工作中，我们提出了DiffCR，这是一种具有可微分压缩比的动态DiT推理框架，它能跨令牌、层和时间步自适应地分配计算资源，从而得到高效的DiT模型。具体而言，DiffCR整合了一种基于深度混合（MoD）的令牌级路由机制，该机制能动态学习每个令牌的重要性分数，同时还包含一个新颖的模块，该模块使MoD相对于压缩比具有可微分性，从而使模型能够学习每个层和时间步的自适应压缩比。冗余层和时间步会学习到更高的压缩比，而关键层和时间步则保持较低的压缩率甚至完全不压缩。在图像修复和文本到图像（T2I）任务上的大量实验一致表明，与其他压缩方法相比，DiffCR在图像生成质量和效率之间取得了更优的权衡。</p>
+<h3 id="层级和时间步自适应可微分令牌压缩比用于高效扩散Transformer补充材料"><a href="#层级和时间步自适应可微分令牌压缩比用于高效扩散Transformer补充材料" class="headerlink" title="层级和时间步自适应可微分令牌压缩比用于高效扩散Transformer补充材料"></a>层级和时间步自适应可微分令牌压缩比用于高效扩散Transformer补充材料</h3><h4 id="A-令牌路由器的更多可视化"><a href="#A-令牌路由器的更多可视化" class="headerlink" title="A. 令牌路由器的更多可视化"></a>A. 令牌路由器的更多可视化</h4><p>在3.2节中，我们提供了路由器预测的示例可视化，以评估我们的DiffCR路由器的有效性。在这里，我们在图9中展示了更多的可视化示例，以进一步验证我们的发现。我们的观察结果一致表明：（1）路由器能有效捕捉语义信息，清晰地勾勒出物体形状，并在显著降低计算成本的同时达到类似注意力的效果；（2）预测的令牌重要性在不同层和时间步之间存在差异。例如，一些层专注于物体生成，而另一些层则强调背景区域。此外，随着时间步的推进，路由器越来越多地捕捉到物体的语义轮廓，这凸显了动态令牌重要性估计的重要性；（3）最佳压缩比在不同层和时间步之间存在差异。例如，一些层将高重要性分配给所有令牌，表明冗余度极小，而另一些层则有选择地修剪来自具有不同形状的物体或背景的令牌，这需要不同的压缩比。这种差异在不同时间步之间也有体现。在之前的MoD[33]方法中，固定的全局压缩率被均匀地应用于所有层和时间步，而忽略了它们各自的重要性。这种均匀修剪可能会过度修剪关键层或时间步，同时对冗余层或时间步的压缩不足。这一观察结果强调了需要为层和时间步量身定制自适应和动态的压缩比。</p>
+<h4 id="B-文本到图像任务的比率轨迹分析"><a href="#B-文本到图像任务的比率轨迹分析" class="headerlink" title="B. 文本到图像任务的比率轨迹分析"></a>B. 文本到图像任务的比率轨迹分析</h4><p>在3.3节中，我们可视化了使用我们提出的层级DiffCR训练的修复任务的比率轨迹。在这里，我们还提供了在文本到图像任务上对PixArt-Σ模型进行微调期间所有层的压缩比训练轨迹，如图8（a-c）所示。可视化结果一致表明：（1）每个层都学习到其独特的压缩比，冗余层实现了更高的压缩率，而关键层则保持较低的压缩率或完全不压缩；（2）各层的平均比率逐渐收敛到目标比率。在这个例子中，目标比率为20%，最终实现的平均比率约为19%，差距很小。值得注意的是，收敛速度和生成质量之间存在权衡：比率的MSE损失系数越高，收敛速度越快，但可能因压缩过快而降低质量；而系数越小，收敛越平缓，质量得以保持，但训练速度较慢。在实践中，我们将初始系数设置为0.3，并在训练过程中动态调整，以有效平衡速度和质量；（3）中间层的冗余度较大，而后层的冗余度通常较低，往往无法被压缩。早期层的冗余度水平则各不相同。</p>
+<p>需要注意的是，为了防止模型学习到所有层的压缩比都为0%，我们使用一个系数来平衡扩散损失（倾向于较低的比率以获得更高的质量）和MSE损失（驱动目标平均比率），而无需额外的正则化或惩罚。较高的系数会加快收敛速度，但可能会影响质量；而较小的系数则能确保收敛平缓并保持质量。一些层自然会学习到0%的比率，这凸显了它们的重要性。</p>
+<h4 id="C-学习到的压缩比与路由器预测之间的相关性"><a href="#C-学习到的压缩比与路由器预测之间的相关性" class="headerlink" title="C. 学习到的压缩比与路由器预测之间的相关性"></a>C. 学习到的压缩比与路由器预测之间的相关性</h4><p>我们选择了三个具有高、中、低学习压缩比的代表性层，以可视化DiffCR路由器的相应预测，并分析可能存在的相关性。如图10所示（其中“C.R.”表示压缩比），我们观察到学习到的比率与路由器的预测之间存在很强的相关性。对于具有高压缩比的层，例如修复任务中的层1或文本到图像任务中的层9，路由器始终对许多语义区域预测较低的重要性分数，采用极其“懒惰的行为”来节省计算。相反，对于具有低压缩比的层，路由器为大多数区域分配较高的重要性分数。这种可视化验证了我们的令牌级路由器与可微分比率之间的联合学习效果。</p>
+<h4 id="D-时间步区域选择的权衡"><a href="#D-时间步区域选择的权衡" class="headerlink" title="D. 时间步区域选择的权衡"></a>D. 时间步区域选择的权衡</h4><p>在3.4节中，我们介绍了时间步级DiffCR，其中对于具有100个采样时间步的修复任务，时间步区域被均匀地划分为10个区域；对于具有20个时间步的文本到图像任务，时间步区域被划分为4个区域。在这里，我们提供了关于选择时间步区域数量及相关权衡的额外指导。更多的时间步区域可以在所有时间步上学习更精细、更精确的压缩比。</p>
+<p>然而，过多的区域会使训练不稳定且具有挑战性。为了降低训练复杂性并提高稳定性，我们选择较少的区域，例如文本到图像任务中选择4个区域。相反，使用过少的区域可能会使方法过于简化，使其沦为类似SpeeD[46]的启发式方法，后者手动定义了三个时间步区域。在实践中，我们选择4到10个时间步区域，以平衡粒度和稳定性。虽然我们的方法与SpeeD的一般见解一致，但它更具系统性和适应性。与手动探索大量设计空间不同，我们的方法以一种原则性的方式有效地处理数量多得多的区域，平衡了粒度和训练稳定性。</p>
+<h4 id="E-整体比较图"><a href="#E-整体比较图" class="headerlink" title="E. 整体比较图"></a>E. 整体比较图</h4><p>在4.2节中，我们全面比较了我们的DiffCR方法与修复和文本到图像任务的基线方法。在这里，我们提供了整体比较图，以更好地说明在FID和延迟减少方面取得的改进。如图11所示，我们的DiffCR在FID和延迟之间始终实现了更优的权衡，与最具竞争力的基线相比，在相当的GPU延迟下，文本到图像和修复任务的FID分别降低了12.10和4.92。</p>
+<h4 id="F-DiffCR的模型轨迹"><a href="#F-DiffCR的模型轨迹" class="headerlink" title="F. DiffCR的模型轨迹"></a>F. DiffCR的模型轨迹</h4><p>在4.2节中，我们可视化了DiffCR-L在文本到图像和修复任务训练期间的模型轨迹。这揭示了一个关键优势：在微调过程中，所有层的平均压缩比逐渐收敛到目标比，从而产生一系列具有不同压缩比的“副产品”模型。在这里，我们还提供了DiffCR-LT（“-LT”表示层级和时间步级DiffCR）的模型轨迹。如图13所示，我们可视化了DiffCR-LT微调期间的FID分数和相应的压缩比。观察结果一致验证了这种方法的优势，表明它能够生成一系列具有不同压缩比的模型。此外，我们观察到与文本到图像任务相比，修复任务和潜在扩散（LD）模型[28]对修剪更敏感，需要更长时间的微调才能有效提高生成质量。此外，对于文本到图像任务，与DiffCR-L相比，DiffCR-LT在模型轨迹方面表现出略高的稳定性。</p>
+<h4 id="G-视觉示例的更多可视化"><a href="#G-视觉示例的更多可视化" class="headerlink" title="G. 视觉示例的更多可视化"></a>G. 视觉示例的更多可视化</h4><p>在4.4节中，我们选择了具有挑战性的输入提示来评估我们提出的DiffCR的定性性能。</p>
+<p>在这里，我们提供了额外的视觉示例，如图12所示。这些示例一致表明，在修复和文本到图像任务中，DiffCR实现了与RegenerateCrop基线甚至未压缩的LD或PixArt-Σ相当甚至更优的生成质量。请注意，此处省略了ToMe[2]和AT-EDM[45]，因为即使在10%的适度压缩比下，它们在应用于DiTs时生成质量也很差。</p>
+<h4 id="H-与基于缓存的基线的比较"><a href="#H-与基于缓存的基线的比较" class="headerlink" title="H. 与基于缓存的基线的比较"></a>H. 与基于缓存的基线的比较</h4><p>我们在表4中总结了我们的方法和基于缓存的基线的特点。DeepCache[54]和CMYC[25]是为基于U-Net的模型设计的，因此难以直接比较，而L2C[22]和TGATE[19]通过缓存层特征来减少未来时间步的重新计算，从而针对DiTs。与这些方法不同，我们的方法专注于具有可学习的层级和时间步相关压缩比的令牌修剪，虽然它不采用时间缓存，但与这些技术兼容。为了进行直接比较，我们在MS-COCO-30K数据集（文本到图像任务）上使用PixArt-Σ评估了所有方法，在约25%的延迟节省下，L2C的FID为28.6（我们训练的路由器重现了与报告相似的缓存模式），TGATE的FID为43.6，而我们的DiffCR的FID为28.6。这些结果表明，我们的方法与基于缓存的基线相当或更好，并且可以进一步与它们结合使用，以实现额外15-30%的延迟减少。</p>
+<h4 id="I-修复任务的人类偏好分数"><a href="#I-修复任务的人类偏好分数" class="headerlink" title="I. 修复任务的人类偏好分数"></a>I. 修复任务的人类偏好分数</h4><p>在4.4节中，我们使用计算机视觉模型来估计可能的人类偏好，并评估模型生成高质量、上下文相关的文本到图像任务图像的能力。在这里，我们还提供了修复任务的评估。具体而言，我们为修复任务生成了2K个样本，并使用HPSv2[51]评估不同方法生成的图像的人类偏好。如表5所示，对于修复任务，我们将所有压缩方法应用于Lazy Diffusion（LD）[28]。与先前的压缩方法ToMe[2]和vanilla MoD[33]相比，DiffCR实现了更高的人类偏好分数，分别为2.181/0.263。</p>
+<h4 id="J-压缩比的消融分析"><a href="#J-压缩比的消融分析" class="headerlink" title="J. 压缩比的消融分析"></a>J. 压缩比的消融分析</h4><p>在这项工作中，我们以降低延迟为目标，作为向边缘部署迈出的一步。为了分析不同压缩比的影响，我们在MS-COCO-30K数据集[18]上使用PixArt-Σ模型进行了消融研究。值得注意的是，1/3的时间步被分配给全模型推理以保持准确性。下表中的结果表明，我们的方法能有效地扩展到更大的压缩比，FID仅略有增加（&lt;1）。先前选择30%的压缩比用于具有挑战性的生成任务，以在现有最先进的高效方法的基础上保持准确性。</p>
+<h4 id="K-仅MSE损失是否足够？"><a href="#K-仅MSE损失是否足够？" class="headerlink" title="K. 仅MSE损失是否足够？"></a>K. 仅MSE损失是否足够？</h4><p>我们发现，仅使用MSE损失就能有效地引导比率向目标值靠近，无需额外的正则化，因此我们将其固定为MSE损失，但其他损失函数也可能同样有效。此外，尽管我们没有强制进行二元预测，但在某些层中，路由器倾向于学习极化分布，将重要令牌与不重要令牌区分开来，学习到的比率也相应地对齐，如图10所示。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/diffusion/" rel="tag"># diffusion</a>
+              <a href="/tags/CVPR/" rel="tag"># CVPR</a>
+              <a href="/tags/2025/" rel="tag"># 2025</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/07/10/2025-CVPR-DreamCache-Finetuning-Free-Lightweight-Personalized-Image-Generation-via-Feature-Caching%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" rel="prev" title="2025-CVPR-DreamCache Finetuning-Free Lightweight Personalized Image Generation via Feature Caching论文精读">
+      <i class="fa fa-chevron-left"></i> 2025-CVPR-DreamCache Finetuning-Free Lightweight Personalized Image Generation via Feature Caching论文精读
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2025/07/10/2025-CVPR-NitroFusion-High-Fidelity-Single-Step-Diffusion-through-Dynamic-Adversarial-Training%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" rel="next" title="2025-CVPR-NitroFusion High-Fidelity Single-Step Diffusion through Dynamic Adversarial Training论文精读">
+      2025-CVPR-NitroFusion High-Fidelity Single-Step Diffusion through Dynamic Adversarial Training论文精读 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1. 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.3.</span> <span class="nav-text">2. 相关工作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.3.1.</span> <span class="nav-text">2.1. 扩散模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E9%AB%98%E6%95%88%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B%E5%92%8CDiT%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.3.2.</span> <span class="nav-text">2.2. 高效扩散模型和DiT模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-%E5%8A%A8%E6%80%81%E6%8E%A8%E7%90%86"><span class="nav-number">1.3.3.</span> <span class="nav-text">2.3. 动态推理</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%89%80%E6%8F%90%E5%87%BA%E7%9A%84DiffCR%E6%A1%86%E6%9E%B6"><span class="nav-number">1.4.</span> <span class="nav-text">3. 所提出的DiffCR框架</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-DiffCR%E6%A6%82%E8%BF%B0"><span class="nav-number">1.4.1.</span> <span class="nav-text">3.1. DiffCR概述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E6%94%AF%E6%92%91%E6%8A%80%E6%9C%AF1%EF%BC%9A%E4%BB%A4%E7%89%8C%E7%BA%A7%E8%B7%AF%E7%94%B1%E6%9C%BA%E5%88%B6"><span class="nav-number">1.4.2.</span> <span class="nav-text">3.2. 支撑技术1：令牌级路由机制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-%E6%94%AF%E6%92%91%E6%8A%80%E6%9C%AF2%EF%BC%9A%E5%B1%82%E7%BA%A7%E5%8F%AF%E5%BE%AE%E5%88%86%E6%AF%94%E7%8E%87"><span class="nav-number">1.4.3.</span> <span class="nav-text">3.3. 支撑技术2：层级可微分比率</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-%E6%94%AF%E6%92%91%E6%8A%80%E6%9C%AF3%EF%BC%9A%E6%97%B6%E9%97%B4%E6%AD%A5%E7%BA%A7%E5%8F%AF%E5%BE%AE%E5%88%86%E6%AF%94%E7%8E%87"><span class="nav-number">1.4.4.</span> <span class="nav-text">3.4. 支撑技术3：时间步级可微分比率</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.5.</span> <span class="nav-text">4. 实验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E5%AE%9E%E9%AA%8C%E8%AE%BE%E7%BD%AE"><span class="nav-number">1.5.1.</span> <span class="nav-text">4.1. 实验设置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-DiffCR%E4%B8%8E%E6%9C%80%E5%85%88%E8%BF%9B%E5%9F%BA%E7%BA%BF%E7%9A%84%E6%AF%94%E8%BE%83"><span class="nav-number">1.5.2.</span> <span class="nav-text">4.2. DiffCR与最先进基线的比较</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-DiffCR%E7%9A%84%E6%B6%88%E8%9E%8D%E7%A0%94%E7%A9%B6"><span class="nav-number">1.5.3.</span> <span class="nav-text">4.3. DiffCR的消融研究</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-%E5%AE%9A%E6%80%A7%E8%A7%86%E8%A7%89%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.5.4.</span> <span class="nav-text">4.4. 定性视觉示例</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E7%BB%93%E8%AE%BA"><span class="nav-number">1.6.</span> <span class="nav-text">5. 结论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B1%82%E7%BA%A7%E5%92%8C%E6%97%B6%E9%97%B4%E6%AD%A5%E8%87%AA%E9%80%82%E5%BA%94%E5%8F%AF%E5%BE%AE%E5%88%86%E4%BB%A4%E7%89%8C%E5%8E%8B%E7%BC%A9%E6%AF%94%E7%94%A8%E4%BA%8E%E9%AB%98%E6%95%88%E6%89%A9%E6%95%A3Transformer%E8%A1%A5%E5%85%85%E6%9D%90%E6%96%99"><span class="nav-number">1.7.</span> <span class="nav-text">层级和时间步自适应可微分令牌压缩比用于高效扩散Transformer补充材料</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#A-%E4%BB%A4%E7%89%8C%E8%B7%AF%E7%94%B1%E5%99%A8%E7%9A%84%E6%9B%B4%E5%A4%9A%E5%8F%AF%E8%A7%86%E5%8C%96"><span class="nav-number">1.7.1.</span> <span class="nav-text">A. 令牌路由器的更多可视化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B-%E6%96%87%E6%9C%AC%E5%88%B0%E5%9B%BE%E5%83%8F%E4%BB%BB%E5%8A%A1%E7%9A%84%E6%AF%94%E7%8E%87%E8%BD%A8%E8%BF%B9%E5%88%86%E6%9E%90"><span class="nav-number">1.7.2.</span> <span class="nav-text">B. 文本到图像任务的比率轨迹分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#C-%E5%AD%A6%E4%B9%A0%E5%88%B0%E7%9A%84%E5%8E%8B%E7%BC%A9%E6%AF%94%E4%B8%8E%E8%B7%AF%E7%94%B1%E5%99%A8%E9%A2%84%E6%B5%8B%E4%B9%8B%E9%97%B4%E7%9A%84%E7%9B%B8%E5%85%B3%E6%80%A7"><span class="nav-number">1.7.3.</span> <span class="nav-text">C. 学习到的压缩比与路由器预测之间的相关性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#D-%E6%97%B6%E9%97%B4%E6%AD%A5%E5%8C%BA%E5%9F%9F%E9%80%89%E6%8B%A9%E7%9A%84%E6%9D%83%E8%A1%A1"><span class="nav-number">1.7.4.</span> <span class="nav-text">D. 时间步区域选择的权衡</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#E-%E6%95%B4%E4%BD%93%E6%AF%94%E8%BE%83%E5%9B%BE"><span class="nav-number">1.7.5.</span> <span class="nav-text">E. 整体比较图</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#F-DiffCR%E7%9A%84%E6%A8%A1%E5%9E%8B%E8%BD%A8%E8%BF%B9"><span class="nav-number">1.7.6.</span> <span class="nav-text">F. DiffCR的模型轨迹</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#G-%E8%A7%86%E8%A7%89%E7%A4%BA%E4%BE%8B%E7%9A%84%E6%9B%B4%E5%A4%9A%E5%8F%AF%E8%A7%86%E5%8C%96"><span class="nav-number">1.7.7.</span> <span class="nav-text">G. 视觉示例的更多可视化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#H-%E4%B8%8E%E5%9F%BA%E4%BA%8E%E7%BC%93%E5%AD%98%E7%9A%84%E5%9F%BA%E7%BA%BF%E7%9A%84%E6%AF%94%E8%BE%83"><span class="nav-number">1.7.8.</span> <span class="nav-text">H. 与基于缓存的基线的比较</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#I-%E4%BF%AE%E5%A4%8D%E4%BB%BB%E5%8A%A1%E7%9A%84%E4%BA%BA%E7%B1%BB%E5%81%8F%E5%A5%BD%E5%88%86%E6%95%B0"><span class="nav-number">1.7.9.</span> <span class="nav-text">I. 修复任务的人类偏好分数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#J-%E5%8E%8B%E7%BC%A9%E6%AF%94%E7%9A%84%E6%B6%88%E8%9E%8D%E5%88%86%E6%9E%90"><span class="nav-number">1.7.10.</span> <span class="nav-text">J. 压缩比的消融分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#K-%E4%BB%85MSE%E6%8D%9F%E5%A4%B1%E6%98%AF%E5%90%A6%E8%B6%B3%E5%A4%9F%EF%BC%9F"><span class="nav-number">1.7.11.</span> <span class="nav-text">K. 仅MSE损失是否足够？</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zongqing Li"
+      src="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+  <p class="site-author-name" itemprop="name">Zongqing Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">100</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hqulzq" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hqulzq" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hqulzq@163.com" title="E-Mail → mailto:hqulzq@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+      
+<script type="text/javascript" charset="utf-8" src="/js/tagcloud.js"></script>
+<script type="text/javascript" charset="utf-8" src="/js/tagcanvas.js"></script>
+<div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div id="myCanvasContainer" class="widget tagcloud">
+        <canvas width="250" height="250" id="resCanvas" style="width=100%">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2023/" rel="tag">2023</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2024/" rel="tag">2024</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2025/" rel="tag">2025</a><span class="tag-list-count">22</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">25</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICCV/" rel="tag">ICCV</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICML/" rel="tag">ICML</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IJCAI/" rel="tag">IJCAI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ODE%E6%B1%82%E8%A7%A3/" rel="tag">ODE求解</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">62</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%80%BB%E7%BB%93/" rel="tag">总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%85%E8%AF%BB/" rel="tag">阅读</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+        </canvas>
+    </div>
+</div>
+
+
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zongqing Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('post.copy_button').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('post.copy_success')
+          else $(this).text('post.copy_failure')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('post.copy_button')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>

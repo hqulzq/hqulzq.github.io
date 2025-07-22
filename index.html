@@ -118,7 +118,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">48</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">49</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -128,7 +128,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">88</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">100</span></a>
 
   </li>
         <li class="menu-item menu-item-book">
@@ -190,7 +190,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/07/09/2025-CVPR-CacheQuant-Comprehensively-Accelerated-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/07/22/%E8%AE%BA%E6%96%87%E6%80%BB%E7%BB%93/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
@@ -204,88 +204,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2025/07/09/2025-CVPR-CacheQuant-Comprehensively-Accelerated-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" class="post-title-link" itemprop="url">2025-CVPR-CacheQuant Comprehensively Accelerated Diffusion Models论文精读</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2025-07-09 22:46:30" itemprop="dateCreated datePublished" datetime="2025-07-09T22:46:30+08:00">2025-07-09</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-07-10 21:07:20" itemprop="dateModified" datetime="2025-07-10T21:07:20+08:00">2025-07-10</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散模型在图像合成领域逐渐崭露头角，展现出卓越的生成能力。然而，由于时间和结构层面的冗余导致推理速度缓慢且网络复杂，阻碍了其在现实场景中的低延迟应用。当前针对扩散模型的加速方法分别聚焦于时间层面和结构层面。但在每个层面进行独立优化以进一步突破加速极限时，会导致性能显著下降。另一方面，整合两个层面的优化可以增强加速效果。遗憾的是，我们发现这<strong>两个层面的优化并非完全正交</strong>。先进行单独优化再简单整合，会导致性能不理想。<strong>为解决这一问题，我们提出了CacheQuant，这是一种全新的无训练范式，通过联合优化模型缓存和量化技术来全面加速扩散模型。具体而言，我们采用动态规划方法确定最优缓存调度，其中仔细考虑了缓存和量化的特性，以最小化误差。此外，我们提出解耦误差校正，逐步减轻耦合和累积的误差。</strong>实验结果表明，在MS-COCO数据集上，CacheQuant对Stable Diffusion实现了5.18倍的加速和4倍的压缩，而CLIP分数仅下降0.02。我们的代码已开源。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/07/09/2025-CVPR-CacheQuant-Comprehensively-Accelerated-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/07/08/2025-CVPR-BlockDance-Reuse-Structurally-Similar-Spatio-Temporal-Features-to-Accelerate-Diffusion-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
-      <meta itemprop="name" content="Zongqing Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lzq's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2025/07/08/2025-CVPR-BlockDance-Reuse-Structurally-Similar-Spatio-Temporal-Features-to-Accelerate-Diffusion-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" class="post-title-link" itemprop="url">2025-CVPR-BlockDance Reuse Structurally Similar Spatio-Temporal Features to Accelerate Diffusion Transformers论文精读</a>
+            <a href="/2025/07/22/%E8%AE%BA%E6%96%87%E6%80%BB%E7%BB%93/" class="post-title-link" itemprop="url">论文总结</a>
         </h2>
 
         <div class="post-meta">
@@ -296,7 +215,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2025-07-08 16:40:44 / 修改时间：22:36:30" itemprop="dateCreated datePublished" datetime="2025-07-08T16:40:44+08:00">2025-07-08</time>
+              <time title="创建时间：2025-07-22 17:59:25 / 修改时间：18:05:57" itemprop="dateCreated datePublished" datetime="2025-07-22T17:59:25+08:00">2025-07-22</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -319,10 +238,95 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散模型已展现出令人印象深刻的生成能力，特别是在最近借助Transformer架构来提升视觉和艺术质量的进展中。然而，扩散Transformer（DiTs）仍面临推理速度慢的挑战，这主要是由其迭代去噪过程导致的。为解决这一问题，我们提出了BlockDance，这是一种无需训练的方法，<strong>它通过探索相邻时间步的特征相似性来加速DiTs。与以往那些缺乏针对不同尺度特征的定制化重用策略的特征重用方法不同，BlockDance优先识别那些结构性最相似的特征，即结构相似的时空（STSS）特征。这些特征主要位于Transformer中专注于结构的块内，且出现在去噪的后期阶段。BlockDance对这些高度相似的特征进行缓存和重用，以减少冗余计算，从而在加速DiTs的同时，最大程度地保证与原始模型生成结果的一致性。此外，考虑到生成内容的多样性以及冗余特征分布的差异性，我们引入了BlockDance-Ada，这是一种轻量级决策网络，专为特定实例的加速而设计。BlockDance-Ada能够动态分配资源，并提供更优的内容质量。</strong>事实证明，BlockDance和BlockDance-Ada在各种生成任务和模型上均有效，在保持生成质量的同时，实现了25%至50%的加速。<br>
+          <h2 id="基础研究"><a href="#基础研究" class="headerlink" title="基础研究"></a>基础研究</h2><ol>
+<li>DDPM</li>
+<li>DDIM</li>
+<li>NCSN</li>
+<li>Score-Based</li>
+<li>class-Guidence</li>
+<li>class-free Guidence</li>
+<li>IDM</li>
+<li>EDM</li>
+</ol>
+<h2 id="加速采样"><a href="#加速采样" class="headerlink" title="加速采样"></a>加速采样</h2><h3 id="Training-Free"><a href="#Training-Free" class="headerlink" title="Training-Free"></a>Training-Free</h3><h4 id="基于求解器"><a href="#基于求解器" class="headerlink" title="基于求解器"></a>基于求解器</h4><ol>
+<li>iPNDMs</li>
+<li>DEIS</li>
+<li>DPM-Solver</li>
+<li>DPM-Solver++</li>
+</ol>
+<h4 id="基于蒸馏"><a href="#基于蒸馏" class="headerlink" title="基于蒸馏"></a>基于蒸馏</h4><h4 id="基于特征重用"><a href="#基于特征重用" class="headerlink" title="基于特征重用"></a>基于特征重用</h4><ol>
+<li>FreeU</li>
+<li>DeepCache</li>
+<li>PFDiff</li>
+</ol>
+<h3 id="Training-Based"><a href="#Training-Based" class="headerlink" title="Training-Based"></a>Training-Based</h3><h4 id="基于求解器-1"><a href="#基于求解器-1" class="headerlink" title="基于求解器_"></a>基于求解器_</h4><h4 id="基于蒸馏-1"><a href="#基于蒸馏-1" class="headerlink" title="基于蒸馏_"></a>基于蒸馏_</h4><h3 id="Training-Efficient"><a href="#Training-Efficient" class="headerlink" title="Training-Efficient"></a>Training-Efficient</h3><h4 id="基于求解器-2"><a href="#基于求解器-2" class="headerlink" title="_基于求解器"></a>_基于求解器</h4><h4 id="基于蒸馏-2"><a href="#基于蒸馏-2" class="headerlink" title="_基于蒸馏"></a>_基于蒸馏</h4>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/07/20/my-paper/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2025/07/20/my-paper/" class="post-title-link" itemprop="url">my paper</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-07-20 20:59:38" itemprop="dateCreated datePublished" datetime="2025-07-20T20:59:38+08:00">2025-07-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-07-22 20:52:18" itemprop="dateModified" datetime="2025-07-22T20:52:18+08:00">2025-07-22</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          Here's something encrypted, password is required to continue reading.
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2025/07/08/2025-CVPR-BlockDance-Reuse-Structurally-Similar-Spatio-Temporal-Features-to-Accelerate-Diffusion-Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/#more" rel="contents">
+              <a class="btn" href="/2025/07/20/my-paper/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -346,7 +350,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/07/07/2024-IJCAI-Boosting-Diffusion-Models-with-an-Adaptive-Momentum-Sampler%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/07/20/%E8%AF%95%E9%AA%8C%E8%AE%B0%E5%BD%95/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
@@ -360,7 +364,160 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2025/07/07/2024-IJCAI-Boosting-Diffusion-Models-with-an-Adaptive-Momentum-Sampler%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" class="post-title-link" itemprop="url">2024-IJCAI-Boosting-Diffusion-Models-with-an-Adaptive-Momentum-Sampler论文精读</a>
+            <a href="/2025/07/20/%E8%AF%95%E9%AA%8C%E8%AE%B0%E5%BD%95/" class="post-title-link" itemprop="url">试验记录</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-07-20 16:16:50" itemprop="dateCreated datePublished" datetime="2025-07-20T16:16:50+08:00">2025-07-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-07-22 16:03:27" itemprop="dateModified" datetime="2025-07-22T16:03:27+08:00">2025-07-22</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          Here's something encrypted, password is required to continue reading.
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/07/20/%E8%AF%95%E9%AA%8C%E8%AE%B0%E5%BD%95/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/07/14/2025-ICML-Differentiable-Solver-Search-for-Fast-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2025/07/14/2025-ICML-Differentiable-Solver-Search-for-Fast-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" class="post-title-link" itemprop="url">2025-ICML-Differentiable Solver Search for Fast Diffusion Sampling论文精读</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-07-14 16:29:22" itemprop="dateCreated datePublished" datetime="2025-07-14T16:29:22+08:00">2025-07-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-07-22 16:24:26" itemprop="dateModified" datetime="2025-07-22T16:24:26+08:00">2025-07-22</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散模型已展现出卓越的生成质量，但其代价是需要大量的函数评估。最近，基于常微分方程（ODE）的高级求解器被开发出来，旨在减轻有限采样步骤下反向扩散求解的巨大计算需求。然而，<strong>这些求解器深受亚当斯（Adams）类多步法的启发，仅依赖于与时间$t$相关的拉格朗日插值。我们发现，与时间$t$相关的拉格朗日插值对于扩散模型而言并非最优，并揭示了一个由时间步长和求解器系数构成的紧凑搜索空间。</strong>基于这一分析，我们提出了一种新颖的可微求解器搜索算法，以识别更优的求解器。配备所搜索到的求解器后，整流流（rectified-flow）模型（如SiT-XL/2和FlowDCN-XL/2）在ImageNet-256×256数据集上仅用10步就能分别达到2.40和2.35的FID分数。同时，DDPM模型DiT-XL/2在仅10步的情况下达到了2.33的FID分数。值得注意的是，我们搜索到的求解器显著优于传统求解器（甚至一些蒸馏方法）。此外，该求解器在各种模型架构、分辨率和模型大小上都表现出良好的通用性。<br>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/07/14/2025-ICML-Differentiable-Solver-Search-for-Fast-Diffusion-Sampling%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/07/14/2025-CVPR-Schedule-On-the-Fly-Diffusion-Time-Prediction-for-Faster-and-Better-Image-Generation%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2025/07/14/2025-CVPR-Schedule-On-the-Fly-Diffusion-Time-Prediction-for-Faster-and-Better-Image-Generation%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" class="post-title-link" itemprop="url">2025-CVPR-Schedule On the Fly Diffusion Time Prediction for Faster and Better Image Generation论文精读</a>
         </h2>
 
         <div class="post-meta">
@@ -371,7 +528,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2025-07-07 20:01:42 / 修改时间：21:48:25" itemprop="dateCreated datePublished" datetime="2025-07-07T20:01:42+08:00">2025-07-07</time>
+              <time title="创建时间：2025-07-14 16:03:45 / 修改时间：16:11:59" itemprop="dateCreated datePublished" datetime="2025-07-14T16:03:45+08:00">2025-07-14</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -394,10 +551,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散概率模型（DPMs）已被证明能够生成高质量图像，且无需复杂的对抗训练。然而，当前DPMs中的采样过程容易出现剧烈波动。<strong>本文提出了一种受广泛使用的Adam优化器启发的新型DPMs反向采样器。该采样器可直接应用于预训练的扩散模型，通过动量机制和自适应更新来平滑反向采样过程，确保生成的稳定性，从而提升输出质量。通过隐式复用早期步骤的更新方向，所提采样器在高层语义与低层细节之间实现了更好的平衡。此外，该采样器具有灵活性，无论训练时使用何种采样器，都能轻松集成到预训练的DPMs中。</strong>在多个基准测试上的实验结果表明，所提反向采样器相较于不同基线方法有显著改进。我们将公开源代码。</p>
+          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散模型和流匹配模型在文本到图像生成任务中取得了显著成功。然而，这些模型通常依赖于为所有提示词预先设定的去噪调度方案。多步反向扩散过程可以看作是一种逐步生成高质量图像的“思维链”。因此，扩散模型应该为每个实例进行推理，自适应地确定最优噪声调度方案，以实现高效采样的同时保证高生成质量。在本文中，我们为此引入了时间预测扩散模型（TPDM）。</p>
+<p>TPDM采用了一个即插即用的时间预测模块（TPM），该模块在每个去噪步骤中根据当前的潜在特征预测下一个噪声水平。我们使用强化学习来训练TPM，以最大化一个奖励值，该奖励值鼓励生成高质量的最终图像，同时惩罚过多的去噪步骤。通过这种自适应调度器，TPDM不仅能生成与人类偏好高度一致的高质量图像，还能动态调整扩散时间和去噪步骤数量，从而同时提升性能和效率。</p>
+<p>基于Stable Diffusion 3 Medium架构，TPDM的美学评分达到5.44，人类偏好评分（HPS）达到29.59，同时使用约50%的去噪步骤就能实现更优的性能。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2025/07/07/2024-IJCAI-Boosting-Diffusion-Models-with-an-Adaptive-Momentum-Sampler%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/#more" rel="contents">
+              <a class="btn" href="/2025/07/14/2025-CVPR-Schedule-On-the-Fly-Diffusion-Time-Prediction-for-Faster-and-Better-Image-Generation%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -421,7 +580,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/07/07/2024-CVPR-One-Step-Diffusion-Distillation-through-Score-Implicit-Matching%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/07/14/2025-CVPR-Scaling-Inference-Time-Compute-for-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
@@ -435,88 +594,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2025/07/07/2024-CVPR-One-Step-Diffusion-Distillation-through-Score-Implicit-Matching%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" class="post-title-link" itemprop="url">2024-CVPR-One-Step Diffusion Distillation through Score Implicit Matching论文精读</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2025-07-07 19:31:22" itemprop="dateCreated datePublished" datetime="2025-07-07T19:31:22+08:00">2025-07-07</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-07-08 17:12:27" itemprop="dateModified" datetime="2025-07-08T17:12:27+08:00">2025-07-08</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>尽管扩散模型在许多生成任务上表现出色，但它们需要大量的采样步骤才能生成逼真的样本。这促使社区开发有效的方法，将预训练的扩散模型蒸馏为更高效的模型，但这些方法通常仍需要少步推理，或者性能明显低于基础模型。<strong>在本文中，我们提出了分数隐式匹配（SIM），这是一种将预训练扩散模型蒸馏为单步生成器模型的新方法，同时保持与原始模型几乎相同的样本生成能力，并且无需数据——蒸馏过程不需要训练样本。该方法基于这样一个事实：尽管对于生成器模型来说，传统的基于分数的损失难以最小化，但在特定条件下，我们可以高效地计算扩散模型和生成器之间广泛类别的基于分数的散度的梯度。</strong>SIM在单步生成器方面表现出强大的实证性能：在CIFAR10数据集上，其无条件生成的FID为2.06，类条件生成的FID为1.96。此外，通过将SIM应用于领先的基于Transformer的扩散模型，我们蒸馏出用于文本到图像（T2I）生成的单步生成器，其美学分数达到6.42，与原始多步模型相比没有性能下降，明显优于其他单步生成器，包括SDXL-TURBO（5.33）、SDXL-LIGHTNING（5.34）和HYPER-SDXL（5.85）。我们将随本文发布这种适用于工业界的基于Transformer的单步T2I生成器。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/07/07/2024-CVPR-One-Step-Diffusion-Distillation-through-Score-Implicit-Matching%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/07/07/2023-ICCV-AutoDiffusion-Training-Free-Optimization-of-Time-Steps-and-Architectures-for-Automated-Diffusion-Model-Acceleration%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
-      <meta itemprop="name" content="Zongqing Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lzq's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2025/07/07/2023-ICCV-AutoDiffusion-Training-Free-Optimization-of-Time-Steps-and-Architectures-for-Automated-Diffusion-Model-Acceleration%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" class="post-title-link" itemprop="url">2023-ICCV-AutoDiffusion Training-Free Optimization of Time Steps and Architectures for Automated Diffusion Model Acceleration论文精读</a>
+            <a href="/2025/07/14/2025-CVPR-Scaling-Inference-Time-Compute-for-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" class="post-title-link" itemprop="url">2025-CVPR-Scaling Inference Time Compute for Diffusion Models论文精读</a>
         </h2>
 
         <div class="post-meta">
@@ -527,7 +605,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2025-07-07 16:38:06 / 修改时间：20:30:46" itemprop="dateCreated datePublished" datetime="2025-07-07T16:38:06+08:00">2025-07-07</time>
+              <time title="创建时间：2025-07-14 15:52:13 / 修改时间：16:03:24" itemprop="dateCreated datePublished" datetime="2025-07-14T15:52:13+08:00">2025-07-14</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -550,10 +628,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散模型是新兴的具有表现力的生成模型，其中单次图像生成需要大量的时间步（推理步骤）。为了加速这一繁琐过程，均匀减少步骤被认为是扩散模型的无可争议的原则。我们认为这种均匀假设在实践中并非最优解，即<strong>我们可以为不同的模型找到不同的最优时间步。</strong>因此，我们提出在一个统一的框架中搜索最优时间步序列和压缩模型架构，以实现扩散模型的有效图像生成，而无需任何进一步的训练。具体来说，我们<strong>首先设计了一个包含所有可能时间步和各种架构的统一搜索空间。</strong>然后，引入两阶段进化算法在设计的搜索空间中寻找最优解。为了进一步加速搜索过程，我们利用生成样本和真实样本之间的FID分数来估计采样示例的性能。结果表明，所提出的方法（i）<strong>无需训练，无需任何训练过程即可获得最优时间步和模型架构；（？不是使用了优化算法和NAS求解）</strong>（ii）与大多数先进的扩散采样器正交，可以集成以获得更好的样本质量；（iii）具有通用性，搜索到的时间步和架构可以直接应用于具有相同引导尺度的不同扩散模型。实验结果表明，我们的方法仅使用几个时间步就取得了优异的性能，例如在ImageNet 64×64上仅用4步就获得了17.86的FID分数，而DDIM的FID分数为138.66。代码可在<a target="_blank" rel="noopener" href="https://github.com/lilijiangg/AutoDiffusion获取。">https://github.com/lilijiangg/AutoDiffusion获取。</a><br>
+          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>生成模型在各个领域都产生了重大影响，这在很大程度上得益于它们在训练过程中通过增加数据、计算资源和模型规模来实现扩展的能力，这种现象可以用缩放定律来描述。最近的研究开始探索大型语言模型（LLMs）在推理阶段的缩放行为，揭示了在推理过程中投入更多计算资源如何能进一步提升性能。与大型语言模型不同，扩散模型本质上具有通过调整去噪步骤数量来灵活分配推理阶段计算资源的能力，尽管在经过几十步后，性能提升通常会趋于平缓。在这项研究中，我们探索了扩散模型超越增加去噪步骤之外的推理阶段缩放行为，并研究了如何通过增加计算资源来进一步提升生成性能。具体而言，我们考虑了一个旨在为扩散采样过程寻找更优噪声的搜索问题。我们沿着两个维度构建设计空间：用于提供反馈的验证器，以及用于寻找更优噪声候选的算法。通过在类别条件和文本条件图像生成基准上进行的大量实验，我们的研究结果表明，增加推理阶段的计算资源会显著提升扩散模型生成样本的质量，并且由于图像的复杂性，可以专门选择框架中各组件的组合，以适应不同的应用场景。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2025/07/07/2023-ICCV-AutoDiffusion-Training-Free-Optimization-of-Time-Steps-and-Architectures-for-Automated-Diffusion-Model-Acceleration%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/#more" rel="contents">
+              <a class="btn" href="/2025/07/14/2025-CVPR-Scaling-Inference-Time-Compute-for-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -577,7 +655,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/07/04/2025-ICML-S4S-Solving-for-a-Fast-Diffusion-Model-Solver%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/07/14/2025-CVPR-RayFlow-Instance-Aware-Diffusion-Acceleration-via-Adaptive-Flow-Trajectories%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
@@ -591,331 +669,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2025/07/04/2025-ICML-S4S-Solving-for-a-Fast-Diffusion-Model-Solver%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" class="post-title-link" itemprop="url">2025-ICML-S4S Solving for a Fast Diffusion Model Solver论文精读</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2025-07-04 23:30:41" itemprop="dateCreated datePublished" datetime="2025-07-04T23:30:41+08:00">2025-07-04</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-07-07 16:23:54" itemprop="dateModified" datetime="2025-07-07T16:23:54+08:00">2025-07-07</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散模型（DMs）通过从随机噪声开始并迭代求解反向时间常微分方程（ODE）来从数据分布中创建样本。由于迭代求解的每个步骤都需要进行计算成本高昂的神经函数评估（NFE），因此人们对仅使用几次NFE来近似求解这些扩散ODE（且不修改基础模型）产生了浓厚兴趣。然而，我们观察到在少量NFE的情况下，使用传统的ODE求解器从根本上无法追踪真实的ODE演化。在这项工作中，<strong>我们提出了一种新方法，用于学习DM的优秀求解器，我们称之为“求解器求解”（S4S）。S4S通过学习匹配强大教师求解器的输出来直接优化求解器，以获得良好的生成质量。</strong>我们在六种不同的预训练DM上评估了S4S，包括用于条件和无条件采样的像素空间和潜空间DM。在所有设置中，相对于传统的ODE求解器，S4S一致地提高了样本质量。此外，我们的方法是轻量级的、无数据的，并且可以作为黑盒插入任何离散化调度或架构之上以提升性能。在此基础上，我们还提出了S4S-Alt，它同时优化求解器和离散化调度。通过利用DM求解器的完整设计空间，在5次NFE的情况下，我们在CIFAR10上实现了3.73的FID，在MS-COCO上实现了13.26的FID，这比之前无训练的ODE方法提升了1.5倍。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/07/04/2025-ICML-S4S-Solving-for-a-Fast-Diffusion-Model-Solver%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/07/03/2025-ICML-Morse-Dual-Sampling-for-Lossless-Acceleration-of-Diffusion-Models%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
-      <meta itemprop="name" content="Zongqing Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lzq's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2025/07/03/2025-ICML-Morse-Dual-Sampling-for-Lossless-Acceleration-of-Diffusion-Models%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB/" class="post-title-link" itemprop="url">2025-ICML-Morse Dual-Sampling for Lossless Acceleration of Diffusion Models论文阅读</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2025-07-03 16:50:24" itemprop="dateCreated datePublished" datetime="2025-07-03T16:50:24+08:00">2025-07-03</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-07-04 23:31:44" itemprop="dateModified" datetime="2025-07-04T23:31:44+08:00">2025-07-04</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>在本文中，我们提出了Morse，<strong>一种简单的双采样框架，用于无损加速扩散模型。</strong>Morse的<strong>核心思想是通过利用快速跳跃采样和自适应残差反馈策略，重新构建迭代生成过程（从噪声到数据）</strong>。具体而言，Morse包含两个相互交互的模型，称为<code>Dash</code>和<code>Dot</code>。Dash模型只是任何类型的预训练扩散模型，但在跳跃采样机制下运行，为采样效率的提升创造了足够的空间。<strong>Dot模型比Dash模型快得多，它经过学习，能够基于Dash模型轨迹上当前跳跃采样点的观测值生成残差反馈，将噪声估计提升到无需跳跃采样即可轻松匹配Dash模型的下一步估计。</strong>通过以时间交错的方式链接Dash和Dot模型的输出，Morse展现出在提高整体运行效率的同时，灵活实现所需图像生成性能的优点。借助我们提出的Dash和Dot模型之间的权重共享策略，Morse在训练和推理方面都很高效。在6个图像生成任务上，相对于9个基线扩散模型，我们的方法在广泛的采样步骤预算范围内，平均实现了1.78×至3.31×的无损加速。此外，我们表明，我们的方法还可以推广到改进专为少步文本到图像合成设计的潜在一致性模型（LCM-SDXL，其已通过一致性蒸馏技术进行了加速）。代码和模型可在<a target="_blank" rel="noopener" href="https://github.com/deep-optimization/Morse">https://github.com/deep-optimization/Morse</a>获取。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/07/03/2025-ICML-Morse-Dual-Sampling-for-Lossless-Acceleration-of-Diffusion-Models%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/06/26/2025-CVPR-Autoregressive%20Distillation%20of%20Diffusion%20Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
-      <meta itemprop="name" content="Zongqing Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lzq's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2025/06/26/2025-CVPR-Autoregressive%20Distillation%20of%20Diffusion%20Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" class="post-title-link" itemprop="url">2025-CVPR-Autoregressive Distillation of Diffusion Transformers论文精读</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2025-06-26 22:13:24" itemprop="dateCreated datePublished" datetime="2025-06-26T22:13:24+08:00">2025-06-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-07-08 16:39:48" itemprop="dateModified" datetime="2025-07-08T16:39:48+08:00">2025-07-08</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>具有Transformer架构的扩散模型在生成高保真图像和实现高分辨率可扩展性方面展现出了良好的能力。然而，图像合成所需的迭代采样过程非常耗费资源。有一系列研究致力于将概率流常微分方程（ODE）的求解方案蒸馏到少步学生模型中。尽管如此，<strong>现有方法受限于依赖最新的去噪样本作为输入，这使得它们容易受到暴露偏差的影响。为了解决这一局限性，我们提出了自回归蒸馏（ARD）方法，这是一种利用ODE历史轨迹来预测未来步骤的新方法。ARD具有两个关键优势：1. 它通过利用对累积误差不太敏感的预测历史轨迹来减轻暴露偏差；2. 它将ODE轨迹的先前历史作为更有效的粗粒度信息源加以利用。ARD通过添加标记轨迹历史中每个输入的逐令牌时间嵌入来修改教师Transformer架构，并采用分块因果注意力掩码进行训练。此外，仅在较低的Transformer层中融入历史输入可提升性能和效率。</strong>我们在ImageNet的类条件生成和文本到图像（T2I）合成任务中验证了ARD的有效性。在ImageNet-256上，我们的模型与基线方法相比，FID（Fréchet Inception Distance）退化降低了5倍，而仅需增加1.1%的FLOPs（浮点运算次数）。此外，ARD在仅4步内就使ImageNet-256的FID达到1.84，并且在提示遵循度评分上优于公开的1024像素文本到图像蒸馏模型，同时与教师模型相比FID仅有微小下降。项目页面：<a target="_blank" rel="noopener" href="https://github.com/alsdudrla10/ARD">https://github.com/alsdudrla10/ARD</a>。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/06/26/2025-CVPR-Autoregressive%20Distillation%20of%20Diffusion%20Transformers%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/06/26/2025-CVPR-Attend-to-Not-Attended-Structure-then-Detail-Token-Merging-for-Post-training-DiT-Acceleratio%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
-      <meta itemprop="name" content="Zongqing Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lzq's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2025/06/26/2025-CVPR-Attend-to-Not-Attended-Structure-then-Detail-Token-Merging-for-Post-training-DiT-Acceleratio%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" class="post-title-link" itemprop="url">2025-CVPR-Attend to Not Attended Structure-then-Detail Token Merging for Post-training DiT Acceleratio论文精读</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2025-06-26 21:31:22" itemprop="dateCreated datePublished" datetime="2025-06-26T21:31:22+08:00">2025-06-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-06-29 21:36:51" itemprop="dateModified" datetime="2025-06-29T21:36:51+08:00">2025-06-29</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散Transformer（DiT）在视觉生成领域展现出了卓越的性能，但其计算成本高昂。尽管已有一些通过在相似token间共享去噪过程来压缩模型的token精简技术，但现有方法忽视了扩散模型的去噪先验，导致加速效果欠佳且生成图像质量下降。本研究提出了一个新的概念：关注并修剪扩散过程未关注区域的特征冗余。我们基于从结构到细节的去噪先验，分析了特征冗余的位置和程度，进而提出了SDTM（从结构到细节的token合并）方法，用于动态压缩特征冗余。具体而言，我们针对不同阶段设计了动态视觉token合并、压缩比调整和提示重加权策略。该方法以训练后处理的方式工作，可无缝集成到任何DiT架构中。在各种骨干网络、调度器和数据集上进行的大量实验表明，我们的方法具有优越性，例如实现了1.55倍的加速，同时对图像质量的影响微乎其微。项目页面：<a target="_blank" rel="noopener" href="https://github.com/ICTMCG/SDTM">https://github.com/ICTMCG/SDTM</a>。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/06/26/2025-CVPR-Attend-to-Not-Attended-Structure-then-Detail-Token-Merging-for-Post-training-DiT-Acceleratio%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/06/26/2025-CVPR-Adaptive-Non-Uniform-Timestep-Sampling-for-Diffusion-Model-Training%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
-      <meta itemprop="name" content="Zongqing Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lzq's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2025/06/26/2025-CVPR-Adaptive-Non-Uniform-Timestep-Sampling-for-Diffusion-Model-Training%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91/" class="post-title-link" itemprop="url">2025-CVPR-Adaptive Non-Uniform Timestep Sampling for Diffusion Model Training全文翻译</a>
+            <a href="/2025/07/14/2025-CVPR-RayFlow-Instance-Aware-Diffusion-Acceleration-via-Adaptive-Flow-Trajectories%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" class="post-title-link" itemprop="url">2025-CVPR-RayFlow Instance-Aware Diffusion Acceleration via Adaptive Flow Trajectories论文精读</a>
         </h2>
 
         <div class="post-meta">
@@ -926,7 +680,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2025-06-26 16:42:05 / 修改时间：21:31:27" itemprop="dateCreated datePublished" datetime="2025-06-26T16:42:05+08:00">2025-06-26</time>
+              <time title="创建时间：2025-07-14 15:48:06 / 修改时间：15:50:24" itemprop="dateCreated datePublished" datetime="2025-07-14T15:48:06+08:00">2025-07-14</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -949,10 +703,247 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>作为一种具有高表达能力的生成模型，扩散模型已在包括图像生成、自然语言处理和组合优化等多个领域展现出卓越的成功。然而，随着数据分布变得愈发复杂，将这些模型训练至收敛所需的计算资源也日益增加。尽管扩散模型通常采用均匀时间步长采样进行训练，<strong>但我们的研究表明，随机梯度的方差在不同时间步长间存在显著差异，高方差的时间步长成为阻碍更快收敛的瓶颈。</strong>为解决这一问题，我们引入了一种非均匀时间步长采样方法，该方法优先处理这些更为关键的时间步长。我们的方法通过跟踪每个时间步长的梯度更新对目标函数的影响，自适应地选择最有可能有效最小化目标函数的时间步长。实验结果表明，这种方法不仅加速了训练过程，还在收敛时提升了性能。此外，我们的方法在各种数据集、调度策略和扩散架构上均表现出稳健的性能，优于此前提出的缺乏这种稳健性的时间步长采样和加权启发式方法。<br>
+          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散模型在多个领域都取得了显著成功。然而，其生成速度缓慢仍是一个关键挑战。现有的加速方法虽以减少步骤为目标，但往往会牺牲样本质量、可控性或增加训练复杂性。为此，我们提出了RayFlow，这是一种新颖的扩散框架，旨在解决这些局限性。与以往方法不同，RayFlow引导每个样本沿着独特路径朝着特定于实例的目标分布演进。该方法在最大限度减少采样步骤的同时，保留了生成的多样性和稳定性。此外，我们引入了时间采样器（Time Sampler），这是一种重要性采样技术，通过聚焦关键时间步来提高训练效率。大量实验表明，与现有的加速技术相比，RayFlow在生成高质量图像方面具有优势，同时提升了速度、可控性和训练效率。<br>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2025/06/26/2025-CVPR-Adaptive-Non-Uniform-Timestep-Sampling-for-Diffusion-Model-Training%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91/#more" rel="contents">
+              <a class="btn" href="/2025/07/14/2025-CVPR-RayFlow-Instance-Aware-Diffusion-Acceleration-via-Adaptive-Flow-Trajectories%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/07/14/2025-CVPR-Random-Conditioning-for-Diffusion-Model-Compression-with-Distillation%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2025/07/14/2025-CVPR-Random-Conditioning-for-Diffusion-Model-Compression-with-Distillation%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" class="post-title-link" itemprop="url">2025-CVPR-Random Conditioning for Diffusion Model Compression with Distillation论文精读</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-07-14 14:48:38 / 修改时间：15:52:19" itemprop="dateCreated datePublished" datetime="2025-07-14T14:48:38+08:00">2025-07-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散模型通过渐进式去噪生成高质量图像，但由于模型规模庞大且采样过程重复，其计算成本较高。知识蒸馏——将知识从复杂的教师模型迁移到更简单的学生模型——已在识别任务中得到广泛研究，尤其适用于迁移学生训练过程中未见过的概念。然而，其在扩散模型中的应用仍未得到充分探索，特别是在使学生模型能够生成训练图像中未涵盖的概念方面。在本研究中，我们提出了“随机条件调节”（Random Conditioning）这一新颖方法，通过将带噪图像与随机选择的文本条件配对，实现高效的无图像知识蒸馏。实验表明，借助该技术，学生模型能够生成训练图像中未出现过的概念。将其应用于条件扩散模型蒸馏时，该方法允许学生模型在无需生成特定条件图像的情况下探索条件空间，从而在生成质量和效率上均取得显著提升。这一成果推动了生成式扩散模型的资源高效部署，拓宽了其在研究和实际应用中的可及性。代码、模型和数据集可访问：<a target="_blank" rel="noopener" href="https://dohyun-as.github.io/Random-Conditioning/">https://dohyun-as.github.io/Random-Conditioning/</a></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/07/14/2025-CVPR-Random-Conditioning-for-Diffusion-Model-Compression-with-Distillation%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/07/11/2025-CVPR-Optimizing-for-the-Shortest-Path-in-Denoising-Diffusion-Model%E5%85%A8%E9%83%A8%E5%86%85%E5%AE%B9/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2025/07/11/2025-CVPR-Optimizing-for-the-Shortest-Path-in-Denoising-Diffusion-Model%E5%85%A8%E9%83%A8%E5%86%85%E5%AE%B9/" class="post-title-link" itemprop="url">2025-CVPR-Optimizing for the Shortest Path in Denoising Diffusion Model全部内容</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-07-11 21:54:58" itemprop="dateCreated datePublished" datetime="2025-07-11T21:54:58+08:00">2025-07-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-07-13 17:16:08" itemprop="dateModified" datetime="2025-07-13T17:16:08+08:00">2025-07-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>在本研究中，我们提出了一种基于<strong>最短路径建模</strong>的新型去噪扩散模型，该模型通过<strong>优化残差传播</strong>来同时提升去噪效率和质量。<strong>借鉴去噪扩散隐式模型（DDIM）和图论的见解，我们的模型被称为最短路径扩散模型（ShortDF），它将去噪过程视为一个以最小化重建误差为目标的最短路径问题。通过优化初始残差，我们提高了反向扩散过程的效率和生成样本的质量。</strong>在多个标准基准上的大量实验表明，与现有技术相比，ShortDF显著减少了扩散时间（或步骤），同时提高了生成样本的视觉保真度。我们认为，这项工作为基于扩散的交互式应用铺平了道路，并为快速数据生成奠定了基础。代码可在<a target="_blank" rel="noopener" href="https://github.com/UnicomAI/ShortDF">https://github.com/UnicomAI/ShortDF</a>获取。<br>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/07/11/2025-CVPR-Optimizing-for-the-Shortest-Path-in-Denoising-Diffusion-Model%E5%85%A8%E9%83%A8%E5%86%85%E5%AE%B9/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/07/10/2025-CVPR-NitroFusion-High-Fidelity-Single-Step-Diffusion-through-Dynamic-Adversarial-Training%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2025/07/10/2025-CVPR-NitroFusion-High-Fidelity-Single-Step-Diffusion-through-Dynamic-Adversarial-Training%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" class="post-title-link" itemprop="url">2025-CVPR-NitroFusion High-Fidelity Single-Step Diffusion through Dynamic Adversarial Training论文精读</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-07-10 22:54:02" itemprop="dateCreated datePublished" datetime="2025-07-10T22:54:02+08:00">2025-07-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-07-11 21:52:41" itemprop="dateModified" datetime="2025-07-11T21:52:41+08:00">2025-07-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>我们提出了NitroFusion，这是一种截然不同的单步扩散方法，它通过动态对抗框架实现了高质量生成。尽管单步方法具有显著的速度优势，但与多步方法相比，它们通常存在质量下降的问题。就像一组艺术评论家通过专注于构图、色彩和技巧等不同方面来提供全面反馈一样，<strong>我们的方法维持了一个庞大的专业判别器头池，这些判别器头共同指导生成过程。每个判别器组都在不同的噪声水平上培养特定质量方面的专业知识，提供多样化的反馈，从而实现高保真的单步生成。我们的框架结合了：（i）具有专业判别器组的动态判别器池，以提高生成质量；（ii）战略性刷新机制，防止判别器过拟合；（iii）用于多尺度质量评估的全局-局部判别器头，以及用于平衡生成的无条件/条件训练。此外，我们的框架通过自底向上的细化独特地支持灵活部署，允许用户使用相同的模型动态选择1-4个去噪步骤，以直接进行质量-速度权衡。</strong>通过全面的实验，我们证明NitroFusion在多个评估指标上显著优于现有的单步方法，尤其在保留精细细节和全局一致性方面表现出色。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/07/10/2025-CVPR-NitroFusion-High-Fidelity-Single-Step-Diffusion-through-Dynamic-Adversarial-Training%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -975,7 +966,7 @@
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1043,7 +1034,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">88</span>
+          <span class="site-state-item-count">100</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1056,7 +1047,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">48</span>
+        <span class="site-state-item-count">49</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1081,7 +1072,7 @@
     <h3 class="widget-title">Tag Cloud</h3>
     <div id="myCanvasContainer" class="widget tagcloud">
         <canvas width="250" height="250" id="resCanvas" style="width=100%">
-            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2023/" rel="tag">2023</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2024/" rel="tag">2024</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2025/" rel="tag">2025</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">16</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICCV/" rel="tag">ICCV</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICML/" rel="tag">ICML</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IJCAI/" rel="tag">IJCAI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ODE%E6%B1%82%E8%A7%A3/" rel="tag">ODE求解</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">52</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%85%E8%AF%BB/" rel="tag">阅读</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2023/" rel="tag">2023</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2024/" rel="tag">2024</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2025/" rel="tag">2025</a><span class="tag-list-count">22</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">25</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICCV/" rel="tag">ICCV</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICML/" rel="tag">ICML</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IJCAI/" rel="tag">IJCAI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ODE%E6%B1%82%E8%A7%A3/" rel="tag">ODE求解</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">62</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%80%BB%E7%BB%93/" rel="tag">总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%85%E8%AF%BB/" rel="tag">阅读</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
         </canvas>
     </div>
 </div>

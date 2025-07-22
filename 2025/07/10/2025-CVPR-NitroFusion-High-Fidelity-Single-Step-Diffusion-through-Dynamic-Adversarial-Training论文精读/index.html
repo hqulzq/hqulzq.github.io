@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="全文翻译摘要我们提出了NitroFusion，这是一种截然不同的单步扩散方法，它通过动态对抗框架实现了高质量生成。尽管单步方法具有显著的速度优势，但与多步方法相比，它们通常存在质量下降的问题。就像一组艺术评论家通过专注于构图、色彩和技巧等不同方面来提供全面反馈一样，我们的方法维持了一个庞大的专业判别器头池，这些判别器头共同指导生成过程。每个判别器组都在不同的噪声水平上培养特定质量方面的专业知识，提">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2025-CVPR-NitroFusion High-Fidelity Single-Step Diffusion through Dynamic Adversarial Training论文精读">
+<meta property="og:url" content="https://hqulzq.github.io/2025/07/10/2025-CVPR-NitroFusion-High-Fidelity-Single-Step-Diffusion-through-Dynamic-Adversarial-Training%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/index.html">
+<meta property="og:site_name" content="Lzq&#39;s blog">
+<meta property="og:description" content="全文翻译摘要我们提出了NitroFusion，这是一种截然不同的单步扩散方法，它通过动态对抗框架实现了高质量生成。尽管单步方法具有显著的速度优势，但与多步方法相比，它们通常存在质量下降的问题。就像一组艺术评论家通过专注于构图、色彩和技巧等不同方面来提供全面反馈一样，我们的方法维持了一个庞大的专业判别器头池，这些判别器头共同指导生成过程。每个判别器组都在不同的噪声水平上培养特定质量方面的专业知识，提">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-07-10T14:54:02.000Z">
+<meta property="article:modified_time" content="2025-07-11T13:52:41.753Z">
+<meta property="article:author" content="Zongqing Li">
+<meta property="article:tag" content="diffusion">
+<meta property="article:tag" content="CVPR">
+<meta property="article:tag" content="2025">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://hqulzq.github.io/2025/07/10/2025-CVPR-NitroFusion-High-Fidelity-Single-Step-Diffusion-through-Dynamic-Adversarial-Training%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>2025-CVPR-NitroFusion High-Fidelity Single-Step Diffusion through Dynamic Adversarial Training论文精读 | Lzq's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lzq's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">49</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">100</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book">
+
+    <a href="/book" rel="section"><i class="fas fa-book fa-fw"></i>Book</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/07/10/2025-CVPR-NitroFusion-High-Fidelity-Single-Step-Diffusion-through-Dynamic-Adversarial-Training%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          2025-CVPR-NitroFusion High-Fidelity Single-Step Diffusion through Dynamic Adversarial Training论文精读
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-07-10 22:54:02" itemprop="dateCreated datePublished" datetime="2025-07-10T22:54:02+08:00">2025-07-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-07-11 21:52:41" itemprop="dateModified" datetime="2025-07-11T21:52:41+08:00">2025-07-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>我们提出了NitroFusion，这是一种截然不同的单步扩散方法，它通过动态对抗框架实现了高质量生成。尽管单步方法具有显著的速度优势，但与多步方法相比，它们通常存在质量下降的问题。就像一组艺术评论家通过专注于构图、色彩和技巧等不同方面来提供全面反馈一样，<strong>我们的方法维持了一个庞大的专业判别器头池，这些判别器头共同指导生成过程。每个判别器组都在不同的噪声水平上培养特定质量方面的专业知识，提供多样化的反馈，从而实现高保真的单步生成。我们的框架结合了：（i）具有专业判别器组的动态判别器池，以提高生成质量；（ii）战略性刷新机制，防止判别器过拟合；（iii）用于多尺度质量评估的全局-局部判别器头，以及用于平衡生成的无条件/条件训练。此外，我们的框架通过自底向上的细化独特地支持灵活部署，允许用户使用相同的模型动态选择1-4个去噪步骤，以直接进行质量-速度权衡。</strong>通过全面的实验，我们证明NitroFusion在多个评估指标上显著优于现有的单步方法，尤其在保留精细细节和全局一致性方面表现出色。</p>
+<span id="more"></span>
+<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1. 引言"></a>1. 引言</h3><p>近年来，加速扩散模型的研究进展[14, 15, 21, 27, 29, 49, 51, 58]表明，通过大幅减少步骤数量，高质量图像生成成为可能。尽管目前已有多种方法实现了单步生成[23, 32, 37, 42, 52, 53, 56]，但与多步方法相比，它们在质量上仍面临巨大挑战，尤其是在保留精细细节和确保全局连贯性方面。这种质量差距限制了单步方法的实际应用，特别是在既需要速度又需要高保真度的场景中。</p>
+<p>单步扩散的核心挑战在于将整个去噪轨迹[25, 57]压缩为单一变换。基于蒸馏的传统方法[39, 46]往往难以奏效，因为它们试图直接匹配中间状态或分布，导致输出模糊且细节丢失。最近的对抗性方法[13, 42, 43, 52]虽展现出潜力，但在推向单步生成时面临训练不稳定性和多样性崩溃的问题。</p>
+<p>NitroFusion提出了一种截然不同的单步扩散方法——动态对抗框架。<strong>试想一组艺术评论家如何评价一幅画：每位评论家专注于构图、色彩、技巧和细节等不同方面。同样，我们没有依赖可能迅速变得过度自信的单一判别器[8, 12, 30, 31]，而是维持了一个庞大的、动态的专业判别器组池，这些判别器组在冻结的UNet骨干网络[38]之上运行。正如多样化的评论家小组能提供比单一评委更全面的反馈，我们的判别器集合通过在不同噪声水平[23]和空间尺度上提供专业反馈，引导生成器产出高质量结果。</strong></p>
+<p>我们的框架通过三项技术创新实现这一理念：（i）动态判别器池架构——利用教师模型的UNet编码器作为冻结特征提取器，并配备多个针对不同噪声水平t*的轻量级专业判别器组，以提升生成质量；（ii）战略性刷新机制——随机重新初始化约1%的判别器头，同时保留池中的集体知识分布，防止判别器过拟合（这是GAN训练中的常见失效模式），同时维持稳定的对抗性反馈；（iii）多尺度策略与双重训练目标——全局和局部判别器头按1:2的比例划分，全局头评估H×W分辨率下的整体图像连贯性，局部头检查h×w大小补丁中的细粒度细节，再结合无条件/条件训练实现平衡生成。</p>
+<p>这些技术组件共同解决了单步生成的根本挑战。动态判别器池与刷新机制协同工作，在整个训练过程中维持平衡的反馈系统——当已建立的判别器头提供一致反馈时，新头的周期性引入防止系统变得过于僵化或可预测。多尺度策略则补充了这一动态反馈系统，使我们的生成器能够实现以往方法无法实现的目标：在单步内将噪声转化为高质量图像，同时避免通常困扰快速生成方法的伪影和质量下降问题。</p>
+<p>值得注意的是，与需要为不同步骤数量使用单独模型的现有方法[23, 37, 52]不同，我们的框架通过自底向上的细化独特地支持灵活部署。虽然我们主要针对单步生成进行优化，但我们的模型独特地支持动态细化——如果需要更高质量，用户可以按需添加步骤（最多4步），且始终使用相同的模型权重。</p>
+<p>通过广泛实验，我们证明NitroFusion始终能生成比现有单步方法更清晰、更详细的图像。我们的方法不仅达到甚至常常超过最新快速扩散模型的质量指标，同时保持单步生成的速度优势。人类评估研究进一步证实了我们结果的卓越视觉质量，尤其在面部细节和纹理保留等挑战性领域表现突出。</p>
+<p>我们的主要贡献包括：（i）具有专业判别器组的动态判别器池，用于提升生成质量；（ii）防止判别器过拟合的战略性刷新机制；（iii）具有双重训练目标的多尺度策略，有效平衡提示对齐与图像连贯性。此外，我们通过支持同一模型权重下的1-4步去噪，独特地实现了灵活部署。</p>
+<h3 id="2-相关工作"><a href="#2-相关工作" class="headerlink" title="2. 相关工作"></a>2. 相关工作</h3><h4 id="2-1-时间步蒸馏"><a href="#2-1-时间步蒸馏" class="headerlink" title="2.1. 时间步蒸馏"></a>2.1. 时间步蒸馏</h4><p>时间步蒸馏通过减少高质量输出所需的采样步骤，加速了扩散模型的推理过程。标准方法[14, 15, 27, 29, 32, 49, 51, 56, 58]将多步教师模型蒸馏为步骤更少的学生模型。一种常见策略是在减少的步骤数内近似教师模型的采样轨迹（建模为常微分方程（ODE））。这可以通过在每个时间步保留[57]原始ODE路径，或者重新构建[25, 42]并直接从最终输出中学习更高效的轨迹来实现。最近的研究训练了一系列这样的学生模型，逐步减少采样步骤[28, 39]，同时加强自一致性[21, 46]。Hyper-SD[37]进一步结合了ODE保留和重构方法。然而，这些模型通常由于有限的模型拟合能力而面临质量下降的问题。与流引导蒸馏不同，分布匹配蒸馏（DMD）[52, 53]通过最小化生成分布和目标分布之间的Kullback-Leibler（KL）散度，直接在样本域上匹配分布。尽管取得了这些进展，但在单步蒸馏中实现高保真度仍然具有挑战性，因为这些模型在极端少步设置中经常遇到退化和不稳定性问题。</p>
+<h4 id="2-2-对抗性蒸馏"><a href="#2-2-对抗性蒸馏" class="headerlink" title="2.2. 对抗性蒸馏"></a>2.2. 对抗性蒸馏</h4><p>对抗性扩散蒸馏（ADD）[42, 43]引入了GAN训练，以解决基于均方误差（MSE）的蒸馏在少步生成中常导致输出模糊的局限性。通常，预训练的特征提取器[33]被用作判别器骨干，以获得稳定的、具有判别性的特征[41]。例如，SDXL-Lightning[23]使用预训练扩散模型的编码器作为判别器骨干，在真实/虚假判断之前注入噪声作为一种增强形式[23]。最近的研究[9, 21, 52]进一步将对抗性损失与蒸馏目标相结合，以提高图像保真度。然而，对抗性损失带来了自身的挑战，包括训练不稳定性和多样性降低[9]。判别器的快速学习可能导致过度自信的评估，限制了对生成器的建设性反馈，并导致次优的训练动态。克服这些挑战是我们工作的主要目标。</p>
+<h4 id="2-3-多判别器训练"><a href="#2-3-多判别器训练" class="headerlink" title="2.3. 多判别器训练"></a>2.3. 多判别器训练</h4><p>具有多个判别器的GAN通过引入多样化的对抗性反馈，减少了模式崩溃并增强了训练稳定性。已经开发了各种策略来平衡多个判别器目标，包括softmax加权集成[12]和三方极小极大博弈[31]。为了解决判别器的过度自信问题，Neyshabur等人[30]为每个判别器应用低维随机投影，而MCL-GAN[8]则引入了多选学习。StyleGAN-XL[40]和StyleGAN-T[41]使用多个判别器头以及冻结的预训练骨干，能够通过特征金字塔提供反馈，以捕捉不同层次的细节。尽管这些多判别器方法解决了GAN训练中的挑战，但在扩散蒸馏中仍未得到充分探索。我们的方法基于这些见解，引入了一个强大的对抗性框架，为高保真单步扩散蒸馏提供多样化和动态的反馈。</p>
+<h3 id="3-方法"><a href="#3-方法" class="headerlink" title="3. 方法"></a>3. 方法</h3><p>为实现单步扩散，我们采用了时间步蒸馏的概念。在这里，一个单步学生模型被训练到与预训练的多步教师模型性能相当。训练完成后，该单步学生模型可独立用于超快速推理。与依赖分数匹配[53]或流匹配[25]来对齐学生模型与教师模型质量的传统方法不同，我们的方法仅使用对抗性损失来评判教师模型和学生模型的预测结果——就像一组评论家评价画作一样。这有助于我们对齐教师模型和学生模型的分布，使学生模型能在单步内模仿教师模型，且不会出现质量下降。</p>
+<p>具体而言，我们提出了一种动态对抗框架，包括：（i）一个庞大的判别器头池，其中包含针对不同噪声水平和质量的专用判别器，减少了单一判别器设置带来的反馈偏差；（ii）周期性的池刷新，随机重新初始化一部分判别器，以防止过拟合；（iii）多尺度双目标GAN训练，减少伪影，平衡图像连贯性与提示对齐。图2和图3展示了我们的训练流程。预备知识：扩散模型[19]通过逆转一个将输入样本x₀逐步转化为噪声的前向过程，迭代地优化数据样本中的噪声。在前向过程中，每个带噪样本xₜ是在时间步t∈{1,…,T}时，通过高斯噪声ϵ~N(0,I)从x₀得到的，公式如下：</p>
+<script type="math/tex; mode=display">x_{t}=\sqrt{\overline{\alpha}_{t}} x_{0}+\sqrt{1-\overline{\alpha}_{t}} \epsilon, (1)</script><p>其中，$\overline{\alpha}_t$是控制噪声水平的方差调度[19,45]。由神经网络$G_θ$参数化的反向过程经过训练，可从xₜ预测噪声ϵ，进而重建x₀。利用预测的噪声$\hat{ϵ}=G_θ(x_t,t)$，x₀的重建公式为：</p>
+<script type="math/tex; mode=display">x_{0}=\frac{x_{t}-\sqrt{1-\overline{\alpha}_{t}} \hat{\epsilon}}{\sqrt{\overline{\alpha}_{t}}} . (2)</script><h4 id="3-1-单步对抗性扩散蒸馏"><a href="#3-1-单步对抗性扩散蒸馏" class="headerlink" title="3.1 单步对抗性扩散蒸馏"></a>3.1 单步对抗性扩散蒸馏</h4><p>我们的训练流程包含一个单步学生（生成器）$G_θ$和一个预训练的多步教师模型$G_ψ$。</p>
+<p>我们使用预训练的单步权重[37,52]初始化学生模型，以缩短收敛时间。在每个训练迭代中，$G_θ$和$G_ψ$分别将带噪样本$x_T$~N(0,I)去噪为$\hat{x}_0$和x₀。教师模型$G_ψ$的去噪过程需要多步，而我们的学生模型$G_θ$仅需一步就能直接将$x_T$去噪为x₀（见图2）。判别器D试图区分x₀（真实）和$\hat{x}_0$（伪造），从而构建对抗性损失$L_{adv}$：</p>
+<script type="math/tex; mode=display">
+\mathcal{L}_{adv }^{G}=-\mathbb{E}\left[\mathcal{D}\left(\hat{x}_{0}\right)\right]</script><script type="math/tex; mode=display">
+\left.\mathcal{L}_{adv }^{D}=\mathbb{E}\left[\mathcal{D}\left(\hat{x}_{0}\right)-\mathcal{D}\left(x_{0}\right)\right)\right]</script><h4 id="3-2-动态判别器池"><a href="#3-2-动态判别器池" class="headerlink" title="3.2 动态判别器池"></a>3.2 动态判别器池</h4><p>在先前工作[52]的基础上，我们利用教师模型[38]的UNet编码器和中间块作为冻结的判别器骨干ε，用于提取图像特征（见图3）。通常，这需要先将输入x₀在预定义的噪声水平$t^<em>$下加噪为$x_{t^</em>}$，然后将其去噪信号$E(x_{t^<em>},t^</em>)$作为视觉特征。UNet编码器ε的不同层级提供了从低级细节到高级语义的不同层次的特征表示。在骨干ε的每个层级上都连接了一个轻量级的可训练判别器头，用于判别真实/伪造。</p>
+<p>作为我们流程的核心构建块，我们使用动态判别器池来提供这些判别器头。这个判别器池P是一个庞大的、不断演化的判别器头集合，这些判别器头可以连接到ε，构成我们流程中的多头判别器。这些头的轻量级设计使我们能够扩展池的规模，而不会带来显著的计算或内存开销。为了训练这个池，在每个训练迭代中，我们从池中采样一部分头D~P，用这部分头计算对抗性损失$L_{adv}$。我们通过$L_{adv}$的梯度反向传播来优化所采样的头D。更新后，我们将这些头放回池中，以动态地演化池的全局知识。通过随机采样实现的这种随机性确保了反馈的多样性，防止任何单个头主导生成器的学习，减少了偏差。这增加了反馈的多样性，并增强了GAN训练的稳定性[6,8]。</p>
+<p>为了构建专用的判别器头，我们根据判别器时间步$t^<em>$的噪声水平，将池P划分为$P_{t^</em>} \in P \forall t^<em>$。这有助于我们采样针对特定判别器时间步$t^</em>$的特定噪声水平的专用判别器头$D_{t^<em>} ~ P_{t^</em>}$。与将时间步相关判别器视为增强或平滑技术的先前方法[23,47]不同，我们池中每个头都在其指定的噪声水平上充当专家，提供针对特定图像特征的精确、细致的评判。我们计算对抗性损失如下：</p>
+<script type="math/tex; mode=display">
+\mathcal{L}_{adv}^{G}=-\mathbb{E}\left[\sum_{\mathcal{H} \in \mathcal{D}_{t^{\ast}}} \mathcal{H}\left(\mathcal{E}\left(\hat{x}_{t^{\ast}}, t^{\ast}\right)\right)\right]</script><script type="math/tex; mode=display">
+\mathcal{L}_{adv }^{D}=\mathbb{E}\left[\sum_{\mathcal{H} \in \mathcal{D}_{t^{\ast}}} \mathcal{H}\left(\mathcal{E}\left(\hat{x}_{t^{\ast}}, t^{\ast}\right)\right)-\mathcal{H}\left(\mathcal{E}\left(x_{t^{\ast}}, t^{\ast}\right)\right)\right]</script><p>其中，冻结的UNet编码器ε为采样的判别器头$D_{t^*}$提取特征。每个可训练头H的中间输出被聚合起来，用于真实/伪造的判别预测。</p>
+<h4 id="3-3-判别器池刷新"><a href="#3-3-判别器池刷新" class="headerlink" title="3.3 判别器池刷新"></a>3.3 判别器池刷新</h4><p>GAN训练中的早期过拟合会限制判别器的反馈多样性，降低生成图像的质量和多样性[9,23,42]。为解决这个问题，我们为动态判别器池引入了一种随机重新初始化策略：在每个训练迭代中，我们丢弃（清空）一部分随机选择的判别器头（约1%），并替换（刷新）为重新初始化的判别器。刷新判别器子集有助于在保留的头提供的稳定反馈和重新初始化的头带来的可变性之间保持平衡，从而提高生成器的性能。</p>
+<h4 id="3-4-多尺度和双目标GAN训练"><a href="#3-4-多尺度和双目标GAN训练" class="headerlink" title="3.4 多尺度和双目标GAN训练"></a>3.4 多尺度和双目标GAN训练</h4><p>扩散模型对多种分辨率的泛化能力[38]使我们能够进一步使用预训练的UNet编码器进行全局和局部（补丁）判别。为此，我们将池分为局部头和全局头，通过对抗性反馈对它们进行训练——分别评判整个图像或细粒度细节。这种设置使全局头能够评估结构，局部头能够捕捉纹理，平衡了图像的宏观和微观细节。我们还引入了双目标GAN训练，同时应用条件和无条件对抗性损失。我们进行这种训练是基于先前的分析[23]，该分析证实条件生成会引入“Janus”伪影，且难以使图像与文本特征对齐。Janus伪影表现为局部区域内的重复模式，例如人脸或手。为了减少在单步扩散中更易出现的此类伪影，我们使用局部判别器头进行条件和无条件判别。无条件局部头仅根据图像的连贯性提供反馈。这种双目标方法防止了对特定提示驱动特征的过拟合，减少了伪影出现的可能性，并提供了平衡的、泛化的对抗性信号。</p>
+<p>总之，我们为每个时间步$t^*$划分权重池，在不同的训练设置下进一步划分：（i）具有条件判别的全局图像，（ii）具有条件判别的局部补丁，（iii）具有无条件判别的局部补丁。每个池都有相同数量的判别器头。</p>
+<h4 id="3-5-自底向上的多步细化"><a href="#3-5-自底向上的多步细化" class="headerlink" title="3.5 自底向上的多步细化"></a>3.5 自底向上的多步细化</h4><p>与先前的步骤减少算法不同，我们提供了质量与速度的权衡，用户可以使用相同的模型权重进行单步或多步（最多4步）去噪，以获得更高质量的生成图像。我们通过自底向上的细化方法来支持这一点，即先优化网络以实现单步，然后逐步细化以实现多步。这与更传统的自顶向下方法有很大不同，传统方法按8步、4步、2步、1步的顺序逐步细化。使用自底向上的细化方法，用户可以将同一模型用于多步，并获得从1步到4步逐步改善的结果。</p>
+<p><strong>算法1 动态对抗框架</strong><br>1: 输入：教师模型Gψ、学生模型Gθ、池P、所有时间步t<em><br>2: 对于每个时间步t</em>∈{所有t<em>}：<br>3: 初始化Pglobal, uncond t</em> , {Plocal, cond t<em>, Plocal, uncond t</em> }<br>4: 结束循环<br>5: 当未收敛时：<br>6: ϵ ∼N(0, I)<br>7: 采样时间步：t<em>∼{所有t</em>}<br>8: 教师输出：x0 ←Gψ(ϵ)<br>9: 学生输出：$\hat{x}_0$ ←Gθ(ϵ)<br>10: $x_{t^<em>}$ ←√$\overline{\alpha}_{t^</em>}$· x0 + √1 −$\overline{\alpha}_{t^<em>}$· ϵ<br>11: $\hat{x}_{t^</em>}$ ←√$\overline{\alpha}_{t^<em>}$· $\hat{x}_0$ + √1 −$\overline{\alpha}_{t^</em>}$· ϵ<br>12: 对于Pt<em>中的每个部分Ptype t</em>：<br>13: $D_{t^<em>}$∼Ptype t</em><br>14: $L_{adv}^D$ = $D_{t^<em>}$(E($\hat{x}_{t^</em>}$, t<em>)) −$D_{t^</em>}$(E($x_{t^<em>}$, t</em>))<br>15: $L_{adv}^G$ = −$D_{t^<em>}$(E($\hat{x}_{t^</em>}$, t*))<br>16: 优化：Gθ −α·∇$L_{adv}^G$<br>17: 优化：Ptype optim −α·∇$L_{adv}^D$<br>18: 结束循环<br>19: P ←{P, Poptim}<br>20: Prefresh ∼N(0, I)<br>21: P ←{P, Prefresh}<br>22: 结束循环<br>23: 返回：训练好的学生模型Gθ</p>
+<h3 id="4-实验"><a href="#4-实验" class="headerlink" title="4. 实验"></a>4. 实验</h3><p><strong>实现细节</strong>：每个判别器头由4×4卷积层（步长为2）、组归一化[48]和SiLU激活函数[16,36]组成。10个判别器头作用于来自预训练扩散模型冻结骨干网络的10个不同特征层级的特征图。我们采用特定的判别器时间步$t^*$∈{10,250,500,750}[23]。</p>
+<p>我们使用包含480个判别器头的池，其中160个用于每种任务类型（全局条件/局部条件/局部无条件）。我们使用AdamW优化器[26]进行训练，批处理大小为5，在单个NVIDIA A100 GPU上进行20步梯度累积。每次迭代从池中采样判别器头进行真假分类，其中1%的判别器头会被重新初始化（在池刷新期间）以保持动态反馈。为了证明在不同教师模型上的泛化能力，我们训练了两个具有不同视觉目标的网络：NitroSD-Realism（以4步DMD2[52]为教师模型，针对真实感进行优化）和NitroSD-Vibrant（以8步Hyper-SDXL[37]为教师模型，针对鲜艳色彩进行优化）。</p>
+<p><strong>数据</strong>：基于[42]中的假设（合成图像比真实图像具有更好的文本对齐性），我们仅使用多步教师模型生成的合成样本训练模型，不使用配对的提示-图像数据。提示来自Pick-a-Pic[22]和LAION[44]数据集，总计100万个。</p>
+<p><strong>基线模型和评估指标</strong>：我们将我们的模型与DMD2[52]、Hyper-SDXL[37]、SDXL基础模型[34]以及其他时间步蒸馏方法（如SDXL-Turbo[42]和SDXL-Lightning[23]）进行比较。DMD2[52]提出了使用KL散度的分布匹配蒸馏，以解决流引导蒸馏的局限性。Hyper-SDXL[37]使用人类反馈[50,55]来提高输出的视觉吸引力。SDXL-Turbo[42]和SDXL-Lightning[23]引入了对抗性损失和时间步相关判别器用于少步推理。</p>
+<h4 id="4-1-定性比较"><a href="#4-1-定性比较" class="headerlink" title="4.1 定性比较"></a>4.1 定性比较</h4><p>图4展示了我们的模型（NitroSD-Realism和NitroSD-Vibrant）与最先进的单步推理扩散模型的定性比较。SDXL-Turbo[42]和SDXL-Lightning[23]模型在视觉保真度方面存在局限性。SDXL-Turbo偶尔会出现文本对齐问题（如第4行），而SDXL-Lightning在精细细节上往往缺乏锐度。相比之下，NitroSD-Realism和NitroSD-Vibrant与所有单步基准（包括教师模型DMD2[52]和Hyper-SDXL[37]）相比，具有更高的清晰度、更丰富的纹理和更少的伪影。我们还注意到，我们的模型能够捕捉多步教师模型的视觉细节和纹理保真度，特别是Hyper-SDXL的8步模型和DMD2的4步模型。NitroSD-Realism与DMD2的照片真实感细节高度一致，即使在单步推理中也能重现细粒度的真实感。NitroSD-Vibrant捕捉了Hyper-SDXL鲜艳风格所特有的鲜艳、饱和色彩。这种在风格和质量上的高度一致性凸显了我们提出的对抗性框架在提取教师模型独特属性方面的有效性。最后，与SDXL[34]的25步结果相比，NitroSD实现了具有竞争力的细节和纹理保真度，有效地将SDXL的复杂过程压缩为一个精简的单步模型，同时不牺牲视觉质量。</p>
+<h4 id="4-2-用户研究"><a href="#4-2-用户研究" class="headerlink" title="4.2 用户研究"></a>4.2 用户研究</h4><p>我们进行了一项基于二选一偏好的用户研究（如图5所示），参与者将NitroSD-Realism和NitroSD-Vibrant生成的图像与其他单步和多步方法生成的图像进行比较。我们的单步结果表明，NitroSD-Vibrant始终优于所有模型，包括25步的SDXL，表现出更出色的色彩鲜艳度和丰富度。NitroSD-Realism也表现出强大的性能，优于所有单步方法。我们还将我们的2步结果与相同竞争对手的4步输出进行了评估，发现我们的2步方法甚至优于4步基线。这表明NitroSD能够以更少的步骤实现更高的质量，并凸显了我们的框架在高保真生成方面的实际优势。</p>
+<h4 id="4-3-定量比较"><a href="#4-3-定量比较" class="headerlink" title="4.3 定量比较"></a>4.3 定量比较</h4><p>我们在COCO-5K验证数据集[24]上进行了定量评估，使用表1中的几个关键指标：CLIP分数[35]（ViT-B/32[11]，通过测量生成图像与文本描述之间的相似性来评估提示对齐性）、Fréchet Inception距离（FID）[17]（通过比较生成图像和真实图像的特征分布来评估图像质量和多样性）、美学分数[1]（基于用户偏好训练，用于量化视觉吸引力）和ImageReward分数[50]（反映潜在的用户偏好）。</p>
+<p>虽然我们的模型在FID和CLIP分数上具有竞争力，但NitroSD在高级指标（美学分数和ImageReward）上尤其出色。NitroSD-Realism在美学分数和ImageReward上均优于其教师模型DMD2[52]，这两个指标基于用户偏好捕捉图像吸引力和文本对齐性。NitroSD-Vibrant在这两个指标上也取得了最高分数之一，反映出其生成符合用户偏好的视觉吸引力图像的能力。这些高级指标凸显了NitroSD在主观质量方面的优势，这是文本到图像生成中的一个关键因素。结合我们的用户研究结果，这些结果证实NitroSD有效地平衡了快速推理和高用户满意度，为需要同时兼顾效率和美学吸引力的应用提供了切实可行的解决方案。</p>
+<h4 id="4-4-多步样本比较"><a href="#4-4-多步样本比较" class="headerlink" title="4.4 多步样本比较"></a>4.4 多步样本比较</h4><p>我们对多步样本进行了比较，如图6所示。值得注意的是，像SDXL-Lightning[23]和DMD2[52]这样的模型缺乏用于单步和多步推理的统一模型，导致布局不一致，限制了用户优化单步输出的能力。Hyper-SDXL为了实现统一模型而牺牲了单步性能。除我们的方法外，所有方法[23,37,42,52]在复杂场景上都表现出明显的伪影，特别是在具有复杂纹理的区域，如茂密的植被或图6中宇航员的宇航服。当推理步骤扩展到4步时，SDXL-Turbo表现出显著的质量下降，显示出其在更多推理步骤下的局限性。相比之下，我们的模型NitroSD-Realism和NitroSD-Vibrant表现出高度的图像清晰度，并且从1步到4步推理的保真度稳步提高。</p>
+<h4 id="4-5-消融研究"><a href="#4-5-消融研究" class="headerlink" title="4.5 消融研究"></a>4.5 消融研究</h4><p>为了评估我们的动态对抗性框架中每个组件的影响，我们通过移除特定元素进行了消融研究，如图7所示。我们注意到：（i）缺少多尺度双目标GAN训练会减少细粒度细节，并引入明显的“三眼”Janus伪影，凸显了平衡反馈的重要性；（ii）没有池刷新时，伪影仍然存在，锐度降低，导致图像质量下降，这表明判别器存在过拟合和适应性不足的问题；（iii）移除动态判别器池会进一步降低锐度，表明庞大的判别器池在我们的框架中起着关键作用。</p>
+<h4 id="4-6-扩展到不同的教师模型"><a href="#4-6-扩展到不同的教师模型" class="headerlink" title="4.6 扩展到不同的教师模型"></a>4.6 扩展到不同的教师模型</h4><p>尽管NitroFusion是作为完整模型而非LoRA[2,20]进行训练的，但它可以通过权重调整适应其他SDXL[34]检查点。这是通过将NitroFusion和SDXL[34]之间的权重差异应用于新的自定义模型来实现的。图8展示了将NitroSD-Realism适应于来自CivitAI[4]社区的具有动漫[3]和油画[5]风格的自定义SDXL模型的结果。无需额外训练，NitroCustom-ZS（零样本）通过权重调整保留了每种风格的独特特征。NitroFusion在训练时不依赖自然图像数据，这进一步使其能够轻松适应新的风格（图8的最后一列）。</p>
+<h3 id="5-结论"><a href="#5-结论" class="headerlink" title="5. 结论"></a>5. 结论</h3><p>在本文中，我们提出了一种用于单步扩散蒸馏的动态对抗框架，该框架使用大量专业判别器头池，从多个方面评判生成质量——就像一组艺术评论家一样。我们为该池引入了周期性刷新策略，即重新初始化池的一部分，以防止判别器过拟合和对抗崩溃。最后，我们通过多尺度双目标策略训练整个模型，关注不同尺度（局部与全局）的图像细节，并平衡提示对齐与图像连贯性。</p>
+<p>通过定性和定量分析，我们证明了我们的模型显著优于现有的少步和单步基线模型。我们进行了广泛的用户研究，结果表明，大多数用户更喜欢我们的单步和两步模型，甚至在与25步高分辨率扩散流程的比较中也是如此。</p>
+<h3 id="NitroFusion：通过动态对抗训练实现高保真单步扩散（补充材料）"><a href="#NitroFusion：通过动态对抗训练实现高保真单步扩散（补充材料）" class="headerlink" title="NitroFusion：通过动态对抗训练实现高保真单步扩散（补充材料）"></a>NitroFusion：通过动态对抗训练实现高保真单步扩散（补充材料）</h3><h4 id="图9-我们的NitroSD-Realism和-Vibrant模型的1到4步优化过程，展示了图像质量和细节在不同步骤中的逐步提升"><a href="#图9-我们的NitroSD-Realism和-Vibrant模型的1到4步优化过程，展示了图像质量和细节在不同步骤中的逐步提升" class="headerlink" title="图9. 我们的NitroSD-Realism和-Vibrant模型的1到4步优化过程，展示了图像质量和细节在不同步骤中的逐步提升"></a>图9. 我们的NitroSD-Realism和-Vibrant模型的1到4步优化过程，展示了图像质量和细节在不同步骤中的逐步提升</h4><h4 id="A-额外的实现细节"><a href="#A-额外的实现细节" class="headerlink" title="A. 额外的实现细节"></a>A. 额外的实现细节</h4><p>时间步偏移：借鉴先前的研究[7]以及我们的基础模型DMD2[52]和Hyper-SD[37]，我们采用了时间步偏移技术，将原始的T=1000偏移至500和250。NitroSD-Realism和-Vibrant分别在{250, 188, 125, 63}和{500, 375, 250, 125}的时间步上进行多步生成训练。两个模型的训练都耗费了约20个NVIDIA A100天。</p>
+<p>用户研究细节：我们使用来自PartiPrompts[54]的LADD[43]子集的128个提示来评估用户偏好，收集了170名参与者的2884张选票。</p>
+<h4 id="B-额外的消融研究"><a href="#B-额外的消融研究" class="headerlink" title="B. 额外的消融研究"></a>B. 额外的消融研究</h4><p>4.5节中的消融研究采用8步的HyperSDXL[37]作为教师模型，训练时长为30小时。表2呈现了定量结果。</p>
+<p>表2. 消融研究的定量结果</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th>CLIP（↑）</th>
+<th>Patch Teacher FID（↓）</th>
+<th>美学分数（↑）</th>
+<th>Image Reward（↑）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>完整模型</td>
+<td>0.315</td>
+<td>18.70</td>
+<td>5.87</td>
+<td>1.020</td>
+</tr>
+<tr>
+<td>无多尺度双目标GAN</td>
+<td>0.316</td>
+<td>18.99</td>
+<td>5.83</td>
+<td>1.035</td>
+</tr>
+<tr>
+<td>无池刷新</td>
+<td>0.316</td>
+<td>18.78</td>
+<td>5.98</td>
+<td>1.054</td>
+</tr>
+<tr>
+<td>无动态池</td>
+<td>0.316</td>
+<td>19.46</td>
+<td>5.98</td>
+<td>1.010</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>特别是，我们引入了Patch Teacher FID指标，该指标测量学生样本和教师样本的299×299中心裁剪补丁之间的FID分数[23]，用于评估高分辨率细节的保留程度。该指标是评估GAN训练有效性的关键指标，因为它强调了生成器表示细粒度特征和保持与教师模型保真度的能力。表2显示，移除每个组件都会导致Patch Teacher FID出现不同程度的下降，凸显了每个组件对我们动态对抗框架整体性能的独特贡献。</p>
+<h4 id="C-讨论与局限性"><a href="#C-讨论与局限性" class="headerlink" title="C. 讨论与局限性"></a>C. 讨论与局限性</h4><p>无分类器引导（CFG）：与大多数少步蒸馏方法[28,37]一样，我们的框架不支持CFG[10,18]。虽然我们在单步生成中取得了有竞争力的结果，但整合CFG可以增强与提示的对齐，特别是对于复杂或模糊的文本。未来的工作可以专注于将CFG整合到对抗框架中以增强可控性。</p>
+<p>使用自然图像训练：使用自然图像训练有望通过利用超出教师生成样本的多样化、高分辨率数据来提高质量。然而，对齐不佳的图像-提示对存在导致文本-图像错位的重大风险，降低对抗训练的有效性。未来的研究将探索使用自然图像训练同时解决图像-提示错位的策略。</p>
+<p>训练效率：我们的框架凸显了对抗训练在单步扩散蒸馏中的潜力，这一领域仍未得到充分探索。未来的方向包括优化对抗策略，例如更高效的自适应学习调度，以进一步提高训练效率。</p>
+<h4 id="D-额外的定性结果"><a href="#D-额外的定性结果" class="headerlink" title="D. 额外的定性结果"></a>D. 额外的定性结果</h4><p>我们在本节中提供额外的定性结果。图9展示了NitroSD的1到4步优化过程，图10呈现了与基线方法[23,34,37,42,52]的进一步比较。此外，图11和图12分别包含了更多由NitroSD-Realism和NitroSD-Vibrant生成的单步样本。</p>
+<h2 id="文章总结"><a href="#文章总结" class="headerlink" title="文章总结"></a>文章总结</h2><ul>
+<li>本文类比了艺术评论家如何评价一幅画，从而提出了多个判别器组池的概念，即：每位评论家专注于构图、色彩、技巧和细节等不同方面。本文没有依赖可能迅速变得过度自信的单一判别器[8, 12, 30, 31]，而是维持了一个庞大的、动态的专业判别器组池，这些判别器组在冻结的UNet骨干网络[38]之上运行。正如多样化的评论家小组能提供比单一评委更全面的反馈，我们的判别器集合通过在不同噪声水平[23]和空间尺度上提供专业反馈，引导生成器产出高质量结果。</li>
+<li></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/diffusion/" rel="tag"># diffusion</a>
+              <a href="/tags/CVPR/" rel="tag"># CVPR</a>
+              <a href="/tags/2025/" rel="tag"># 2025</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/07/10/2025-CVPR-Layer-and-Timestep-Adaptive-Differentiable-Token-Compression-Ratios-for-Efficient-Diffusion-Transformers-%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" rel="prev" title="2025-CVPR-Layer and Timestep-Adaptive Differentiable Token Compression Ratios for Efficient Diffusion Transformers 论文精读">
+      <i class="fa fa-chevron-left"></i> 2025-CVPR-Layer and Timestep-Adaptive Differentiable Token Compression Ratios for Efficient Diffusion Transformers 论文精读
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2025/07/11/2025-CVPR-Optimizing-for-the-Shortest-Path-in-Denoising-Diffusion-Model%E5%85%A8%E9%83%A8%E5%86%85%E5%AE%B9/" rel="next" title="2025-CVPR-Optimizing for the Shortest Path in Denoising Diffusion Model全部内容">
+      2025-CVPR-Optimizing for the Shortest Path in Denoising Diffusion Model全部内容 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1. 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.3.</span> <span class="nav-text">2. 相关工作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E6%97%B6%E9%97%B4%E6%AD%A5%E8%92%B8%E9%A6%8F"><span class="nav-number">1.3.1.</span> <span class="nav-text">2.1. 时间步蒸馏</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E5%AF%B9%E6%8A%97%E6%80%A7%E8%92%B8%E9%A6%8F"><span class="nav-number">1.3.2.</span> <span class="nav-text">2.2. 对抗性蒸馏</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-%E5%A4%9A%E5%88%A4%E5%88%AB%E5%99%A8%E8%AE%AD%E7%BB%83"><span class="nav-number">1.3.3.</span> <span class="nav-text">2.3. 多判别器训练</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.</span> <span class="nav-text">3. 方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E5%8D%95%E6%AD%A5%E5%AF%B9%E6%8A%97%E6%80%A7%E6%89%A9%E6%95%A3%E8%92%B8%E9%A6%8F"><span class="nav-number">1.4.1.</span> <span class="nav-text">3.1 单步对抗性扩散蒸馏</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E5%8A%A8%E6%80%81%E5%88%A4%E5%88%AB%E5%99%A8%E6%B1%A0"><span class="nav-number">1.4.2.</span> <span class="nav-text">3.2 动态判别器池</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-%E5%88%A4%E5%88%AB%E5%99%A8%E6%B1%A0%E5%88%B7%E6%96%B0"><span class="nav-number">1.4.3.</span> <span class="nav-text">3.3 判别器池刷新</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-%E5%A4%9A%E5%B0%BA%E5%BA%A6%E5%92%8C%E5%8F%8C%E7%9B%AE%E6%A0%87GAN%E8%AE%AD%E7%BB%83"><span class="nav-number">1.4.4.</span> <span class="nav-text">3.4 多尺度和双目标GAN训练</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-5-%E8%87%AA%E5%BA%95%E5%90%91%E4%B8%8A%E7%9A%84%E5%A4%9A%E6%AD%A5%E7%BB%86%E5%8C%96"><span class="nav-number">1.4.5.</span> <span class="nav-text">3.5 自底向上的多步细化</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.5.</span> <span class="nav-text">4. 实验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E5%AE%9A%E6%80%A7%E6%AF%94%E8%BE%83"><span class="nav-number">1.5.1.</span> <span class="nav-text">4.1 定性比较</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E7%94%A8%E6%88%B7%E7%A0%94%E7%A9%B6"><span class="nav-number">1.5.2.</span> <span class="nav-text">4.2 用户研究</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-%E5%AE%9A%E9%87%8F%E6%AF%94%E8%BE%83"><span class="nav-number">1.5.3.</span> <span class="nav-text">4.3 定量比较</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-%E5%A4%9A%E6%AD%A5%E6%A0%B7%E6%9C%AC%E6%AF%94%E8%BE%83"><span class="nav-number">1.5.4.</span> <span class="nav-text">4.4 多步样本比较</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-5-%E6%B6%88%E8%9E%8D%E7%A0%94%E7%A9%B6"><span class="nav-number">1.5.5.</span> <span class="nav-text">4.5 消融研究</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-6-%E6%89%A9%E5%B1%95%E5%88%B0%E4%B8%8D%E5%90%8C%E7%9A%84%E6%95%99%E5%B8%88%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.5.6.</span> <span class="nav-text">4.6 扩展到不同的教师模型</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E7%BB%93%E8%AE%BA"><span class="nav-number">1.6.</span> <span class="nav-text">5. 结论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NitroFusion%EF%BC%9A%E9%80%9A%E8%BF%87%E5%8A%A8%E6%80%81%E5%AF%B9%E6%8A%97%E8%AE%AD%E7%BB%83%E5%AE%9E%E7%8E%B0%E9%AB%98%E4%BF%9D%E7%9C%9F%E5%8D%95%E6%AD%A5%E6%89%A9%E6%95%A3%EF%BC%88%E8%A1%A5%E5%85%85%E6%9D%90%E6%96%99%EF%BC%89"><span class="nav-number">1.7.</span> <span class="nav-text">NitroFusion：通过动态对抗训练实现高保真单步扩散（补充材料）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9B%BE9-%E6%88%91%E4%BB%AC%E7%9A%84NitroSD-Realism%E5%92%8C-Vibrant%E6%A8%A1%E5%9E%8B%E7%9A%841%E5%88%B04%E6%AD%A5%E4%BC%98%E5%8C%96%E8%BF%87%E7%A8%8B%EF%BC%8C%E5%B1%95%E7%A4%BA%E4%BA%86%E5%9B%BE%E5%83%8F%E8%B4%A8%E9%87%8F%E5%92%8C%E7%BB%86%E8%8A%82%E5%9C%A8%E4%B8%8D%E5%90%8C%E6%AD%A5%E9%AA%A4%E4%B8%AD%E7%9A%84%E9%80%90%E6%AD%A5%E6%8F%90%E5%8D%87"><span class="nav-number">1.7.1.</span> <span class="nav-text">图9. 我们的NitroSD-Realism和-Vibrant模型的1到4步优化过程，展示了图像质量和细节在不同步骤中的逐步提升</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#A-%E9%A2%9D%E5%A4%96%E7%9A%84%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82"><span class="nav-number">1.7.2.</span> <span class="nav-text">A. 额外的实现细节</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B-%E9%A2%9D%E5%A4%96%E7%9A%84%E6%B6%88%E8%9E%8D%E7%A0%94%E7%A9%B6"><span class="nav-number">1.7.3.</span> <span class="nav-text">B. 额外的消融研究</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#C-%E8%AE%A8%E8%AE%BA%E4%B8%8E%E5%B1%80%E9%99%90%E6%80%A7"><span class="nav-number">1.7.4.</span> <span class="nav-text">C. 讨论与局限性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#D-%E9%A2%9D%E5%A4%96%E7%9A%84%E5%AE%9A%E6%80%A7%E7%BB%93%E6%9E%9C"><span class="nav-number">1.7.5.</span> <span class="nav-text">D. 额外的定性结果</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E7%AB%A0%E6%80%BB%E7%BB%93"><span class="nav-number">2.</span> <span class="nav-text">文章总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zongqing Li"
+      src="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+  <p class="site-author-name" itemprop="name">Zongqing Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">100</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hqulzq" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hqulzq" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hqulzq@163.com" title="E-Mail → mailto:hqulzq@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+      
+<script type="text/javascript" charset="utf-8" src="/js/tagcloud.js"></script>
+<script type="text/javascript" charset="utf-8" src="/js/tagcanvas.js"></script>
+<div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div id="myCanvasContainer" class="widget tagcloud">
+        <canvas width="250" height="250" id="resCanvas" style="width=100%">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2023/" rel="tag">2023</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2024/" rel="tag">2024</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2025/" rel="tag">2025</a><span class="tag-list-count">22</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">25</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICCV/" rel="tag">ICCV</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICML/" rel="tag">ICML</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IJCAI/" rel="tag">IJCAI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ODE%E6%B1%82%E8%A7%A3/" rel="tag">ODE求解</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">62</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%80%BB%E7%BB%93/" rel="tag">总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%85%E8%AF%BB/" rel="tag">阅读</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+        </canvas>
+    </div>
+</div>
+
+
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zongqing Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('post.copy_button').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('post.copy_success')
+          else $(this).text('post.copy_failure')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('post.copy_button')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>

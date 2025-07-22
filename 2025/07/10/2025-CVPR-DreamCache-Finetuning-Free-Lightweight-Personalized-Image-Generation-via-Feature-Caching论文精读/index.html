@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="全文翻译摘要个性化图像生成需要文本到图像的生成模型捕捉参考主体的核心特征，以便在不同场景下实现可控生成。现有方法面临着训练要求复杂、推理成本高、灵活性有限等挑战，或这些问题的组合。在本文中，我们提出了DreamCache，一种可扩展的高效高质量个性化图像生成方法。通过缓存预训练扩散去噪器的部分层和单个时间步的少量参考图像特征，DreamCache能够通过轻量级的、经过训练的条件适配器动态调制生成图">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2025-CVPR-DreamCache Finetuning-Free Lightweight Personalized Image Generation via Feature Caching论文精读">
+<meta property="og:url" content="https://hqulzq.github.io/2025/07/10/2025-CVPR-DreamCache-Finetuning-Free-Lightweight-Personalized-Image-Generation-via-Feature-Caching%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/index.html">
+<meta property="og:site_name" content="Lzq&#39;s blog">
+<meta property="og:description" content="全文翻译摘要个性化图像生成需要文本到图像的生成模型捕捉参考主体的核心特征，以便在不同场景下实现可控生成。现有方法面临着训练要求复杂、推理成本高、灵活性有限等挑战，或这些问题的组合。在本文中，我们提出了DreamCache，一种可扩展的高效高质量个性化图像生成方法。通过缓存预训练扩散去噪器的部分层和单个时间步的少量参考图像特征，DreamCache能够通过轻量级的、经过训练的条件适配器动态调制生成图">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-07-10T13:13:41.000Z">
+<meta property="article:modified_time" content="2025-07-10T13:27:11.295Z">
+<meta property="article:author" content="Zongqing Li">
+<meta property="article:tag" content="diffusion">
+<meta property="article:tag" content="CVPR">
+<meta property="article:tag" content="2025">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://hqulzq.github.io/2025/07/10/2025-CVPR-DreamCache-Finetuning-Free-Lightweight-Personalized-Image-Generation-via-Feature-Caching%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>2025-CVPR-DreamCache Finetuning-Free Lightweight Personalized Image Generation via Feature Caching论文精读 | Lzq's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lzq's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">49</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">100</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book">
+
+    <a href="/book" rel="section"><i class="fas fa-book fa-fw"></i>Book</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/07/10/2025-CVPR-DreamCache-Finetuning-Free-Lightweight-Personalized-Image-Generation-via-Feature-Caching%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          2025-CVPR-DreamCache Finetuning-Free Lightweight Personalized Image Generation via Feature Caching论文精读
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-07-10 21:13:41 / 修改时间：21:27:11" itemprop="dateCreated datePublished" datetime="2025-07-10T21:13:41+08:00">2025-07-10</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>个性化图像生成需要文本到图像的生成模型捕捉参考主体的核心特征，以便在不同场景下实现可控生成。现有方法面临着训练要求复杂、推理成本高、灵活性有限等挑战，或这些问题的组合。在本文中，我们提出了DreamCache，一种可扩展的高效高质量个性化图像生成方法。通过缓存预训练扩散去噪器的部分层和单个时间步的少量参考图像特征，DreamCache能够通过轻量级的、经过训练的条件适配器动态调制生成图像的特征。DreamCache实现了最先进的图像与文本对齐效果，额外参数数量减少了一个数量级，且比现有模型计算效率更高、用途更广泛。<br><span id="more"></span></p>
+<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1. 引言"></a>1. 引言</h3><p>近年来，在扩散模型[11, 31]的推动下，文本到图像生成技术取得了显著进展，能够根据文本描述生成高质量、多样化的图像。扩散模型[26, 28]通过一系列去噪步骤，以输入文本提示为条件，将随机噪声逐步转化为图像。  </p>
+<p>一个活跃的研究领域是对这些模型进行个性化处理，使其能够在各种场景下生成参考主体的新图像，同时保持基于文本编辑的灵活性。早期的个性化技术[1, 7, 9, 27, 33, 35, 38, 38]，如开创性的DreamBooth[27]，依赖于为每个参考主体微调生成模型。然而，这些方法在许多使用场景中并不实用，因为测试时的微调成本高昂，每个主体可能需要数分钟。为解决这一问题，无需微调（即零样本）的个性化图像生成方法应运而生，消除了测试时的优化需求。这些无需微调的方法大致可分为两类：基于编码器的方法和基于参考的方法，每种方法都有其明显的缺点。  </p>
+<p>基于编码器的方法[8, 16, 21, 36, 39]利用专用的图像编码器（如CLIP[24]或DINO[3]）从参考图像中提取相关特征。虽然这些编码器能产生高质量的结果，但它们通常规模较大，需要大量训练来对齐文本和图像特征，并且会降低模型的灵活性[14, 16, 20, 39]。  </p>
+<p>相比之下，基于参考的方法[23, 40]直接以从U-Net去噪器中提取的参考特征为条件来调节扩散模型，在每个去噪步骤中整合这些特征。尽管有效，但这些方法需要在生成的每个步骤中提取特征，导致计算成本和内存需求更高。此外，它们通常需要输入文本标题作为条件，这会引入变异性并可能降低输出精度。  </p>
+<p>最近的一些研究提出微调U-Net骨干网络本身[23, 40, 42]。然而，这会阻碍模型在个性化和非个性化任务之间切换的能力，并可能导致“语言偏移”现象——个性化训练会降低模型的语言理解能力[13, 27]。  </p>
+<p>在本文中，我们提出了DreamCache，一种新颖的无需微调的个性化图像生成方法，它通过特征缓存机制克服了现有方法的局限性（见图1），实现了无文本编码和高效的个性化条件调节。  </p>
+<p>具体而言，我们首先创建一个合成数据集[23]，包含标题、目标图像和参考主体的三元组，以捕捉不同场景中的主体。接下来，我们预训练轻量级的基于注意力的条件适配器，将主体特定特征注入图像生成过程。在个性化阶段，参考图像通过预训练的基础扩散模型去噪器进行处理，无需文本条件，从而消除了对用户生成标题的需求，同时在单个时间步缓存少量层的特征。在个性化采样时，这些缓存的特征通过预训练的条件适配器注入去噪器。  </p>
+<p>表1总结了现有方法的关键特性，并说明了DreamCache在当前研究中的定位；更多细节将在第2节中探讨。作为一种无编码器的方法，DreamCache仅引入少量额外参数，使其非常轻量，适合部署在资源受限的设备上。例如，像[36]和[14]这样的方法由于依赖CLIP编码器，引入了3.8亿个参数，而DreamCache仅需要2500万个额外参数。此外，在单个预处理时间步从少数选定的U-Net层缓存特征，避免了生成过程中对U-Net参考的完整处理，从而节省了大量计算和内存，实现了实时、高质量的个性化生成。DreamCache的另一个关键优势是其即插即用特性，允许同时生成个性化和非个性化内容，而无需改变原始U-Net权重，从而保持了原始模型的完整性，并支持更广泛的部署场景，特别是在移动平台上。</p>
+<h3 id="2-背景与相关工作"><a href="#2-背景与相关工作" class="headerlink" title="2. 背景与相关工作"></a>2. 背景与相关工作</h3><p>个性化图像生成旨在生成包含特定主体的图像。这一任务已得到广泛研究，主要形成了两种方法：微调方法（需要在测试时针对每个参考主体进行微调）和无微调方法（无需针对特定主体进行优化，通过学习通用的条件调节机制来实现生成）。</p>
+<h4 id="基于微调的个性化方法"><a href="#基于微调的个性化方法" class="headerlink" title="基于微调的个性化方法"></a>基于微调的个性化方法</h4><p>DreamBooth[27]通过微调整个U-Net网络，并引入正则化损失来减轻过拟合问题。相比之下，Custom Diffusion[13]仅微调U-Net交叉注意力块中的K和V投影矩阵。基于文本的个性化方法则优化单个（如Textual Inversion[7]）或多个（如P+[35]）输入令牌嵌入。后续方法[1,9,33,38]在此基础上进行创新，例如Perfusion[33]使用动态秩1更新来防止过拟合，同时保持编码的轻量级特性。然而，所有基于微调的方法计算成本都很高，通常每个参考主体在测试时需要数分钟的微调时间。</p>
+<h4 id="无微调的个性化方法"><a href="#无微调的个性化方法" class="headerlink" title="无微调的个性化方法"></a>无微调的个性化方法</h4><p>为降低计算需求，近年来的研究转向零样本个性化方法，省去了特定主体的微调步骤，这类方法通常利用图像编码器，通过从参考图像中提取的特征来调节生成过程[8,16,21,36,39]。例如，BLIP-Diffusion[14]预训练一个Q-Former来学习与文本对齐的图像特征；IP-Adapter则使用冻结的CLIP编码器提取与文本对齐的视觉特征，以调节生成模型的交叉注意力层。其他方法如Kosmos-G[20]和CAFE[41]将大型语言模型（LLMs）与扩散模型相结合，以基于个性化概念调节生成过程。SuTI[5]采用不同的方法，通过训练数百万个特定主体专家，然后通过学徒学习训练模型，实现测试时高效的零样本个性化生成。</p>
+<p>此外，无编码器方法（如JeDi[40]和BootPIG[23]）使用生成模型骨干网络的特征来指导生成过程。JeDi创建多视图合成数据集，并修改空间自注意力机制，以联合关注批次中同一概念的图像。BootPIG保留U-Net原始模型的可训练副本，添加参考自注意力层，使个性化模型能够适配参考特征。尽管这些方法无需额外编码器，但推理过程的计算成本仍然很高——由于扩散过程的迭代特性，参考图像必须在生成过程中并行处理，导致成本累积。</p>
+<p>相比之下，我们提出的DreamCache方法通过从U-Net中缓存部分参考特征（无需文本条件），避免了并行推理，且无需加载单独的模型，从而减少了内存开销。这使得测试时的计算效率与基于编码器的方法相当，同时兼具无编码器特征提取与注入的灵活性。</p>
+<p>近期的研究如BootPIG[23]和Toffee-5M[42]强调了合成数据的重要性，这类数据能明确将主体与背景分离，从而提升性能。受此启发，我们采用类似的生成流程来创建训练DreamCache所用的合成数据集。</p>
+<p>此外，由于我们的方法具有即插即用特性且保持U-Net冻结状态，相比其他方法[16,20,23,40-42]，大大降低了训练成本。关于现有方法的详细概述、训练参数数量及其训练成本，可参见表1。</p>
+<h4 id="特征缓存"><a href="#特征缓存" class="headerlink" title="特征缓存"></a>特征缓存</h4><p>特征缓存技术已被用于减少扩散模型的生成时间，其核心是缓存中间激活值。一些研究[18,37]利用训练过程中的时间冗余性，在不同时间步缓存激活值，以减少后续时间步的计算量。其他工作则专注于在扩散框架内缓存层激活值，避免冗余计算。Learning-to-Cache[17]引入动态缓存机制，学习跳过扩散模型选定层的计算。与这些通常为节省计算而缓存部分层的模型内特征的工作不同，我们利用特征缓存来编码参考图像的多分辨率特征（从少数选定层中提取），以调节新个性化图像的生成过程。我们的方法借鉴了判别性问题中成功的少样本学习器[19,30,34]，并将其扩展到个性化图像生成领域。</p>
+<h3 id="3-方法"><a href="#3-方法" class="headerlink" title="3. 方法"></a>3. 方法</h3><p>给定一个预训练的文本到图像生成模型$\epsilon_{\theta}$和一张包含参考主体的图像$I_{ref}$，个性化采样的目标是生成包含该参考主体的新图像，这些图像需处于不同场景且受文本控制。我们提出了DreamCache，这是一种从$I_{ref}$中提取条件信号并指导图像生成过程的新方法。该方法利用预训练的扩散模型、通过合成数据集预训练的条件适配器以及来自参考图像的特征缓存。DreamCache生成的样本输出如图2所示，方法概述如图3所示。</p>
+<p>DreamCache的核心是利用预训练扩散模型中的去噪器，通过缓存少数选定层的激活值，从$I_{ref}$中提取多分辨率特征。为提高泛化能力，我们在正向传播过程中使用空文本提示来缓存特征。在进行个性化采样时，缓存的特征会经过适配器处理，作为条件信号，在对应层调节正在生成的图像的去噪器特征。这些适配器在合成数据集上预训练完成后，只需缓存新参考图像的特征，无需进一步微调，就能实现零样本个性化生成。</p>
+<p>下面，我们详细介绍DreamCache的三个主要方面，即：i) 如何缓存参考特征（3.1节）；ii) 如何基于缓存的特征调节扩散模型以进行个性化采样（3.2节）；iii) 如何训练用于模型调节的适配器（3.3节）。</p>
+<h4 id="3-1-缓存参考特征"><a href="#3-1-缓存参考特征" class="headerlink" title="3.1. 缓存参考特征"></a>3.1. 缓存参考特征</h4><p>为提取参考图像中用于个性化采样的信息，我们在单个时间步对扩散模型的去噪器进行一次正向传播。我们选择$t=1$（噪声最少的时间步），以获得清晰的特征，这些特征最适合用于调节个性化生成过程。此外，我们移除文本条件，将参考图像的视觉内容与文本标题解耦，从而消除了对用户提供参考图像标题的需求。这与JeDi[40]等对标题内容敏感的方法形成对比。</p>
+<p>在正向传播过程中，会计算去噪器所有层的激活值，但只缓存其中一部分。基于我们在Stable Diffusion U-Net上的实验，发现从中间瓶颈层和解码器中每隔一层缓存特征，能在生成质量和缓存效率之间取得最佳平衡（见4.3节）。</p>
+<p>形式上，特征缓存$H_{FC}$由去噪器$\epsilon_{\theta}$在时间步$t=1$、使用空文本提示$\varnothing$和带噪声的参考图像$I_{ref}+n_{t}$（其中$n_{t}$为噪声实现）时，选定层$c$的激活值组成，表示为：</p>
+<script type="math/tex; mode=display">
+\mathcal{H}_{FC}=\left\{h_{ref, L}: L \in \mathcal{L}\right\} \quad (1)</script><script type="math/tex; mode=display">
+h_{ref, L}=\left.\epsilon_{\theta}\left(I_{ref}+n_{t}, \varnothing, t ; l\right)\right|_{t=1, l=L}. \quad (2)</script><p>需要注意的是，缓存的特征具有不同的空间分辨率，从低分辨率的瓶颈层到高分辨率的解码器层，这使得参考图像能够获得多分辨率表示。这对于同时实现全局语义和细粒度细节的指导尤为有用。与先前的工作[16,23,36]一样，我们在缓存参考图像的特征之前，会对其进行前景分割，将主体与背景分离。</p>
+<h4 id="3-2-基于缓存的参考特征进行调节"><a href="#3-2-基于缓存的参考特征进行调节" class="headerlink" title="3.2. 基于缓存的参考特征进行调节"></a>3.2. 基于缓存的参考特征进行调节</h4><p>我们提出了一种新颖的条件适配器机制，该机制包括：i) 缓存特征与正在生成的图像的特征之间的交叉注意力块；ii) 将原始U-Net去噪骨干网络的自注意力块输出与交叉注意力块输出进行拼接的操作；iii) 一个投影层。框图如图3（右侧）所示。</p>
+<p>为清晰起见，省略层下标，条件适配器机制的数学表达式如下：</p>
+<script type="math/tex; mode=display">
+q=W_{Q} h, \quad k_{c}=W_{K} h_{ref}, \quad v_{c}=W_{V} h_{ref}, \quad (3)</script><script type="math/tex; mode=display">
+a_{c}=\text{softmax}\left(\frac{q k_{c}^{T}}{\sqrt{d}}\right) v_{c},</script><script type="math/tex; mode=display">
+a=W_{\text{proj }}\left(\left[a ; a_{c}\right]\right), \quad (5)</script><p>其中$h \in \mathbb{R}^{N \times d}$是正在生成的$N$像素图像的当前$d$维特征，$h_{ref}$是式(2)中的缓存参考特征。$W_{Q}$、$W_{K}$、$W_{V}$和$W_{proj}$是可学习的投影矩阵，其训练过程将在3.3节中描述。拼接操作$\left[a ; a_{c}\right] \in \mathbb{R}^{N \times 2d}$结合了自注意力输出$a \in \mathbb{R}^{N \times d}$和交叉注意力输出$a_{c} \in \mathbb{R}^{N \times d}$。与类似工作中的其他方法相比，拼接操作允许灵活的信息融合，且无需明确的对齐约束（见4.3节）。可学习的投影矩阵$W_{proj}$将拼接特征的维度缩减回$\mathbb{R}^{N \times d}$，以与原始骨干网络兼容。</p>
+<p>总体而言，适配器的设计通过让模型同时利用生成过程中的主要上下文信息和来自缓存的条件上下文信息，丰富了图像生成扩散过程中使用的特征表示。</p>
+<h4 id="3-3-训练条件适配器"><a href="#3-3-训练条件适配器" class="headerlink" title="3.3. 训练条件适配器"></a>3.3. 训练条件适配器</h4><p>3.2节中介绍的用于处理缓存特征的额外参数需要在大规模多样化数据集上训练，以确保其能适用于任何参考主体。</p>
+<p>收集用于此训练过程的配对数据成本极高，因为这需要同一主体在不同场景下的多张图像。为解决这一问题，我们借鉴了BootPIG[23]中最近提出的合成数据生成流程来构建训练数据。首先，我们使用大型语言模型（Llama 3.2[6]）生成潜在目标图像的标题。每个标题都用于通过Stable Diffusion[26]生成图像。然后，我们使用Segment Anything Model（SAM[12]）和Grounding DINO[15]，根据文本标题精确分割参考主体，并生成标题中主要对象的前景掩码。</p>
+<p>我们将Stable Diffusion生成的图像作为目标图像，将粘贴在白色背景上的前景对象作为参考图像，将LLM生成的标题作为训练流程中的文本提示。与BootPIG相比，我们的流程使用开源模型，因此更易于获取。由于类似数据集（包括BootPIG[23]的数据集）尚未公开，我们将发布我们的合成数据集，以促进可重复性和进一步研究。关于数据集及其统计信息的更多细节可参见补充材料。</p>
+<p>我们使用标准的分数匹配损失[32]，结合文本条件噪声输入和缓存的参考特征，训练3.2节中介绍的适配器参数（$W_{Q}$、$W_{K}$、$W_{V}$和$W_{proj}$）：</p>
+<script type="math/tex; mode=display">
+\mathcal{L}_{\text{diffusion}}=\mathbb{E}_{x_{0}, \epsilon, c_{T}, I_{ref}, t}\left[\left\| \epsilon-\epsilon_{\theta}'\left(x_{t}, c_{T}, \mathcal{H}_{FC}, t\right)\right\|_{2}^{2}\right], \quad (6)</script><p>其中$x_{0}$是目标图像，$c_{T}$是大型语言模型生成的文本提示，$\epsilon$是高斯噪声，$t$是从$1, \ldots, T$中均匀采样的扩散时间步。时间步$t$的带噪声图像$x_{t}$是在正向扩散过程中通过向$x_{0}$逐渐添加噪声获得的。函数$\epsilon_{\theta}’$表示整合了条件适配器的改进去噪模型。</p>
+<h3 id="4-实验结果"><a href="#4-实验结果" class="headerlink" title="4. 实验结果"></a>4. 实验结果</h3><p>在本节中，我们将呈现实验结果，包括定量和定性比较、消融研究，以及分析部分——该部分可视化了适配器中新引入的交叉注意力机制的表现。</p>
+<h4 id="实现细节"><a href="#实现细节" class="headerlink" title="实现细节"></a>实现细节</h4><p>我们在两个版本的Stable Diffusion（SD）[26]上评估了我们的方法，具体为1.5版和2.1版，以确保与不同骨干网络上的最先进方法进行公平比较。如消融研究中所述，我们的缓存和条件调节机制应用于解码器的中间层和每隔一层。DreamCache的可训练参数总数为2500万。我们使用原始的SD代码库，在4×80GB A100 GPU上以128的批量大小训练模型25k步，采用AdamW优化器，学习率为$10^{-5}$。</p>
+<p>输入图像被调整为512×512大小，对参考图像应用缩放、偏移和 resize 增强，以提高模型对扰动的鲁棒性。消融实验在SD 1.5上进行。我们使用50个采样步骤生成图像，采用无分类器引导进行图像和文本条件调节，引导尺度为7.5。</p>
+<h4 id="评估"><a href="#评估" class="headerlink" title="评估"></a>评估</h4><p>定量评估在DreamBooth数据集[27]上进行，遵循先前的方法。DreamBooth包含30个主体，每个主体有25个文本提示。我们每个主体使用单张输入图像，每个主体-提示组合生成4张图像，共生成3000张图像。我们使用预训练的DINO ViT-S/16和CLIP ViT-B/32模型计算生成图像与参考图像的全局图像嵌入的平均余弦相似度，分别用指标DINO和CLIP-I表示。为评估文本对齐，我们使用CLIP的图像和文本编码器[10]计算生成图像的嵌入与文本提示的嵌入之间的余弦相似度，相应的分数用CLIP-T表示。</p>
+<h4 id="4-1-零样本个性化"><a href="#4-1-零样本个性化" class="headerlink" title="4.1. 零样本个性化"></a>4.1. 零样本个性化</h4><p>我们将DreamCache与最先进的基于微调的和零样本个性化方法进行比较。表2呈现了定量结果，显示了扩散骨干网络和每种方法的参考图像数量。我们的方法与其他计算密集型的最先进方法相比，表现相当或更优，而这些方法是在更大的数据集上用多得多的参数训练的。关于各种方法的数据需求、训练时间和参数数量，读者可参考表1。我们注意到，一般来说，DINO是比CLIP-I更适合的图像相似度指标，因为它对主体的外观和细粒度细节更敏感。</p>
+<p>我们还与Kosmos-G[20]和BLIP-Diffusion[14]进行了定性比较。我们注意到，其他一些方法由于缺乏代码、数据集或训练好的检查点而无法复现。如图4所示，我们的方法在主体保留和文本对齐方面表现出色，生成的结果视觉效果更优。我们还注意到，Kosmos-G报告了较高的CLIP-I分数，但在检查生成的图像后发现，该分数并不完全反映参考主体在生成图像中的保留情况。事实上，Kosmos-G存在严重的背景干扰，参考背景的部分复制提高了对齐分数。因此，我们在补充材料中还报告了主体的前景掩码指标，如MCLIP-I和MDINO。</p>
+<h4 id="4-2-推理时间评估"><a href="#4-2-推理时间评估" class="headerlink" title="4.2. 推理时间评估"></a>4.2. 推理时间评估</h4><p>我们将我们方法的计算效率与基于参考的方法BootPIG[23]和基于编码器的方法如Kosmos-G[20]和Subject-Diffusion[16]进行比较。表3详细比较了推理时间，包括个性化时间（例如，DreamCache生成缓存的时间）和个性化图像的采样时间。我们还报告了模型大小的增加，即允许个性化的额外参数所需的存储（以FP16精度），表明DreamCache比最先进的方法小一个数量级。总体而言，DreamCache提供了一种轻量级解决方案，以更快的推理速度和更低的计算开销实现了最先进的性能。</p>
+<h4 id="4-3-消融研究"><a href="#4-3-消融研究" class="headerlink" title="4.3. 消融研究"></a>4.3. 消融研究</h4><p>我们通过一系列研究验证我们的设计选择，检查不同的条件调节机制，评估我们的特征缓存方法，并分析合成数据集缩放的影响。</p>
+<p><strong>参考特征整合</strong>：表4比较了整合参考特征的各种条件调节策略。我们的带自注意力和交叉注意力输出拼接的空间交叉注意力块（“Spatial Concat”）与不同的替代方案进行了评估，包括IP-Adapter的条件调节机制[39]（“Textual Sum”），该机制将解耦的交叉注意力输出与文本交叉注意力的输出相加。我们还测试了一种变体（“Spatial Sum”），其中自注意力和交叉注意力条件调节输出被相加。此外，我们还评估了受ViCo[9]启发的另一种条件调节流程（“Decoupled Blocks”），涉及独立和交错的交叉注意力块。表4中的结果表明，所提出的“Spatial Concat”在文本对齐和参数效率之间取得了最佳平衡。</p>
+<p>我们在表5中进一步探索了U-Net骨干网络内的最佳条件调节插入位置，确定在解码器的中间层和每隔一层应用条件调节（因此进行特征缓存）在性能和参数数量之间取得了最佳权衡。</p>
+<p><strong>缓存特征的文本输入</strong>：我们的特征缓存流程设计为无文本的，利用了预训练期间偶尔省略标题的无分类器引导。我们将这种方法与缓存期间包含文本输入的版本（例如，“一张……的照片”）进行了比较。表6显示，添加文本条件调节略微降低了文本对齐，同时增加了复杂性，并在标题不准确的情况下可能引入噪声。</p>
+<p><strong>数据集影响</strong>：我们展示了我们的合成数据集对训练条件适配器的重要性以及其大小缩放的效果。为此，我们根据3.3节中的流程创建了大小为50K、200K和400K样本的合成数据集。我们还测试了来自LAION[29]数据集的500万真实世界样本，该数据集由于缺乏目标-标题-参考三元组，需要将目标图像也用作参考图像。表7显示，增加数据集大小提高了图像对齐，但略微降低了文本对齐。值得注意的是，LAION提高了图像对齐，但在文本对齐方面表现不佳。这突出了三元组数据（目标图像、参考图像和标题）对于有效的零样本个性化的重要性，确保主体保留和文本可编辑性。</p>
+<h4 id="4-4-参考影响的可视化"><a href="#4-4-参考影响的可视化" class="headerlink" title="4.4. 参考影响的可视化"></a>4.4. 参考影响的可视化</h4><p>最后，我们通过可视化缓存的参考特征影响，分析DreamCache中的交叉注意力机制如何影响图像生成。图5提供了不同分辨率下的注意力图可视化。具体而言，当前生成的查询与来自参考特征的键之间的注意力图显示出高度局部化的对主体的关注，不受背景元素的干扰。这种机制有效地建模了对应关系，将参考信息整合到生成的图像中。</p>
+<h3 id="5-讨论与结论"><a href="#5-讨论与结论" class="headerlink" title="5. 讨论与结论"></a>5. 讨论与结论</h3><p>在本文中，我们提出了DreamCache，这是一种用于个性化文本到图像生成的新颖方法，它通过特征缓存机制克服了现有方法的局限性。通过仅从U-Net的一小部分层缓存一次参考特征，我们的方法显著降低了计算和内存需求，实现了高效、实时的个性化图像生成。与先前的方法不同，DreamCache无需昂贵的微调、外部图像编码器或并行参考处理，因此轻量且适合即插即用部署。我们的实验表明，DreamCache仅需2500万额外参数就能实现最先进的零样本个性化效果，且训练过程快速高效。</p>
+<p>尽管DreamCache为高效个性化生成开辟了新方向，但它仍存在一些局限性。虽然在单主体个性化方面表现有效，但对于复杂的多主体生成，由于可能出现特征干扰，我们的方法可能需要调整。此外，某些边缘情况（如高度抽象或风格化的图像）可能会挑战缓存机制准确保留主体细节的能力。为解决这些挑战，未来的工作可能会探索自适应缓存技术或多参考特征整合方法。</p>
+<h3 id="DreamCache：无需微调的轻量级个性化图像生成——补充材料"><a href="#DreamCache：无需微调的轻量级个性化图像生成——补充材料" class="headerlink" title="DreamCache：无需微调的轻量级个性化图像生成——补充材料"></a>DreamCache：无需微调的轻量级个性化图像生成——补充材料</h3><h4 id="S1-合成数据集"><a href="#S1-合成数据集" class="headerlink" title="S1. 合成数据集"></a>S1. 合成数据集</h4><p>在本节中，我们将描述数据集生成流程。该流程受BootPIG成功案例的启发，并进行了部分修改，确保采用开源模型且完全可复现。图S1展示了数据创建过程的概览。我们还在图S3中展示了一些生成的合成数据示例。</p>
+<p>我们使用lang-sam pipeline¹，结合Grounding-DINO和SAM，基于文本条件对生成图像和参考图像进行分割。对于标题生成，我们利用Llama 3.2 8B模型[6]，并精心设计提示词，旨在生成具体物体的多样化、描述性标题，将物体置于各种有意义的场景中。我们对生成的标题进行过滤，以确保数据集的多样性，并移除重复或高度相似的标题。我们编写了一个简单的过滤脚本，统计每个物体/类别的出现次数，并过滤掉冗余标题。</p>
+<p>经过过滤的标题随后被用于提示SD-XL模型[22]，采用3.5的无分类器引导（CFG）尺度，通过25个去噪步骤生成图像。我们的整个数据生成流程可复现，计划与DreamCache的代码一同发布。此外，我们将提供生成的数据集，以鼓励该领域的进一步研究。</p>
+<h4 id="S2-额外评估"><a href="#S2-额外评估" class="headerlink" title="S2. 额外评估"></a>S2. 额外评估</h4><h5 id="S2-1-掩码指标"><a href="#S2-1-掩码指标" class="headerlink" title="S2.1. 掩码指标"></a>S2.1. 掩码指标</h5><p>近期研究[40, 42]强调，评估掩码版本的图像相似性指标具有重要价值，可消除背景元素的潜在干扰，确保评估聚焦于个性化物体的保真度。我们使用Grounded-SAM[25]对生成图像和参考图像进行分割，随后计算这些分割区域的CLIP-I和DINO分数。表S1报告了这些掩码指标的结果。DreamCache在两项指标上均取得了更高分数，证明其在主体保留方面的优越性。</p>
+<p>表S1. 掩码指标定量评估</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>MCLIP-I（↑）</th>
+<th>MDINO（↑）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DreamBooth</td>
+<td>0.868</td>
+<td>0.712</td>
+</tr>
+<tr>
+<td>Custom Diffusion</td>
+<td>0.864</td>
+<td>0.711</td>
+</tr>
+<tr>
+<td>JeDI</td>
+<td>0.876</td>
+<td>0.751</td>
+</tr>
+<tr>
+<td>BLIP-D</td>
+<td>0.862</td>
+<td>0.669</td>
+</tr>
+<tr>
+<td>ELITE</td>
+<td>0.861</td>
+<td>0.681</td>
+</tr>
+<tr>
+<td>Toffee-5M</td>
+<td>0.874</td>
+<td>0.803</td>
+</tr>
+<tr>
+<td>我们的方法</td>
+<td>0.906</td>
+<td>0.837</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h5 id="S2-2-定性结果"><a href="#S2-2-定性结果" class="headerlink" title="S2.2. 定性结果"></a>S2.2. 定性结果</h5><p>在本节中，我们展示了DreamCache生成的额外定性结果（图S4）。我们使用合成生成的主体和DreamBooth数据集中的真实主体进行实验。结果表明，我们的方法能有效遵循复杂文本提示。有趣的是，尽管没有针对主体修改进行明确训练（如编辑数据集所示），但我们的方法能在各种场景中成功调整和转换输入主体，而非简单复制参考图像。</p>
+<p><strong>额外定性比较</strong>：我们在图S5中提供了额外的定性比较，包括两个可复现的开源基线：BLIP-D[14]和Kosmos-G[20]。</p>
+<h4 id="S3-额外消融研究"><a href="#S3-额外消融研究" class="headerlink" title="S3. 额外消融研究"></a>S3. 额外消融研究</h4><p><strong>编码时间步t的影响</strong>：所提出的参考编码机制依赖于选择t=1作为编码过程中的固定时间步。我们在表S3中验证了这一设计选择，结果表明t=1能产生最佳性能。这一发现与“噪声更少的特征提供更丰富的条件信号”的直觉一致。此外，该实验凸显了基于参考U-Net的方法的一个显著局限性——这些方法注入对应于不同时间步的含噪声特征，而这些含噪声特征的信息量较少，细节也少于我们用于独立于当前时间步调节生成过程的低噪声固定时间步参考特征。</p>
+<p><strong>多分辨率特征的影响</strong>：我们还研究了多分辨率特征对DreamCache性能的必要性。在我们方法的一个变体中，我们将缓存特征固定为单一分辨率（即编码阶段后U-Net的瓶颈分辨率（8×8））。实验表明，与使用单一固定分辨率的缓存特征图相比，利用多分辨率特征能显著提升性能，如表S2所示。</p>
+<h4 id="S4-采样空间与图像引导"><a href="#S4-采样空间与图像引导" class="headerlink" title="S4. 采样空间与图像引导"></a>S4. 采样空间与图像引导</h4><p>在实验中，我们遵循先前的工作[2, 40]，测试了用于图像和文本条件信号的不同引导类型。第一种也是更简单的联合引导方法，在无条件预测中同时丢弃文本和图像条件：</p>
+<p>$\begin{aligned} \tilde{e_{\theta}}\left(z_{t}, c_{I}, c_{T}\right)= &amp; e_{\theta}\left(z_{t}, \varnothing, \varnothing\right) \\ &amp; +s \cdot\left(e_{\theta}\left(z_{t}, c_{I}, c_{T}\right)-e_{\theta}\left(z_{t}, \varnothing, \varnothing\right)\right) \end{aligned}$</p>
+<p>其中，$\tilde{e_{\theta}}(z_{t}, c_{I}, c_{T})$表示去噪步骤t时基于文本条件$c_{T}$和图像条件$c_{I}$的调整预测，$e_{\theta}(z_{t}, \varnothing, \varnothing)$表示无条件预测，s为引导尺度。第二种方法称为组合引导，它将文本和图像分离，允许在两种条件模式之间实现更灵活的平衡：</p>
+<p>$\begin{aligned} \tilde{e_{\theta}}\left(z_{t}, c_{I}, c_{T}\right)= &amp; e_{\theta}\left(z_{t}, \varnothing, \varnothing\right) \\ &amp; +s_{I} \cdot\left(e_{\theta}\left(z_{t}, c_{I}, \varnothing\right)-e_{\theta}\left(z_{t}, \varnothing, \varnothing\right)\right) \\ &amp; +s_{T} \cdot\left(e_{\theta}\left(z_{t}, c_{I}, c_{T}\right)-e_{\theta}\left(z_{t}, c_{I}, \varnothing\right)\right) \end{aligned}$</p>
+<p>实验结果表明，使用更高的图像引导尺度能更好地保留参考图像的内容，但会降低主体的可编辑性。相反，降低图像引导尺度能更灵活地编辑参考主体，但会以降低主体保真度为代价。图S2在DreamBooth数据集上比较了联合引导和组合引导策略，展示了这些发现。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/diffusion/" rel="tag"># diffusion</a>
+              <a href="/tags/CVPR/" rel="tag"># CVPR</a>
+              <a href="/tags/2025/" rel="tag"># 2025</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/07/09/2025-CVPR-CacheQuant-Comprehensively-Accelerated-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" rel="prev" title="2025-CVPR-CacheQuant Comprehensively Accelerated Diffusion Models论文精读">
+      <i class="fa fa-chevron-left"></i> 2025-CVPR-CacheQuant Comprehensively Accelerated Diffusion Models论文精读
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2025/07/10/2025-CVPR-Layer-and-Timestep-Adaptive-Differentiable-Token-Compression-Ratios-for-Efficient-Diffusion-Transformers-%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" rel="next" title="2025-CVPR-Layer and Timestep-Adaptive Differentiable Token Compression Ratios for Efficient Diffusion Transformers 论文精读">
+      2025-CVPR-Layer and Timestep-Adaptive Differentiable Token Compression Ratios for Efficient Diffusion Transformers 论文精读 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1. 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%83%8C%E6%99%AF%E4%B8%8E%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.3.</span> <span class="nav-text">2. 背景与相关工作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E5%BE%AE%E8%B0%83%E7%9A%84%E4%B8%AA%E6%80%A7%E5%8C%96%E6%96%B9%E6%B3%95"><span class="nav-number">1.3.1.</span> <span class="nav-text">基于微调的个性化方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%97%A0%E5%BE%AE%E8%B0%83%E7%9A%84%E4%B8%AA%E6%80%A7%E5%8C%96%E6%96%B9%E6%B3%95"><span class="nav-number">1.3.2.</span> <span class="nav-text">无微调的个性化方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%89%B9%E5%BE%81%E7%BC%93%E5%AD%98"><span class="nav-number">1.3.3.</span> <span class="nav-text">特征缓存</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.</span> <span class="nav-text">3. 方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E7%BC%93%E5%AD%98%E5%8F%82%E8%80%83%E7%89%B9%E5%BE%81"><span class="nav-number">1.4.1.</span> <span class="nav-text">3.1. 缓存参考特征</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E5%9F%BA%E4%BA%8E%E7%BC%93%E5%AD%98%E7%9A%84%E5%8F%82%E8%80%83%E7%89%B9%E5%BE%81%E8%BF%9B%E8%A1%8C%E8%B0%83%E8%8A%82"><span class="nav-number">1.4.2.</span> <span class="nav-text">3.2. 基于缓存的参考特征进行调节</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-%E8%AE%AD%E7%BB%83%E6%9D%A1%E4%BB%B6%E9%80%82%E9%85%8D%E5%99%A8"><span class="nav-number">1.4.3.</span> <span class="nav-text">3.3. 训练条件适配器</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C"><span class="nav-number">1.5.</span> <span class="nav-text">4. 实验结果</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82"><span class="nav-number">1.5.1.</span> <span class="nav-text">实现细节</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%84%E4%BC%B0"><span class="nav-number">1.5.2.</span> <span class="nav-text">评估</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E9%9B%B6%E6%A0%B7%E6%9C%AC%E4%B8%AA%E6%80%A7%E5%8C%96"><span class="nav-number">1.5.3.</span> <span class="nav-text">4.1. 零样本个性化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E6%8E%A8%E7%90%86%E6%97%B6%E9%97%B4%E8%AF%84%E4%BC%B0"><span class="nav-number">1.5.4.</span> <span class="nav-text">4.2. 推理时间评估</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-%E6%B6%88%E8%9E%8D%E7%A0%94%E7%A9%B6"><span class="nav-number">1.5.5.</span> <span class="nav-text">4.3. 消融研究</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-%E5%8F%82%E8%80%83%E5%BD%B1%E5%93%8D%E7%9A%84%E5%8F%AF%E8%A7%86%E5%8C%96"><span class="nav-number">1.5.6.</span> <span class="nav-text">4.4. 参考影响的可视化</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E8%AE%A8%E8%AE%BA%E4%B8%8E%E7%BB%93%E8%AE%BA"><span class="nav-number">1.6.</span> <span class="nav-text">5. 讨论与结论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DreamCache%EF%BC%9A%E6%97%A0%E9%9C%80%E5%BE%AE%E8%B0%83%E7%9A%84%E8%BD%BB%E9%87%8F%E7%BA%A7%E4%B8%AA%E6%80%A7%E5%8C%96%E5%9B%BE%E5%83%8F%E7%94%9F%E6%88%90%E2%80%94%E2%80%94%E8%A1%A5%E5%85%85%E6%9D%90%E6%96%99"><span class="nav-number">1.7.</span> <span class="nav-text">DreamCache：无需微调的轻量级个性化图像生成——补充材料</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#S1-%E5%90%88%E6%88%90%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="nav-number">1.7.1.</span> <span class="nav-text">S1. 合成数据集</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#S2-%E9%A2%9D%E5%A4%96%E8%AF%84%E4%BC%B0"><span class="nav-number">1.7.2.</span> <span class="nav-text">S2. 额外评估</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#S2-1-%E6%8E%A9%E7%A0%81%E6%8C%87%E6%A0%87"><span class="nav-number">1.7.2.1.</span> <span class="nav-text">S2.1. 掩码指标</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#S2-2-%E5%AE%9A%E6%80%A7%E7%BB%93%E6%9E%9C"><span class="nav-number">1.7.2.2.</span> <span class="nav-text">S2.2. 定性结果</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#S3-%E9%A2%9D%E5%A4%96%E6%B6%88%E8%9E%8D%E7%A0%94%E7%A9%B6"><span class="nav-number">1.7.3.</span> <span class="nav-text">S3. 额外消融研究</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#S4-%E9%87%87%E6%A0%B7%E7%A9%BA%E9%97%B4%E4%B8%8E%E5%9B%BE%E5%83%8F%E5%BC%95%E5%AF%BC"><span class="nav-number">1.7.4.</span> <span class="nav-text">S4. 采样空间与图像引导</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zongqing Li"
+      src="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+  <p class="site-author-name" itemprop="name">Zongqing Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">100</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hqulzq" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hqulzq" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hqulzq@163.com" title="E-Mail → mailto:hqulzq@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+      
+<script type="text/javascript" charset="utf-8" src="/js/tagcloud.js"></script>
+<script type="text/javascript" charset="utf-8" src="/js/tagcanvas.js"></script>
+<div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div id="myCanvasContainer" class="widget tagcloud">
+        <canvas width="250" height="250" id="resCanvas" style="width=100%">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2023/" rel="tag">2023</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2024/" rel="tag">2024</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2025/" rel="tag">2025</a><span class="tag-list-count">22</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">25</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICCV/" rel="tag">ICCV</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICML/" rel="tag">ICML</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IJCAI/" rel="tag">IJCAI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ODE%E6%B1%82%E8%A7%A3/" rel="tag">ODE求解</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">62</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%80%BB%E7%BB%93/" rel="tag">总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%85%E8%AF%BB/" rel="tag">阅读</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+        </canvas>
+    </div>
+</div>
+
+
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zongqing Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('post.copy_button').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('post.copy_success')
+          else $(this).text('post.copy_failure')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('post.copy_button')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
