@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="全文翻译摘要扩散模型凭借其卓越的生成能力，近期在图像合成领域获得了前所未有的关注。尽管性能强大，但这些模型通常会产生高昂的计算成本，这主要归因于其序列性去噪过程和庞大的模型规模。传统的扩散模型压缩方法通常需要大量的再训练，存在成本和可行性方面的挑战。在本文中，我们提出了DeepCache，这是一种全新的无需训练的范式，它从模型架构的角度加速扩散模型。DeepCache利用了扩散模型序列性去噪步骤中">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2024-CVPR-DeepCache Accelerating Diffusion Models for Free论文精读">
+<meta property="og:url" content="https://hqulzq.github.io/2025/07/31/2024-CVPR-DeepCache-Accelerating-Diffusion-Models-for-Free%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/index.html">
+<meta property="og:site_name" content="Lzq&#39;s blog">
+<meta property="og:description" content="全文翻译摘要扩散模型凭借其卓越的生成能力，近期在图像合成领域获得了前所未有的关注。尽管性能强大，但这些模型通常会产生高昂的计算成本，这主要归因于其序列性去噪过程和庞大的模型规模。传统的扩散模型压缩方法通常需要大量的再训练，存在成本和可行性方面的挑战。在本文中，我们提出了DeepCache，这是一种全新的无需训练的范式，它从模型架构的角度加速扩散模型。DeepCache利用了扩散模型序列性去噪步骤中">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/31/2024-CVPR-DeepCache-Accelerating-Diffusion-Models-for-Free%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f2.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/31/2024-CVPR-DeepCache-Accelerating-Diffusion-Models-for-Free%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f4.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/31/2024-CVPR-DeepCache-Accelerating-Diffusion-Models-for-Free%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f3.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/31/2024-CVPR-DeepCache-Accelerating-Diffusion-Models-for-Free%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/31/2024-CVPR-DeepCache-Accelerating-Diffusion-Models-for-Free%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t2.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/31/2024-CVPR-DeepCache-Accelerating-Diffusion-Models-for-Free%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t3.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/31/2024-CVPR-DeepCache-Accelerating-Diffusion-Models-for-Free%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t4.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/31/2024-CVPR-DeepCache-Accelerating-Diffusion-Models-for-Free%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t5.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/31/2024-CVPR-DeepCache-Accelerating-Diffusion-Models-for-Free%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t6.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/31/2024-CVPR-DeepCache-Accelerating-Diffusion-Models-for-Free%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/a1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/31/2024-CVPR-DeepCache-Accelerating-Diffusion-Models-for-Free%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t7.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/31/2024-CVPR-DeepCache-Accelerating-Diffusion-Models-for-Free%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t8.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/31/2024-CVPR-DeepCache-Accelerating-Diffusion-Models-for-Free%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t9.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/31/2024-CVPR-DeepCache-Accelerating-Diffusion-Models-for-Free%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t10.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/31/2024-CVPR-DeepCache-Accelerating-Diffusion-Models-for-Free%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f6.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/31/2024-CVPR-DeepCache-Accelerating-Diffusion-Models-for-Free%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t11.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/31/2024-CVPR-DeepCache-Accelerating-Diffusion-Models-for-Free%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t12.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/31/2024-CVPR-DeepCache-Accelerating-Diffusion-Models-for-Free%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/31/2024-CVPR-DeepCache-Accelerating-Diffusion-Models-for-Free%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f5.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/31/2024-CVPR-DeepCache-Accelerating-Diffusion-Models-for-Free%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f7.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/31/2024-CVPR-DeepCache-Accelerating-Diffusion-Models-for-Free%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t13.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/07/31/2024-CVPR-DeepCache-Accelerating-Diffusion-Models-for-Free%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t14.png">
+<meta property="article:published_time" content="2025-07-31T09:21:33.000Z">
+<meta property="article:modified_time" content="2025-07-31T11:46:10.745Z">
+<meta property="article:author" content="Zongqing Li">
+<meta property="article:tag" content="diffusion">
+<meta property="article:tag" content="CVPR">
+<meta property="article:tag" content="2024">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hqulzq.github.io/2025/07/31/2024-CVPR-DeepCache-Accelerating-Diffusion-Models-for-Free%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f2.png">
+
+<link rel="canonical" href="https://hqulzq.github.io/2025/07/31/2024-CVPR-DeepCache-Accelerating-Diffusion-Models-for-Free%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>2024-CVPR-DeepCache Accelerating Diffusion Models for Free论文精读 | Lzq's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lzq's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">49</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">103</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book">
+
+    <a href="/book" rel="section"><i class="fas fa-book fa-fw"></i>Book</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/07/31/2024-CVPR-DeepCache-Accelerating-Diffusion-Models-for-Free%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          2024-CVPR-DeepCache Accelerating Diffusion Models for Free论文精读
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-07-31 17:21:33 / 修改时间：19:46:10" itemprop="dateCreated datePublished" datetime="2025-07-31T17:21:33+08:00">2025-07-31</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散模型凭借其卓越的生成能力，近期在图像合成领域获得了前所未有的关注。尽管性能强大，但这些模型通常会产生高昂的计算成本，这主要归因于其序列性去噪过程和庞大的模型规模。传统的扩散模型压缩方法通常需要大量的再训练，存在成本和可行性方面的挑战。在本文中，我们提出了DeepCache，这是一种全新的无需训练的范式，它从模型架构的角度加速扩散模型。<strong>DeepCache利用了扩散模型序列性去噪步骤中固有的时间冗余性，通过在相邻去噪阶段缓存和检索特征，从而减少冗余计算。借助U-Net的特性，我们在以极低成本更新低层级特征的同时，重用高层级特征。</strong>这种创新策略使得Stable Diffusion v1.5的速度提升了2.3倍，而CLIP分数仅下降0.05；LDM-4-G在ImageNet上的速度提升了4.1倍，FID仅轻微下降0.22。我们的实验还表明，DeepCache优于现有的需要再训练的剪枝和蒸馏方法，并且与当前的采样技术兼容。此外，我们发现，在相同的吞吐量下，DeepCache与DDIM或PLMS结合时，能够取得相当甚至略有提升的结果。代码可在<a target="_blank" rel="noopener" href="https://github.com/horseee/DeepCache">https://github.com/horseee/DeepCache</a>获取。<br><span id="more"></span></p>
+<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1. 引言"></a>1. 引言</h3><p>近年来，扩散模型[9, 17, 57, 59]已成为生成建模领域的一项关键进展，因其令人印象深刻的能力而受到广泛关注。这些模型在各种应用中展现出了显著的效能，被用于生成图像[19, 60, 64]、文本[11, 28]、音频[6, 44]和视频[18, 36, 56]。扩散模型促成了大量颇具吸引力的应用，包括但不限于图像编辑[2, 20, 38]、图像超分辨率增强[26, 51]、图像到图像的转换[7, 49]、文本到图像生成[41, 45, 46, 50]以及文本到3D生成[30, 35, 43]。</p>
+<p>尽管扩散模型具有显著的有效性，但正如[29]所强调的，其相对较慢的推理速度仍然是更广泛应用的主要障碍。核心挑战源于其反向阶段所需的逐步去噪过程，这限制了并行解码能力[55]。加速这些模型的努力主要集中在两种策略上：减少采样步骤数量，如方法[34, 39, 52, 58]所示；以及通过模型剪枝、蒸馏和量化等方法降低每一步的模型推理开销[10, 13, 21]。</p>
+<p><strong>我们的目标是通过减小每一步的模型规模来提高扩散模型的效率。</strong>以往的扩散模型压缩方法侧重于通过全面的结构分析重新设计网络架构[29]，或者将频率先验纳入模型设计[66]，这些方法在图像生成方面取得了有前景的结果。然而，它们需要大规模数据集来重新训练这些轻量级模型。[10, 21]所探索的基于剪枝的方法将数据和训练需求减少到完整训练的0.1%。另外，[32]为不同步骤采用自适应模型，这也是一种潜在的解决方案。但是，它依赖于一组预训练模型或需要对子网络进行优化[65]。这些方法可以降低构建新的轻量级模型的成本，但再训练过程仍然不可避免，这使得压缩成本高昂，并且对于大规模预训练扩散模型（如Stable Diffusion[47]）来说不太实用。</p>
+<p>为此，我们关注一个具有挑战性的课题：如何在不进行额外训练的情况下显著降低每个去噪步骤的计算开销，从而实现扩散模型的无成本压缩？为实现这一目标，我们将注意力转向扩散模型反向去噪过程的内在特性，观察到<strong>连续步骤之间的高层特征具有显著的时间一致性。</strong>我们发现<strong>这些高层特征甚至是可缓存的，只需计算一次，就可以在后续步骤中重新检索使用。</strong>利用U-Net的结构特性，可以缓存高层特征，同时在每个去噪步骤中更新低层特征。通过这种方式，可以在不进行任何训练的情况下显著提高扩散模型的效率和速度。</p>
+<p>总之，我们引入了一种新的扩散模型加速范式，为无需训练的扩散模型加速提供了新视角。它不仅与现有的快速采样器兼容，而且在生成能力方面显示出相当或更优的潜力。本文的贡献包括：</p>
+<ul>
+<li>我们提出了一种简单有效的加速算法，名为DeepCache，用于在运行时动态压缩扩散模型，从而在不增加训练负担的情况下提高图像生成速度。</li>
+<li>DeepCache利用了高层特征之间的时间一致性。借助可缓存的特征，有效减少了冗余计算。此外，我们引入了一种非均匀的1:N策略，专门针对长缓存间隔进行了优化。</li>
+<li>DeepCache在多种数据集上得到了验证，包括CIFAR、LSUN-Bedroom/Churches、ImageNet、COCO2017和PartiPrompt，并在DDPM、LDM和Stable Diffusion上进行了测试。实验表明，在相同的吞吐量下，我们的方法优于需要再训练的剪枝和蒸馏算法。</li>
+</ul>
+<h3 id="2-相关工作"><a href="#2-相关工作" class="headerlink" title="2. 相关工作"></a>2. 相关工作</h3><p>在生成建模领域，高维图像生成取得了显著的发展。起初，生成对抗网络（GANs）[1, 12]和变分自编码器（VAEs）[16, 22]引领了这一领域，但由于不稳定性和模式崩溃问题[23]，它们面临着可扩展性方面的挑战。近年来，扩散概率模型[9, 17, 47, 61]取得了领先地位，其在图像生成方面表现更为出色。然而，反向扩散过程[59]的固有特性减缓了推理速度。目前的研究主要集中在两种加速扩散模型推理的方法上。</p>
+<h4 id="优化采样效率"><a href="#优化采样效率" class="headerlink" title="优化采样效率"></a>优化采样效率</h4><p>该方法侧重于减少采样步骤的数量。DDIM[58]通过探索非马尔可夫过程（与神经常微分方程相关）来减少这些步骤。研究[3, 33, 34, 69]进一步深入研究随机微分方程（SDE）或常微分方程（ODE）的快速求解器，以实现扩散模型的高效采样。一些方法通过逐步蒸馏模型来减少时间步长[52]，或者用单步变分自编码器（VAE）替代剩余步骤[37]。一致性模型[62]仅通过一次模型评估就能将随机噪声转换为初始图像。诸如DSNO[70]和ParaDiGMS[55]等并行采样技术采用傅里叶神经算子和皮卡迭代进行并行解码。</p>
+<h4 id="优化结构效率"><a href="#优化结构效率" class="headerlink" title="优化结构效率"></a>优化结构效率</h4><p>这种方法旨在减少每个采样步骤的推理时间。它利用了扩散剪枝（Diff-pruning）[10]中的结构剪枝策略和快速融合（SnapFusion）[29]中的高效结构演化等方法。谱扩散（Spectral Diffusion）[66]通过融入频率动态和先验知识来改进架构设计。与这些在每个步骤使用统一模型的方法不同，[32]提出在不同步骤使用不同的模型，这些模型选自扩散模型库。[27, 40, 63]探索了扩散中的早停机制，而量化技术[13, 54]则专注于模型权重和激活的低精度数据类型。此外，[4]和[5]提出了新的方法来聚焦输入，前者为每个像素采用独特的前向过程，后者基于相似性合并令牌以提高注意力模块的计算效率。我们的方法旨在最小化每步的平均推理时间。独特之处在于，我们的方法大幅减小了每步的平均模型规模，在无需重新训练的情况下加速了去噪过程。</p>
+<h3 id="3-方法"><a href="#3-方法" class="headerlink" title="3. 方法"></a>3. 方法</h3><h4 id="3-1-预备知识"><a href="#3-1-预备知识" class="headerlink" title="3.1. 预备知识"></a>3.1. 预备知识</h4><p><strong>正向和反向过程</strong>：扩散模型[17]通过一系列随机扩散步骤模拟图像生成过程。扩散模型的核心思想是从随机噪声开始，逐步对其进行优化，直到它与目标分布中的样本相似。在正向扩散过程中，从真实分布中采样一个数据点$x_0 \sim q(x)$，在T步中逐渐加入高斯噪声：</p>
+<script type="math/tex; mode=display">q\left(x_{t} | x_{t-1}\right)=\mathcal{N}\left(x_{t} ; \sqrt{1-\beta_{t}} x_{t-1}, \beta_{t} I\right) \tag{1}</script><p>其中t是当前时间步，$\{\beta_t\}$是噪声调度。反向扩散过程通过对$q(x_{t-1} | x_t)$进行建模，将随机噪声$x_T \sim N(0, I)$去噪为目标分布。在每个反向步骤t，条件概率分布由网络$\epsilon_\theta(x_t, t)$近似，该网络以时间步t和先前输出$x_t$作为输入：</p>
+<script type="math/tex; mode=display">\begin{aligned} & x_{t-1} \sim p_{\theta}\left(x_{t-1} | x_{t}\right)= \\ & \mathcal{N}\left(x_{t-1} ; \frac{1}{\sqrt{\alpha_{t}}}\left(x_{t}-\frac{1-\alpha_{t}}{\sqrt{1-\overline{\alpha}_{t}}} \epsilon_{\theta}\left(x_{t}, t\right)\right), \beta_{t} I\right) \end{aligned} \tag{2}</script><p>其中$\alpha_t = 1 - \beta_t$，$\overline{\alpha}_t = \prod_{i=1}^T \alpha_i$。通过迭代应用该过程，逐步降低当前$x_t$的噪声，当达到$x_0$时，使其接近真实数据点。</p>
+<p><strong>U-Net中的高层和低层特征</strong>：U-Net[48]最初是为生物医学图像分割而提出的，它展示出强大的融合低层和高层特征的能力，这要归功于跳跃连接。U-Net构建在堆叠的下采样和上采样块上，这些块将输入图像编码为高层表示，然后对其进行解码以用于下游任务。块对表示为$\{D_i\}_{i=1}^d$和$\{U_i\}_{i=1}^d$，它们通过额外的跳跃路径相互连接。这些跳跃路径直接将来自$D_i$的丰富且相对更多的低层信息传递到$U_i$。在U-Net架构的前向传播过程中，数据同时通过两条路径：主分支和跳跃分支。这些分支在连接模块处汇合，主分支提供来自先前上采样块$U_{i+1}$的经过处理的高层特征，跳跃分支提供来自对称块$D_i$的相应特征。因此，U-Net模型的核心是来自跳跃分支的低层特征和来自主分支的高层特征的连接，形式化为：</p>
+<script type="math/tex; mode=display">Concat \left(D_{i}(\cdot), U_{i+1}(\cdot)\right) \tag{3}</script><h4 id="3-2-序列去噪中的特征冗余"><a href="#3-2-序列去噪中的特征冗余" class="headerlink" title="3.2. 序列去噪中的特征冗余"></a>3.2. 序列去噪中的特征冗余</h4><p>扩散模型中去噪过程的固有序列性是推理速度的主要瓶颈。先前的方法主要采用跳过某些步骤的策略来解决这个问题。在这项工作中，我们重新审视整个去噪过程，试图发现可以优化以提高推理效率的特定属性。</p>
+<p><strong>观察结果</strong>：<font style="color:red">去噪过程中的相邻步骤在高层特征上表现出显著的时间相似性。</font></p>
+<p>在图2中，我们提供了与这一观察相关的实证证据。实验阐明了两个主要见解：<strong>1）去噪过程中相邻步骤之间存在明显的时间特征相似性，这表明连续步骤之间的变化通常很小；2）无论我们使用哪种扩散模型，对于每个时间步，至少有10%的相邻时间步与当前步骤具有高度相似性（&gt;0.95），这表明某些高层特征的变化速度很慢。</strong>这种现象可以在许多成熟的模型中观察到，如Stable Diffusion、LDM和DDPM。在用于LSUN-Churches和LSUN-Bedroom的DDPM中，某些时间步甚至与80%的其他步骤表现出高度相似性，如图2（c）中的绿线所示。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f2.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图2. (a) Stable Diffusion中上行采样块U₂的特征图示例。我们展示了相邻步骤对的对比，强调了去噪过程中固有的不变性。(b) 三种典型扩散模型中U₂特征在所有步骤间的相似性热力图。(c) 与当前步骤相似性大于0.95的步骤所占百分比。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>基于这些观察结果，我们的目标是利用这一有利特性来加速去噪过程。我们的分析表明，计算结果往往会产生与前一步骤非常相似的特征，从而凸显出存在可优化的冗余计算。我们认为，投入大量计算资源来重新生成这些相似的特征图是一种低效行为。虽然产生了巨大的计算开销，但收益甚微，这表明在扩散模型的速度方面存在提高效率的潜在空间。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f4.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图4. 每个跳跃分支的MACs，在用于CIFAR10的DDPM和Stable Diffusion V1.5上评估得到。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="3-3-用于扩散模型的深度缓存（DeepCache）"><a href="#3-3-用于扩散模型的深度缓存（DeepCache）" class="headerlink" title="3.3. 用于扩散模型的深度缓存（DeepCache）"></a>3.3. 用于扩散模型的深度缓存（DeepCache）</h4><p>我们引入了DeepCache，这是一种简单有效的方法，它利用反向扩散过程中步骤之间的时间冗余来加速推理。我们的方法从计算机系统中的缓存机制中汲取灵感，包含一个为随时间变化极小的元素设计的存储组件。将其应用于扩散模型中，我们通过有策略地缓存缓慢演化的特征来消除冗余计算，从而避免在后续步骤中进行重复计算。</p>
+<p>为实现这一目标，我们将注意力转向U-Net内的跳跃连接，它天生具有双路径优势：主分支需要大量计算来遍历整个网络，而跳跃分支只需经过一些浅层，因此计算负载非常小。主分支中显著的特征相似性使我们能够重用已经计算的结果，而不是为所有时间步重复计算。</p>
+<p><strong>去噪中的可缓存特征</strong>：为了使这一想法更加具体，我们研究两个连续时间步t和$t-1$的情况。根据反向过程，$x_{t-1}$将基于先前的结果$x_t$有条件地生成。首先，我们以常规方式生成$x_t$，其中计算在整个U-Net中进行。为了获得下一个输出$x_{t-1}$，我们检索在先前的$x_t$中产生的高层特征。更具体地说，考虑U-Net中的一个跳跃分支m，它连接$D_m$和$U_m$，我们将时间步t的上采样块的特征图缓存如下：</p>
+<script type="math/tex; mode=display">F_{cache }^{t} \leftarrow U_{m+1}^{t}(\cdot) \quad (4)</script><p>这是时间步t主分支的特征。这些缓存的特征将被用于后续步骤的网络推理中。在接下来的时间步$t-1$，推理不会在整个网络上进行；相反，我们执行动态的部分推理。基于先前生成的$x_t$，我们只计算第n个跳跃分支所需的部分，并使用从公式（4）的缓存中检索的操作来替代主分支的计算。因此，$t-1$时间步中$U_m^{t-1}$的输入可以表示为：</p>
+<script type="math/tex; mode=display">Concat\left(D_{m}^{t-1}(\cdot), F_{cache }^{t}\right) \quad (5)</script><p>这里，$D_m^{t-1}$表示第m个下采样块的输出，如果选择较小的m，它只包含几个层。例如，如果我们在第一层使用DeepCache，即$m=1$，那么我们只需要执行一个下采样块来获得$D_1^{t-1}$。至于第二个特征$F_{cache }^{t}$，不需要额外的计算成本，因为它可以简单地从缓存中检索。我们在图3中说明了上述过程。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f3.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图3. DeepCache示意图。在t-1步骤中，通过重用t步骤缓存的特征生成xₜ₋₁，且不执行D₂、D₃、U₂、U₃块以实现更高效的推理。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>扩展到1:N推理</strong>：这个过程不仅限于一步全推理之后跟随一步部分推理的类型。如图2（b）所示，在几个连续步骤中，成对相似性仍然保持较高的值。该机制可以扩展到涵盖更多步骤，计算一次缓存的特征，并在连续的$N-1$个步骤中重用它们，以替代原始的$U_{m+1}^{t-n}(\cdot)$，$n \in \{1, …, N-1\}$。因此，对于所有T个去噪步骤，执行全推理的时间步序列为：</p>
+<script type="math/tex; mode=display">\mathcal{I}=\{x \in \mathbb{N} | x=i N, 0 \leq i<k\}</script><p>其中$k = \lceil T / N \rceil$表示缓存更新的次数。</p>
+<p><strong>非均匀1:N推理</strong>：基于1:N策略，我们在强假设——高层特征在连续的N个步骤中不变的情况下，成功加速了扩散的推理。然而，情况并非总是如此，特别是对于较大的N，如图2（c）中的实验证据所示。特征的相似性并非在所有步骤中都保持不变。对于像LDM这样的模型，在大约40%的去噪过程中，特征的时间相似性会显著下降。因此，对于非均匀1:N推理，我们倾向于在那些与相邻步骤相似性相对较小的步骤上进行更多的采样。这里，执行全推理的时间步序列变为：</p>
+<script type="math/tex; mode=display">\mathcal{L}=\left\{l_{i} | l_{i} \in linear\_space \left((-c)^{\frac{1}{p}},(T-c)^{\frac{1}{p}}, k\right)\right\} \quad (7)</script><script type="math/tex; mode=display">\mathcal{I}= unique\_int \left(\left\{i_{k} | i_{k}=\left(l_{k}\right)^{p}+c, where l_{k} \in \mathcal{L}\right\}\right)</script><p>其中linear_space(s, e, n)均匀地生成从s到e（不包括e）的n个数字，unique_int()将数字转换为整数并确保序列中时间步的唯一性。c是所选中心时间步的超参数。在这个公式中，索引的频率在远离中心时间步时以二次方式变化。值得注意的是，上述策略只是众多潜在策略中的一种。特别是以特定时间步为中心的其他序列，也可以带来类似的图像质量提升。</p>
+<h3 id="5-局限性"><a href="#5-局限性" class="headerlink" title="5. 局限性"></a>5. 局限性</h3><p>我们方法的主要局限性源于其对预训练扩散模型预定义结构的依赖。具体而言，当一个模型最浅层的跳跃分支包含了相当大比例的计算量（例如占整个模型的50%）时，通过我们的方法所能实现的加速比会相对有限。此外，当缓存步骤较大时（例如$N=20$），我们的方法会出现不可忽视的性能下降，这可能会对加速比的上限造成限制。</p>
+<h3 id="6-结论"><a href="#6-结论" class="headerlink" title="6. 结论"></a>6. 结论</h3><p>在本文中，我们提出了一种新颖的范式——DeepCache，用于加速扩散模型。我们的策略利用了扩散模型相邻步骤间高层特征的相似性，从而减少与冗余高层特征计算相关的计算开销。此外，我们利用U-Net架构的结构特性来促进低层特征的更新。通过采用DeepCache，实现了显著的计算速度提升。在多个数据集和扩散模型上的实证评估表明，DeepCache优于其他专注于减小参数规模的压缩方法。此外，所提出的算法与现有的技术（如DDIM和PLMS）相比，在生成质量上表现相当甚至略有提升，从而为该领域提供了新的视角。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t1.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表1. 使用LDM-4-G在ImageNet上的类别条件生成质量。此处的基线方法以及我们的方法均采用250步DDIM。</em>为进行全面比较，我们复现了Diff-Pruning，官方结果显示在括号中。*</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t2.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表2. 在CIFAR-10、LSUN-Bedroom和LSUN-Churches上的结果。此处所有方法均采用100步DDIM。</em>表示复现结果，由于使用相同的随机种子，与我们的结果更具可比性。*</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t3.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表3. 与PLMS和BK-SDM的比较。我们使用PartiPrompt和COCO2017验证集中的提示词生成512分辨率的图像。我们选择N=5以实现与现有基线方法相当或更优的吞吐量。其他N值的结果可参见图6。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t4.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表4. 在相同吞吐量下与DDIM的比较。此处我们使用LDM-4-G在ImageNet上进行类别条件生成。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t5.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表5. 缓存特征的有效性。在相同超参数下，我们将缓存特征替换为零矩阵。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t6.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表6. 浅层网络推理的有效性。此处的步骤指执行完整模型推理的步数。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="DeepCache：免费加速扩散模型的补充材料"><a href="#DeepCache：免费加速扩散模型的补充材料" class="headerlink" title="DeepCache：免费加速扩散模型的补充材料"></a>DeepCache：免费加速扩散模型的补充材料</h3><h4 id="A-伪算法"><a href="#A-伪算法" class="headerlink" title="A. 伪算法"></a>A. 伪算法</h4><p>我们在算法1中展示了我们算法的伪代码。它说明了在N步内的迭代生成过程，包括一步完整的模型推理和N-1步部分模型推理。这里，我们以DDPM[17]的采样算法为例。我们的算法适用于其他快速采样方法。</p>
+<p><img src="a1.png" width="70%"></p>
+<h4 id="B-非均匀1-N策略中的超参数变化"><a href="#B-非均匀1-N策略中的超参数变化" class="headerlink" title="B. 非均匀1:N策略中的超参数变化"></a>B. 非均匀1:N策略中的超参数变化</h4><p>在非均匀1:N策略中，涉及的两个超参数是中心c和幂p，用于确定执行整个模型推理的时间步序列。我们在LDM-4-G上测试了这些超参数的影响。结果如表7和表8所示。从这两个表中，可以清楚地观察到一个明显的趋势：随着参数p和c的增加，生成的图像质量起初有所提高，随后出现下降。这种模式证实了该策略的有效性，也与图2(c)中观察到的相似性显著下降的位置一致。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t7.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表7. 幂p等于1.2时中心c的变化。此处缓存间隔设置为20。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t8.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表8. 中心c等于120时幂p的变化。此处缓存间隔也设置为20。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>非均匀1:N的选定超参数</strong> 在LDM的实验中，最佳超参数如表9所示。对于Stable Diffusion的实验，我们从集合{0,5,10,15,20,25}中选择中心时间步，从集合{1.1,1.2,1.3,1.4,1.5,1.6}中选择幂值。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t9.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表9. LDM-4-G中非均匀1:N策略的超参数。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>我们实验中使用的最佳超参数值详细列于表10中。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t10.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表10. Stable Diffusion v1.5中非均匀1:N策略的超参数。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>从选定的超参数中，我们发现最佳值在不同数据集上略有不同。观察到一个明显的趋势，即大多数最佳参数倾向于以第15个时间步为中心，幂值约为1.4。</p>
+<h4 id="C-非均匀1-N与均匀1-N"><a href="#C-非均匀1-N与均匀1-N" class="headerlink" title="C. 非均匀1:N与均匀1:N"></a>C. 非均匀1:N与均匀1:N</h4><p>我们在图6中展示了Stable Diffusion上非均匀1:N与均匀1:N策略的比较。这里，我们将比较扩展到使用LDM-4G的ImageNet，相应结果详细列于表11中。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f6.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图6. PLMS、采用均匀1:N策略的DeepCache与采用非均匀1:N策略的DeepCache之间的对比。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>与Stable Diffusion上的发现一致，表11中的观察结果呈现出一致的模式。值得注意的是，当采用较大的缓存间隔时，非均匀策略表现出显著的改进，当N=20时，FID从8.23提高到7.36。然而，当处理较小的缓存间隔（N&lt;5）时，该策略并没有提高图像质量。事实上，在某些情况下，它甚至可能导致图像质量略有下降，如N=2时FID从3.39增加到3.46所证明的那样。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t11.png" width="90%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表11. 在ImageNet上使用LDM-4-G进行类别条件生成时非均匀和均匀1:N策略的比较。</em>我们使用LDM-4-G的官方检查点重新生成图像。*</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="D-不同跳跃分支的变化"><a href="#D-不同跳跃分支的变化" class="headerlink" title="D. 不同跳跃分支的变化"></a>D. 不同跳跃分支的变化</h4><p>在表12中，我们展示了在改变执行DeepCache的跳跃分支时对图像质量的影响。在我们的实验中，我们采用均匀1:N策略，N=5，DDIM采样仍然采用100步。从表中的结果可以看出，跳跃分支的选择在速度和图像保真度之间引入了一种权衡。具体而言，选择第一个跳跃分支（没有下采样块和一个上采样块）可获得约3倍的加速，同时FID降低到7.14。此外，某些跳跃分支表现出显著的性能变化，特别是第6个分支。结果强调了速度和图像质量之间的另一种权衡，补充了前面提到的与不同采样步骤相关的权衡。这种特定的权衡在模型大小粒度级别上起作用，并且可以在不产生额外成本的情况下实现。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t12.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表12. 不同跳跃分支的影响。此处我们在均匀1:5策略下测试其影响。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="E-提示词"><a href="#E-提示词" class="headerlink" title="E. 提示词"></a>E. 提示词</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f1.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图1. 将Stable Diffusion V1.5和LDM-4-G分别加速2.3倍和7.0倍，分别采用50步PLMS和250步DDIM。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>图1(a)中的提示词：</p>
+<ul>
+<li>满月照耀下的繁忙城市街道</li>
+<li>黎明第一缕阳光照亮的雪山峰顶图片</li>
+<li>黑暗的房间， volumetric光线穿过窗户照在石砌壁炉上，壁炉前有布艺沙发</li>
+<li>宇航员在月球上的照片</li>
+<li>中世纪城镇的数字插画，4k，细节丰富，在ArtStation上流行，奇幻风格</li>
+<li>猫的照片。聚焦光线，打造清晰、分明的边缘</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f5.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图5. BK-SDM-Tiny和DeepCache生成图像的可视化。所有方法均采用50步PLMS。此处的时间为生成单张图像的时长。为简洁起见，部分提示词已省略。详见附录。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>图5中的提示词：</p>
+<ul>
+<li>一个戴着头盔的人正在玩滑板</li>
+<li>桌子上有三个陶制花瓶</li>
+<li>一个很厚的披萨放在盘子里，已经被拿走了一块。</li>
+<li>房间里有一辆自行车停在床边。</li>
+<li>一只小猫坐在门边。</li>
+<li>宁静的山景，有一条流动的河流、茂密的绿叶，背景是白雪皑皑的山峰，采用油画风格。</li>
+<li>精致的花卉 arrangement，柔和的 pastel 色彩，轻盈流畅的水彩画笔触。</li>
+<li>夜晚的神奇冬季仙境。想象一个被新雪覆盖的 landscape，头顶上有闪烁的星星，一间舒适的小屋，烟囱里冒出烟，树上挂着灯笼发出柔和的光芒</li>
+<li>森林边缘一座废弃房屋的照片，窗户里神秘地闪烁着灯光，背景是暴风雨的天空。高质量摄影，佳能EOS R3。</li>
+<li>一个男人拿着冲浪板在海边的沙滩上行走。</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f7.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图7. 生成图像随缓存间隔N增大的演变示意图。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="F-Stable-Diffusion的详细结果"><a href="#F-Stable-Diffusion的详细结果" class="headerlink" title="F. Stable Diffusion的详细结果"></a>F. Stable Diffusion的详细结果</h4><p>我们在表13和表14中提供了与图6对应的详细结果。由于没有明确的N来匹配PLMS的吞吐量，我们选择通过探索不同N值的结果来采用另一种方法。此外，我们评估了PLMS算法在不同步骤下的性能。对这些表格中的数据进行分析后发现，当N&lt;5时，图像内容的变化很小，CLIP分数也只有轻微波动。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t13.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表13. Stable Diffusion v1.5在PartiPrompt上的结果。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t14.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表14. Stable Diffusion v1.5在MS-COCO 2017上的结果。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/diffusion/" rel="tag"># diffusion</a>
+              <a href="/tags/CVPR/" rel="tag"># CVPR</a>
+              <a href="/tags/2024/" rel="tag"># 2024</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/07/25/my-paper-English-Verison/" rel="prev" title="my paper English Verison">
+      <i class="fa fa-chevron-left"></i> my paper English Verison
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2025/08/02/2025-Three-Creates-All-You-Only-Sample-Three-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" rel="next" title="2025-Three Creates All You Only Sample Three Steps论文精读">
+      2025-Three Creates All You Only Sample Three Steps论文精读 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1. 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.3.</span> <span class="nav-text">2. 相关工作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BC%98%E5%8C%96%E9%87%87%E6%A0%B7%E6%95%88%E7%8E%87"><span class="nav-number">1.3.1.</span> <span class="nav-text">优化采样效率</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BC%98%E5%8C%96%E7%BB%93%E6%9E%84%E6%95%88%E7%8E%87"><span class="nav-number">1.3.2.</span> <span class="nav-text">优化结构效率</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.</span> <span class="nav-text">3. 方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86"><span class="nav-number">1.4.1.</span> <span class="nav-text">3.1. 预备知识</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E5%BA%8F%E5%88%97%E5%8E%BB%E5%99%AA%E4%B8%AD%E7%9A%84%E7%89%B9%E5%BE%81%E5%86%97%E4%BD%99"><span class="nav-number">1.4.2.</span> <span class="nav-text">3.2. 序列去噪中的特征冗余</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-%E7%94%A8%E4%BA%8E%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%B7%B1%E5%BA%A6%E7%BC%93%E5%AD%98%EF%BC%88DeepCache%EF%BC%89"><span class="nav-number">1.4.3.</span> <span class="nav-text">3.3. 用于扩散模型的深度缓存（DeepCache）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E5%B1%80%E9%99%90%E6%80%A7"><span class="nav-number">1.5.</span> <span class="nav-text">5. 局限性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E7%BB%93%E8%AE%BA"><span class="nav-number">1.6.</span> <span class="nav-text">6. 结论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DeepCache%EF%BC%9A%E5%85%8D%E8%B4%B9%E5%8A%A0%E9%80%9F%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%A1%A5%E5%85%85%E6%9D%90%E6%96%99"><span class="nav-number">1.7.</span> <span class="nav-text">DeepCache：免费加速扩散模型的补充材料</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#A-%E4%BC%AA%E7%AE%97%E6%B3%95"><span class="nav-number">1.7.1.</span> <span class="nav-text">A. 伪算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B-%E9%9D%9E%E5%9D%87%E5%8C%801-N%E7%AD%96%E7%95%A5%E4%B8%AD%E7%9A%84%E8%B6%85%E5%8F%82%E6%95%B0%E5%8F%98%E5%8C%96"><span class="nav-number">1.7.2.</span> <span class="nav-text">B. 非均匀1:N策略中的超参数变化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#C-%E9%9D%9E%E5%9D%87%E5%8C%801-N%E4%B8%8E%E5%9D%87%E5%8C%801-N"><span class="nav-number">1.7.3.</span> <span class="nav-text">C. 非均匀1:N与均匀1:N</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#D-%E4%B8%8D%E5%90%8C%E8%B7%B3%E8%B7%83%E5%88%86%E6%94%AF%E7%9A%84%E5%8F%98%E5%8C%96"><span class="nav-number">1.7.4.</span> <span class="nav-text">D. 不同跳跃分支的变化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#E-%E6%8F%90%E7%A4%BA%E8%AF%8D"><span class="nav-number">1.7.5.</span> <span class="nav-text">E. 提示词</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#F-Stable-Diffusion%E7%9A%84%E8%AF%A6%E7%BB%86%E7%BB%93%E6%9E%9C"><span class="nav-number">1.7.6.</span> <span class="nav-text">F. Stable Diffusion的详细结果</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zongqing Li"
+      src="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+  <p class="site-author-name" itemprop="name">Zongqing Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">103</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hqulzq" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hqulzq" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hqulzq@163.com" title="E-Mail → mailto:hqulzq@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+      
+<script type="text/javascript" charset="utf-8" src="/js/tagcloud.js"></script>
+<script type="text/javascript" charset="utf-8" src="/js/tagcanvas.js"></script>
+<div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div id="myCanvasContainer" class="widget tagcloud">
+        <canvas width="250" height="250" id="resCanvas" style="width=100%">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2023/" rel="tag">2023</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2024/" rel="tag">2024</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2025/" rel="tag">2025</a><span class="tag-list-count">23</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">25</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICCV/" rel="tag">ICCV</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICML/" rel="tag">ICML</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IJCAI/" rel="tag">IJCAI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ODE%E6%B1%82%E8%A7%A3/" rel="tag">ODE求解</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">64</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%80%BB%E7%BB%93/" rel="tag">总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%85%E8%AF%BB/" rel="tag">阅读</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+        </canvas>
+    </div>
+</div>
+
+
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zongqing Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('post.copy_button').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('post.copy_success')
+          else $(this).text('post.copy_failure')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('post.copy_button')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
