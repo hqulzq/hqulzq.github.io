@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="全文翻译摘要扩散模型（DMs）已实现了最先进的生成性能，但由于其序列去噪特性，存在较高的采样延迟问题。现有的基于求解器的加速方法在低延迟预算下往往会面临图像质量下降的问题。在本文中，我们提出了集成并行方向求解器（简称EPD-Solver），这是一种新型常微分方程（ODE）求解器，通过在每个ODE步骤中融入多个并行梯度评估来减轻截断误差。重要的是，由于额外的梯度计算是相互独立的，它们可以完全并行化，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2025-ICCV-Distilling Parallel Gradients for Fast ODE Solvers of Diffusion Models论文精读">
+<meta property="og:url" content="https://hqulzq.github.io/2025/08/03/2025-ICCV-Distilling-Parallel-Gradients-for-Fast-ODE-Solvers-of-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/index.html">
+<meta property="og:site_name" content="Lzq&#39;s blog">
+<meta property="og:description" content="全文翻译摘要扩散模型（DMs）已实现了最先进的生成性能，但由于其序列去噪特性，存在较高的采样延迟问题。现有的基于求解器的加速方法在低延迟预算下往往会面临图像质量下降的问题。在本文中，我们提出了集成并行方向求解器（简称EPD-Solver），这是一种新型常微分方程（ODE）求解器，通过在每个ODE步骤中融入多个并行梯度评估来减轻截断误差。重要的是，由于额外的梯度计算是相互独立的，它们可以完全并行化，">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hqulzq.github.io/2025/08/03/2025-ICCV-Distilling-Parallel-Gradients-for-Fast-ODE-Solvers-of-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/08/03/2025-ICCV-Distilling-Parallel-Gradients-for-Fast-ODE-Solvers-of-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f2.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/08/03/2025-ICCV-Distilling-Parallel-Gradients-for-Fast-ODE-Solvers-of-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f3.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/08/03/2025-ICCV-Distilling-Parallel-Gradients-for-Fast-ODE-Solvers-of-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/08/03/2025-ICCV-Distilling-Parallel-Gradients-for-Fast-ODE-Solvers-of-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t2.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/08/03/2025-ICCV-Distilling-Parallel-Gradients-for-Fast-ODE-Solvers-of-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f4.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/08/03/2025-ICCV-Distilling-Parallel-Gradients-for-Fast-ODE-Solvers-of-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t3.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/08/03/2025-ICCV-Distilling-Parallel-Gradients-for-Fast-ODE-Solvers-of-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t4.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/08/03/2025-ICCV-Distilling-Parallel-Gradients-for-Fast-ODE-Solvers-of-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t5.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/08/03/2025-ICCV-Distilling-Parallel-Gradients-for-Fast-ODE-Solvers-of-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t6.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/08/03/2025-ICCV-Distilling-Parallel-Gradients-for-Fast-ODE-Solvers-of-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f5.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/08/03/2025-ICCV-Distilling-Parallel-Gradients-for-Fast-ODE-Solvers-of-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f6.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/08/03/2025-ICCV-Distilling-Parallel-Gradients-for-Fast-ODE-Solvers-of-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t7.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/08/03/2025-ICCV-Distilling-Parallel-Gradients-for-Fast-ODE-Solvers-of-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t8.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/08/03/2025-ICCV-Distilling-Parallel-Gradients-for-Fast-ODE-Solvers-of-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t9.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/08/03/2025-ICCV-Distilling-Parallel-Gradients-for-Fast-ODE-Solvers-of-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t10.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/08/03/2025-ICCV-Distilling-Parallel-Gradients-for-Fast-ODE-Solvers-of-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t11.png">
+<meta property="article:published_time" content="2025-08-03T08:58:37.000Z">
+<meta property="article:modified_time" content="2025-08-03T13:47:36.979Z">
+<meta property="article:author" content="Zongqing Li">
+<meta property="article:tag" content="diffusion">
+<meta property="article:tag" content="2025">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hqulzq.github.io/2025/08/03/2025-ICCV-Distilling-Parallel-Gradients-for-Fast-ODE-Solvers-of-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f1.png">
+
+<link rel="canonical" href="https://hqulzq.github.io/2025/08/03/2025-ICCV-Distilling-Parallel-Gradients-for-Fast-ODE-Solvers-of-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>2025-ICCV-Distilling Parallel Gradients for Fast ODE Solvers of Diffusion Models论文精读 | Lzq's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lzq's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">49</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">104</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book">
+
+    <a href="/book" rel="section"><i class="fas fa-book fa-fw"></i>Book</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/08/03/2025-ICCV-Distilling-Parallel-Gradients-for-Fast-ODE-Solvers-of-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          2025-ICCV-Distilling Parallel Gradients for Fast ODE Solvers of Diffusion Models论文精读
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-08-03 16:58:37 / 修改时间：21:47:36" itemprop="dateCreated datePublished" datetime="2025-08-03T16:58:37+08:00">2025-08-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散模型（DMs）已实现了最先进的生成性能，但由于其序列去噪特性，存在较高的采样延迟问题。现有的基于求解器的加速方法在低延迟预算下往往会面临图像质量下降的问题。在本文中，我们提出了集成并行方向求解器（简称EPD-Solver），这是<strong>一种新型常微分方程（ODE）求解器，通过在每个ODE步骤中融入多个并行梯度评估来减轻截断误差。重要的是，由于额外的梯度计算是相互独立的，它们可以完全并行化，从而保持低延迟采样。我们的方法以蒸馏的方式优化一小组可学习参数，确保训练开销最小化。</strong>此外，我们的方法还可作为插件来改进现有的ODE采样器。在各种图像合成基准测试上的大量实验表明，我们的EPD-Solver在实现高质量、低延迟采样方面是有效的。例如，在5次函数评估（NFE）的相同延迟水平下，EPD在CIFAR-10数据集上的FID值为4.47，在FFHQ数据集上为7.97，在ImageNet数据集上为8.17，在LSUN Bedroom数据集上为8.26，大幅超越了现有的基于学习的求解器。相关代码可在<a target="_blank" rel="noopener" href="https://github.com/BeierZhu/EPD">https://github.com/BeierZhu/EPD</a>获取。<br><span id="more"></span></p>
+<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1. 引言"></a>1. 引言</h3><p>扩散模型（DMs）[7, 32, 39]已成为生成建模领域的主流范式，在图像合成[16, 32, 35]、视频生成[2, 8]、语音合成[14]和3D形状建模[26]等多种应用中均实现了最先进的性能。这些模型通过去噪过程逐步优化含噪输入，生成具有高保真度、丰富多样性和真实感的输出。然而，多步骤的序列去噪过程会带来显著的延迟，导致采样效率低下。</p>
+<p>为应对这一挑战，近期研究主要聚焦于加速扩散模型的采样过程。值得注意的是，<strong>这些方法通常可分为三类：基于求解器的方法、基于蒸馏的方法和基于并行化的方法，每类方法都有其独特的优势和局限性。</strong>基于求解器的方法通过开发快速数值求解器来减少采样步骤[10, 12, 21, 23, 24, 40, 46, 50–52]。但当函数评估次数（NFE）较低（例如，&lt;5）时，固有的截断误差会导致生成质量显著下降。基于蒸馏的方法训练学生扩散模型，在数据分布与预定义的易处理噪声分布之间建立双射映射[1, 11, 22, 25, 27, 29, 36, 42, 53]。这使得蒸馏后的模型能在极少的NFE（通常低至1次）内生成高质量样本。但要实现这种效率，需要通过精心设计的目标函数进行大量训练，导致蒸馏过程计算成本高昂。此外，这类方法难以有效利用多NFE设置，在需要权衡速度与质量时灵活性受限。</p>
+<p><strong>基于并行化的方法通过以计算换速度来加速扩散模型[4, 17, 19, 38]。尽管前景广阔，但这一方向的研究仍有待深入。</strong></p>
+<p>为结合这些方法的优势，我们研究了低延迟约束下的基于求解器的方法，并探索如何在保持最小延迟的同时通过额外计算提升图像质量。我们开发了集成并行方向（EPD）求解器，<strong>该求解器通过融入额外的并行梯度计算来减轻每个ODE步骤中的截断误差。从整体上看，各种现有ODE求解器会利用不同时间步的梯度来近似ODE解，精度各不相同。例如，如图2所示，EDM[10]（图2.b）和AMED（图2.c）通过分别利用在$t_{n}$和$s_{n} \in(t_{n+1}, t_{n})$处评估的额外梯度，相比DDIM（图2.a）提升了图像生成质量。我们的EPD求解器（图2.d）进一步扩展了这一思路，融入了K个学习到的中间时间步（$\tau_{n}^{k} \in(t_{n+1}, t_{n}), k \in[K]$）。通过单纯形加权求和组合这些额外梯度，可得到更准确的积分估计，减少局部截断误差并提升采样保真度。此外，由于这些额外梯度的计算是相互独立的——每个梯度都是通过从$x_{t_{n+1}}$开始的单步欧拉更新计算得到的——它们可以高效并行化，确保不会增加推理延迟。在图1中，我们在CIFAR-10数据集[15]上对比了各种ODE求解器的FID分数与延迟。在每个延迟水平下，我们提出的K=2的EPD-Solver始终能实现更优的图像质量。</strong></p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f1.png" width="40%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图1. 不同求解器在扩散模型上的对比。我们在NVIDIA 4090显卡上，针对不同的函数评估次数（NFE）设置，对比了各求解器的Fréchet Inception距离（FID）与延迟（毫秒）。我们提出的EPD-Solver在不增加延迟的情况下，展现出更优异的图像质量。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f2.png" width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图2. 不同ODE求解器的计算图。(a) DDIM求解器[40]（欧拉方法）采用矩形法则，使用起点处的梯度：$d_{t_{n+1}}=\epsilon_{\theta}(x_{t_{n+1}}, t_{n+1})$。(b) EDM求解器[10]（休恩方法）使用梯形法则，对起点和终点时间步的梯度取平均，即$d_{t_{n+1}}=\epsilon_{\theta}(x_{t_{n+1}}, t_{n+1})$和$d_{t_{n}}’=\epsilon_{\theta}(x_{t_{n}}’, t_{n})$，其中$x_{t_{n}}’$是通过欧拉方法得到的额外评估点。(c) AMED求解器[52]优化小型网络$g_{\phi}(\cdot)$以输出中间时间步$s_{n} \in(t_{n}, t_{n+1})$来计算梯度：$d_{s_{n}}=\epsilon_{\theta}(x_{s_{n}}, s_{n})$。由于AMED在序列计算中引入了网络，其延迟略高于其他求解器，如图1所示。(d) 我们的EPD-Solver利用$K$个并行梯度实现更准确的积分近似。我们优化$K$个中间时间步$\tau_{n}^{1}, …, \tau_{n}^{K}$，计算它们的梯度$d_{\tau_{n}^{1}}, …, d_{\tau_{n}^{K}}$，并通过单纯形加权求和对这些梯度进行组合。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="2-相关工作"><a href="#2-相关工作" class="headerlink" title="2. 相关工作"></a>2. 相关工作</h3><p>与其他生成模型[6, 13]相比，扩散模型的主要缺点是采样过程存在高延迟问题。现有的加速方法主要分为三类：</p>
+<ul>
+<li><p><strong>基于蒸馏的方法</strong>：这类方法通过重新训练或微调整个扩散模型来实现加速。其中一类是轨迹蒸馏，即训练学生模型以更少的步骤模仿教师模型的轨迹[53]。这一过程可通过离线蒸馏[22, 25]实现，即需要构建从教师模型采样的数据集；也可通过在线蒸馏实现，即通过多阶段方式逐步减少采样步骤[1, 29, 36]。另一类研究方向是一致性蒸馏，即强制采样轨迹上的去噪输出保持一致性[11, 27, 42]。除了蒸馏噪声-图像对之外，分布匹配方法会在分布层面匹配真实样本与重建样本[31, 37, 45, 48]。尽管这些方法能显著提升生成质量，但它们会带来高昂的训练成本，且需要精心设计训练流程。</p>
+</li>
+<li><p><strong>基于求解器的方法</strong>：除了微调扩散模型之外，快速常微分方程（ODE）求解器也得到了广泛研究。无训练的方法包括欧拉方法[40]、休恩方法[10]、基于泰勒展开的求解器（DPMSolver[23]、DPM-Solver++[24]）、多步方法（PNDM[21]、iPNDM[50]）以及预测-校正框架（UniPC[51]）。部分求解器需要额外训练，例如AMED-Solver[52]、D-ODE[12]和DDSS[46]。近期研究聚焦于优化时间步调度，代表性研究包括LD3[44]、AYS[34]、GITS[3]和DMN[47]。虽然EPD-Solver也属于这一类，但我们通过蒸馏优化求解器参数，借助并行化实现高质量、低延迟的生成。由于可学习参数数量极少，训练过程仍能保持高效。</p>
+</li>
+<li><p><strong>基于并行化的方法</strong>：尽管并行化在加速扩散模型方面前景广阔，但相关研究仍有待深入。ParaDiGMS[38]利用皮卡迭代实现并行采样，但难以与原始输出保持一致性。Faster Diffusion[19]通过省略部分相邻时间步的编码器计算，实现了解码器计算的并行化，但会牺牲图像质量。Distrifusion[17]将高分辨率图像分割为补丁，并对每个补丁执行并行推理。AsyncDiff[4]通过异步去噪实现模型并行化。与这些专注于降低延迟的方法不同，我们的EPD-Solver利用并行梯度提升图像质量，且不会带来显著的延迟增加。</p>
+</li>
+</ul>
+<h3 id="3-方法"><a href="#3-方法" class="headerlink" title="3. 方法"></a>3. 方法</h3><h4 id="3-1-背景"><a href="#3-1-背景" class="headerlink" title="3.1. 背景"></a>3.1. 背景</h4><p>扩散模型通过正向加噪过程逐渐向数据中注入噪声，并通过学习反向去噪过程生成样本，该过程以高斯噪声为初始输入。设$x \sim p_{\text{data}}(x)$表示d维数据，$p(x; \sigma)$表示注入方差为$\sigma^2$的高斯噪声后的数据分布。正向过程由时间尺度$s(t)$和时间$t$处的噪声水平$\sigma(t)$定义的噪声调度控制。具体地，$x = s(t)\hat{x}_t$，其中$\hat{x}_t \sim p’(x; \sigma(t))$。这种正向过程可通过随机微分方程（SDE）[10]表述为：</p>
+<script type="math/tex; mode=display">dx = \frac{\dot{s}(t)}{s(t)}x + s(t)\sqrt{2\sigma(t)\dot{\sigma}(t)}dw_t \tag{1}</script><p>其中$w \in \mathbb{R}^d$表示维纳过程。在本文中，我们采用Karras等人[10]的框架，设置$\sigma(t) = t$且$s(t) = 1$。生成过程通过方程(1)的反向过程实现。值得注意的是，存在概率流常微分方程（ODE）：</p>
+<script type="math/tex; mode=display">dx = -t\nabla_x \log p(x; t)dt \tag{2}</script><p>我们学习一个参数化网络$\epsilon_\theta(x, t)$来预测时间$t$时添加到$x$中的高斯噪声。该网络满足：$\epsilon_\theta(x, t) = -t\nabla_x \log p(x; t)$，此时方程(2)简化为：</p>
+<script type="math/tex; mode=display">dx = \epsilon_\theta(x, t)dt \tag{3}</script><p>噪声预测模型$\epsilon_\theta(x, t)$通过最小化带有权重函数$\lambda(t)$的$\ell_2^2$损失进行训练[10, 41]：</p>
+<script type="math/tex; mode=display">\mathcal{L}_t(\theta) = \lambda(t)\mathbb{E}_{x \sim p_{\text{data}}, \epsilon \sim \mathcal{N}(0, I)}\left\|\epsilon_\theta(x, t) - \epsilon\right\|_2^2 \tag{4}</script><p>给定时间调度$T = \{t_0 = t_{\text{min}}, …, t_N = t_{\text{max}}\}$，数据生成过程从随机噪声$x_{t_N} \sim \mathcal{N}(0, t_{\text{max}}^2 I)$开始，然后通过迭代求解方程(3)计算序列$\{x_{t_{N-1}}, …, x_{t_0}\}$。</p>
+<h4 id="3-2-所提求解器"><a href="#3-2-所提求解器" class="headerlink" title="3.2. 所提求解器"></a>3.2. 所提求解器</h4><p><strong>动机</strong>：方程(3)在时间$t_n$处的解可通过积分形式精确计算：</p>
+<script type="math/tex; mode=display">x_{t_n} = x_{t_{n+1}} + \int_{t_{n+1}}^{t_n} \epsilon_\theta(x_t, t)dt \tag{5}</script><p>已有多种ODE求解器被提出用于近似该积分。总体而言，这些求解器利用一个或多个点计算梯度，再通过梯度估计积分。设$I$表示积分$I = \int_{t_{n+1}}^{t_n} \epsilon_\theta(x_t, t)dt$，$h_n$表示步长$h_n = t_n - t_{n+1}$。例如，DDIM[40]（欧拉方法）采用矩形法则，使用起点处的梯度：</p>
+<script type="math/tex; mode=display">I \approx h_n \underbrace{\epsilon_\theta(x_{t_{n+1}}, t_{n+1})}_{\text{起点梯度}} \tag{6}</script><p>EDM[10]采用梯形法则，对起点和终点的梯度取平均：</p>
+<script type="math/tex; mode=display">I \approx \frac{1}{2}h_n \left\{ \underbrace{\epsilon_\theta(x_{t_{n+1}}, t_{n+1})}_{\text{起点梯度}} + \underbrace{\epsilon_\theta(x_{t_n}', t_n)}_{\text{终点梯度}} \right\} \tag{7}</script><p>其中$x_{t_n}’$是通过欧拉方法得到的额外评估点，即$x_{t_n}’ = x_{t_{n+1}} + h_n \epsilon_\theta(x_{t_{n+1}}, t_{n+1})$。AMED-Solver[52]优化一个小型网络输出中间时间步$s_n \in (t_n, t_{n+1})$以计算梯度：</p>
+<script type="math/tex; mode=display">I \approx h_n \underbrace{\epsilon_\theta(x_{s_n}, s_n)}_{\text{中点梯度}}\tag{8}</script><p>其中$x_{s_n} = x_{t_{n+1}} + (s_n - t_{n+1})\epsilon_\theta(x_{t_{n+1}}, t_{n+1})$。DDIM、EDM和AMED-Solver的计算图如图2所示，直观展示了它们各自的积分近似过程。</p>
+<p>与DDIM相比，EDM和AMED通过引入额外的梯度计算时间步（$t_n$和$s_n$）提升了积分估计精度。我们方法的核心动机是利用多个时间步减少截断误差。此外，由于额外梯度的计算相互独立，它们可高效并行化，不会增加推理延迟。<strong>在本文中，我们提出集成并行方向（EPD）求解器，通过融入多个中间时间步优化积分估计。具体地，积分近似为：</strong></p>
+<script type="math/tex; mode=display">I \approx h_n \underbrace{\sum_{k=1}^K \lambda_n^k \epsilon_\theta(x_{\tau_n^k}, \tau_n^k)}_{\text{集成并行梯度}}\tag{9}</script><p><strong>其中$\tau_n^k \in (t_n, t_{n+1})$是中间时间步，权重满足单纯形组合条件$\lambda_n^k \geq 0$且$\sum_{k=1}^K \lambda_n^k = 1$。</strong></p>
+<p>每个中间时间步$\tau_n^k$处的状态通过欧拉方法计算：<br>$x_{\tau_n^k} = x_{t_{n+1}} + (\tau_k - t_{n+1})\epsilon_\theta(x_{t_{n+1}}, t_{n+1})$。每个梯度计算$\epsilon_\theta(x_{\tau_n^k}, \tau_n^k)$均可完全并行化，在保证效率的同时不增加推理延迟。实际上，利用多个时间步的梯度估计改进积分近似可通过向量值函数的中值定理从理论上证明。</p>
+<p><strong>定理1（[28]）</strong>：当函数$f$的值属于d维向量空间，且在闭区间$[a, b]$上连续、在开区间$(a, b)$上可微时，存在$c_k \in (a, b)$、$\lambda_k \geq 0$且$\sum_{k=1}^n \lambda_k = 1$，使得：</p>
+<script type="math/tex; mode=display">f(b) - f(a) = (b - a)\sum_{k=1}^n \lambda_k f'(c_k)  \tag{10}</script><p>在去噪过程中，函数输出为d维向量$x \in \mathbb{R}^d$。根据定理1，$\epsilon_\theta(x_t, t)$在区间$[t_n, t_{n+1}]$上的精确积分可表示为d个中间点处梯度的单纯形加权组合，再乘以区间长度$h_n = t_n - t_{n+1}$，如方程(9)所示。</p>
+<p><strong>参数优化与推理</strong>：[18, 30]发现暴露偏差（即训练与采样输入的不匹配）是导致误差累积和采样偏移的关键因素。为缓解这一问题，他们分别提出对网络输出进行缩放和对时间步进行偏移。受这些见解启发，我们引入两个可学习参数$o_n$和$\delta_n^k$，分别用于扰动网络输出的尺度和时间步。我们的EPD-Solver遵循如下更新规则：</p>
+<script type="math/tex; mode=display">x_{t_n} = x_{t_{n+1}} + (1 + o_n)h_n \sum_{k=1}^K \lambda_n^k \epsilon_\theta(x_{\tau_n^k}, \tau_n^k + \delta_n^k) \tag{11}</script><p>我们将步骤$n$处的参数定义为$\Theta_n = \{\tau_n^k, \lambda_n^k, \delta_n^k, o_n\}_{k=1}^K$，并将N步采样过程的完整参数集记为$\Theta_{1:N}$。因此，参数总数为$N(1 + 3K)$。</p>
+<p>为确定$\Theta_{1:N}$，我们采用基于蒸馏的优化过程。具体地，给定含N个步骤的学生时间调度$T_{\text{stu}} = \{t_0 = t_{\text{min}}, …, t_N = t_{\text{max}}\}$，我们在$t_n$和$t_{n+1}$之间插入M个中间步骤，即$T_{\text{tea}} = \{t_0, …, t_n, t_n^1, …, t_n^M, t_{n+1}, …, t_N\}$，以生成更精确的教师轨迹。训练过程首先通过任意ODE求解器（例如DPM-Solver）生成教师轨迹，并存储参考状态$\{y_{t_n}\}_{n=0}^N$。之后，我们使用相同的初始噪声$y_{t_N}$采样学生轨迹，并优化参数$\{\Theta_n\}_{n=1}^N$，使学生轨迹$\{x_{t_n}\}_{n=0}^N$通过某种距离度量$dist(\cdot, \cdot)$与教师轨迹对齐。对于含噪状态$\{x_{t_n}\}_{n=1}^N$，我们使用平方$\ell_2$距离作为$dist(\cdot, \cdot)$。对于生成样本$x_{t_0}$，我们在ImageNet预训练的Inception网络[43]最后一层的特征空间中计算平方$\ell_2$距离。特别地，为改进$x_{t_n}$与$y_{t_n}$的对齐效果（由于$x_{t_n}$的值依赖于参数$\Theta_1$至$\Theta_n$），我们通过最小化以下目标优化这些参数：</p>
+<script type="math/tex; mode=display">\mathcal{L}_n(\Theta_{1:n}) = dist(x_{t_n}, y_{t_n}) \tag{12}</script><p><img src = "a1.png" width = "100%"></p>
+<p><img src = "a2.png" width = "100%"></p>
+<p>在一次训练循环中，我们需要N次反向传播。完整的训练算法如算法1所示，推理过程如算法2所示。默认情况下，我们在第一步采用解析第一步（AFS）技巧[5]，通过直接使用$x_{t_N}$作为方向节省一次NFE。</p>
+<p><strong>面向现有求解器的EPD-Plugin</strong>：EPD-Solver可应用于现有求解器以进一步改进扩散采样。核心思想是用多个并行分支替换它们原有的梯度估计。作为代表性案例，我们基于多步iPNDM采样器[21, 50]进行演示，将修改后的求解器称为EPD-Plugin。由于篇幅限制，详细描述见补充材料A.2。</p>
+<h4 id="3-3-讨论"><a href="#3-3-讨论" class="headerlink" title="3.3. 讨论"></a>3.3. 讨论</h4><p><strong>与多步求解器的对比</strong>：尽管多步求解器[21, 24, 50, 51]也使用多个梯度近似积分，但它们通常依赖泰勒展开或多项式外推对历史梯度进行线性组合。相比之下，我们的方法基于向量值中值定理，通过优化当前时间区间内梯度的凸组合实现。通过聚焦区间内梯度，我们的方法能对积分进行更准确、更自适应的近似。</p>
+<p><strong>与AMED-Solver的对比</strong>：AMED-Solver[52]每步使用单个中间时间步估计方向。与之不同，我们的EPD-Solver通过凸加权方案组合多个中间梯度，且不会增加推理延迟。虽然当轨迹接近一维时单个方向可能足够，但[3]中的PCA分析表明，第一主成分仅解释65%的方差，这意味着多个方向能更好地捕捉潜在几何结构。</p>
+<p>为验证这一点，我们在3步调度下进行对照实验。如图3所示，我们在1000个随机样本上计算教师与学生轨迹的$\ell_2$误差，并改变中间梯度数量$K$。结果显示，当$K$从1增加到2时误差显著下降，但当$K &gt; 2$时改进逐渐减弱，表明两个方向已能捕捉轨迹的大部分结构。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f3.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图3. 教师轨迹与学生轨迹之间的$\ell_{2}$误差随$K$值的变化。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>此外，与AMED-Solver使用神经网络预测样本特定的插值点不同，我们的EPD-Solver以即插即用的方式学习全局采样参数，不会产生额外的运行时成本。</p>
+<h3 id="4-实验"><a href="#4-实验" class="headerlink" title="4. 实验"></a>4. 实验</h3><p>本节组织结构如下：</p>
+<ul>
+<li>第4.1节概述实验设置。第4.2节将我们的EPD-Solver和EPD-Plugin与最先进的ODE采样器进行对比。</li>
+<li>第4.3节分析并行方向数量$K$对图像质量和推理延迟的影响。</li>
+<li>第4.4节对EPD-Solver的主要组件进行消融研究。</li>
+<li>第4.5节展示采样过程和生成图像的定性可视化结果。</li>
+</ul>
+<h4 id="4-1-实验设置"><a href="#4-1-实验设置" class="headerlink" title="4.1. 实验设置"></a>4.1. 实验设置</h4><p><strong>模型</strong>：我们在基于扩散的图像生成模型上测试ODE求解器，涵盖像素空间模型[10]和潜空间模型[32]，图像分辨率从32到512不等。对于像素空间模型，我们评估[10]中预训练的CIFAR 32×32[15]、FFHQ 64×64[9]、ImageNet 64×64[33]模型。对于潜空间模型，我们测试[32]中预训练的LSUN Bedroom 256×256[49]模型和分辨率为512的Stable-Diffusion[32]模型。</p>
+<p><strong>基线求解器</strong>：我们与三类代表性ODE求解器进行对比：（1）单步求解器：DDIM[40]、EDM[10]、DPM-Solver-2[23]和AMED-Solver[52]；（2）多步求解器：DPM-Solver++<a href="24">3M</a>、UniPC[51]、iPNDM[21, 50]和AMED-Plugin[52]；（3）基于并行化的求解器：ParaDiGMS[38]。为保证公平对比，我们遵循其原始论文[10, 24, 51]推荐的时间调度。具体而言，对DPM-Solver-2、DPM-Solver++(3M)和UniPC使用logSNR调度，对AMED-Solver[52]使用时间均匀调度，对其余基线采用$\rho=7$的多项式时间调度。ParaDiGMS[38]的实现细节见补充材料A.3。</p>
+<p><strong>评估</strong>：我们在低NFE预算（$NFE \in \{3,5,7,9\}$）下测试EPD-Solver和EPD-Plugin，并应用AFS[5]技巧。当$K=1$时，EPD-Solver和EPD-Plugin与基线的NFE相同；当$K&gt;1$时，每步包含$K-1$次额外NFE，但并行化确保延迟不变。我们使用“并行函数评估次数（Para. NFE）”表示并行执行下的有效NFE。我们通过在50k图像上计算Fréchet Inception距离（FID）评估样本质量。对于Stable-Diffusion，我们使用从MS-COCO验证集[20]采样的提示生成30k图像来评估FID。</p>
+<p><strong>实现细节</strong>：我们使用Adam优化器在10k图像上优化参数，批量大小为32。为防止过拟合，我们使用sigmoid技巧约束$o_n$和$\delta_n^k$，使其保持在[-0.05, 0.05]范围内。由于参数数量少（实验中为6到45个），训练效率很高——在单张NVIDIA 4090上训练CIFAR-10约需3分钟，在4张NVIDIA A800 GPU上训练LSUN Bedroom 256×256约需30分钟。为生成教师轨迹，我们使用DPM-Solver-2求解器并注入$M=6$个中间时间步。更多实现细节见补充材料A.1。</p>
+<h4 id="4-2-主要结果"><a href="#4-2-主要结果" class="headerlink" title="4.2. 主要结果"></a>4.2. 主要结果</h4><p>在表1中，我们将$K=2$的EPD-Solver与基线求解器在CIFAR-10、FFHQ、ImageNet和LSUN Bedroom数据集上的FID分数进行对比。结果表明，我们的学习方向在所有数据集和NFE值下均实现了一致且显著的改进。具体而言，在9次并行函数评估（Para. NFE）下，我们在ImageNet和LSUN数据集上的FID分数分别为4.27和5.01，而次优基线分别为5.44和5.65，改进明显。此外，在低NFE场景下（如LSUN Bedroom的3次NFE），EPD-Solver的FID分数达到13.21，显著优于次优基线求解器（AMED-Solver的58.21）。我们进一步评估了应用于iPNDM求解器的EPD-Plugin，发现当步骤足够大时，它的性能优于EPD-Solver，这与我们的预期一致——iPNDM仅在步骤足够大时才能从历史梯度中获益；而在小NFE下，这种优势不太明显。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t1.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表 1. 四个数据集上的图像生成结果：(a) CIFAR10、(b) FFHQ、(c) ImageNet、(d) LSUN Bedroom。我们将所提出的 EPD-Solver 和 EPD-Plugin 与以下几类求解器进行了对比：(1) 单步求解器：DDIM、EDM、DPM-Solver-2 和 AMED-Solver；(2) 多步求解器：DPM-Solver++(3M)、UniPC、iPNDM 和 AMED-Plugin；(3) 基于并行化的求解器：ParaDiGMS。最佳结果以粗体显示，次佳结果以下划线标注。EPD-Solver 和 EPD-Plugin 的学习参数值详见补充材料 B.1。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>我们在StableDiffusion v1.5上评估EPD-Solver方法，设置无分类器引导权重为7.5，并在表2中报告MS-COCO验证集上的FID分数。此外，我们对比了官方实现推荐的DPM-Solver(2M)++和最新的最先进求解器AMED-Plugin Solver生成的样本质量。结果表明，我们提出的方法始终具有优越性。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t2.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表 2. Stable-Diffusion [32] 上的 FID 结果。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="4-3-并行方向数量的影响"><a href="#4-3-并行方向数量的影响" class="headerlink" title="4.3. 并行方向数量的影响"></a>4.3. 并行方向数量的影响</h4><p><strong>不同$K$值下的图像质量</strong>：在图4中，我们对比了不同$K$值下EPD-Solver生成的图像质量。如预期，增加中间点数量可提升FID分数。例如，在FFHQ数据集的3次并行函数评估（Para. NFE）下，当$K$从1增加到2时，FID分数从26.0降至22.7。此外，结果表明当$K&gt;2$时改进逐渐减弱。例如，在ImageNet的9次并行函数评估（Para. NFE）下，$K=2$和$K=3$的FID分数分别为4.20和4.18，改进极小。</p>
+<p><strong>不同$K$值下的延迟</strong>：由于每个中间梯度均可完全并行化，我们研究增加$K$是否会显著影响延迟。表3展示了在单张NVIDIA 4090上的推理延迟，通过1000张生成图像（批量大小为1）评估，报告平均推理时间及95%置信区间。对于CIFAR-10、FFHQ和ImageNet，将$K$增加到3不会显著影响延迟；对于LSUN Bedroom，当$K=3$时延迟略有增加。但前期结果表明，$K=2$已能实现显著的质量改进。因此，设置$K=2$可实现有效权衡，在不增加额外推理成本的前提下实现高质量图像生成。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f4.png" width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图4. 不同数据集和并行方向数量（$K$）下的FID曲线。(a) CIFAR-10 32×32 (b) FFHQ 64×64 (c) ImageNet 64×64 (d) LSUN Bedroom 256×256</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t3.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表 3. 不同数据集、并行函数评估次数（Para. NFE）和并行方向数量（$K$）下的延迟（毫秒）测量结果。当$K$增加到2时，未观察到明显的延迟增加。报告的值包含95%置信区间。(a) CIFAR10 和 FFHQ (b) ImageNet 和 LSUN Bedroom</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="4-4-消融研究"><a href="#4-4-消融研究" class="headerlink" title="4.4. 消融研究"></a>4.4. 消融研究</h4><p><strong>缩放因子的影响</strong>：[18, 30]发现暴露偏差（即训练与采样输入的不匹配）是导致误差累积和采样偏移的关键因素。为缓解这一偏差，他们分别提出对梯度进行缩放和对时间步进行偏移。基于这些见解，我们的EPD-Solver引入两个可学习参数$o_n$和$\delta_n^k$。我们通过对比不使用这些缩放因子的FID分数评估其影响。如表4所示，省略缩放因子会明显降低图像质量。例如，不使用$o_n$时，并行函数评估次数（Para. NFE）=5的FID从4.33升至5.84。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t4.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表 4. 缩放因子（$o_{n}, \delta_{n}^{k}$）的影响。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>时间调度的影响</strong>：在表5中，我们展示了CIFAR-10上使用常用时间调度（LogSNR、EDM和时间均匀调度）的结果。我们的求解器在时间均匀调度下表现始终更优。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t5.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表 5. 时间调度的影响。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>教师ODE求解器的影响</strong>：我们在表6中研究不同教师ODE求解器的影响。结果表明，使用DPM-Solver-2生成教师轨迹可实现最佳性能。我们推测这是因为DPM-Solver-2也通过中间点估计梯度，与我们的EPD-Solver差距更小。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t6.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表 6. 教师ODE求解器的影响。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="4-5-定性分析"><a href="#4-5-定性分析" class="headerlink" title="4.5. 定性分析"></a>4.5. 定性分析</h4><p><strong>轨迹的定性结果</strong>：由于高维数据的轨迹可视化具有挑战性，我们采用[21]中的分析框架。具体而言，如图5所示，我们随机选择图像中的两个像素进行局部轨迹可视化，展示其值在采样过程中的演变。给定采样序列$x_{t_N}, x_{t_{N-1}}, …, x_{t_0}$，我们追踪两个随机位置$p_1$和$p_2$处的对应值$v_t^1$和$v_t^2$，然后将$(v_t^1, v_t^2)$表示为数据点并在$\mathbb{R}^2$中可视化。可以清晰地观察到，EPD-Solver（并行函数评估次数（Para. NFE）=5，$K=2$）的像素值轨迹与目标轨迹的距离比其他采样器更近。这表明我们的EPD-Solver能生成更准确的轨迹，显著减少采样过程中的误差。</p>
+<p><strong>生成样本的定性结果</strong>：在图6中，我们对比了DPM-Solver-2[23]、iPNDM[50]和EPD-Solver使用FFHQ、ImageNet和LSUN Bedroom预训练模型生成的图像。在相同的并行函数评估次数（Para. NFE）下，我们的EPD-Solver在视觉感知质量上始终优于其他采样器。这种优势在低NFE场景（$NFE=3,5$）中尤为明显——EPD-Solver能生成完整清晰的图像，而其他采样器的输出则高度模糊。这些结果凸显了我们的方法在不同NFE设置下的优越性能。更多可视化结果见补充材料B.3。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f5.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图5. 局部采样轨迹分析。该图展示了图像中两个随机选择像素的生成路径。我们使用EPD（并行函数评估次数（Para. NFE）=5，$K=2$）采样器进行采样，并将其教师采样器的轨迹作为目标轨迹。我们展示了DDIM[40]、DPM-Solver[23]和iPNDM[50]在CIFAR-10[15]上的$NFE=5$采样轨迹。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f6.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图 6. DPM-Solver-2 [23]、iPNDM [50] 与 EPD-Solver 生成样本的对比。与其他采样器相比，即使在$NFE=3$的情况下，EPD-Solver 也能生成高质量结果。更多可视化结果见补充材料 B。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="5-结论"><a href="#5-结论" class="headerlink" title="5. 结论"></a>5. 结论</h3><p>在本文中，我们提出了集成并行方向（EPD）求解器，这是一种新型常微分方程（ODE）求解器，通过利用多个并行梯度评估来改进扩散模型的采样过程。与传统的基于求解器的方法在低函数评估次数（NFE）下受限于截断误差不同，我们的方法在保持低延迟推理的同时显著提升了积分近似精度。通过以蒸馏方式优化一小组可学习参数，EPD-Solver实现了高效训练，并能无缝集成到现有扩散模型中。我们还将EPD-Solver推广为EPD-Plugin，这是一种可扩展到现有ODE采样器的插件。在CIFAR10、FFHQ、ImageNet、LSUN Bedroom和Stable Diffusion上的大量实验表明，EPD-Solver在保持计算效率的同时，在FID分数上持续优于最先进的求解器。我们的研究结果表明，并行梯度估计是加速扩散模型的一种强大但尚未充分探索的方向。</p>
+<h3 id="A-额外的实现细节"><a href="#A-额外的实现细节" class="headerlink" title="A. 额外的实现细节"></a>A. 额外的实现细节</h3><h4 id="A-1-EPD-Solver的实现细节"><a href="#A-1-EPD-Solver的实现细节" class="headerlink" title="A.1. EPD-Solver的实现细节"></a>A.1. EPD-Solver的实现细节</h4><p>在N步过程中的每个采样步骤（从$t_{n+1}$到$t_n$），求解器会提供一组学习到的参数$\Theta_n = \{\tau_n^k, \lambda_n^k, \delta_n^k, o_n\}_{k=1}^K$，其实现如下：</p>
+<ul>
+<li><p><strong>中间时间步（$\tau_n^k$）</strong>：这些是$[t_n, t_{n+1}]$范围内的点，通过几何插值计算得到。具体而言，插值比例$r_n^k \in [0,1]$是通过对可学习标量参数应用sigmoid函数获得的，计算公式为：</p>
+<script type="math/tex; mode=display">\tau_n^k = t_{n+1}^{r_n^k} \cdot t_n^{1-r_n^k} \tag{13}</script></li>
+<li><p><strong>单纯形权重（$\lambda_n^k$）</strong>：这些非负权重构成$K$个并行梯度的凸组合，满足$\sum_{k=1}^K \lambda_n^k = 1$。它们通过对$K$个可学习标量参数应用softmax函数获得。</p>
+</li>
+<li><p><strong>输出缩放（$o_n$）</strong>：这是一个可学习标量，通过因子$(1 + o_n)$对整体更新方向进行缩放，以缓解训练和采样之间的暴露偏差。为实现这一点，我们引入每个分支的调制项$\sigma_n^k \in [-0.05, 0.05]$，用于缩放相应的权重$\lambda_n^k$。具体而言，我们使用基于sigmoid的变换约束$\sigma_n^k$：</p>
+<script type="math/tex; mode=display">\sigma_n^k = 0.1 \times \left(sigmoid\left(\tilde{\sigma}_n^k\right) - 0.5\right)</script><p>其中$\tilde{\sigma}_n^k$是无约束的可学习参数。最终的缩放因子由下式给出：</p>
+<script type="math/tex; mode=display">o_n = \sum_k \lambda_n^k \sigma_n^k - 1</script></li>
+<li><p><strong>时间步偏移（$\delta_n^k$）</strong>：这是应用于中间时间步$\tau_n^k$的可训练扰动，生成$\tau_n^k + \delta_n^k$作为去噪网络的输入。我们通过引入缩放因子$s_n^k$来实现这一点，该因子将$\tau_n^k$转换为$\tau_n^k + \delta_n^k$。$s_n^k$与$\delta_n^k$的关系为：</p>
+<script type="math/tex; mode=display">s_n^k \tau_n^k = \tau_n^k + \delta_n^k \Rightarrow \delta_n^k = \left(s_n^k - 1\right) \tau_n^k</script></li>
+</ul>
+<p>为防止过拟合，$s_n^k$通过基于sigmoid的变换约束在较小范围（例如[0.95, 1.05]）内。具体而言，我们将未归一化参数$\tilde{s}_n^k$映射如下：</p>
+<script type="math/tex; mode=display">s_n^k = 1 + 0.1 \times \left(sigmoid\left(\tilde{s}_n^k\right) - 0.5\right)</script><h4 id="A-2-EPD-Plugin的实现细节"><a href="#A-2-EPD-Plugin的实现细节" class="headerlink" title="A.2. EPD-Plugin的实现细节"></a>A.2. EPD-Plugin的实现细节</h4><p>EPD-Plugin作为一个模块集成到任何现有ODE求解器中。我们以多步iPNDM[21, 50]采样器为例进行说明。首先简要回顾iPNDM采样器。</p>
+<p><strong>iPNDM回顾</strong>：设$d_{t_n}$表示时间步$t_n$处的估计梯度。时间步$t_n$的更新公式为：</p>
+<script type="math/tex; mode=display">d_{t_{n+1}}' = \frac{1}{24}\left(55 d_{t_{n+1}} - 59 d_{t_{n+2}} + 37 d_{t_{n+3}} - 9 d_{t_{n+4}}\right)</script><script type="math/tex; mode=display">x_{t_n} = x_{t_{n+1}} + h_n d_{t_{n+1}}' \tag{14}</script><p>该规则适用于$n &lt; N-3$；为简洁起见，我们仅展示这种情况。其他情况可参见原始论文。</p>
+<p><strong>iPNDM的EPD插件</strong>：我们的插件用$K$个并行中间梯度的加权组合替换$d_{t_{n+1}}$，以减少截断误差。与EPD-Solver类似，我们在步骤$n$处引入参数$\Theta_n = \{\tau_n^k, \lambda_n^k, \delta_n^k, o_n\}_{k=1}^K$。梯度现在估计为：</p>
+<script type="math/tex; mode=display">d_{t_{n+1}}^{EPD} = \left(1 + o_n\right) \sum_{k=1}^K \lambda_n^k \epsilon_\theta\left(x_{\tau_n^k}, \tau_n^k + \delta_n^k\right) \tag{15}</script><p>相应地，EPD-Plugin的更新公式变为：</p>
+<script type="math/tex; mode=display">d_{t_{n+1}}' = \frac{1}{24}\left(55 d_{t_{n+1}}^{EPD} - 59 d_{t_{n+2}} + 37 d_{t_{n+3}} - 9 d_{t_{n+4}}\right)</script><script type="math/tex; mode=display">x_{t_n} = x_{t_{n+1}} + h_n d_{t_{n+1}}' \tag{16}</script><p>EPD-Plugin的训练开销极小，符合EPD-Solver的轻量级设计理念。由于可学习参数数量有限，优化过程高效。</p>
+<h4 id="A-3-ParaDiGMS的实现细节"><a href="#A-3-ParaDiGMS的实现细节" class="headerlink" title="A.3. ParaDiGMS的实现细节"></a>A.3. ParaDiGMS的实现细节</h4><p>为与EPD-Solver和EPD-Plugin直接对比，我们在EDM[10]框架中重新实现了ParaDiGMS采样器[38]，因为其公开实现专为Stable Diffusion设计。为确保与单GPU的EPD-Solver进行公平的延迟对比，我们在两张NVIDIA 4090 GPU上运行ParaDiGMS，通过匹配每GPU的并行函数评估次数（Para. NFE）比例来均匀分配工作量。</p>
+<p>具体而言，为与EPD-Solver（$K=2$）的并行结构对齐，我们将ParaDiGMS的批处理窗口大小设置为2。</p>
+<h3 id="B-额外的实验结果"><a href="#B-额外的实验结果" class="headerlink" title="B. 额外的实验结果"></a>B. 额外的实验结果</h3><h4 id="其他中间点选择方案"><a href="#其他中间点选择方案" class="headerlink" title="其他中间点选择方案"></a>其他中间点选择方案</h4><p>在表7中，我们将$K=2$的EPD-Solver（即两个学习到的中间点）与两种手动选择的中点和随机选择的中点进行了对比。具体而言，手动选择的中点包括起始时间步$t_{n}$、结束时间步$t_{n+1}$（EDM所采用的方案）、几何平均值$\sqrt{t_{n}t_{n+1}}$（DPM-Solver-2所采用的方案）以及算术平均值$\frac{1}{2}(t_{n}+t_{n+1})$。随机中点是从$[t_{n},t_{n+1}]$中均匀采样得到的。我们观察到以下几点：</p>
+<ol>
+<li>起始点与中点（几何中点和算术中点）的组合显著优于包含终点的组合。例如，使用几何中点和算术中点时，在$NFE=9$的情况下，FID为5.83；而将终点与几何中点、算术中点组合时，FID则分别高达44.38和32.21。</li>
+<li>包含随机点的组合取得了具有竞争力的结果。例如，将随机点与起始点组合时，在所有NFE值下的FID均优于EDM。</li>
+<li>最佳的手工设计中间时间步组合与我们学习到的中间时间步组合之间仍存在较大差距，这凸显了我们所提方法的必要性。</li>
+</ol>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t7.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表 7. 两个中间点选择方案的FID结果。评估在CIFAR-10[15]上进行。起点：$t_{n+1}$，终点：$t_{n}$，中点：$\sqrt{t_{n}t_{n+1}}$、$\frac{1}{2}(t_{n}+t_{n+1})$，“random”表示从$[t_{n},t_{n+1}]$中随机选择的中点。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="B-1-EPD-Solver的优化参数"><a href="#B-1-EPD-Solver的优化参数" class="headerlink" title="B.1. EPD-Solver的优化参数"></a>B.1. EPD-Solver的优化参数</h4><p>我们在表8和表9中提供了$K=2$的EPD-Solver在CIFAR-10、ImageNet、FFHQ和LSUN Bedroom数据集上不同并行函数评估次数（Para. NFE）下的优化参数。根据补充材料A.1中的实现细节，参数$\tau_{n}^{k}$、$\delta_{n}^{k}$、$o_{n}$的推导如下：</p>
+<script type="math/tex; mode=display">\tau_{n}^{k}=t_{n+1}^{r_{n}^{k}} \cdot t_{n}^{1-r_{n}^{k}} \tag{17}</script><script type="math/tex; mode=display">\delta_{n}^{k}=\left(s_{n}^{k}-1\right) \tau_{n}^{k} \tag{18}</script><script type="math/tex; mode=display">o_{n}=\sum_{k} \lambda_{n}^{k} \sigma_{n}^{k}-1 \tag{19}</script><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t8.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表 8. CIFAR10和FFHQ上EPD-Solver（$K=2$）的优化参数。(a) CIFAR10 32×32[15] (b) FFHQ 64×64[9]</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t9.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表 9. ImageNet和LSUN Bedroom上EPD-Solver（$K=2$）的优化参数。(a) ImageNet 64×64[33] (b) LSUN Bedroom 256×256[49]</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="B-2-EPD-Plugin的优化参数"><a href="#B-2-EPD-Plugin的优化参数" class="headerlink" title="B.2. EPD-Plugin的优化参数"></a>B.2. EPD-Plugin的优化参数</h4><p>我们在表10和表11中提供了$K=2$的EPD-Plugin在CIFAR-10、ImageNet、FFHQ和LSUN Bedroom数据集上不同并行函数评估次数（Para. NFE）下的优化参数。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t10.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表 10. CIFAR10和FFHQ上EPD-Plugin（$K=2$）的优化参数。(a) CIFAR10 32×32[15] (b) FFHQ 64×64[9]</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t11.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表 11. ImageNet和LSUN Bedroom上EPD-Plugin（$K=2$）的优化参数。(a) ImageNet 64×64[33] (b) LSUN Bedroom 256×256[49]</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="B-3-额外的定性结果"><a href="#B-3-额外的定性结果" class="headerlink" title="B.3. 额外的定性结果"></a>B.3. 额外的定性结果</h4><p>此处，我们在图7至图10中展示了不同数据集上的一些定性结果。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/diffusion/" rel="tag"># diffusion</a>
+              <a href="/tags/2025/" rel="tag"># 2025</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/08/02/2025-Three-Creates-All-You-Only-Sample-Three-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" rel="prev" title="2025-Three Creates All You Only Sample Three Steps论文精读">
+      <i class="fa fa-chevron-left"></i> 2025-Three Creates All You Only Sample Three Steps论文精读
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1. 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.3.</span> <span class="nav-text">2. 相关工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.</span> <span class="nav-text">3. 方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E8%83%8C%E6%99%AF"><span class="nav-number">1.4.1.</span> <span class="nav-text">3.1. 背景</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E6%89%80%E6%8F%90%E6%B1%82%E8%A7%A3%E5%99%A8"><span class="nav-number">1.4.2.</span> <span class="nav-text">3.2. 所提求解器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-%E8%AE%A8%E8%AE%BA"><span class="nav-number">1.4.3.</span> <span class="nav-text">3.3. 讨论</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.5.</span> <span class="nav-text">4. 实验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E5%AE%9E%E9%AA%8C%E8%AE%BE%E7%BD%AE"><span class="nav-number">1.5.1.</span> <span class="nav-text">4.1. 实验设置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E4%B8%BB%E8%A6%81%E7%BB%93%E6%9E%9C"><span class="nav-number">1.5.2.</span> <span class="nav-text">4.2. 主要结果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-%E5%B9%B6%E8%A1%8C%E6%96%B9%E5%90%91%E6%95%B0%E9%87%8F%E7%9A%84%E5%BD%B1%E5%93%8D"><span class="nav-number">1.5.3.</span> <span class="nav-text">4.3. 并行方向数量的影响</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-%E6%B6%88%E8%9E%8D%E7%A0%94%E7%A9%B6"><span class="nav-number">1.5.4.</span> <span class="nav-text">4.4. 消融研究</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-5-%E5%AE%9A%E6%80%A7%E5%88%86%E6%9E%90"><span class="nav-number">1.5.5.</span> <span class="nav-text">4.5. 定性分析</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E7%BB%93%E8%AE%BA"><span class="nav-number">1.6.</span> <span class="nav-text">5. 结论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#A-%E9%A2%9D%E5%A4%96%E7%9A%84%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82"><span class="nav-number">1.7.</span> <span class="nav-text">A. 额外的实现细节</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#A-1-EPD-Solver%E7%9A%84%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82"><span class="nav-number">1.7.1.</span> <span class="nav-text">A.1. EPD-Solver的实现细节</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#A-2-EPD-Plugin%E7%9A%84%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82"><span class="nav-number">1.7.2.</span> <span class="nav-text">A.2. EPD-Plugin的实现细节</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#A-3-ParaDiGMS%E7%9A%84%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82"><span class="nav-number">1.7.3.</span> <span class="nav-text">A.3. ParaDiGMS的实现细节</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#B-%E9%A2%9D%E5%A4%96%E7%9A%84%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C"><span class="nav-number">1.8.</span> <span class="nav-text">B. 额外的实验结果</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E4%B8%AD%E9%97%B4%E7%82%B9%E9%80%89%E6%8B%A9%E6%96%B9%E6%A1%88"><span class="nav-number">1.8.1.</span> <span class="nav-text">其他中间点选择方案</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B-1-EPD-Solver%E7%9A%84%E4%BC%98%E5%8C%96%E5%8F%82%E6%95%B0"><span class="nav-number">1.8.2.</span> <span class="nav-text">B.1. EPD-Solver的优化参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B-2-EPD-Plugin%E7%9A%84%E4%BC%98%E5%8C%96%E5%8F%82%E6%95%B0"><span class="nav-number">1.8.3.</span> <span class="nav-text">B.2. EPD-Plugin的优化参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B-3-%E9%A2%9D%E5%A4%96%E7%9A%84%E5%AE%9A%E6%80%A7%E7%BB%93%E6%9E%9C"><span class="nav-number">1.8.4.</span> <span class="nav-text">B.3. 额外的定性结果</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zongqing Li"
+      src="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+  <p class="site-author-name" itemprop="name">Zongqing Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">104</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hqulzq" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hqulzq" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hqulzq@163.com" title="E-Mail → mailto:hqulzq@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+      
+<script type="text/javascript" charset="utf-8" src="/js/tagcloud.js"></script>
+<script type="text/javascript" charset="utf-8" src="/js/tagcanvas.js"></script>
+<div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div id="myCanvasContainer" class="widget tagcloud">
+        <canvas width="250" height="250" id="resCanvas" style="width=100%">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2023/" rel="tag">2023</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2024/" rel="tag">2024</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2025/" rel="tag">2025</a><span class="tag-list-count">24</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">25</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICCV/" rel="tag">ICCV</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICML/" rel="tag">ICML</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IJCAI/" rel="tag">IJCAI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ODE%E6%B1%82%E8%A7%A3/" rel="tag">ODE求解</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">65</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%80%BB%E7%BB%93/" rel="tag">总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%85%E8%AF%BB/" rel="tag">阅读</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+        </canvas>
+    </div>
+</div>
+
+
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zongqing Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('post.copy_button').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('post.copy_success')
+          else $(this).text('post.copy_failure')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('post.copy_button')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
