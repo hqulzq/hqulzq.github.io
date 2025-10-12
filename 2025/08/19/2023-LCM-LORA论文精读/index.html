@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="全文翻译摘要潜在一致性模型（LCMs）（Luo 等人，2023）在加速文本到图像生成任务方面取得了令人瞩目的性能，仅需极少的推理步骤就能生成高质量图像。LCMs 由预训练的潜在扩散模型（LDMs）蒸馏而来，仅需约 32 个 A100 GPU 训练小时。本报告从两个方面进一步拓展了 LCMs 的潜力：首先，通过将 LoRA 蒸馏应用于 Stable-Diffusion 模型（包括 SD-V1.5（R">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2023-LCM-LORA论文精读">
+<meta property="og:url" content="https://hqulzq.github.io/2025/08/19/2023-LCM-LORA%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/index.html">
+<meta property="og:site_name" content="Lzq&#39;s blog">
+<meta property="og:description" content="全文翻译摘要潜在一致性模型（LCMs）（Luo 等人，2023）在加速文本到图像生成任务方面取得了令人瞩目的性能，仅需极少的推理步骤就能生成高质量图像。LCMs 由预训练的潜在扩散模型（LDMs）蒸馏而来，仅需约 32 个 A100 GPU 训练小时。本报告从两个方面进一步拓展了 LCMs 的潜力：首先，通过将 LoRA 蒸馏应用于 Stable-Diffusion 模型（包括 SD-V1.5（R">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hqulzq.github.io/2025/08/19/2023-LCM-LORA%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/08/19/2023-LCM-LORA%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/a1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/08/19/2023-LCM-LORA%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/08/19/2023-LCM-LORA%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f2.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/08/19/2023-LCM-LORA%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f3.png">
+<meta property="article:published_time" content="2025-08-19T08:26:12.000Z">
+<meta property="article:modified_time" content="2025-08-25T08:51:36.724Z">
+<meta property="article:author" content="Zongqing Li">
+<meta property="article:tag" content="diffusion">
+<meta property="article:tag" content="2023">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hqulzq.github.io/2025/08/19/2023-LCM-LORA%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f1.png">
+
+<link rel="canonical" href="https://hqulzq.github.io/2025/08/19/2023-LCM-LORA%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>2023-LCM-LORA论文精读 | Lzq's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lzq's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">50</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">107</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book">
+
+    <a href="/book" rel="section"><i class="fas fa-book fa-fw"></i>Book</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/08/19/2023-LCM-LORA%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          2023-LCM-LORA论文精读
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-08-19 16:26:12" itemprop="dateCreated datePublished" datetime="2025-08-19T16:26:12+08:00">2025-08-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-08-25 16:51:36" itemprop="dateModified" datetime="2025-08-25T16:51:36+08:00">2025-08-25</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>潜在一致性模型（LCMs）（Luo 等人，2023）在加速文本到图像生成任务方面取得了令人瞩目的性能，仅需极少的推理步骤就能生成高质量图像。LCMs 由预训练的潜在扩散模型（LDMs）蒸馏而来，仅需约 32 个 A100 GPU 训练小时。本报告从两个方面进一步拓展了 LCMs 的潜力：首先，通过将 LoRA 蒸馏应用于 Stable-Diffusion 模型（包括 SD-V1.5（Rombach 等人，2022）、SSD-1B（Segmind.，2023）和 SDXL（Podell 等人，2023）），我们将 LCM 的适用范围扩展到更大的模型，同时显著降低了内存消耗，实现了更优异的图像生成质量。其次，我们将通过 LCM 蒸馏获得的 LoRA 参数确定为一种通用的 Stable-Diffusion 加速模块，并命名为 LCM-LoRA。LCM-LoRA 无需训练即可直接嵌入到各种 Stable-Diffusion 微调模型或 LoRAs 中，因此成为适用于多种图像生成任务的通用加速器。与之前的数值 PF-ODE 求解器（如 DDIM（Song 等人，2020）、DPM-Solver（Lu 等人，2022a；b））相比，LCM-LoRA 可被视为一种具有强泛化能力的插件式神经 PF-ODE 求解器。项目页面：<a target="_blank" rel="noopener" href="https://github.com/luosiallen/latent-consistency-model">https://github.com/luosiallen/latent-consistency-model</a>。<br><span id="more"></span></p>
+<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1 引言"></a>1 引言</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f1.png" width="90%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图1: 通过将 LoRA 引入 LCM 的蒸馏过程，我们显著降低了蒸馏的内存开销，这使得我们能够在资源有限的情况下训练更大的模型，例如 SDXL 和 SSD-1B。更重要的是，通过 LCM-LoRA 训练获得的 LoRA 参数（即 “加速向量”）可以直接与在特定风格数据集上微调得到的其他 LoRA 参数（即 “风格向量”）相结合。无需任何额外训练，通过加速向量和风格向量的线性组合得到的模型就能获得以最少采样步骤生成特定绘画风格图像的能力。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>潜在扩散模型（LDMs）（Rombach 等人，2022）在从文本、草图等各种输入生成高度细节化和富有创意的图像方面发挥了关键作用。尽管取得了成功，但 LDMs 固有的缓慢反向采样过程阻碍了实时应用，影响了用户体验。当前的开源模型和加速技术尚未填补在标准消费级 GPU 上实现实时生成的空白。加速 LDMs 的努力大致分为两类：第一类是采用先进的 ODE 求解器，如 DDIM（Song 等人，2020）、DPM-Solver（Lu 等人，2022a）和 DPM-Solver++（Lu 等人，2022b），以加快生成过程。第二类策略是对 LDMs 进行蒸馏以简化其功能。ODE 求解器方法虽然减少了所需的推理步骤数量，但仍需要大量的计算开销，尤其是在结合无分类器引导（Ho &amp; Salimans，2022）时。同时，像 Guided-Distill（Meng 等人，2023）这样的蒸馏方法尽管前景广阔，但由于其密集的计算需求而面临实际应用限制。在 LDM 生成图像的速度和质量之间寻求平衡仍然是该领域的一大挑战。</p>
+<p>最近，受一致性模型（CMs）（Song 等人，2023）启发的潜在一致性模型（LCMs）（Luo 等人，2023）应运而生，作为图像生成中采样速度慢问题的解决方案。LCMs 将反向扩散过程视为一个增强的概率流 ODE（PF-ODE）问题来处理。它们创新性地在潜在空间中预测解决方案，绕过了通过数值 ODE 求解器进行迭代求解的需求。这使得高分辨率图像的合成效率显著提升，仅需 1 到 4 个推理步骤。此外，LCMs 在蒸馏效率方面表现突出，仅需 32 个 A100 训练小时即可实现少步骤推理。</p>
+<p>在此基础上，潜在一致性微调（LCF）（Luo 等人，2023）被开发出来，作为一种无需从教师扩散模型开始就能微调预训练 LCMs 的方法。对于特定数据集（如动漫、照片写实或幻想图像数据集），还需要额外的步骤，例如采用潜在一致性蒸馏（LCD）（Luo 等人，2023）将预训练的 LDM 蒸馏为 LCM，或者使用 LCF 直接微调 LCM。然而，这种额外的训练可能会阻碍 LCMs 在各种数据集上的快速部署，从而引出一个关键问题：能否在自定义数据集上实现无需训练的快速推理。</p>
+<p>为了回答上述问题，我们引入了 LCM-LoRA，这是一种通用的无需训练的加速模块，可直接嵌入到各种 Stable-Diffusion（SD）（Rombach 等人，2022）微调模型或 SD LoRAs（Hu 等人，2021）中，以支持少步骤的快速推理。与早期的数值概率流 ODE（PF-ODE）求解器（如 DDIM（Song 等人，2020）、DPM-Solver（Lu 等人，2022a）和 DPM-Solver++（Lu 等人，2022b））相比，LCM-LoRA 代表了一类新型的基于神经网络的 PF-ODE 求解器模块。它在各种微调的 SD 模型和 LoRAs 上展现出强大的泛化能力。</p>
+<h3 id="2-相关工作"><a href="#2-相关工作" class="headerlink" title="2 相关工作"></a>2 相关工作</h3><p><strong>一致性模型</strong> Song 等人（2023）展示了一致性模型（CMs）的显著潜力，这是一类新型生成模型，在不牺牲输出质量的前提下提高了采样效率。这些模型采用一致性映射技术，巧妙地将常微分方程（ODE）轨迹上的点映射到其起点，从而实现快速的一步生成。他们的研究专门针对 ImageNet 64x64（Deng 等人，2009）和 LSUN 256x256（Yu 等人，2015）上的图像生成任务，证明了 CMs 在这些领域的有效性。进一步推动该领域发展的是，Luo 等人（2023）在文本到图像合成领域开创了潜在一致性模型（LCMs）。通过将引导反向扩散过程视为增强型概率流 ODE（PF-ODE）的求解问题，LCMs 能够在潜在空间中熟练地预测此类 ODE 的解。这种创新方法大幅减少了对迭代步骤的需求，从而能够从文本输入快速生成高保真图像，并在 LAION-5B-Aesthetics 数据集（Schuhmann 等人，2022）上树立了新的最先进性能标准。</p>
+<p><strong>参数高效微调</strong> 参数高效微调（PEFT）（Houlsby 等人，2019）能够针对特定任务定制现有模型，同时限制需要重新训练的参数数量。这降低了计算负载和存储需求。在 PEFT 涵盖的各种技术中，低秩适应（LoRA）（Hu 等人，2021）表现突出。LoRA 的策略是通过整合低秩矩阵来训练少量参数，这些矩阵简洁地表示了模型权重在微调时所需的调整。在实践中，这意味着在特定任务优化过程中，仅学习这些矩阵，而大部分预训练权重保持不变。因此，LoRA 显著减少了需要修改的参数数量，从而提高了计算效率，并允许用少得多的数据对模型进行优化。</p>
+<p><strong>预训练模型中的任务算术</strong> 任务算术（Ilharco 等人，2022；Ortiz-Jimenez 等人，2023；Zhang 等人，2023）已成为增强预训练模型能力的一种重要方法，为权重空间的直接编辑提供了一种经济高效且可扩展的策略。通过将不同任务的微调权重应用于模型，研究人员可以提高模型在这些任务上的性能，或者通过否定它们来诱导遗忘。尽管前景广阔，但对任务算术的全部潜力及其潜在原理的理解仍处于积极探索阶段。</p>
+<h3 id="3-LCM-LoRA"><a href="#3-LCM-LoRA" class="headerlink" title="3 LCM-LoRA"></a>3 LCM-LoRA</h3><h4 id="3-1-用于-LCM-的-LoRA-蒸馏"><a href="#3-1-用于-LCM-的-LoRA-蒸馏" class="headerlink" title="3.1 用于 LCM 的 LoRA 蒸馏"></a>3.1 用于 LCM 的 LoRA 蒸馏</h4><p>潜在一致性模型（LCM）（Luo 等人，2023）采用单阶段引导蒸馏方法进行训练，它利用预训练自编码器的潜在空间将引导扩散模型蒸馏为 LCM。这一过程涉及求解增强型概率流 ODE（PF-ODE），这是一种数学公式，可确保生成的样本遵循能产生高质量图像的轨迹。蒸馏过程的重点是在显著减少所需采样步骤数量的同时，保持这些轨迹的保真度。该方法包含诸如跳步技术等创新手段以加快收敛速度。潜在一致性蒸馏（LCD）的伪代码如算法 1 所示。</p>
+<p><img src="a1.png" width="80%"></p>
+<p>由于潜在一致性模型（LCM）的蒸馏过程是在预训练扩散模型的参数基础上进行的，因此我们可以将潜在一致性蒸馏视为扩散模型的微调过程。这使我们能够采用参数高效的微调方法，例如 LoRA（低秩适应）（Hu 等人，2021）。LoRA 通过应用低秩分解来更新预训练权重矩阵。给定一个权重矩阵 $W_0 \in \mathbb{R}^{d×k}$，其更新表示为 $W_0 + \Delta W = W_0 + BA$，其中 $B \in \mathbb{R}^{d×r}$，$A \in \mathbb{R}^{r×k}$，且秩 $r \leq \min(d, k)$。在训练过程中，$W_0$ 保持不变，仅对 A 和 B 应用梯度更新。对于输入 $x$，修改后的前向传播为：</p>
+<script type="math/tex; mode=display">h = W_0x + \Delta Wx = W_0x + BAx \tag{1}</script><p>在这个方程中，h 表示输出向量，$W_0$ 和 $\Delta W = BA$ 的输出在与输入 $x$ 相乘后相加。通过将完整的参数矩阵分解为两个低秩矩阵的乘积，LoRA 显著减少了可训练参数的数量，从而降低了内存使用率。表 3.1 对比了完整模型的总参数数量与使用 LoRA 技术时的可训练参数数量。显然，在 LCM 蒸馏过程中融入 LoRA 技术后，可训练参数的数量大幅减少，有效降低了训练的内存需求。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t1.png" width="90%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表 1：SD-V1.5（Rombach 等人，2022）、SSD-1B（Segmind.，2023）和 SDXL（Podell 等人，2023）的完整参数数量和使用 LoRA 时的可训练参数数量。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Luo 等人（2023）主要对基础稳定扩散模型进行蒸馏，例如 SD-V1.5 和 SD-V2.1。我们将这一蒸馏过程扩展到了更强大的模型，这些模型具有更强的文本到图像生成能力和更多的参数，包括 SDXL（Podell 等人，2023）和 SSD-1B（Segmind.，2023）。我们的实验表明，LCD 范式能够很好地适应更大的模型。不同模型的生成结果如图 2 所示。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f2.png" width="90%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图 2：使用从不同预训练扩散模型蒸馏得到的潜在一致性模型生成的图像。我们使用 LCM-LoRA-SD-V1.5 生成 512×512 分辨率的图像，使用 LCM-LoRA-SDXL 和 LCM-LoRA-SSD-1B 生成 1024×1024 分辨率的图像。在蒸馏过程中，我们为所有模型使用固定的无分类器引导尺度 $\omega = 7.5$。所有图像均通过 4 步采样获得。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="3-2-作为通用加速模块的-LCM-LoRA"><a href="#3-2-作为通用加速模块的-LCM-LoRA" class="headerlink" title="3.2 作为通用加速模块的 LCM-LoRA"></a>3.2 作为通用加速模块的 LCM-LoRA</h4><p>基于参数高效微调技术（如 LoRA），人们可以在大幅降低内存需求的情况下微调预训练模型。在 LoRA 框架内，得到的 LoRA 参数可以无缝集成到原始模型参数中。在 3.1 节中，我们论证了将 LoRA 应用于潜在一致性模型（LCMs）蒸馏过程的可行性。另一方面，人们可以在自定义数据集上进行微调以用于特定的任务导向型应用。目前有大量的微调参数可供选择和使用。我们发现，LCM-LoRA 参数可以直接与在特定风格数据集上微调得到的其他 LoRA 参数相结合。这种组合产生的模型能够以最少的采样步骤生成特定风格的图像，且无需任何进一步的训练。如图 1 所示，我们将 LCM-LoRA 微调参数记为 $\tau_{LCM}$（即“加速向量”），将在自定义数据集上微调得到的 LoRA 参数记为 $\tau’$（即“风格向量”），我们发现可以通过以下方式得到一个能生成自定义图像的 LCM：</p>
+<script type="math/tex; mode=display">θ'_{LCM} = θ_{pre} + τ'_{LCM} \tag{2}</script><p>其中，</p>
+<script type="math/tex; mode=display">τ'_{LCM} = \lambda_1 τ' + \lambda_2 τ_{LCM} \tag{3}</script><p>是加速向量 $\tau_{LCM}$ 和风格向量 $\tau’$ 的线性组合。这里的 $\lambda_1$ 和 $\lambda_2$ 是超参数。特定风格 LoRA 参数及其与 LCM-LoRA 参数组合的生成结果如图 3 所示。需要注意的是，我们没有对组合后的参数进行进一步训练。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f3.png" width="90%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图 3：特定风格 LoRA 参数以及其与 LCM-LoRA 参数组合的生成结果。我们使用 SDXL 作为基础模型。所有图像均为 1024×1024 分辨率。我们选择在特定绘画风格数据集上微调得到的 LoRA 参数，并将其与 LCM-LoRA 参数相结合。我们比较了这些模型在不同采样步骤下生成图像的质量。对于原始 LoRA 参数，我们使用 DPM-Solver++（Lu 等人，2022b）采样器和无分类器引导尺度 $\omega = 7.5$。对于 LCM-LoRA 与特定风格 LoRA 组合后得到的参数，我们使用 LCM 的多步采样器。组合时我们使用 $\lambda_1 = 0.8$ 和 $\lambda_2 = 1.0$。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="4-结论"><a href="#4-结论" class="headerlink" title="4 结论"></a>4 结论</h3><p>我们提出了 LCM-LoRA，这是一种适用于 Stable-Diffusion（SD）的通用无需训练的加速模块。LCM-LoRA 可作为一个独立且高效的基于神经网络的求解器模块，用于预测 PF-ODE 的解，能够在各种微调的 SD 模型和 SD LoRAs 上实现少步骤的快速推理。在文本到图像生成任务上的大量实验已经证明了 LCM-LoRA 强大的泛化能力和优越性。</p>
+<h3 id="5-贡献与致谢"><a href="#5-贡献与致谢" class="headerlink" title="5 贡献与致谢"></a>5 贡献与致谢</h3><p>本研究基于 Simian Luo 和 Yiqin Tan 的潜在一致性模型（LCMs）（Luo 等人，2023）展开。在 LCMs 的基础上，Simian Luo 编写了原始的 LCM-SDXL 蒸馏代码，并与 Yiqin Tan 共同主要完成了本技术报告。Yiqin Tan 发现了 LCM 参数的算术特性。Suraj Patil 首次完成了 LCM-LoRA 的训练，发现了其强大的泛化能力，并主导了大部分训练工作。Suraj Patil 和 Daniel Gu 对原始的 LCM-SDXL 代码库进行了出色的重构，提高了训练效率，并将其无缝集成到 Diffusers 库中。Patrick von Platen 对本技术报告进行了修订和润色，并将 LCM 集成到 Diffusers 库中。Longbo Huang、Jian Li、Hang Zhao 共同指导了原始 LCMs 论文的研究，并对本技术报告进行了润色。我们还要感谢 Apolinário Passos 和 Patrick von Platen 制作了出色的 LCMs 演示和部署版本。同时感谢 Sayak Paul 和 Pedro Cuenca 在文档撰写方面提供的帮助，以及 Radamés Ajna 制作的演示内容。我们感谢 Hugging Face Diffusers 团队提供的计算资源支持我们的实验。最后，我们珍视 LCM 社区成员富有洞察力的讨论。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/diffusion/" rel="tag"># diffusion</a>
+              <a href="/tags/2023/" rel="tag"># 2023</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/08/05/2024-CVPR-Distilling-ODE-Solvers-of-Diffusion-Models-into-Smaller-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" rel="prev" title="2024-CVPR-Distilling ODE Solvers of Diffusion Models into Smaller Steps论文精读">
+      <i class="fa fa-chevron-left"></i> 2024-CVPR-Distilling ODE Solvers of Diffusion Models into Smaller Steps论文精读
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2025/08/19/2023-ICML-Refining-Generative-Process-with-Discriminator-Guidance-in-Score-based-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" rel="next" title="2023-ICML-Refining Generative Process with Discriminator Guidance in Score-based Diffusion Models论文精读">
+      2023-ICML-Refining Generative Process with Discriminator Guidance in Score-based Diffusion Models论文精读 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.3.</span> <span class="nav-text">2 相关工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-LCM-LoRA"><span class="nav-number">1.4.</span> <span class="nav-text">3 LCM-LoRA</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E7%94%A8%E4%BA%8E-LCM-%E7%9A%84-LoRA-%E8%92%B8%E9%A6%8F"><span class="nav-number">1.4.1.</span> <span class="nav-text">3.1 用于 LCM 的 LoRA 蒸馏</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E4%BD%9C%E4%B8%BA%E9%80%9A%E7%94%A8%E5%8A%A0%E9%80%9F%E6%A8%A1%E5%9D%97%E7%9A%84-LCM-LoRA"><span class="nav-number">1.4.2.</span> <span class="nav-text">3.2 作为通用加速模块的 LCM-LoRA</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E7%BB%93%E8%AE%BA"><span class="nav-number">1.5.</span> <span class="nav-text">4 结论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E8%B4%A1%E7%8C%AE%E4%B8%8E%E8%87%B4%E8%B0%A2"><span class="nav-number">1.6.</span> <span class="nav-text">5 贡献与致谢</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zongqing Li"
+      src="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+  <p class="site-author-name" itemprop="name">Zongqing Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">107</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">50</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hqulzq" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hqulzq" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hqulzq@163.com" title="E-Mail → mailto:hqulzq@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+      
+<script type="text/javascript" charset="utf-8" src="/js/tagcloud.js"></script>
+<script type="text/javascript" charset="utf-8" src="/js/tagcanvas.js"></script>
+<div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div id="myCanvasContainer" class="widget tagcloud">
+        <canvas width="250" height="250" id="resCanvas" style="width=100%">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2023/" rel="tag">2023</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2024/" rel="tag">2024</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2025/" rel="tag">2025</a><span class="tag-list-count">23</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">26</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICCV/" rel="tag">ICCV</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICML/" rel="tag">ICML</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IJCAI/" rel="tag">IJCAI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIps/" rel="tag">NeurIps</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ODE%E6%B1%82%E8%A7%A3/" rel="tag">ODE求解</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">68</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%80%BB%E7%BB%93/" rel="tag">总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%85%E8%AF%BB/" rel="tag">阅读</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+        </canvas>
+    </div>
+</div>
+
+
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zongqing Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('post.copy_button').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('post.copy_success')
+          else $(this).text('post.copy_failure')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('post.copy_button')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>

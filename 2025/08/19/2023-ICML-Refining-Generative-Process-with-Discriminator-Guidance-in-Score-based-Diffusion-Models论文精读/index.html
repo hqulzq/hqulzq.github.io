@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="全文翻译摘要本文提出的“判别器引导（Discriminator Guidance）”方法旨在改进预训练扩散模型的样本生成质量。该方法引入一个判别器，对去噪样本路径的真实性进行显式监督。与生成对抗网络（GANs）不同，我们的方法无需对分数网络和判别器网络进行联合训练。相反，我们在分数网络训练完成后再训练判别器，这使得判别器的训练过程更加稳定且收敛速度更快。在样本生成阶段，我们在预训练的分数中添加一个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2023-ICML-Refining Generative Process with Discriminator Guidance in Score-based Diffusion Models论文精读">
+<meta property="og:url" content="https://hqulzq.github.io/2025/08/19/2023-ICML-Refining-Generative-Process-with-Discriminator-Guidance-in-Score-based-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/index.html">
+<meta property="og:site_name" content="Lzq&#39;s blog">
+<meta property="og:description" content="全文翻译摘要本文提出的“判别器引导（Discriminator Guidance）”方法旨在改进预训练扩散模型的样本生成质量。该方法引入一个判别器，对去噪样本路径的真实性进行显式监督。与生成对抗网络（GANs）不同，我们的方法无需对分数网络和判别器网络进行联合训练。相反，我们在分数网络训练完成后再训练判别器，这使得判别器的训练过程更加稳定且收敛速度更快。在样本生成阶段，我们在预训练的分数中添加一个">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hqulzq.github.io/2025/08/19/2023-ICML-Refining-Generative-Process-with-Discriminator-Guidance-in-Score-based-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/%E6%AD%A4%E5%A4%84%E4%B8%BA%E5%8E%9F%E6%96%87%E5%9B%BE1%E4%BD%8D%E7%BD%AE">
+<meta property="og:image" content="https://hqulzq.github.io/2025/08/19/2023-ICML-Refining-Generative-Process-with-Discriminator-Guidance-in-Score-based-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/%E6%AD%A4%E5%A4%84%E4%B8%BA%E5%8E%9F%E6%96%87%E5%9B%BE3%E4%BD%8D%E7%BD%AE">
+<meta property="og:image" content="https://hqulzq.github.io/2025/08/19/2023-ICML-Refining-Generative-Process-with-Discriminator-Guidance-in-Score-based-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/%E6%AD%A4%E5%A4%84%E4%B8%BA%E5%8E%9F%E6%96%87%E5%9B%BE4%E4%BD%8D%E7%BD%AE">
+<meta property="og:image" content="https://hqulzq.github.io/2025/08/19/2023-ICML-Refining-Generative-Process-with-Discriminator-Guidance-in-Score-based-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/%E6%AD%A4%E5%A4%84%E4%B8%BA%E5%8E%9F%E6%96%87%E5%9B%BE5%E4%BD%8D%E7%BD%AE">
+<meta property="og:image" content="https://hqulzq.github.io/2025/08/19/2023-ICML-Refining-Generative-Process-with-Discriminator-Guidance-in-Score-based-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/%E6%AD%A4%E5%A4%84%E4%B8%BA%E5%8E%9F%E6%96%87%E5%9B%BE6%E4%BD%8D%E7%BD%AE">
+<meta property="article:published_time" content="2025-08-19T09:20:23.000Z">
+<meta property="article:modified_time" content="2025-08-19T10:21:20.649Z">
+<meta property="article:author" content="Zongqing Li">
+<meta property="article:tag" content="diffusion">
+<meta property="article:tag" content="2023">
+<meta property="article:tag" content="ICML">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hqulzq.github.io/2025/08/19/2023-ICML-Refining-Generative-Process-with-Discriminator-Guidance-in-Score-based-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/%E6%AD%A4%E5%A4%84%E4%B8%BA%E5%8E%9F%E6%96%87%E5%9B%BE1%E4%BD%8D%E7%BD%AE">
+
+<link rel="canonical" href="https://hqulzq.github.io/2025/08/19/2023-ICML-Refining-Generative-Process-with-Discriminator-Guidance-in-Score-based-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>2023-ICML-Refining Generative Process with Discriminator Guidance in Score-based Diffusion Models论文精读 | Lzq's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lzq's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">50</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">107</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book">
+
+    <a href="/book" rel="section"><i class="fas fa-book fa-fw"></i>Book</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/08/19/2023-ICML-Refining-Generative-Process-with-Discriminator-Guidance-in-Score-based-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          2023-ICML-Refining Generative Process with Discriminator Guidance in Score-based Diffusion Models论文精读
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-08-19 17:20:23 / 修改时间：18:21:20" itemprop="dateCreated datePublished" datetime="2025-08-19T17:20:23+08:00">2025-08-19</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>本文提出的“判别器引导（Discriminator Guidance）”方法旨在改进预训练扩散模型的样本生成质量。该方法引入一个判别器，对去噪样本路径的真实性进行显式监督。与生成对抗网络（GANs）不同，我们的方法无需对分数网络和判别器网络进行联合训练。相反，我们在分数网络训练完成后再训练判别器，这使得判别器的训练过程更加稳定且收敛速度更快。在样本生成阶段，我们在预训练的分数中添加一个辅助项以“欺骗”判别器。在最优判别器条件下，该辅助项能将模型分数修正为数据分数，这意味着判别器以互补的方式帮助实现更优的分数估计。通过我们的算法，在ImageNet 256x256数据集上取得了当前最优结果，FID值为1.83，召回率为0.64，与验证集数据的FID（1.68）和召回率（0.66）相当。我们已在<a target="_blank" rel="noopener" href="https://github.com/alsdudrla10/DG">https://github.com/alsdudrla10/DG</a>发布相关代码。</p>
+<span id="more"></span>
+<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1. 引言"></a>1. 引言</h3><p>近年来，扩散模型因其在图像生成（Dhariwal &amp; Nichol, 2021; Ho et al., 2022a; Karras et al., 2022; Song et al., 2020b）、视频生成（Singer et al., 2022; Ho et al., 2022b; Voleti et al., 2022）以及文本到图像生成（Rombach et al., 2022; Ramesh et al., 2022; Saharia et al., 2022）等领域的成功而备受关注。当前最优模型已能实现接近人类水平的生成效果，但对于扩散模型的深入理解仍有很大探索空间。</p>
+<p>生成模型领域广泛将训练良好的分数模型（Dhariwal &amp; Nichol, 2021; Rombach et al., 2022）应用于下游任务（Meng et al., 2021; Kawar et al., 2022; Su et al., 2022; Kim et al.）。部分原因是从头训练一个新的分数模型计算成本极高。然而，随着复用预训练模型的需求增加，针对如何利用预训练分数模型提升样本质量的研究却为数不多。</p>
+<p>为避免进一步训练分数模型可能引发的过拟合（Nichol &amp; Dhariwal, 2021）或记忆化（Carlini et al., 2023）等问题（如图25所示），我们的方法固定预训练分数模型，并引入一个新组件在样本生成过程中提供监督。具体而言，我们提出将判别器作为预训练模型的辅助自由度。</p>
+<p><img src="此处为原文图1位置" alt="图1：去噪过程对比。判别器引导通过估计预测模型分数与真实数据分数之间的差距$c_{\phi}$来调整分数函数。因此，根据判别器的判断，使用判别器引导生成的样本与真实数据难以区分。"></p>
+<p>该判别器在所有噪声尺度下对真实数据和生成数据进行分类，为样本去噪过程提供直接反馈，指示样本路径是否真实。我们通过在模型分数中添加由判别器构建的修正项来实现这一点，该修正项将样本路径导向更真实的区域（图1）。此修正项旨在使最优判别器下的模型分数与数据分数相匹配（定理1），从而通过调整模型分数帮助我们的方法找到真实的样本路径。在实验中，我们在CIFAR-10、CelebA/FFHQ 64x64和ImageNet 256x256等图像数据集上取得了新的最优性能。由于判别器训练是一个稳定且收敛迅速的极小化问题（图3），因此只需较低的计算成本就能实现显著的性能提升（表6）。我们的贡献总结如下：</p>
+<ol>
+<li>我们提出了一种新的生成过程——判别器引导，它对给定预训练分数模型的分数进行调整。</li>
+<li>我们从理论和实证上证明，判别器引导的样本比非引导样本更接近真实世界数据。</li>
+</ol>
+<h3 id="2-预备知识"><a href="#2-预备知识" class="headerlink" title="2. 预备知识"></a>2. 预备知识</h3><p>假设$p_{r}(x_{0})$为数据分布，$p_{\theta}(x_{0})$为模型分布。基于似然的潜变量模型通过最小化KL散度$D_{KL}(p_{r}(x_{0}) | p_{\theta}(x_{0}))$的上界来优化其参数，该上界由下式给出：</p>
+<script type="math/tex; mode=display">D_{KL}\left(p_{r}\left(x_{0}\right) \| p_{\theta}\left(x_{0}\right)\right) \leq D_{KL}\left(q\left(x_{0: T}\right) \| p_{\theta}\left(x_{0: T}\right)\right),</script><p>其中$x_{1: T}$为$T$个潜变量；$q(x_{0: T})$为推理分布，其边缘密度为$q(x_{0}):=p_{r}(x_{0})$；$p_{\theta}(x_{0: T})$为生成分布，其边缘密度为$p_{\theta}(x_{T}):=\pi(x_{T})$，其中$\pi$是便于采样的先验分布，用于生成目的。</p>
+<p>去噪扩散概率模型（DDPM）（Ho等人，2020）通过逐步向数据变量$x_{0}$添加迭代高斯噪声来构建$x_{1: T}$，使得$q$成为非参数化的固定推理分布，即$q(x_{0: T})=p_{r}(x_{0}) \prod_{t=1}^{T} q(x_{t} | x_{t-1})$。大多数扩散模型（Okhotin等人，2023）假设生成过程为马尔可夫链，以满足$p_{\theta}(x_{0: T})=\pi(x_{T}) \prod_{t=1}^{T} p_{\theta}(x_{t-1} | x_{t})$，这种建模选择使得能够以易于处理的方式优化替代目标$D_{KL}(q(x_{0: T}) | p_{\theta}(x_{0: T}))$。</p>
+<p>DDPM的连续时间对应模型（Song等人，2020b）用随机微分方程（SDE）描述扩散过程：</p>
+<script type="math/tex; mode=display">d x_{t}=f\left(x_{t}, t\right) d t+g(t) d w_{t}, \quad (1)</script><p>其中$t$是$[0, T]$范围内的连续扩散索引，$f(x_{t}, t)$和$g(t)$分别是漂移系数和波动率系数。我们主要在连续时间框架下描述我们的模型，这主要是为了符号简化。我们的模型适用于离散时间和连续时间两种设置。</p>
+<p>在连续时间框架下，式（1）中的正向时间扩散过程具有唯一的反向时间扩散过程（Anderson，1982）：</p>
+<script type="math/tex; mode=display">d x_{t}=\left[f\left(x_{t}, t\right)-g^{2}(t) \nabla \log p_{r}^{t}\left(x_{t}\right)\right] d \bar{t}+g(t) d \bar{w}_{t}, \quad (2)</script><p>其中$d \bar{t}$和$\bar{w}_{t}$分别是无穷小反向时间和反向时间布朗运动。随后，连续时间生成过程变为：</p>
+<script type="math/tex; mode=display">d x_{t}=\left[f\left(x_{t}, t\right)-g^{2}(t) s_{\theta}\left(x_{t}, t\right)\right] d \bar{t}+g(t) d \bar{w}_{t},</script><p>其中分数网络$s_{\theta}(x_{t}, t)$的估计目标是实际数据分数$\nabla \log p_{r}^{t}(x_{t})$。这里，$p_{r}^{t}$是遵循式（1）中正向时间扩散过程的数据分布的扩散概率密度。</p>
+<p>连续时间模型使用去噪分数匹配损失（Song &amp; Ermon，2019）训练分数网络：</p>
+<script type="math/tex; mode=display">\mathcal{L}_{\theta}=\frac{1}{2} \int_{0}^{T} \xi(t) \mathbb{E}\left[\left\| s_{\theta}\left(x_{t}, t\right)-\nabla \log p_{0 t}\left(x_{t} | x_{0}\right)\right\|_{2}^{2}\right] d t,</script><p>其中$\xi$是时间权重，$p_{0 t}$是从$x_{0}$到$x_{t}$的转移概率。如果$\xi(t)=g^{2}(t)$（Chen等人，2016；Song等人，2021），则该去噪分数目标与联合KL散度$D_{KL}(q(x_{0: T}) | p_{\theta}(x_{0: T}))$一致。此外，在不同的权重函数下，该目标可以等效地解释为噪声匹配损失$\int_{0}^{T} \mathbb{E}[\left|\epsilon_{\theta}-\epsilon\right|_{2}^{2}]$（Ho等人，2020）或数据重建损失$\int_{0}^{T} \mathbb{E}[\left|\hat{x}_{\theta}(x_{t})-x_{0}\right|_{2}^{2}]$（Kingma等人，2021）。</p>
+<p>有多种方法可以提高分数训练的精度。例如，Kim等人（2022b）、Kingma &amp; Gao（2023）、Hang等人（2023）提出使用最大扰动似然估计来更新分数网络，以提高大时间去噪精度。相反，Lai等人（2022）、Daras等人（2023）研究了数据扩散过程的不变特征，并建议在去噪分数损失中添加额外的正则化项以满足这些不变性质。另一方面，我们的工作旨在通过噪声对比估计来优化固定的模型分数，这与先前提高分数精度的尝试不同。</p>
+<h3 id="3-利用判别器引导优化生成过程"><a href="#3-利用判别器引导优化生成过程" class="headerlink" title="3. 利用判别器引导优化生成过程"></a>3. 利用判别器引导优化生成过程</h3><h4 id="3-1-预训练模型分数的修正"><a href="#3-1-预训练模型分数的修正" class="headerlink" title="3.1 预训练模型分数的修正"></a>3.1 预训练模型分数的修正</h4><p>分数网络训练完成后，我们通过时间反转生成过程合成样本：</p>
+<script type="math/tex; mode=display">dx_{t}=\left[ f(x_{t},t)-g^{2}(t) s_{\theta_{\infty}}(x_{t},t)\right] d\overline{t}+g(t) d\overline{w}_{t}, \quad (3)</script><p>其中$s_{\theta_{\infty}}$表示收敛后的分数网络。如果局部最优解$\theta_{\infty}$偏离全局最优解$\theta_{_}$，则该生成过程可能与时间反转的数据过程不一致。我们在定理1中证明：若对模型分数进行调整，式（3）的生成过程可与式（2）的数据过程一致。我们将这种差距称为修正项，只要$\theta_{\infty} \neq \theta_{_}$，该修正项就不为零。</p>
+<p><strong>定理1</strong>：设$p_{\theta_{\infty}}$为式（3）时间反转生成过程的解。令$p_{r}^{t}$和$p_{\theta_{\infty}}^{t}$分别为从$p_{r}$和$p_{\theta_{\infty}}$出发的正向SDE $dx_{t}=f(x_{t},t)dt+g(t)dw_{t}$在时间$t$的边缘密度。若$s_{\theta_{\infty}}(x,T)=\nabla \log \pi(x)$（其中$\pi$为先验分布），且对数似然$\log p_{\theta_{\infty}}$等于其证据下界$L_{\theta_{\infty}}$，则反向SDE：</p>
+<script type="math/tex; mode=display">dx_{t}=\left[ f(x_{t},t)-g^{2}(t) \nabla \log p_{r}^{t}(x_{t})\right] d\overline{t}+g(t) d\overline{w}_{t},</script><p>与具有调整后分数的扩散过程一致：</p>
+<script type="math/tex; mode=display">dx_{t}=\left[ f(x_{t},t)-g^{2}(t)\left(s_{\theta_{\infty}}+c_{\theta_{\infty}}\right)(x_{t},t)\right] d\overline{t}+g(t) d\overline{w}_{t},</script><p>其中：</p>
+<script type="math/tex; mode=display">c_{\theta_{\infty}}(x_{t},t):=\nabla \log \frac{p_{r}^{t}(x_{t})}{p_{\theta_{\infty}}^{t}(x_{t})}</script><h4 id="3-2-判别器引导"><a href="#3-2-判别器引导" class="headerlink" title="3.2 判别器引导"></a>3.2 判别器引导</h4><p>修正项$c_{\theta_{\infty}}(x_{t},t)=\nabla \log \frac{p_{r}^{t}(x_{t})}{p_{\theta_{\infty}}^{t}(x_{t})}$通常难以直接求解，因为密度比$\frac{p_{r}^{t}}{p_{\theta_{\infty}}^{t}}$无法直接获取。因此，我们通过在所有噪声水平$t$上训练判别器来估计该密度比。对于判别器训练，我们首先从式（3）的生成过程中抽取与数据样本数量相当的伪造样本，然后使用嵌入噪声的二元交叉熵（BCE）损失对真实数据和伪造数据进行分类：</p>
+<script type="math/tex; mode=display">\begin{aligned} \mathcal{L}_{\phi}= & \int \lambda(t)\left(\mathbb{E}_{p_{r}^{t}(x_{t})}\left[-\log d_{\phi}(x_{t},t)\right]\right. \\ & \left.+\mathbb{E}_{p_{\theta_{\infty}}^{t}(x_{t})}\left[-\log \left(1-d_{\phi}(x_{t},t)\right)\right]\right) dt, \end{aligned} \quad (4)</script><p>其中$\lambda$为时间权重，详见算法1和附录A.4。</p>
+<p>在最优判别器$d_{\phi_{_}}$（即最小化$L_{\phi}$的判别器）下，修正项可表示为：</p>
+<script type="math/tex; mode=display">c_{\theta_{\infty}}(x_{t},t)=\nabla \log \frac{d_{\phi_{_}}(x_{t},t)}{1-d_{\phi_{*}}(x_{t},t)},</script><p>因此，我们使用神经判别器$d_{\phi}$估计修正项$c_{\theta_{\infty}}$：</p>
+<script type="math/tex; mode=display">c_{\theta_{\infty}}(x_{t},t) \approx c_{\phi}(x_{t},t):=\nabla \log \frac{d_{\phi}(x_{t},t)}{1-d_{\phi}(x_{t},t)}.</script><p>基于上述易于处理的修正项估计，我们定义判别器引导（DG）为：</p>
+<script type="math/tex; mode=display">\begin{array}{r}dx_{t}=\left[ f(x_{t},t)-g^{2}(t)(s_{\theta_{\infty}}+c_{\phi})(x_{t},t)\right] d\overline{t}+g(t)\, d\overline{w}_{t}.\\ (5)\end{array}</script><p>图3显示，判别器确实能快速收敛并提升样本质量。</p>
+<p><img src="此处为原文图3位置" alt="图3：判别器引导优化CIFAR-10数据集上的FID值"></p>
+<h4 id="3-3-理论分析"><a href="#3-3-理论分析" class="headerlink" title="3.3 理论分析"></a>3.3 理论分析</h4><p>尽管我们在微分方程的框架下引入了判别器引导，但本节将从数据分布与样本分布之间的统计散度角度分析该方法。具体而言，我们将式（5）的判别器引导样本分布记为$p_{\theta_{\infty},\phi}$。核心问题是：$p_{\theta_{\infty},\phi}$是否比$p_{\theta_{\infty}}$更接近数据分布$p_{r}$？</p>
+<p>我们通过定理2回答这一问题。</p>
+<p><strong>定理2</strong>：若定理1的假设成立，则：</p>
+<script type="math/tex; mode=display">D_{KL}(p_{r} \| p_{\theta_{\infty}})=D_{KL}(p_{r}^{T} \| \pi)+E_{\theta_{\infty}},</script><script type="math/tex; mode=display">D_{KL}(p_{r} \| p_{\theta_{\infty},\phi}) \leq D_{KL}(p_{r}^{T} \| \pi)+E_{\theta_{\infty},\phi},</script><p>其中$E_{\theta_{\infty}}$为分数误差：</p>
+<script type="math/tex; mode=display">E_{\theta_{\infty}}=\frac{1}{2} \int_{0}^{T} g^{2}(t) \mathbb{E}_{p_{r}^{t}}\left[\left\| \nabla \log p_{r}^{t}-s_{\theta_{\infty}}\right\|_{2}^{2}\right] dt,</script><p>$E_{\theta_{\infty},\phi}$为判别器调整后的分数误差：</p>
+<script type="math/tex; mode=display">\begin{aligned} E_{\theta_{\infty},\phi} & =\frac{1}{2} \int_{0}^{T} g^{2}(t) \mathbb{E}_{p_{r}^{t}}\left[\left\| \nabla \log p_{r}^{t}-\left(s_{\theta_{\infty}}+c_{\phi}\right)\right\|_{2}^{2}\right] dt \\ & =\frac{1}{2} \int_{0}^{T} g^{2}(t) \mathbb{E}_{p_{r}^{t}}\left[\left\| c_{\theta_{\infty}}-c_{\phi}\right\|_{2}^{2}\right] dt . \end{aligned}</script><p>为衡量判别器训练的效果，我们利用定理2通过两个KL散度的差值计算增益：</p>
+<script type="math/tex; mode=display">D_{KL}(p_{r} \| p_{\theta_{\infty},\phi}) \leq D_{KL}(p_{r} \| p_{\theta_{\infty}})-Gain(\theta_{\infty},\phi).</script><p>其中$Gain(\theta_{\infty},\phi)=E_{\theta_{\infty}}-E_{\theta_{\infty},\phi}$表示分数误差与判别器调整后分数误差的差值。需要注意的是，定理2并未保证增益一定为正，但增益初始值接近零，并在判别器训练过程中逐渐增大，如表1所示。具体而言，当判别器完全失效时（$d_{\phi_{b}} \equiv 0.5$），判别器梯度无信号，此时判别器调整后的分数误差$E_{\theta_{\infty},\phi_{b}}$等于分数误差$E_{\theta_{\infty}}$。因此，如图3所示，当判别器未训练时（$d_{\phi_{0}} \approx 0.5$），增益近似为零。另一方面，在最优判别器$d_{\phi_{_}}$下，神经修正项$c_{\phi_{_}}$与目标修正项$c_{\theta_{\infty}}$匹配，且满足$E_{\theta_{\infty},\phi_{*}}=0$，因此随着判别器参数的更新，增益可达到最大值（见图4的示意图）。换言之，我们可以将判别器引导理解为引入额外的自由度$\phi$，将分数误差$E_{\theta_{\infty}}$重新参数化为判别器调整后的分数误差$E_{\theta_{\infty},\phi}$。因此，分数误差$E_{\theta_{\infty}}$不再通过去噪分数损失优化，而是通过式（4）的替代损失$L_{\phi}$优化重新参数化后的误差$E_{\theta_{\infty},\phi}$。</p>
+<p><img src="此处为原文图4位置" alt="图4：3.3节分析的示意图。随着判别器学习过程的推进，增益逐渐增大。"></p>
+<p>表1：判别器调整后的分数误差$E_{\theta_{\infty},\phi}$及相应增益</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>判别器</th>
+<th>$E_{\theta_{\infty},\phi}$</th>
+<th>增益</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>失效判别器$d_{\phi_{b}}(\equiv 0.5)$</td>
+<td>$E_{\theta_{\infty}}$</td>
+<td>0</td>
+</tr>
+<tr>
+<td>最优判别器$d_{\phi_{*}}$</td>
+<td>0</td>
+<td>$E_{\theta_{\infty}}$（最大值）</td>
+</tr>
+<tr>
+<td>未训练判别器$d_{\phi_{0}}(\approx 0.5)$</td>
+<td>$\approx E_{\theta_{\infty}}$</td>
+<td>$\approx 0$</td>
+</tr>
+<tr>
+<td>训练后判别器$d_{\phi_{\infty}}$</td>
+<td>$\ll E_{\theta_{\infty}}$</td>
+<td>$\nearrow E_{\theta_{\infty}}$</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="3-4-最优性分析"><a href="#3-4-最优性分析" class="headerlink" title="3.4 最优性分析"></a>3.4 最优性分析</h4><p>我们进一步分析分数组件。与不稳定的GAN训练不同，我们的判别器训练过程稳定，因为训练时固定预训练分数模型。因此，当判别器达到最优后，调整后的模型分数为：</p>
+<script type="math/tex; mode=display">\begin{aligned} s_{\theta_{\infty}} & (x_{t},t)+w c_{\phi_{*}}(x_{t},t) \\ & =\nabla \log p_{\theta_{\infty}}^{t}(x_{t})+w \nabla \log \frac{p_{r}^{t}(x_{t})}{p_{\theta_{\infty}}^{t}(x_{t})} \\ & =\nabla \log \left[ \left(p_{r}^{t}(x_{t})\right)^{w} \left(p_{\theta_{\infty}}^{t}(x_{t})\right)^{1-w}\right], \end{aligned}</script><p>因此，样本分布$(p_{r}^{t})^{w}(p_{\theta_{\infty}}^{t})^{1-w}$平衡了数据分布与非引导分布。这一结论同样适用于条件生成场景，使得判别器引导可作为类内多样性的控制器。图5在ImageNet数据集上的实验表明，存在一个判别器引导权重的“最佳点”，能同时优化样本质量（FID）和多样性（召回率）。</p>
+<p><img src="此处为原文图5位置" alt="图5：DiT-XL-G++模型上FID与召回率的权衡关系。"></p>
+<h4 id="3-5-与分类器引导的关联"><a href="#3-5-与分类器引导的关联" class="headerlink" title="3.5 与分类器引导的关联"></a>3.5 与分类器引导的关联</h4><p>分类器引导（CG）（Dhariwal &amp; Nichol, 2021）是一项里程碑式的技术，它利用预训练分类器$p_{\psi_{\infty}}(c | x_{t},t)$引导样本生成。分类器引导的生成过程为：$dx_{t}=[f(x_{t},t)-g^{2}(t)(s_{\theta_{\infty}}(x_{t},t)+\nabla \log p_{\psi_{\infty}}(y | x_{t},t))] d\bar{t}+g_{t} d\overline{w}_{t}$。这相当于从$(x_{t},y)$的联合分布中采样，因为：</p>
+<script type="math/tex; mode=display">\begin{aligned} \nabla \log p_{r}^{t}(x_{t},y) & =\nabla \log p_{r}^{t}(x_{t})+\nabla \log p(y | x_{t},t) \\ & \approx s_{\theta_{\infty}}(x_{t},t)+\nabla \log p_{\psi_{\infty}}(y | x_{t},t), \end{aligned}</script><p>其中$p(y | x_{t},t)$为时间$t$的理想分类器。分类器引导为样本路径提供监督信息，判断样本是否被类别标签$y$正确分类。然而，由于分类器引导最大化分类概率$p(y | x_{t},t)$，可能导致模式坍塌。相比之下，如3.4节所述，判别器引导通过提供样本路径真实性的独特监督信息，可增强模式覆盖度。</p>
+<p>由于从$(x_{t},y)$的联合分布中采样需要准确的分数估计，判别器引导与分类器引导可结合使用以产生协同效应。我们建议将两种引导技术结合：</p>
+<script type="math/tex; mode=display">\begin{aligned} dx_{t}= & \left[ f(x_{t},t)-g^{2}(t)\left( \left(s_{\theta_{\infty}}+w_{t}^{DG} c_{\phi_{\infty}}\right)(x_{t},t)\right.\right. \\ & \left.\left.+w_{t}^{CG} \nabla \log p_{\psi_{\infty}}(c | x_{t},t)\right)\right] d\overline{t}+g(t) d\overline{w}_{t}, \end{aligned}</script><p>其中$w_{t}^{DG}$和$w_{t}^{CG}$分别为时间相关权重。理想情况下，这两种信息能以互补方式引导样本向分类器和判别器的共同高概率区域移动。</p>
+<p>表2：算法2包含DDPM、DDIM和EDM采样器</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>采样器</th>
+<th>$\gamma_{t}$</th>
+<th>$\eta$</th>
+<th>$w_{t}^{CG}$</th>
+<th>$w_{t}^{DG}$</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DDPM</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>DDIM</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>EDM</td>
+<td>$\geq 0$</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>ADM-G</td>
+<td>0</td>
+<td>1</td>
+<td>$&gt;0$</td>
+<td>0</td>
+</tr>
+<tr>
+<td>EDM-G++</td>
+<td>$\geq 0$</td>
+<td>0</td>
+<td>0</td>
+<td>$&gt;0$</td>
+</tr>
+<tr>
+<td>ADM-G++</td>
+<td>0</td>
+<td>1</td>
+<td>$&gt;0$</td>
+<td>$&gt;0$</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>算法2描述了式（6）采样过程的完整细节。该算法通过表2中的相应超参数，简化了DDPM（Ho等人，2020；Dhariwal &amp; Nichol, 2021）、DDIM（Song等人，2020a）和EDM（Karras等人，2022）的采样器。我们的采样器在基础采样器前缀后以“G++”为后缀表示。详见附录D.1的详细采样步骤。</p>
+<p><img src="此处为原文图6位置" alt="图6：二维玩具案例中真实数据分数、合成分数与调整后分数的对比。我们假设数据分布为$p_{r}(x):=\frac{1}{2} \mathcal{N}(x;(10,10)^{T},I)+\frac{1}{2} \mathcal{N}(x;(-10,-10)^{T},I)$，假设合成生成分布为$p_{g}(x):=\frac{1}{2} \mathcal{N}(x;(10,-10)^{T},I)+\frac{1}{2} \mathcal{N}(x;(-10,10)^{T},I)$，其分数为不正确的$s(x_{t},t):=\nabla \log p_{g}^{t}(x_{t})$。我们通过求解概率流ODE（Song等人，2020b）可视化各分数函数生成的样本。"></p>
+<h3 id="4-相关工作"><a href="#4-相关工作" class="headerlink" title="4. 相关工作"></a>4. 相关工作</h3><p>有一系列研究将扩散模型与GAN模型相结合。Zheng等人（2022b）、Lyu等人（2022）利用GAN生成器合成扩散数据$x_{\sigma_{mid}}$（将$x_{T}$作为生成器的输入），并通过扩散模型将$x_{\sigma_{mid}}$去噪为$x_{0}$。Xiao等人（2022）用少量序列条件GAN生成器替代数千步去噪步骤。Wang等人（2022）利用扩散概念训练GAN。相反，Jolicoeur-Martineau等人（2021）通过对抗损失训练扩散模型。然而，在上述工作中，扩散模型与GAN在训练完成后的生成过程中并未相互作用。相比之下，判别器引导中的判别器直接干预生成过程。与先前研究的另一区别是，我们的判别器训练无需任何生成器参与，因此训练过程稳定。</p>
+<p>其他先前工作使用拒绝采样或MCMC从重新加权的模型分布中抽取样本。Azadi等人（2019）、Che等人（2020）利用拒绝采样，在似然比技巧（Gutmann &amp; Hyvärinen, 2010）下通过判别器调整生成器的隐式分布。类似地，Turner等人（2019）利用似然比技巧进行MCMC采样。具体而言，Aneja等人（2021）和Bauer &amp; Mnih（2019）分别在VAE中引入了聚合后验的重要性采样和拒绝采样。在扩散模型中，判别器引导通过梯度上升最大化$\frac{p_{r}^{t}}{p_{\theta_{\infty}}^{t}}$，本质上是用重要性权重$\frac{p_{r}^{t}}{p_{\theta_{\infty}}^{t}}$对模型分布$p_{\theta_{\infty}}^{t}$进行重新加权。因此，判别器引导无需样本拒绝，且可扩展至高维场景。</p>
+<h3 id="5-实验"><a href="#5-实验" class="headerlink" title="5. 实验"></a>5. 实验</h3><h4 id="5-1-二维玩具案例"><a href="#5-1-二维玩具案例" class="headerlink" title="5.1 二维玩具案例"></a>5.1 二维玩具案例</h4><p>图6展示了一个易于处理的二维玩具案例的实验结果。我们训练了一个含256个神经元的4层MLP判别器直至收敛，并假设存在一个不正确的分数函数$s:=\nabla \log p_{g}^{t}$（对应合成生成分布$p_{g}$），该函数与数据分数不匹配。若没有引导，不正确的分数$s$会生成来自错误分布的样本，如图6所示。相反，$s + c_{\phi_{\infty}}$成功将$s$引导至$\nabla \log p_{r}^{t}$，更多可视化结果见图15和图16。</p>
+<h4 id="5-2-图像生成"><a href="#5-2-图像生成" class="headerlink" title="5.2 图像生成"></a>5.2 图像生成</h4><p>我们在CIFAR-10、CelebA/FFHQ 64x64和ImageNet 256x256数据集上进行了实验。CIFAR-10和FFHQ的预训练网络来自Karras等人（2022）、Vahdat等人（2021），CelebA的预训练网络来自Kim等人（2022b），ImageNet的预训练网络来自Dhariwal &amp; Nichol（2021）、Peebles &amp; Xie（2022）。</p>
+<h5 id="判别器网络"><a href="#判别器网络" class="headerlink" title="判别器网络"></a>判别器网络</h5><p>我们采用U-Net结构的编码器作为判别器网络。对于数据空间上的扩散模型，我们附加两个嵌入噪声的U-Net编码器：预训练的ADM分类器（Dhariwal &amp; Nichol, 2021）和一个辅助（浅层）U-Net编码器。我们将$(x_{t}, t)$输入ADM分类器，并从预训练分类器的最后一个池化层提取$x_{t}$的 latent 特征$z_{t}$。然后，我们将$(z_{t}, t)$输入辅助U-Net编码器，并通过其输出来预测真实/伪造样本。我们冻结ADM分类器的参数，默认只微调浅层U-Net编码器。值得一提的是，微调不仅节省训练成本，其性能还优于或等同于训练整个架构（Kato &amp; Teshima, 2021）。对于LSGM-G++，我们从头训练U-Net编码器。对于DiT-XL-G++，我们训练与ADM分类器架构相同但输入维度不同的latent分类器，并微调浅层U-Net编码器作为判别器。对于类别条件生成，我们训练类别条件判别器。详细训练配置见表8。</p>
+<h5 id="定量分析"><a href="#定量分析" class="headerlink" title="定量分析"></a>定量分析</h5><p>我们在所有数据集（包括CIFAR-10、CelebA、FFHQ和ImageNet）上均实现了新的最优FID结果。在CIFAR-10上，表3显示判别器引导在数据扩散模型（EDM）和潜在扩散模型（LSGM）中均有效。除判别器引导外，我们使用EDM和LSGM的所有超参数，因此性能提升完全来自判别器组件。在人脸数据集上，判别器引导的增益同样显著，见表4。</p>
+<p>在ImageNet 256x256上，我们在包括FID、sFID、IS和召回率在内的多种指标上呈现了最优结果，见表5。作为参考，我们还在ImageNet 50k验证集上测量了这些指标。值得注意的是，验证集的IS和精确率与最佳模型相当。因此，一旦模型的IS和精确率达到验证集水平，优化其他指标（如FID、sFID和召回率）就变得更为重要。实验表明，借助判别器引导，我们在DiT-XL/2-G++上实现了FID和召回率的最佳性能，表明样本质量和多样性均得到显著提升。详细超参数见表8，未筛选样本见附录D.4。</p>
+<h5 id="定性分析"><a href="#定性分析" class="headerlink" title="定性分析"></a>定性分析</h5><p>图7展示了FFHQ数据集上原始样本与其100次再生样本平均值的对比（Meng等人，2021）。若分数估计准确，当扰动噪声足够小时，平均重建图像应近似等于原始图像。为解释这一点，假设原始图像为$y$，我们通过$y + \sigma(t)\epsilon$沿固定方向$\epsilon$对其进行扰动。将该扰动数据代入Tweedie公式（Robbins, 1992；Jolicoeur-Martineau等人，2021），平均重建数据$x_{0}$为：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\mathbb{E}\left[x_{0} | x_{t}\right. & \left.= y + \sigma(t)\epsilon\right] \\
+& = y + \sigma(t)\epsilon + \sigma^{2}(t)\nabla \log p_{r}^{t}(y + \sigma(t)\epsilon).
+\end{aligned}</script><p>若$\sigma(t)$足够小，则有$p_{r}^{t}(y + \sigma(t)\epsilon) \propto p(\epsilon)$，这导致$\mathbb{E}_{\epsilon}[\nabla \log p_{r}^{t}(y + \sigma(t)\epsilon)] \approx 0$。因此，沿随机方向$\epsilon$对$y$进行重建的平均图像近似为原始数据：</p>
+<script type="math/tex; mode=display">
+\mathbb{E}_{\epsilon}\left[\mathbb{E}\left[x_{0} | x_{t} = y + \sigma(t)\epsilon\right]\right] \approx y.</script><p>综上，平均重建图像与原始图像的接近程度间接反映了估计分数的准确性，因为上述结论对数据分数成立。在图7中，当$\sigma(t) = 1$（较小值）时，调整后的分数比原始模型分数提供了更准确的估计。</p>
+<p>图8显示，训练后的判别器能够准确区分真实数据的扩散路径和生成样本的去噪路径。相反，经判别器调整的去噪路径“欺骗”了判别器，使得调整后生成SDE（式5）的密度比曲线与数据正向SDE的密度比曲线高度接近。</p>
+<p>图9展示了在CIFAR-10上判别器引导随采样NFE（函数评估次数）的变化效果。随着NFE减少，离散化误差主导采样误差（De Bortoli, 2022），判别器引导的增益变得次优。我们将在极低NFE采样器上适配判别器引导作为未来工作。更多消融实验见附录D.3。</p>
+<p>图10展示了判别器训练过程中的精确率/召回率曲线。在第0轮（判别器训练前），我们观察到 vanilla DiT-XL-G的精确率/召回率分别高于/低于验证集。这是因为分类器引导生成的样本在分类器看来过于自信。然而，判别器引导显著缓解了分类器引导的精确率-召回率权衡问题。</p>
+<p>图11展示了按噪声尺度归一化的累积目标损失。为确保公平比较，我们使用相同的权重函数$\xi(t) = \lambda(t)$评估判别器损失$L_{\phi}$和分数损失$\mathcal{L}_{\theta}$。结果表明，判别器能够捕捉估计误差，尤其是在决定样本多样性的大扩散时间尺度上。这一发现凸显了判别器引导作为补充方法解决分数匹配框架中大时间尺度估计不佳问题（Kim等人，2022b）的潜力。</p>
+<h4 id="5-3-图像到图像翻译"><a href="#5-3-图像到图像翻译" class="headerlink" title="5.3 图像到图像翻译"></a>5.3 图像到图像翻译</h4><p>判别器引导可应用于图像到图像（I2I）翻译任务。I2I（Meng等人，2021）通过在目标域训练的分数网络对扰动的源图像进行去噪。对于判别器训练，我们首先翻译源训练图像，然后将这些翻译图像与源图像聚合为伪造数据集。通过将D指定为目标图像，我们遵循算法1训练判别器。判别器引导避免样本停留在源域或翻译域，而是引导至目标域。实证上，图12-(b)的曲线表明我们的方法缓解了真实性（贴近目标域）与忠实度（贴近源域）之间的权衡。详细内容见附录C。</p>
+<h3 id="6-讨论"><a href="#6-讨论" class="headerlink" title="6. 讨论"></a>6. 讨论</h3><p>本节探讨判别器引导未来发展的两个可能方向。第一个方向是用Bregman散度重写我们的方法，第二个方向是探索分数网络与判别器网络的联合训练。在第一个方向中，密度比$r_{\theta_{\infty}}^{t}=\frac{p_{r}^{t}}{p_{\theta_{\infty}}^{t}}$是判别器的目标，而BCE损失$L_{\phi}$可推广到h-Bregman散度家族（Sugiyama等人，2012）：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+D_{h}\left(r_{\theta_{\infty}} \| r_{\phi}\right)= & \int \lambda(t) \mathbb{E}_{p_{\theta_{\infty}}^{t}\left(x_{t}\right)}\left[h\left(r_{\theta_{\infty}}^{t}\left(x_{t}\right)\right)-h\left(r_{\phi}^{t}\left(x_{t}\right)\right)\right. \\
+& \left.-\partial h\left(r_{\phi}^{t}\left(x_{t}\right)\right)\left(r_{\theta_{\infty}}^{t}\left(x_{t}\right)-r_{\phi}^{t}\left(x_{t}\right)\right)\right] d t,
+\end{aligned}</script><p>其中$r_{\phi}=\frac{d_{\phi}}{1-d_{\phi}}$。值得注意的是，BCE损失是唯一同时属于h-Bregman散度和f-散度的散度（Amari，2009）。因此，我们的方法提出了一种新的分数估计散度家族，详见附录B的更多讨论。表7呈现了关于Bregman散度的实验结果。</p>
+<p>另一个潜在方向是判别器与分数网络的联合训练，这可能比GAN更具吸引力，因为它是一个极小-极小问题而非GAN的极小-极大问题。然而，$L_{\theta}$和$L_{\phi}$的损失函数相互独立，因此它们的联合作用会受到限制。如图13所示，判别器对分数准确性的提升效果甚微。</p>
+<p>作为替代方案，我们可将分数损失修改为f-散度（Song等人，2021）：</p>
+<script type="math/tex; mode=display">
+D_{f}\left(p_{r}\left(x_{0}\right) \| p_{\theta}\left(x_{0}\right)\right)=D_{f}\left(p_{r}^{T}\left(x_{T}\right) \| \pi\left(x_{T}\right)\right)+E_{\theta, \phi}^{f},</script><p>其中在定理1的假设下，$E_{\theta, \phi}^{f}=\frac{1}{2} \int_{0}^{T} g^{2}(t) \mathbb{E}[f^{\prime \prime}(\frac{p_{r}^{t}(x_{t})}{p_{\theta}^{t}(x_{t})}) \frac{p_{r}^{t}(x_{t})}{p_{\theta}^{t}(x_{t})} | \nabla \log p_{r}^{t}(x_{t})-s_{\theta}(x_{t}, t) |_{2}^{2}] d t$。当使用神经比率近似真实似然比时，f-散度建立了判别器损失与分数损失之间的联系。f-散度通过在高密度比$\frac{p_{r}^{t}}{p_{\theta}^{t}}$的空间域上赋予分数匹配更高权重，从而在感知合理区域实现更优的分数估计，这可能是其相对于KL散度训练的优势。我们将其留作未来工作。</p>
+<h3 id="7-结论"><a href="#7-结论" class="headerlink" title="7. 结论"></a>7. 结论</h3><p>本文通过调整分数估计优化了去噪过程。借助所提出的方法，我们能够进一步优化预训练分数模型的散度。实证结果表明，我们的方法在所有数据集上均实现了新的最优FID值。深度伪造图像是本研究可能被滥用的潜在风险之一。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/diffusion/" rel="tag"># diffusion</a>
+              <a href="/tags/2023/" rel="tag"># 2023</a>
+              <a href="/tags/ICML/" rel="tag"># ICML</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/08/19/2023-LCM-LORA%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" rel="prev" title="2023-LCM-LORA论文精读">
+      <i class="fa fa-chevron-left"></i> 2023-LCM-LORA论文精读
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2025/08/19/2023-Neurlps-UniPC-A-Unified-Predictor-Corrector-Framework-for-Fast-Sampling-of-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" rel="next" title="2023-Neurlps-UniPC A Unified Predictor-Corrector Framework for Fast Sampling of Diffusion Models论文精读">
+      2023-Neurlps-UniPC A Unified Predictor-Corrector Framework for Fast Sampling of Diffusion Models论文精读 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1. 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86"><span class="nav-number">1.3.</span> <span class="nav-text">2. 预备知识</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%88%A9%E7%94%A8%E5%88%A4%E5%88%AB%E5%99%A8%E5%BC%95%E5%AF%BC%E4%BC%98%E5%8C%96%E7%94%9F%E6%88%90%E8%BF%87%E7%A8%8B"><span class="nav-number">1.4.</span> <span class="nav-text">3. 利用判别器引导优化生成过程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B%E5%88%86%E6%95%B0%E7%9A%84%E4%BF%AE%E6%AD%A3"><span class="nav-number">1.4.1.</span> <span class="nav-text">3.1 预训练模型分数的修正</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E5%88%A4%E5%88%AB%E5%99%A8%E5%BC%95%E5%AF%BC"><span class="nav-number">1.4.2.</span> <span class="nav-text">3.2 判别器引导</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-%E7%90%86%E8%AE%BA%E5%88%86%E6%9E%90"><span class="nav-number">1.4.3.</span> <span class="nav-text">3.3 理论分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-%E6%9C%80%E4%BC%98%E6%80%A7%E5%88%86%E6%9E%90"><span class="nav-number">1.4.4.</span> <span class="nav-text">3.4 最优性分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-5-%E4%B8%8E%E5%88%86%E7%B1%BB%E5%99%A8%E5%BC%95%E5%AF%BC%E7%9A%84%E5%85%B3%E8%81%94"><span class="nav-number">1.4.5.</span> <span class="nav-text">3.5 与分类器引导的关联</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.5.</span> <span class="nav-text">4. 相关工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.6.</span> <span class="nav-text">5. 实验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#5-1-%E4%BA%8C%E7%BB%B4%E7%8E%A9%E5%85%B7%E6%A1%88%E4%BE%8B"><span class="nav-number">1.6.1.</span> <span class="nav-text">5.1 二维玩具案例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-2-%E5%9B%BE%E5%83%8F%E7%94%9F%E6%88%90"><span class="nav-number">1.6.2.</span> <span class="nav-text">5.2 图像生成</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%88%A4%E5%88%AB%E5%99%A8%E7%BD%91%E7%BB%9C"><span class="nav-number">1.6.2.1.</span> <span class="nav-text">判别器网络</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AE%9A%E9%87%8F%E5%88%86%E6%9E%90"><span class="nav-number">1.6.2.2.</span> <span class="nav-text">定量分析</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AE%9A%E6%80%A7%E5%88%86%E6%9E%90"><span class="nav-number">1.6.2.3.</span> <span class="nav-text">定性分析</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-3-%E5%9B%BE%E5%83%8F%E5%88%B0%E5%9B%BE%E5%83%8F%E7%BF%BB%E8%AF%91"><span class="nav-number">1.6.3.</span> <span class="nav-text">5.3 图像到图像翻译</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E8%AE%A8%E8%AE%BA"><span class="nav-number">1.7.</span> <span class="nav-text">6. 讨论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E7%BB%93%E8%AE%BA"><span class="nav-number">1.8.</span> <span class="nav-text">7. 结论</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zongqing Li"
+      src="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+  <p class="site-author-name" itemprop="name">Zongqing Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">107</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">50</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hqulzq" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hqulzq" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hqulzq@163.com" title="E-Mail → mailto:hqulzq@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+      
+<script type="text/javascript" charset="utf-8" src="/js/tagcloud.js"></script>
+<script type="text/javascript" charset="utf-8" src="/js/tagcanvas.js"></script>
+<div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div id="myCanvasContainer" class="widget tagcloud">
+        <canvas width="250" height="250" id="resCanvas" style="width=100%">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2023/" rel="tag">2023</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2024/" rel="tag">2024</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2025/" rel="tag">2025</a><span class="tag-list-count">23</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">26</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICCV/" rel="tag">ICCV</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICML/" rel="tag">ICML</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IJCAI/" rel="tag">IJCAI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIps/" rel="tag">NeurIps</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ODE%E6%B1%82%E8%A7%A3/" rel="tag">ODE求解</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">68</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%80%BB%E7%BB%93/" rel="tag">总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%85%E8%AF%BB/" rel="tag">阅读</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+        </canvas>
+    </div>
+</div>
+
+
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zongqing Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('post.copy_button').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('post.copy_success')
+          else $(this).text('post.copy_failure')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('post.copy_button')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
