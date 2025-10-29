@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="全文翻译摘要扩散 Transformer（Diffusion Transformers）的应用正受限于其高昂的推理成本。近期，特征缓存（feature caching）技术被提出以解决这一问题，该技术通过复用前一时间步的特征，省去未来时间步的计算过程。然而，以往的特征缓存技术假设相邻时间步的特征具有相似性或连续性，这一假设并非在所有场景下都成立。为探究此问题，本文从频域视角展开分析，结果表明：扩散">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2025-FREQCA ACCELERATING DIFFUSION MODELS VIA FREQUENCY-AWARE CACHING">
+<meta property="og:url" content="https://hqulzq.github.io/2025/10/20/2025-FREQCA-ACCELERATING-DIFFUSION-MODELS-VIA-FREQUENCY-AWARE-CACHING/index.html">
+<meta property="og:site_name" content="Lzq&#39;s blog">
+<meta property="og:description" content="全文翻译摘要扩散 Transformer（Diffusion Transformers）的应用正受限于其高昂的推理成本。近期，特征缓存（feature caching）技术被提出以解决这一问题，该技术通过复用前一时间步的特征，省去未来时间步的计算过程。然而，以往的特征缓存技术假设相邻时间步的特征具有相似性或连续性，这一假设并非在所有场景下都成立。为探究此问题，本文从频域视角展开分析，结果表明：扩散">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hqulzq.github.io/2025/10/20/2025-FREQCA-ACCELERATING-DIFFUSION-MODELS-VIA-FREQUENCY-AWARE-CACHING/f1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/10/20/2025-FREQCA-ACCELERATING-DIFFUSION-MODELS-VIA-FREQUENCY-AWARE-CACHING/f2.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/10/20/2025-FREQCA-ACCELERATING-DIFFUSION-MODELS-VIA-FREQUENCY-AWARE-CACHING/f3.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/10/20/2025-FREQCA-ACCELERATING-DIFFUSION-MODELS-VIA-FREQUENCY-AWARE-CACHING/f4.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/10/20/2025-FREQCA-ACCELERATING-DIFFUSION-MODELS-VIA-FREQUENCY-AWARE-CACHING/t1.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/10/20/2025-FREQCA-ACCELERATING-DIFFUSION-MODELS-VIA-FREQUENCY-AWARE-CACHING/t2.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/10/20/2025-FREQCA-ACCELERATING-DIFFUSION-MODELS-VIA-FREQUENCY-AWARE-CACHING/t3.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/10/20/2025-FREQCA-ACCELERATING-DIFFUSION-MODELS-VIA-FREQUENCY-AWARE-CACHING/t4.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/10/20/2025-FREQCA-ACCELERATING-DIFFUSION-MODELS-VIA-FREQUENCY-AWARE-CACHING/f5.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/10/20/2025-FREQCA-ACCELERATING-DIFFUSION-MODELS-VIA-FREQUENCY-AWARE-CACHING/f6.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/10/20/2025-FREQCA-ACCELERATING-DIFFUSION-MODELS-VIA-FREQUENCY-AWARE-CACHING/t5.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/10/20/2025-FREQCA-ACCELERATING-DIFFUSION-MODELS-VIA-FREQUENCY-AWARE-CACHING/f7.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/10/20/2025-FREQCA-ACCELERATING-DIFFUSION-MODELS-VIA-FREQUENCY-AWARE-CACHING/f8.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/10/20/2025-FREQCA-ACCELERATING-DIFFUSION-MODELS-VIA-FREQUENCY-AWARE-CACHING/f9.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/10/20/2025-FREQCA-ACCELERATING-DIFFUSION-MODELS-VIA-FREQUENCY-AWARE-CACHING/f10.png">
+<meta property="og:image" content="https://hqulzq.github.io/2025/10/20/2025-FREQCA-ACCELERATING-DIFFUSION-MODELS-VIA-FREQUENCY-AWARE-CACHING/fc1.png">
+<meta property="article:published_time" content="2025-10-20T11:17:21.000Z">
+<meta property="article:modified_time" content="2025-10-21T06:29:25.118Z">
+<meta property="article:author" content="Zongqing Li">
+<meta property="article:tag" content="diffusion">
+<meta property="article:tag" content="2025">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hqulzq.github.io/2025/10/20/2025-FREQCA-ACCELERATING-DIFFUSION-MODELS-VIA-FREQUENCY-AWARE-CACHING/f1.png">
+
+<link rel="canonical" href="https://hqulzq.github.io/2025/10/20/2025-FREQCA-ACCELERATING-DIFFUSION-MODELS-VIA-FREQUENCY-AWARE-CACHING/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>2025-FREQCA ACCELERATING DIFFUSION MODELS VIA FREQUENCY-AWARE CACHING | Lzq's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lzq's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">50</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">110</span></a>
+
+  </li>
+        <li class="menu-item menu-item-book">
+
+    <a href="/book" rel="section"><i class="fas fa-book fa-fw"></i>Book</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/10/20/2025-FREQCA-ACCELERATING-DIFFUSION-MODELS-VIA-FREQUENCY-AWARE-CACHING/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          2025-FREQCA ACCELERATING DIFFUSION MODELS VIA FREQUENCY-AWARE CACHING
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-10-20 19:17:21" itemprop="dateCreated datePublished" datetime="2025-10-20T19:17:21+08:00">2025-10-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-10-21 14:29:25" itemprop="dateModified" datetime="2025-10-21T14:29:25+08:00">2025-10-21</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散 Transformer（Diffusion Transformers）的应用正受限于其高昂的推理成本。近期，特征缓存（feature caching）技术被提出以解决这一问题，该技术通过复用前一时间步的特征，省去未来时间步的计算过程。然而，<strong>以往的特征缓存技术假设相邻时间步的特征具有相似性或连续性，这一假设并非在所有场景下都成立</strong>。为探究此问题，本文从频域视角展开分析，<strong>结果表明：扩散模型特征中的不同频段在时间步间呈现出截然不同的动态变化规律。具体而言，决定图像结构的低频成分相似性较高，但连续性较差；与之相反，承载图像细节信息的高频成分连续性显著，但相似性较低</strong>。这些有趣的发现促使我们提出一种 “<strong>频率感知缓存（FreqCa）</strong>” 方法。<strong>该方法基于低频成分的相似性直接复用其特征，同时利用高频成分的连续性，通过二阶埃尔米特插值器（Hermite interpolator）对易变的高频成分进行预测</strong>。此外，本文进一步<strong>提出缓存 “累积残差特征（Cumulative Residual Feature, CRF）”，而非所有层的特征</strong>，此举将特征缓存的内存占用降低了 99%。在 FLUX.1-dev、FLUX.1-Kontext-dev、Qwen-Image 和 Qwen-Image-Edit 等模型上开展的大量实验表明，该方法在图像生成与编辑任务中均具有良好效果。相关代码已收录于补充材料，并将在 GitHub 上发布</p>
+<span id="more"></span>
+<h3 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f1.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图1：Qwen-Image模型结合FreqCa方法采样得到的图像，加速比达7.14倍。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>扩散模型（Diffusion Models, DMs）在图像合成、视频生成等生成式任务中取得了显著成功（Ho et al., 2020a; Rombach et al., 2022; Blattmann et al., 2023）。近期提出的扩散Transformer（Diffusion Transformers）（Peebles &amp; Xie, 2023a）进一步提升了生成质量与多样性，成为大规模视觉内容创作的主流架构。然而，扩散Transformer通常依赖大量Transformer块堆叠与多步采样过程，计算效率成为其实际部署的关键瓶颈。为解决这一问题，特征缓存范式应运而生，该范式利用相邻时间步间的高时间冗余性实现加速（Ma et al., 2024; Li et al., 2023a; Selvaraju et al., 2024; Chen et al., 2024; Zou et al., 2025; 2024）。</p>
+<p><strong>缓存范式的争议：</strong> 特征缓存已逐渐发展出两种不同范式。“先缓存再复用（Cache-Then-Reuse）”范式假设扩散模型相邻时间步的特征高度相似，因此提出将前一时间步的特征直接复用于未来时间步（Selvaraju et al., 2024）；与之相对，“先缓存再预测（Cache-Then-Forecast）”范式则认为扩散模型特征具有“连续性”，进而提出利用泰勒展开等非参数预测器，基于前一时间步特征预测未来时间步特征。尽管“先缓存再预测”范式在近期研究中往往表现更优，但其对连续性的假设并非始终完全成立。例如，Liu等人的研究表明，FLUX模型的特征并不具备高阶连续性，这导致TaylorSeer方法退化为线性预测方式，进而产生质量损失（Liu et al., 2025a）。基于这些发现，本文首先对扩散模型的时间动态特性展开深入分析。</p>
+<p><strong>频域视角的分析：</strong> 在经典图像处理中，图像的高频与低频成分通常被认为承载着不同的语义信息，这一特点促使我们分别研究扩散模型特征中高频与低频成分的动态变化规律。如文中<strong>图2(a)-(b)所示，我们意外发现不同频段呈现出显著不同的动态特性：具体而言，低频成分在大多数时间步的相似性均高于0.90，而高频成分的相似性则明显较低；另一方面，如图2(c)-(d)所示，高频成分的特征轨迹展现出极佳的稳定性与连续性，而低频成分的特征轨迹则不稳定且伴随突变现象。这表明高频信息可被精准预测，而低频信息则难以预测。</strong></p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f2.png" width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图2：频域视角的分析结果。(a)-(b)：采用余弦相似度分析不同步长间隔下低频与高频成分的时间相似性；(c)-(d)：通过主成分分析(Principal Component Analysis, PCA)可视化特征轨迹。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>基于上述发现，本文提出“频率感知特征缓存（Frequency-aware Feature Caching, FreqCa）”方法，旨在对扩散模型特征的频率成分进行解耦，并采用不同范式分别处理。具体而言，FreqCa首先对需缓存的特征进行频率分解（如傅里叶变换等）；对于低频段，鉴于其高相似性，直接将其复用于未来时间步；对于高频段，凭借其良好的连续性，采用埃尔米特多项式预测器（Hermite polynomial predictor）等序列预测器对未来时间步的特征值进行预测。</strong> 随后，在未来时间步中，FreqCa通过复用的低频段与预测的高频段重构特征，从而省去扩散Transformer的计算过程，实现两种传统缓存范式的优势融合。</p>
+<p><strong>内存高效的特征缓存：</strong>以往的缓存方法通常会缓存注意力层与前馈网络（FFN）层的全部特征，这导致内存开销显著（例如，在FLUX模型上采用ToCa方法时，内存开销≥10GB），使得特征缓存方法难以应用于实际场景。正如Veit等人（2016）所指出的，具有残差连接的神经网络可被视为所有块特征的集合，<strong>这一观点促使我们提出缓存“累积残差特征（Cumulative Residual Feature, CRF）”——即所有来自注意力块与FFN块的残差连接的累积特征</strong> 。这一策略将原本需缓存的2×L个特征（L表示层数）减少为单个特征向量，使缓存内存占用量降低高达99%；此外，该策略还将频率（逆）分解操作的次数减少2L倍，使其在整个扩散过程中的延迟开销占比仅≤0.01%。</p>
+<p>综上，本文的贡献如下：</p>
+<ul>
+<li><strong>频率感知特征缓存（Frequency-Aware Feature Caching）：</strong>受不同频段在相似性与连续性上存在差异这一发现的启发，我们提出了 FreqCa 方法。该方法针对不同频率采用不同的特征缓存策略，实现了对以往两种缓存范式的融合统一。</li>
+<li><strong>内存高效的特征缓存：</strong>通过仅缓存累积残差特征（Cumulative Residual Feature, CRF），FreqCa 实现了 O (1) 的内存复杂度，在无保真度损失的前提下，将缓存内存占用量大幅降至以往方法的 1%，从而能够在消费级硬件上实现高质量加速。</li>
+<li><strong>顶尖的泛化能力与性能：</strong>在文本生成图像及图像编辑任务中，FreqCa 始终能实现 6-7 倍的加速，同时质量损失低于2%，其性能优于现有方法，并展现出极强的鲁棒性与实用性。</li>
+</ul>
+<h3 id="2-相关工作"><a href="#2-相关工作" class="headerlink" title="2 相关工作"></a>2 相关工作</h3><p>扩散模型已成为现代生成式人工智能的核心技术之一，在视觉内容合成领域展现出顶尖性能（Sohl-Dickstein et al., 2015; Ho et al., 2020b）。早期扩散模型多基于U-Net架构构建（Ronneberger et al., 2015），但其可扩展性局限为扩散Transformer（Diffusion Transformer, DiT）的发展奠定了基础（Peebles &amp; Xie, 2023b）。此后，DiT架构逐渐成为核心基础，推动了各类领域中高性能模型的涌现（Zheng et al., 2024; Yang et al., 2025）。然而，扩散采样过程的迭代特性给推理阶段带来了巨大的计算负担，因此加速技术成为该领域的关键研究方向（Ho et al., 2020b; Peebles &amp; Xie, 2023b）。目前，提升扩散模型效率的研究主要集中在两个互补方向：减少采样步数，以及加速去噪网络本身。</p>
+<h4 id="2-1-采样步数减少"><a href="#2-1-采样步数减少" class="headerlink" title="2.1 采样步数减少"></a>2.1 采样步数减少</h4><p>该方向的核心策略是在保证生成质量的前提下，尽可能减少所需的采样迭代次数。具有开创性的DDIM（Denoising Diffusion Implicit Models）方法引入了确定性采样机制，在无显著保真度损失的情况下减少了采样步数（Song et al., 2021）。这一思路在DPM-Solver系列方法中得到进一步优化——该系列方法采用高阶常微分方程（ODE）求解器，实现了更快的收敛速度（Lu et al., 2022a; 2022b; Zheng et al., 2023）。其他代表性方法包括知识蒸馏（knowledge distillation）：通过训练一个“学生模型”来模拟大型“教师模型”的多步去噪过程（Salimans &amp; Ho, 2022; Meng et al., 2022）；以及Rectified Flow（整流流）：通过学习“噪声分布”与“数据分布”之间的生成路径拉直方法，简化采样过程（Liu et al., 2023b）。近年来，一致性模型（Consistency Models）实现了突破性进展，其能够直接将噪声映射为清晰数据，无需序列式采样路径，从而实现单步高质量合成（Song et al., 2023）。</p>
+<h4 id="2-2-去噪网络加速"><a href="#2-2-去噪网络加速" class="headerlink" title="2.2 去噪网络加速"></a>2.2 去噪网络加速</h4><p>与减少采样步数不同，该方向旨在降低去噪网络单次前向传播的计算成本，主要通过模型压缩或特征缓存两种方式实现。</p>
+<p><strong>基于模型压缩的加速：</strong> 模型压缩是该方向的重要研究分支，涵盖网络剪枝（network pruning）（Fang et al., 2023; Zhu et al., 2024）、量化（quantization）（Li et al., 2023b; Shang et al., 2023; Kim et al., 2025），以及各类令牌缩减（token reduction）技术——这类技术通过动态缩短输入序列长度降低计算量（Bolya &amp; Hoffman, 2023; Kim et al., 2024; Zhang et al., 2024; 2025）。尽管这些方法具有一定效果，但模型简化往往会导致表达能力下降，因此通常需要微调或重训练阶段来缓解这一问题（Li et al., 2024; 2023b）。</p>
+<p><strong>基于特征缓存的加速：</strong> 特征缓存是一种无需训练的高效替代方案，其核心是利用去噪过程中的时间冗余性。该范式最初在U-Net架构中通过FasterDiffusion和DeepCache方法提出，随后被适配到DiT架构中。早期研究聚焦于“先缓存再复用（cache then reuse）”策略，而FORA和Δ-DiT等进阶方法对该策略进行了优化。随着研究深入，更复杂的机制不断涌现，包括动态令牌级更新（ToCa）、自适应采样（RAS（Liu et al., 2025c）），以及显式误差校正框架（Qiu et al., 2025; Chen et al., 2025; Chu et al., 2025）。该领域的一个关键突破是TaylorSeer提出的“先缓存再预测（cache then forecast）”范式，后续FoCa（Zheng et al., 2025）、HiCache（Feng et al., 2025）和SpeCa（Liu et al., 2025b）等方法通过更稳健的数值方法进一步完善了这一范式。</p>
+<p>然而，正如初步频域分析所暗示的，这些复杂范式存在一个关键缺陷。例如，PAB（Zhao et al., 2024）方法虽敏锐地将不同注意力机制与特定频段关联起来，但并未深入研究令牌级别的频率动态特性；类似地，FasterCache（Lv et al., 2025）虽在“无分类器引导（Classifier-Free Guidance）”场景下分析了频域差异，但其结论局限于该特定场景，未涉及时间维度上特征演化的普遍动态规律，因此实际加速效果有限。</p>
+<p>与以往将特征视为整体的方法不同，本文提出的FreqCa方法通过将特征分解为稳定的低频成分与易变的高频成分，并对其采用差异化处理，解决了缓存方法中的质量损失问题。此外，本文还引入了“累积残差特征（Cumulative Residual Feature）”，将内存复杂度从O(L)降至O(1)，从而解决了以往“逐层（layer-wise）”架构中资源效率低下的问题。</p>
+<h3 id="3-方法"><a href="#3-方法" class="headerlink" title="3 方法"></a>3 方法</h3><h4 id="3-1-预备知识"><a href="#3-1-预备知识" class="headerlink" title="3.1 预备知识"></a>3.1 预备知识</h4><h5 id="3-1-1-扩散Transformer架构"><a href="#3-1-1-扩散Transformer架构" class="headerlink" title="3.1.1 扩散Transformer架构"></a>3.1.1 扩散Transformer架构</h5><p>扩散Transformer（Diffusion Transformer, DiT）（Peebles &amp; Xie, 2023a）采用分层结构$G = g_1 \circ g_2 \circ \cdots \circ g_L$，其中每个模块$g_l = F_{SA}^l \circ F_{CA}^l \circ F_{MLP}^l$由自注意力（Self-Attention, SA）、交叉注意力（Cross-Attention, CA）和多层感知机（Multilayer Perceptron, MLP）组件构成。在DiT中，这些组件会随时间动态调整，以处理图像生成过程中不同的噪声水平。输入$x_t = \{x_i\}_{i=1}^{H \times W}$被表示为与图像块对应的令牌序列。每个模块通过残差连接整合信息，其形式为$F(x) = x + \text{AdaLN} \circ f(x)$，其中AdaLN表示自适应层归一化（Adaptive Layer Normalization），该操作可稳定训练过程并提升学习效果。</p>
+<h5 id="3-1-2-频率分解方法"><a href="#3-1-2-频率分解方法" class="headerlink" title="3.1.2 频率分解方法"></a>3.1.2 频率分解方法</h5><p>频率分解通过<strong>快速傅里叶变换</strong>（Fast Fourier Transform, FFT）、快速傅里叶变换（Discrete Cosine Transform, DCT）等方法实现，是一种将信号解耦为不同成分的强大技术。该过程会将信号分离为低频成分和高频成分：<strong>低频成分通常代表全局结构与平滑布局，高频成分则对应细粒度细节与锐利边缘。</strong> 在扩散模型的场景下，这种解耦能够区分生成过程中稳定的基础结构与易变的临时细节。</p>
+<h4 id="3-2-频率感知缓存加速框架"><a href="#3-2-频率感知缓存加速框架" class="headerlink" title="3.2 频率感知缓存加速框架"></a>3.2 频率感知缓存加速框架</h4><p>本节将介绍FreqCa（频率感知特征缓存，Frequency-aware Feature Caching）框架，该框架由<strong>三个核心组件构成：（i）对待缓存特征进行频率分解，并对低频成分与高频成分采用不同处理策略；（ii）针对高频部分采用基于非线性埃尔米特多项式（Hermite polynomial）的预测器，以提升预测精度；（iii）将累积残差特征（Cumulative Residual Feature, CRF）确定为一种新型、高效的单张量缓存目标，该特征可涵盖模型的完整变换历史。</strong></p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f3.png" width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图 3：FreqCa 框架概述。（a）累积残差特征（CRF）缓存：无需缓存每一层的特征，仅在流程末尾缓存单一的累积残差特征（CRF）。（b）频率感知缓存：采用快速傅里叶变换（FFT）或离散余弦变换（DCT）等频率分解技术，将缓存的特征分离为低频段和高频段。（c）低频策略：低频成分直接从前一步骤复用。（d）高频策略：高频成分通过埃尔米特预测器（Hermite predictor）进行预测，该预测器基于前两个激活步骤的数据拟合得到。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>1. 频率分解缓存与预测策略：</strong> 我们提出的差异化缓存策略，源于频率成分具有截然不同的时间动态特性：低频成分相似性高但连续性低，表现稳定却难以预测；相反，高频成分相似性低但连续性高，虽具波动性但可沿轨迹预测。这种关键差异表明，“一刀切”的方法并非最优选择，因此需要采用差异化策略。</p>
+<p>为实现该策略，我们首先通过通用频率变换$D(\cdot)$将特征$z_t$分解为其组成部分：</p>
+<script type="math/tex; mode=display">z_t = z_t^{low} + z_t^{high}, \quad \text{其中} \quad z_t^{low/high} = \mathcal{P}_{low/high}\left(\mathcal{D}(z_t)\right)</script><p>式中，$\mathcal{P}_{low/high}$为互补投影算子；低频部分主导全局结构，高频部分则编码细节信息。</p>
+<p>基于频率成分的动态特性，我们采用定制化策略：对于稳定的低频成分$z_t^{low}$，采用直接复用策略以维持全局一致性，且几乎无额外成本，即$\widehat{z}_t^{low} = z_{t-1}^{low}$；对于可预测的高频成分$z_t^{high}$，采用基于埃尔米特多项式的非线性预测器，以精准预测其轨迹。在归一化时间$s_t \in [-1,1]$处，每个高频系数$\widehat{h}_i$的建模形式为：$\widehat{h}_i(s_t) = \sum_{k=0}^{m} c_{i,k} \text{He}_k(s_t)$，其中系数$c_{i,k}$通过最近K个缓存步骤的最小二乘回归估计得出，最终可得到精准重构的高频成分$\widehat{z}_t^{high}$。</p>
+<p>最后，将两部分成分重组，得到最终的预测特征：$\widehat{z}_t = \widehat{z}_t^{low} + \widehat{z}_t^{high}$。</p>
+<p><strong>2. 累积残差特征（CRF）：</strong> 扩散Transformer（DiT）的核心是由L个残差块构成的深度堆叠结构。每个块$l$的变换并非替换操作，而是增量更新，其形式符合标准残差连接：$h^{(l+1)} = h^{(l)} + F^{(l)}(h^{(l)}, t)$，其中$F^{(l)}(\cdot, t)$表示第$l$层的变换模块（包含注意力和MLP组件），该模块会通过扩散时间步$t$（如通过AdaLN）进行动态调制。</p>
+<p>由此可推导出DiT最终输出的结构：$\phi_L(x_t) = h^{(0)} + \sum_{l=0}^{L-1} F^{(l)}(h^{(l)}, t)$。该公式表明，最终输出并非简单的中间特征，而是初始输入与所有后续残差更新的累积结果。我们将这一特殊输出定义为$z_t \triangleq \phi_L(x_t)$，并将其命名为累积残差特征（Cumulative Residual Feature, CRF），以体现其复合特性。</p>
+<p>这一见解催生出更高效的内存策略：传统逐层缓存需存储所有中间特征$\{h^{(l)}\}_{l=0}^{L-1}$，而我们的方法利用CRF已包含完整变换历史这一特性，将该单一全局融合张量作为全量特征集的高效替代方案。如图4所示，仅缓存CRF所实现的重构保真度与完整逐层缓存几乎一致，平均均方误差（MSE）仅高4\%，这表明CRF可作为对整个计算路径的近无损压缩。因此，CRF成为理想的轻量级缓存目标，能够在不显著损失质量的前提下，将内存复杂度从$O(L)$革命性地降至$O(1)$。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f4.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图 4：各时间步下真实特征（ground-truth）与预测特征之间均方误差（MSE，Mean Squared Error）的箱线图。（a）逐层特征缓存（layer-wise feature caching）；（b）累积残差特征（CRF，Cumulative Residual Feature）缓存。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="4-实验"><a href="#4-实验" class="headerlink" title="4 实验"></a>4 实验</h3><h4 id="4-1-实验设置"><a href="#4-1-实验设置" class="headerlink" title="4.1 实验设置"></a>4.1 实验设置</h4><h5 id="模型配置"><a href="#模型配置" class="headerlink" title="模型配置"></a>模型配置</h5><p>实验在五个当前主流的视觉生成模型上开展，分别为FLUX.1-dev（Labs, 2024）、Qwen-Image（Liu et al., 2023a）、FLUX.1-Kontext-dev（Zhang &amp; Agrawala, 2025）以及Qwen-Image-Edit（Salimans &amp; Ho, 2022）。</p>
+<h5 id="评估与指标"><a href="#评估与指标" class="headerlink" title="评估与指标"></a>评估与指标</h5><p>在文本生成图像任务的评估中，我们采用DrawBench基准测试集（Saharia et al., 2022）。生成样本通过ImageReward（Xu et al., 2023）和CLIP Score（Hessel et al., 2021）进行系统性评估，这两个指标可共同衡量图像质量与文本-图像语义对齐程度。为评估视觉保真度，我们进一步采用峰值信噪比（PSNR）、结构相似性指数（SSIM）（Wang et al., 2004）和感知相似度指标（LPIPS）（Zhang et al., 2018），以同时捕捉像素级相似性与感知一致性。此外，我们利用GEdit基准测试集（Wang et al., 2024）评估通用图像编辑任务，该基准可在文本和视觉指导下，系统性评估指令驱动的编辑保真度及与目标修改的对齐程度。</p>
+<h4 id="4-2-文本生成图像"><a href="#4-2-文本生成图像" class="headerlink" title="4.2 文本生成图像"></a>4.2 文本生成图像</h4><h5 id="4-2-1-FLUX-1-dev"><a href="#4-2-1-FLUX-1-dev" class="headerlink" title="4.2.1 FLUX.1-dev"></a>4.2.1 FLUX.1-dev</h5><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t1.png" width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表1：FLUX.1-dev与FLUX.1-schnell（其蒸馏版本）在文本生成图像任务中的定量对比。最佳结果以粗体标注，次佳结果以下划线标注。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>注：† 表示该方法存在显著的图像质量下降。灰色标注：相较于基准方法，质量下降且延迟降低；蓝色标注：FreqCa在大幅降低延迟的同时，实现了最小化的质量下降。</p>
+<p>在FLUX.1-dev模型上，FreqCa在不同加速比下均持续优于当前主流加速方法。当加速比为2.63倍时，FreqCa的ImageReward得分为1.00，显著优于FORA与TeaCache；当加速比达到4.99倍时，仍能保持无损质量。即便在6.24倍加速比下，FreqCa的ImageReward得分仅下降2%（降至0.97），而TaylorSeer的质量下降幅度则达13.1%。在蒸馏版本FLUX.1-schnell上，FreqCa实现2.00倍加速的同时，还将ImageReward得分从0.93提升至0.95。</p>
+<h5 id="4-2-2-Qwen-Image"><a href="#4-2-2-Qwen-Image" class="headerlink" title="4.2.2 Qwen-Image"></a>4.2.2 Qwen-Image</h5><p>在Qwen-Image模型上，FreqCa在不同加速比下均展现出优越性能。当加速比为5.00倍时，FreqCa的ImageReward得分为1.20，优于TaylorSeer（1.01）；当加速比提升至7.14倍时，FreqCa的ImageReward得分仅下降18.4%（降至1.02），而TaylorSeer的质量损失则达41.6%（降至0.73）。在蒸馏版本Qwen-Image-Lightning上，FreqCa实现4.00倍加速的同时，仅产生极小的质量下降。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t2.png" width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表2：Qwen-Image与Qwen-Image-Lightning（其蒸馏版本）在文本生成图像任务中的定量对比。最佳结果以粗体标注，次佳结果以下划线标注</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>注：† 表示该方法存在显著的图像质量下降。灰色标注：相较于基准方法，质量下降且延迟降低；蓝色标注：FreqCa在大幅降低延迟的同时，实现了最小化的质量下降。</p>
+<h4 id="4-3-图像编辑"><a href="#4-3-图像编辑" class="headerlink" title="4.3 图像编辑"></a>4.3 图像编辑</h4><h5 id="4-3-1-FLUX-1-Kontext-dev"><a href="#4-3-1-FLUX-1-Kontext-dev" class="headerlink" title="4.3.1 FLUX.1-Kontext-dev"></a>4.3.1 FLUX.1-Kontext-dev</h5><p>在FLUX.1-Kontext-dev模型上，FreqCa的性能优于其他加速方法。当加速比为5.00倍时，FreqCa的Q_O（总体得分）为6.195，高于ToCa（6.125）；当加速比达到6.24倍时，FreqCa的Q_O得分仅下降0.4%，展现出更优的感知保真度。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t3.png" width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表3：FLUX.1-Kontext-dev在文本生成图像任务中的定量对比。最佳结果以粗体标注，次佳结果以下划线标注。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>注：† 表示该方法存在显著的图像质量下降；Q_SC：语义一致性，Q_PQ：感知质量，Q_O：总体得分。灰色标注：相较于基准方法，质量下降且延迟降低；蓝色标注：FreqCa在大幅降低延迟的同时，实现了最小化的质量下降。</p>
+<h5 id="4-3-2-Qwen-Image-Edit"><a href="#4-3-2-Qwen-Image-Edit" class="headerlink" title="4.3.2 Qwen-Image-Edit"></a>4.3.2 Qwen-Image-Edit</h5><p>在Qwen-Image-Edit模型上，FreqCa在双语编辑任务中展现出优越性能。当加速比为5.00倍时，FreqCa在GEdit-CN（中文GEdit基准）和GEdit-EN（英文GEdit基准）上的Q_O得分分别为7.49和7.52，优于TaylorSeer（分别为6.92和6.89）；当加速比达到6.24倍时，FreqCa的质量下降幅度仅为1.9%和4.3%，而TaylorSeer的质量下降幅度则达14.8%和16.3%。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t4.png" width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表4：Qwen-Image-Edit在图像编辑任务中的定量对比。最佳结果以粗体标注，次佳结果以下划线标注。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>注：† 表示该方法存在显著的图像质量下降；Q_SC：语义一致性，Q_PQ：感知质量，Q_O：总体得分。灰色标注：相较于基准方法，质量下降且延迟降低；蓝色标注：FreqCa在大幅降低延迟的同时，实现了最小化的质量下降。</p>
+<p>如图5和图6所示，定性评估结果证实了FreqCa在视觉质量保留方面的优越性。FORA（6.24倍）、DuCa（5.46倍）和TaylorSeer（6.24倍）均出现明显的伪影，而FreqCa（6.24倍）则保持了与原始模型相近的稳定视觉质量。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f5.png" width="100%"></th>
+<th style="text-align:center"><img src="f6.png" width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图 5：基于 GEdit 基准测试集（的实验结果）在 Qwen-Image-Edit上，FreqCa 的性能优于大多数基准方法。</em></td>
+<td style="text-align:center"><em>图6：在Qwen-Image-Edit模型上，FreqCa在实现更高加速比的同时，编辑质量接近原始模型</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="4-4-消融实验"><a href="#4-4-消融实验" class="headerlink" title="4.4 消融实验"></a>4.4 消融实验</h4><h5 id="4-4-1-缓存内存与计算效率"><a href="#4-4-1-缓存内存与计算效率" class="headerlink" title="4.4.1 缓存内存与计算效率"></a>4.4.1 缓存内存与计算效率</h5><p>传统逐层缓存方法会存储每层的注意力层和MLP层输出（N=2），并为m阶预测保留m+1个历史状态，因此内存开销为$K_{layer}=2(m+1)L$。对于FLUX.1-dev模型（L=57层），当采用二阶预测（m=2）时，需342个缓存单元。</p>
+<p>相比之下，FreqCa仅缓存CRF，并采用频率解耦策略：低频成分复用（1个单元），高频成分采用二阶埃尔米特插值（3个单元），总内存开销固定，计算公式如下：</p>
+<script type="math/tex; mode=display">
+\mathcal{K}_{FreqCa}=1+3=4, \quad R=\frac{\mathcal{K}_{FreqCa}}{\mathcal{K}_{layer}}=\frac{4}{(m+1)\cdot N\cdot L}\approx1.17\% \quad (m=2, L=57, N=2)</script><p>这一策略将内存复杂度从$O(L)$降至$O(1)$。在计算方面，预测步骤的开销可忽略不计（$C_{pred}\ll C_{full}$）。每S步执行一次完整前向传播，平均开销计算公式如下：</p>
+<script type="math/tex; mode=display">
+\mathcal{C}=\frac{1}{S}C_{full}+\left(1-\frac{1}{S}\right)C_{pred} \implies \text{加速比} \approx S \quad (\text{当} \ C_{pred}\to0)</script><p>FreqCa实现了接近S倍的加速，且仅增加1%的内存开销，成为首个为扩散模型打造的“恒定内存、高吞吐量”推理加速框架。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t5.png" width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表5：FLUX.1-dev模型上各方法在缓存内存、乘加运算量（MACs）、延迟和浮点运算量（FLOPs）方面的对比。最佳结果以粗体标注，次佳结果以下划线标注。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>注：所有方法均采用基准模型的内存优化技术（如FlashAttention）。ToCa与这些优化技术不兼容，因此其报告的缓存开销更高。各方法的实际缓存内存开销计算方式为：显存开销 - 0.62GB。</p>
+<h5 id="4-4-2-分解方法与预测阶数消融实验"><a href="#4-4-2-分解方法与预测阶数消融实验" class="headerlink" title="4.4.2 分解方法与预测阶数消融实验"></a>4.4.2 分解方法与预测阶数消融实验</h5><p>我们在FLUX.1-dev模型上开展消融实验，以确定最优的频率分解方法与预测阶数。实验对比了三种分解策略（FFT、DCT以及无分解的基准方法），每种策略均搭配多种频率成分预测方式。图10对比了这些优化配置的结果，表明基于DCT的方法（尤其是低频复用+高频预测的组合）在不同加速比下均能保持较高的ImageReward得分，且在较大步长间隔（N&gt;8）时优势显著。这种在高加速比下的稳健性，验证了我们选择该策略的合理性。在Qwen-Image模型上开展的独立消融实验显示，采用相同预测策略的FFT-based方法表现最佳。如图7所示，与最优配置相比，其他配置均会导致显著的质量下降。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f7.png" width="100%"></th>
+<th style="text-align:center"><img src="f8.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图 7：Qwen-Image 模型的消融实验结果，展示了不同频率预测配置与加速比下的图像质量。其中，(x,y)=(低频预测阶数，高频预测阶数)</em></td>
+<td style="text-align:center"><em>图 8：不同方法的 ImageReward 得分与加速比对比图。气泡大小代表缓存内存（占用量）</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f9.png" width="100%"></th>
+<th style="text-align:center"><img src="f10.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图 9：在 FLUX.1-Fill-dev（FLUX.1 图像修复开发版）模型上，FreqCa（频率感知缓存方法）实现了 6.24 倍的加速，同时所保留的图像修复质量与原始模型（未加速时）几乎无差异。</em></td>
+<td style="text-align:center"><em>图 10：在 FLUX 模型上，不同加速比下各类频率分解方法对应的最优预测器对比图。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="5-结论"><a href="#5-结论" class="headerlink" title="5 结论"></a>5 结论</h3><p>在本研究中，我们提出了FreqCa——一种频率感知特征缓存框架，该框架融合了基于复用（reuse-based）与基于预测（forecast-based）两种范式的优势。通过将特征分解为低频成分与高频成分，FreqCa对稳定的低频特征进行选择性复用，并对动态变化的高频特征进行精准预测，最终在模型加速与生成质量之间实现了更优的权衡。此外，通过引入累积残差特征（Cumulative Residual Feature, CRF）缓存机制，我们将内存占用降至O(1)级别，使得频率感知缓存即便在消费级硬件上也具备实际应用可行性。在多种扩散模型上开展的大量实验表明，FreqCa能够实现6-7倍的加速，同时质量损失可忽略不计，为高效扩散模型推理树立了新的技术标杆（SOTA）。我们相信，FreqCa为可扩展、高性能的生成式建模开辟了新的可能，并为未来频率感知加速技术的研究提供了一种通用方法。</p>
+<h3 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h3><h4 id="A-大型语言模型的使用说明"><a href="#A-大型语言模型的使用说明" class="headerlink" title="A 大型语言模型的使用说明"></a>A 大型语言模型的使用说明</h4><p>本研究未使用任何大型语言模型（Large Language Models）。所有研究思路、算法设计、实验方法、数据分析及论文撰写工作均由作者独立完成。</p>
+<h4 id="B-详细实验设置"><a href="#B-详细实验设置" class="headerlink" title="B 详细实验设置"></a>B 详细实验设置</h4><p>本节提供第4.1节中提及的所有实验配置的完整技术细节。</p>
+<h5 id="B-1-模型与任务说明"><a href="#B-1-模型与任务说明" class="headerlink" title="B.1 模型与任务说明"></a>B.1 模型与任务说明</h5><ul>
+<li><strong>FLUX.1-dev与Qwen-Image</strong>：FLUX.1-dev、FLUX.1-schnell（FLUX.1-dev的蒸馏版本）及Qwen-Image-Lightning（Qwen-Image的蒸馏版本）生成的图像分辨率为1024×1024，所使用的200条高质量提示词均源自DrawBench基准测试集；Qwen-Image生成的图像分辨率为1328×1328。图像质量评估采用ImageReward指标——该指标是衡量文本-图像对齐程度的稳健感知指标。</li>
+<li><strong>FLUX.1-Kontext-dev与Qwen-Image-Edit</strong>：图像编辑合成任务采用FLUX.1-Kontext-dev与Qwen-Image-Edit模型。图像编辑操作及质量评估均基于GEdit基准测试集，该基准测试集以真实场景应用为核心构建，可对图像编辑模型进行更真实、全面的评估。</li>
+</ul>
+<h5 id="B-2-硬件与计算资源"><a href="#B-2-硬件与计算资源" class="headerlink" title="B.2 硬件与计算资源"></a>B.2 硬件与计算资源</h5><p>所有实验均在企业级GPU硬件环境中开展，具体配置如下：</p>
+<ul>
+<li>FLUX.1-dev实验：采用NVIDIA A100 GPU</li>
+<li>FLUX.1-Kontext-dev实验：采用NVIDIA A100 GPU</li>
+<li>Qwen-Image实验：采用NVIDIA H20 GPU</li>
+<li>Qwen-Image-Edit实验：采用NVIDIA H20 GPU</li>
+</ul>
+<h5 id="B-3-FreqCa实现参数"><a href="#B-3-FreqCa实现参数" class="headerlink" title="B.3 FreqCa实现参数"></a>B.3 FreqCa实现参数</h5><ul>
+<li>FLUX.1-dev实验：采用基于离散余弦变换（DCT）的频率分解方法</li>
+<li>FLUX.1-Kontext-dev实验：采用基于离散余弦变换（DCT）的频率分解方法</li>
+<li>Qwen-Image实验：采用基于快速傅里叶变换（FFT）的频率分解方法</li>
+<li>Qwen-Image-Edit实验：采用基于快速傅里叶变换（FFT）的频率分解方法</li>
+</ul>
+<h4 id="C-分解方法与预测阶数消融实验"><a href="#C-分解方法与预测阶数消融实验" class="headerlink" title="C 分解方法与预测阶数消融实验"></a>C 分解方法与预测阶数消融实验</h4><p>如图C1所示，我们系统对比了经典频率分解方法（快速傅里叶变换FFT、离散余弦变换DCT）与无频率分解的基准方法。结果清晰表明，频率分解对稳定模型性能至关重要：不进行分解会导致ImageReward得分急剧下降，而FFT与DCT两种分解方法均能显著缓解这种性能退化，在各时间步保持稳定的生成质量。</p>
+<p>此外，我们还探究了低频与高频成分不同预测阶数对模型性能的影响。实验发现，不当的预测策略易引入误差，损害生成质量。在所有测试配置中，“低频成分零阶预测（直接复用）+高频成分二阶预测”的组合始终表现最优，这验证了我们的核心假设——低频特征应直接复用，而高频成分则能从高阶预测建模中获益。这些发现不仅证实了频率感知设计的必要性，也为选择最优预测策略提供了实证依据。</p>
+<h5 id="C-1-预测阶数组合"><a href="#C-1-预测阶数组合" class="headerlink" title="C.1 预测阶数组合"></a>C.1 预测阶数组合</h5><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="fc1.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图 C1：此处展示了 FLUX.1-dev 模型在不同分解策略（快速傅里叶变换 FFT、离散余弦变换 DCT、无分解（None））与不同频率预测方式搭配下的 ImageReward 得分。本部分内容包含每种分解策略对应的最优预测方法：其中，快速傅里叶变换（FFT）与离散余弦变换（DCT）采用 “低频复用 + 高频预测” 的策略，而无分解（None）策略则采用直接复用的方式。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="Review"><a href="#Review" class="headerlink" title="Review"></a>Review</h2><h3 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h3><p>本文提出了一种基于频率感知的缓存框架FreqCa，用于加速扩散模型的采样效率。FreqCa通过将缓存的特征分解为低频和高频分量，之后重​​用低频部分，并使用历史高频信息和 Hermite 插值器预测高频部分。此外，本文提出仅缓存累积残差特征（CRF），大大减少了内存开销。实验结果表明，在文本到图像生成和图像编辑的基准测试中，FreqCa 在速度和内存占用方面始终表现出强劲的竞争力。</p>
+<h3 id="Strengths"><a href="#Strengths" class="headerlink" title="Strengths"></a>Strengths</h3><p>方法建立在良好的动机之上，图2展示了扩散模型采样过程中低频和高频分量的不同行为，证明了对低频和高频的差异化缓存策略的合理性与有效性。</p>
+<p>FreqCa将差异化频率处理与内存高效CRF 缓存相结合，超越了之前的整体特征缓存方法。</p>
+<p>实验结果充足，在不同模型和不同任务上进行了广泛的实验，充分证明了FreqCa的有效性。</p>
+<h3 id="Weaknesses"><a href="#Weaknesses" class="headerlink" title="Weaknesses"></a>Weaknesses</h3><p>扩散模型采样过程中低频和高频分量的不同行为在之前的工作（FreeU）中已经被发现，虽然它是针对于UNet模型的研究。</p>
+<p>文章写作缺少对使用方法的阐述，例如FFT和DCT具体是如何工作的，以及二阶Hermite插值器m阶差分$\Delta^{m}F(z_{t}^{High})$是如何求取的。</p>
+<p>虽然实验结果表明 Hermite 插值效果良好，但缺乏误差界或收敛性理论分析以及与其他方法的对比。</p>
+<h3 id="Questions"><a href="#Questions" class="headerlink" title="Questions"></a>Questions</h3><p>图3(d)中为什么$\Delta^{1}F(z_{t}^{High})$与$\Delta^{2}F(z_{t}^{High})$要与$\Delta^{1}F(z_{t+N}^{High})$与$\Delta^{2}F(z_{t+N}^{High})$双向连接？两者是互相影响的吗？</p>
+<p>为什么选择二阶埃尔米特插值器对易变的高频成分进行预测？有尝试使用不同的方法预测高频成分吗？效果与二阶埃尔米特插值器相比如何，有无具体对比结果？</p>
+<p>对于FreeCa，它的极限加速倍数有多少？是否存在一个加速阈值，之后生成的图像质量急速下降？</p>
+<p>对于FreeCa，会存在加速失效的特殊情况吗？如果有，是否可以说明加速失效的原因？</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/diffusion/" rel="tag"># diffusion</a>
+              <a href="/tags/2025/" rel="tag"># 2025</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/10/16/2025-INFERENCE-TIME-REWARD-GUIDED-LANGEVIN-RE-FINEMENT-FOR-DIFFUSION-MODELS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" rel="prev" title="2025-INFERENCE-TIME REWARD-GUIDED LANGEVIN RE-FINEMENT FOR DIFFUSION MODELS论文精读">
+      <i class="fa fa-chevron-left"></i> 2025-INFERENCE-TIME REWARD-GUIDED LANGEVIN RE-FINEMENT FOR DIFFUSION MODELS论文精读
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2025/10/21/2025-ETC-TRAINING-FREE-DIFFUSION-MODELS-ACCELERATION-WITH-ERROR-AWARE-TREND-CONSISTENCY%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" rel="next" title="2025-ETC TRAINING-FREE DIFFUSION MODELS ACCELERATION WITH ERROR-AWARE TREND CONSISTENCY论文精读">
+      2025-ETC TRAINING-FREE DIFFUSION MODELS ACCELERATION WITH ERROR-AWARE TREND CONSISTENCY论文精读 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.3.</span> <span class="nav-text">2 相关工作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E9%87%87%E6%A0%B7%E6%AD%A5%E6%95%B0%E5%87%8F%E5%B0%91"><span class="nav-number">1.3.1.</span> <span class="nav-text">2.1 采样步数减少</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E5%8E%BB%E5%99%AA%E7%BD%91%E7%BB%9C%E5%8A%A0%E9%80%9F"><span class="nav-number">1.3.2.</span> <span class="nav-text">2.2 去噪网络加速</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.</span> <span class="nav-text">3 方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86"><span class="nav-number">1.4.1.</span> <span class="nav-text">3.1 预备知识</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#3-1-1-%E6%89%A9%E6%95%A3Transformer%E6%9E%B6%E6%9E%84"><span class="nav-number">1.4.1.1.</span> <span class="nav-text">3.1.1 扩散Transformer架构</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-1-2-%E9%A2%91%E7%8E%87%E5%88%86%E8%A7%A3%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.1.2.</span> <span class="nav-text">3.1.2 频率分解方法</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E9%A2%91%E7%8E%87%E6%84%9F%E7%9F%A5%E7%BC%93%E5%AD%98%E5%8A%A0%E9%80%9F%E6%A1%86%E6%9E%B6"><span class="nav-number">1.4.2.</span> <span class="nav-text">3.2 频率感知缓存加速框架</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.5.</span> <span class="nav-text">4 实验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E5%AE%9E%E9%AA%8C%E8%AE%BE%E7%BD%AE"><span class="nav-number">1.5.1.</span> <span class="nav-text">4.1 实验设置</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E9%85%8D%E7%BD%AE"><span class="nav-number">1.5.1.1.</span> <span class="nav-text">模型配置</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%AF%84%E4%BC%B0%E4%B8%8E%E6%8C%87%E6%A0%87"><span class="nav-number">1.5.1.2.</span> <span class="nav-text">评估与指标</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90%E5%9B%BE%E5%83%8F"><span class="nav-number">1.5.2.</span> <span class="nav-text">4.2 文本生成图像</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#4-2-1-FLUX-1-dev"><span class="nav-number">1.5.2.1.</span> <span class="nav-text">4.2.1 FLUX.1-dev</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-2-2-Qwen-Image"><span class="nav-number">1.5.2.2.</span> <span class="nav-text">4.2.2 Qwen-Image</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-%E5%9B%BE%E5%83%8F%E7%BC%96%E8%BE%91"><span class="nav-number">1.5.3.</span> <span class="nav-text">4.3 图像编辑</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#4-3-1-FLUX-1-Kontext-dev"><span class="nav-number">1.5.3.1.</span> <span class="nav-text">4.3.1 FLUX.1-Kontext-dev</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-3-2-Qwen-Image-Edit"><span class="nav-number">1.5.3.2.</span> <span class="nav-text">4.3.2 Qwen-Image-Edit</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-%E6%B6%88%E8%9E%8D%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.5.4.</span> <span class="nav-text">4.4 消融实验</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#4-4-1-%E7%BC%93%E5%AD%98%E5%86%85%E5%AD%98%E4%B8%8E%E8%AE%A1%E7%AE%97%E6%95%88%E7%8E%87"><span class="nav-number">1.5.4.1.</span> <span class="nav-text">4.4.1 缓存内存与计算效率</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-4-2-%E5%88%86%E8%A7%A3%E6%96%B9%E6%B3%95%E4%B8%8E%E9%A2%84%E6%B5%8B%E9%98%B6%E6%95%B0%E6%B6%88%E8%9E%8D%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.5.4.2.</span> <span class="nav-text">4.4.2 分解方法与预测阶数消融实验</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E7%BB%93%E8%AE%BA"><span class="nav-number">1.6.</span> <span class="nav-text">5 结论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%84%E5%BD%95"><span class="nav-number">1.7.</span> <span class="nav-text">附录</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#A-%E5%A4%A7%E5%9E%8B%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E"><span class="nav-number">1.7.1.</span> <span class="nav-text">A 大型语言模型的使用说明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B-%E8%AF%A6%E7%BB%86%E5%AE%9E%E9%AA%8C%E8%AE%BE%E7%BD%AE"><span class="nav-number">1.7.2.</span> <span class="nav-text">B 详细实验设置</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#B-1-%E6%A8%A1%E5%9E%8B%E4%B8%8E%E4%BB%BB%E5%8A%A1%E8%AF%B4%E6%98%8E"><span class="nav-number">1.7.2.1.</span> <span class="nav-text">B.1 模型与任务说明</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#B-2-%E7%A1%AC%E4%BB%B6%E4%B8%8E%E8%AE%A1%E7%AE%97%E8%B5%84%E6%BA%90"><span class="nav-number">1.7.2.2.</span> <span class="nav-text">B.2 硬件与计算资源</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#B-3-FreqCa%E5%AE%9E%E7%8E%B0%E5%8F%82%E6%95%B0"><span class="nav-number">1.7.2.3.</span> <span class="nav-text">B.3 FreqCa实现参数</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#C-%E5%88%86%E8%A7%A3%E6%96%B9%E6%B3%95%E4%B8%8E%E9%A2%84%E6%B5%8B%E9%98%B6%E6%95%B0%E6%B6%88%E8%9E%8D%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.7.3.</span> <span class="nav-text">C 分解方法与预测阶数消融实验</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#C-1-%E9%A2%84%E6%B5%8B%E9%98%B6%E6%95%B0%E7%BB%84%E5%90%88"><span class="nav-number">1.7.3.1.</span> <span class="nav-text">C.1 预测阶数组合</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Review"><span class="nav-number">2.</span> <span class="nav-text">Review</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Summary"><span class="nav-number">2.1.</span> <span class="nav-text">Summary</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Strengths"><span class="nav-number">2.2.</span> <span class="nav-text">Strengths</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Weaknesses"><span class="nav-number">2.3.</span> <span class="nav-text">Weaknesses</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Questions"><span class="nav-number">2.4.</span> <span class="nav-text">Questions</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zongqing Li"
+      src="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+  <p class="site-author-name" itemprop="name">Zongqing Li</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">50</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hqulzq" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hqulzq" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hqulzq@163.com" title="E-Mail → mailto:hqulzq@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+      
+<script type="text/javascript" charset="utf-8" src="/js/tagcloud.js"></script>
+<script type="text/javascript" charset="utf-8" src="/js/tagcanvas.js"></script>
+<div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div id="myCanvasContainer" class="widget tagcloud">
+        <canvas width="250" height="250" id="resCanvas" style="width=100%">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/2019/" rel="tag">2019</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2020/" rel="tag">2020</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2021/" rel="tag">2021</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2022/" rel="tag">2022</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2023/" rel="tag">2023</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2024/" rel="tag">2024</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/2025/" rel="tag">2025</a><span class="tag-list-count">26</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Bug%E6%80%BB%E7%BB%93/" rel="tag">Bug总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR/" rel="tag">CVPR</a><span class="tag-list-count">26</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CVPR-Workshop/" rel="tag">CVPR Workshop</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICCV/" rel="tag">ICCV</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICLR/" rel="tag">ICLR</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ICML/" rel="tag">ICML</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IJCAI/" rel="tag">IJCAI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Knife4j/" rel="tag">Knife4j</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MinIO/" rel="tag">MinIO</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis-Plus/" rel="tag">Mybatis-Plus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIPS/" rel="tag">NeurIPS</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NeurIps/" rel="tag">NeurIps</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ODE%E6%B1%82%E8%A7%A3/" rel="tag">ODE求解</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RabbitMQ/" rel="tag">RabbitMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RocketMQ/" rel="tag">RocketMQ</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/diffusion/" rel="tag">diffusion</a><span class="tag-list-count">71</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/" rel="tag">代码随想录</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag">头函数</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%9A%E5%BA%AD%E5%85%AC%E5%AF%93/" rel="tag">尚庭公寓</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" rel="tag">异常处理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="tag">快速入门</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%80%BB%E7%BB%93/" rel="tag">总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" rel="tag">技术总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%A8%E8%A7%A3/" rel="tag">注解</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%AB%99/" rel="tag">网站</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%8B%A5%E4%BE%9D/" rel="tag">若依</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BA%E6%96%87/" rel="tag">论文</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%A1%A8i/" rel="tag">链表i</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%85%E8%AF%BB/" rel="tag">阅读</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/" rel="tag">项目实战</a><span class="tag-list-count">6</span></li></ul>
+        </canvas>
+    </div>
+</div>
+
+
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zongqing Li</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #4D4D4C;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #F7F7F7;
+      background-image: linear-gradient(#F7F7F7, #F7F7F7);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('post.copy_button').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('post.copy_success')
+          else $(this).text('post.copy_failure')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('post.copy_button')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>

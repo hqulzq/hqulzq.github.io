@@ -42242,4 +42242,802 @@ r_1 h & r_2 h & \cdots & r_p h \\
         <tag>NeurIps</tag>
       </tags>
   </entry>
+  <entry>
+    <title>2025-INFERENCE-TIME REWARD-GUIDED LANGEVIN RE-FINEMENT FOR DIFFUSION MODELS论文精读</title>
+    <url>/2025/10/16/2025-INFERENCE-TIME-REWARD-GUIDED-LANGEVIN-RE-FINEMENT-FOR-DIFFUSION-MODELS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/</url>
+    <content><![CDATA[<h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>我们研究了基于常微分方程（ODE）采样器的预训练扩散模型在测试阶段与任务特定奖励的对齐问题。我们从受直接偏好优化（DPO）启发的基于能量的分布出发，提出了一种<strong>推理阶段朗之万细化方法</strong>：该方法在图像/ latent（潜变量）空间中，<strong>将标准的确定性去噪更新与奖励引导的修正交替进行</strong>。该流程对于常见的ODE求解器具有“即插即用”特性，无需额外训练或数据，且可适配任意可微奖励模型——包括人类偏好奖励模型、美学评分或安全性评分，以及基于CLIP的奖励模型。从实验结果来看，在多个数据集和不同奖励模型上，该方法在测试阶段均能持续提升奖励值。最终形成的是一种轻量级的“采样即对齐”方法：它能将预训练扩散模型转化为追求奖励的生成器，在无需微调数据、额外训练或架构修改的情况下提升生成质量。</p>
+<span id="more"></span>
+<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1. 引言"></a>1. 引言</h3><p>近年来，去噪扩散模型迅速成为高保真图像生成的主流方法，在学术研究和工业应用中均取得了显著进展（Ho 等人，2020；Dhariwal &amp; Nichol，2021；Rombach 等人，2022）。其优势的确立，得益于一个兼具卓越实际性能与坚实理论基础的框架。与其他生成范式不同，扩散模型建立在基于随机微分方程（SDE）的成熟公式之上（Song 等人，2020b）。这一视角提供了统一且规范的数学框架，巧妙地将前向加噪过程与反向生成过程（及其确定性概率流常微分方程对应形式（Song 等人，2020b），以及 DDIM（Song 等人，2020a）等高效常微分方程采样器）关联起来，带来了在其他模型中往往不够明确的理论保障与洞见。这种理论上的严谨性，再加上其在样本质量和多样性方面实现最先进结果的能力（Karras 等人，2022；Lu 等人，2022；Dhariwal &amp; Nichol，2021），使得扩散模型成为图像生成领域最受欢迎的方法。</p>
+<p>推进生成模型发展的一个关键方向，是<strong>让模型输出与细微的人类偏好对齐</strong>——不再局限于单纯的视觉保真度，而是延伸到美学质量、构图、伦理合规等属性。为此，越来越多的研究聚焦于利用人类反馈对生成模型进行微调。现有方法大致可按两个维度分类：<strong>反馈形式与训练范式</strong>。在反馈方面，部分方法利用人类直接提供的数据（如 pairwise 比较（Wallace 等人，2024）），另一部分则借助学习到的、包含人类偏好的奖励函数（Fan 等人，2023）。在训练范式方面，有些技术需要对模型进行全部或部分重训练（通常以强化学习（RL）的形式，通过优化去噪过程来最大化奖励信号（Fan 等人，2023；Clark 等人，2023））；另一些方法则通过蒸馏，将奖励引导过程中的知识迁移到模型参数中（Salimans &amp; Ho，2022）。与之相对，还有一类截然不同的研究思路聚焦于推理阶段：不更新预训练模型的权重，而是利用来自分类器或奖励模型的引导信号来调控生成过程（Dhariwal &amp; Nichol，2021；Ho &amp; Salimans，2022）。尽管这类方法具有一定效果，但往往需要在控制强度与样本质量之间进行权衡。</p>
+<p>在本研究中，我们提出了一种无需训练的推理阶段框架，可将基于确定性常微分方程（ODE）的扩散采样器与任意可微奖励函数对齐。在每一步采样过程中，我们先执行一个针对“拉回能量倾斜”的简短朗之万细化（该概念源于基于能量的模型（LeCun 等人，2006；Du 等人，2023）），随后再应用确定性去噪器，将细化后的状态推进到下一步。这种交替执行的设计带来了简洁且可组合的理论保障：下一步的分布会实现预期的奖励指数倾斜，而通过多步迭代，最终能恢复出类似 DPO（直接偏好优化）形式的基于能量的目标分布（Wallace 等人，2024），从而与直接偏好优化（Direct Preference Optimization）的原理建立了形式化关联（Rafailov 等人，2023）。我们的方法具有“即插即用”特性，不依赖特定架构，且可适配多种奖励模型（如美学评分（Fan 等人，2023）、NIMA（Talebi &amp; Milanfar，2018）、基于分类器的类别引导（Dhariwal &amp; Nichol，2021）），能在推理阶段完全实现实用化的偏好对齐——这与那些需要微调（Fan 等人，2023；Clark 等人，2023）或训练奖励模型（Rafailov 等人，2023；Wallace 等人，2024）的方法形成了鲜明对比。</p>
+<p>综上，本文的主要贡献如下：</p>
+<ol>
+<li><strong>无需训练的推理阶段框架</strong>：提出了一种面向基于确定性常微分方程（ODE）的扩散采样器、由奖励引导的无需训练的推理阶段微调框架，将简短的朗之万细化与模型的确定性去噪器交替执行。</li>
+<li><strong>理论保障</strong>：通过严格证明表明，我们的分层细化与确定性推进过程，能让每一层都实现预期的指数倾斜分布，最终在输出端形成类似 DPO 的倾斜分布，从而验证了该框架的正确性。</li>
+<li><strong>实验有效性</strong>：大量实验表明，我们的方法在不同数据集和奖励模型上均能持续提升预期奖励值；此外，将分类器的 logit 值作为奖励，还能在不更新参数的情况下，实现推理阶段的类别引导图像生成。</li>
+</ol>
+<h3 id="2-预备知识"><a href="#2-预备知识" class="headerlink" title="2 预备知识"></a>2 预备知识</h3><h4 id="2-1-扩散模型的前向过程与反向过程"><a href="#2-1-扩散模型的前向过程与反向过程" class="headerlink" title="2.1 扩散模型的前向过程与反向过程"></a>2.1 扩散模型的前向过程与反向过程</h4><p>我们考虑在有限时间域[0, T]内、定义在$T^d$（d维环面）上的前向加噪伊藤随机微分方程（SDE）：</p>
+<script type="math/tex; mode=display">d x_{t}=f\left(x_{t}, t\right) d t+g(t) d W_{t}, t \in[0, T], x_{0} \sim p_{0} \equiv p_{\text{data }}, \tag{2.1}</script><p>其中，$f(\cdot, t)$为漂移场，$g(t)&gt;0$为标量（或各向同性）扩散调度，$W_{t}$为标准维纳过程（Wiener process）。用$p_{t}$表示由公式（2.1）诱导的$x_{t}$的边缘概率密度。</p>
+<p>将服从分布$x_{T} \sim p_{T}$的样本反向映射回服从分布$x_{0} \sim p_{0}$的样本的反向时间SDE（即反向过程SDE）可表示为：</p>
+<script type="math/tex; mode=display">dx_{t} = \Big (f(x_{t},t) - g(t)^{2}\, \nabla _{x}\log p_{t}(x_{t})\Big )\, dt + g(t)\, d\overline {W}_{t}, t:T\to 0, \tag{2.2}</script><p>其中，$\bar{W}_{t}$为反向时间下的标准维纳过程，$\nabla_{x} \log p_{t}$为（未知的）得分函数（score function）。</p>
+<p>上述反向过程对应的确定性形式为概率流（反向）常微分方程（ODE），当得分函数精确时，该ODE与反向SDE具有相同的时间边缘分布，其表达式为：</p>
+<script type="math/tex; mode=display">\frac{d x_{t}}{d t}=f\left(x_{t}, t\right)-\frac{1}{2} g(t)^{2} \nabla_{x} \log p_{t}\left(x_{t}\right), t: T \to 0 . \tag{2.3}</script><p>在实际应用中，我们会用预训练的得分模型$s_{\theta}(x, t) \approx\nabla_{x} \log p_{t}(x)$替代公式（2.2）和公式（2.3）中的未知得分函数；对公式（2.3）进行数值离散化，即可得到基于确定性ODE的去噪采样器（例如DDIM（Song等人，2020a）、EDM风格的积分器（Karras等人，2022））。</p>
+<h4 id="2-2-作为SDE的朗之万动力学及其离散化"><a href="#2-2-作为SDE的朗之万动力学及其离散化" class="headerlink" title="2.2 作为SDE的朗之万动力学及其离散化"></a>2.2 作为SDE的朗之万动力学及其离散化</h4><p>给定目标概率密度$\pi(x) \propto e^{-U(x)}$（其中$U: \mathbb{R}^{d} \to \mathbb{R}$为能量函数），过阻尼朗之万SDE（单位温度下）可表示为：</p>
+<script type="math/tex; mode=display">d x_{\tau}=-\nabla U\left(x_{\tau}\right) d \tau+\sqrt{2} d B_{\tau}=\nabla \log \pi\left(x_{\tau}\right) d \tau+\sqrt{2} d B_{\tau}, \tag{2.4}</script><p>其中，$B_{\tau}$为标准布朗运动（Brownian motion）。在温和条件（如能量函数$U$具有约束性）下，该SDE对应的福克-普朗克方程（Fokker–Planck equation）$\partial_{\tau} q_{\tau}=-\nabla \cdot (q_{\tau} \nabla \log \pi)+\Delta q_{\tau}$以$\pi$为平稳分布（Pavliotis，2014）。</p>
+<p>该朗之万SDE的一种基础时间离散化方法是无调整朗之万算法（Unadjusted Langevin Algorithm，ULA）（Robert &amp; Tweedie，1996；Parisi &amp; Yongshi，1980），其更新公式为：</p>
+<script type="math/tex; mode=display">x \leftarrow x+\alpha \nabla \log \pi(x)+\sqrt{2 \alpha} \xi, \xi \sim \mathcal{N}(0, I), \alpha>0, \tag{2.5}</script><p>其中，$\alpha$为步长，$\xi$为服从标准正态分布的随机噪声。当$\alpha \to 0$且迭代次数足够多时（或通过Metropolis校正可实现精确收敛），ULA算法的输出会收敛到目标分布$\pi$。</p>
+<h4 id="2-3-类RLHF目标函数与DPO：诱导的能量倾斜最优解"><a href="#2-3-类RLHF目标函数与DPO：诱导的能量倾斜最优解" class="headerlink" title="2.3 类RLHF目标函数与DPO：诱导的能量倾斜最优解"></a>2.3 类RLHF目标函数与DPO：诱导的能量倾斜最优解</h4><p>设$p_{\theta}(x_{0})$为图像$x_{0}$上的参数化无条件生成模型，$p_{\text{ref }}(x_{0})$为固定的参考分布（例如预训练模型的分布）。基于人类反馈的强化学习（RLHF）的目标是最大化潜在奖励$r(x_{0})$，同时正则化模型分布与参考分布$p_{\text{ref }}$之间的KL散度（Ziegler等人，2019；Stiennon等人，2020），其目标函数可表示为：</p>
+<script type="math/tex; mode=display">max _{p_{\theta}} \mathbb{E}_{x_{0} \sim p_{\theta}\left(x_{0}\right)}\left[r\left(x_{0}\right)\right]-\beta D_{\text{KL}}\left[p_{\theta}\left(x_{0}\right) \| p_{\text{ref }}\left(x_{0}\right)\right], \beta>0 . \tag{2.6}</script><p>对于公式（2.6）所示的目标函数，其（唯一的）全局最优解具有能量倾斜形式的闭合表达式：</p>
+<script type="math/tex; mode=display">p_{\theta}^{*}\left(x_{0}\right)=\frac{1}{Z} p_{\text{ref }}\left(x_{0}\right) \exp \left(r\left(x_{0}\right) / \beta\right), Z=\int p_{\text{ref }}\left(x_{0}\right) \exp \left(r\left(x_{0}\right) / \beta\right) d x_{0} . \tag{2.7}</script><p>其中，$Z$为归一化常数。</p>
+<h5 id="推导过程"><a href="#推导过程" class="headerlink" title="推导过程"></a>推导过程</h5><p>引入用于归一化约束的拉格朗日乘数$\lambda$，对目标泛函：</p>
+<script type="math/tex; mode=display">\mathcal{L}[p]=\int p\left(x_{0}\right) r\left(x_{0}\right) d x_{0}-\beta \int p\left(x_{0}\right) \log \frac{p\left(x_{0}\right)}{p_{\text{ref }}\left(x_{0}\right)} d x_{0}-\lambda\left(\int p\left(x_{0}\right) d x_{0}-1\right) \tag{2.8}</script><p>关于$p$求导并令导数为0，可得：</p>
+<script type="math/tex; mode=display">\frac{\delta \mathcal{L}}{\delta p}=r\left(x_{0}\right)-\beta\left(\log p\left(x_{0}\right)-\log p_{\text{ref }}\left(x_{0}\right)+1\right)-\lambda=0 \tag{2.9}</script><p>整理后得到$\log p(x_{0})=\log p_{\text{ref }}(x_{0})+r(x_{0}) / \beta-C$（其中$C$为常数）。对等式两边取指数并进行归一化，即可得到公式（2.7）。</p>
+<h5 id="基于能量的视角"><a href="#基于能量的视角" class="headerlink" title="基于能量的视角"></a>基于能量的视角</h5><p>公式（2.7）可视为一种基于能量的模型（Energy-Based Model，EBM），其能量函数为$E(x_{0})=-\log p_{\text{ref }}(x_{0})-r(x_{0}) / \beta$。因此，优化公式（2.6）所示的RLHF目标函数，等价于从如下基于能量的模型族中采样：$p(x_{0}) \propto p_{\text{ref }}(x_{0}) \exp (r(x_{0}) / \beta)$。</p>
+<h4 id="2-4-基于ODE的扩散模型：确定性去噪"><a href="#2-4-基于ODE的扩散模型：确定性去噪" class="headerlink" title="2.4 基于ODE的扩散模型：确定性去噪"></a>2.4 基于ODE的扩散模型：确定性去噪</h4><p>我们采用基于确定性ODE的采样器（例如对概率流ODE进行DDIM/EDM风格积分的采样器），该采样器会生成离散时间的去噪轨迹，其表达式为：</p>
+<script type="math/tex; mode=display">x_{t-1}=f_{t}\left(x_{t}\right), t \in\{T, T-1, \ldots, 1\} .\tag{2.10}</script><p>其中，$f_{t}$为去噪函数，$t$为采样步数（从$T$到1逐步迭代）。</p>
+<p>用$p_{t}$表示第$t$步（layer t）时模型诱导的$x_{t}$的边缘分布。由于$f_{t}: \mathbb{R}^{d} \to \mathbb{R}^{d}$是可微的且在支撑集上局部可逆，因此各步的概率密度满足变量替换恒等式：</p>
+<script type="math/tex; mode=display">p_{t}(x)=p_{t-1}\left(f_{t}(x)\right)\left|\det \nabla f_{t}(x)\right| . \tag{2.11}</script><p>其中，$\det \nabla f_{t}(x)$表示$f_{t}(x)$梯度的雅可比行列式的绝对值。</p>
+<p>由此可知，一旦初始采样$x_{T} \sim p_{T}$（通常为标准正态分布）确定，整个采样轨迹$\{x_{t}\}$就会由公式（2.10）完全确定；也就是说，给定$x_{T}$，后续所有步骤的$x_{T-1}, \ldots, x_{0}$都会被唯一确定。</p>
+<h3 id="3-方法"><a href="#3-方法" class="headerlink" title="3 方法"></a>3 方法</h3><h4 id="最终目标"><a href="#最终目标" class="headerlink" title="最终目标"></a>最终目标</h4><p>受直接偏好优化（DPO）闭式解的启发，我们旨在将$t=0$时刻（即最终输出时刻）的分布倾斜为如下基于能量的模型分布：</p>
+<script type="math/tex; mode=display">p_{0}^{(\lambda)}(x) \propto p_{0}(x) \exp (\lambda r(x)), \tag{3.1}</script><p>其中，$r: X \to \mathbb{R}$代表（可微的）奖励函数，$\lambda&gt;0$为全局奖励强度参数。</p>
+<h4 id="分步目标"><a href="#分步目标" class="headerlink" title="分步目标"></a>分步目标</h4><p>为逐步实现公式（3.1）所示的最终目标，我们引入一个递减的奖励强度调度策略：</p>
+<script type="math/tex; mode=display">\lambda_{T}=0, \lambda_{0}=\lambda, \lambda_{t-1} \geq \lambda_{t} \quad(t=1, \ldots, T), \tag{3.2}</script><p>并定义第$t$步（layer t）的倾斜分布为：</p>
+<script type="math/tex; mode=display">p_{t}^{\left(\lambda_{t}\right)}(x) \propto p_{t}(x) \exp \left(\lambda_{t} r(x)\right) . \tag{3.3}</script><p>已知当前时刻$t$的样本$x_{t}’ \sim p_{t}^{(\lambda_{t})}$，我们通过以下两步操作生成下一时刻$t-1$的样本$x_{t-1}’ \sim p_{t-1}^{(\lambda_{t-1})}$：</p>
+<h5 id="步骤1：朗之万细化"><a href="#步骤1：朗之万细化" class="headerlink" title="步骤1：朗之万细化"></a>步骤1：朗之万细化</h5><p>从时刻$t$的样本$x_{t}’$出发，执行若干步朗之万迭代，目标分布为：</p>
+<script type="math/tex; mode=display">\pi_{t}(x) \propto p_{t}(x) \exp \left(\lambda_{t-1} r\left(f_{t}(x)\right)\right), \tag{3.4}</script><p>最终得到细化后的样本：</p>
+<script type="math/tex; mode=display">x_{t}^{\text{new }} \sim p_{t}(x) \exp \left(\lambda_{t-1} r\left(f_{t}(x)\right)\right) . \tag{3.5}</script><p>针对目标分布$\pi_{t}$的连续时间朗之万随机微分方程（SDE）为：</p>
+<script type="math/tex; mode=display">d X_{\tau}=\nabla_{x} \log \pi_{t}\left(X_{\tau}\right) d \tau+\sqrt{2} d B_{\tau} . \tag{3.6}</script><p>该分布的对数梯度为：</p>
+<script type="math/tex; mode=display">\nabla_{x} \log \pi_{t}(x)=s_{\theta}(x, t)+\lambda_{t-1} \nabla_{x} r\left(f_{t}(x)\right) . \tag{3.7}</script><p>其中，$s_{\theta}(x, t)$为预训练的得分模型。</p>
+<p>以当前时刻$t$的状态为初始值：</p>
+<script type="math/tex; mode=display">x^{(0)}=x_{t}' . \tag{3.8}</script><p>随后执行$K_{t}$步无调整朗之万算法（ULA），步长为$\alpha_{t}&gt;0$，迭代更新公式为：</p>
+<script type="math/tex; mode=display">x^{(k+1)}=x^{(k)}+\alpha_{t}\left[s_{\theta}\left(x^{(k)}, t\right)+\lambda_{t-1} \nabla_{x} r\left(f_{t}\left(x^{(k)}\right)\right)\right]+\sqrt{2 \alpha_{t}} \xi^{(k)} . \tag{3.9}</script><p>其中，高斯噪声满足：</p>
+<script type="math/tex; mode=display">\xi^{(k)} \sim \mathcal{N}(0, I) . \tag{3.10}</script><p>在噪声极低的采样步骤中，可采用无噪声版本的迭代更新公式：</p>
+<script type="math/tex; mode=display">x^{(k+1)}=x^{(k)}+\alpha_{t}\left[s_{\theta}\left(x^{(k)}, t\right)+\lambda_{t-1} \nabla_{x} r\left(f_{t}\left(x^{(k)}\right)\right)\right] . \tag{3.11}</script><p>经过$K_{t}$次迭代后，定义细化后的样本为：</p>
+<script type="math/tex; mode=display">x_{t}^{\text{new }}:=x^{\left(K_{t}\right)} . \tag{3.12}</script><p>当步长$\alpha_{t}$足够小且迭代次数$K_{t}$足够多时，细化后的样本$x_{t}^{\text{new }}$会满足公式（3.5）所示的分布。</p>
+<h5 id="步骤2：确定性去噪"><a href="#步骤2：确定性去噪" class="headerlink" title="步骤2：确定性去噪"></a>步骤2：确定性去噪</h5><p>已知细化后的样本$x_{t}^{\text{new }}$满足公式（3.5），将其输入确定性去噪器，得到：</p>
+<script type="math/tex; mode=display">x_{t-1}'=f_{t}\left(x_{t}^{\text{new }}\right), \tag{3.13}</script><p>通过变量替换可知，该操作会使下一时刻的样本满足预期的倾斜分布：</p>
+<script type="math/tex; mode=display">x_{t-1}' \sim p_{t-1}(x) \exp \left(\lambda_{t-1} r(x)\right) . \tag{3.14}</script><h6 id="证明过程"><a href="#证明过程" class="headerlink" title="证明过程"></a>证明过程</h6><p>由公式（3.5）可知，$X’ \equiv x_{t}^{\text{new }}$的概率密度为$\tilde{\pi}_{t}(x) \propto p_{t}(x) \exp (\lambda_{t-1} r(f_{t}(x)))$。令$Y=f_{t}(X’)$，对于任意可测集$A \subset \mathbb{R}^{d}$，有：</p>
+<script type="math/tex; mode=display">\mathbb{P}(Y \in A)=\int 1_{\left\{f_{t}(x) \in A\right\}} p_{t}(x) e^{\lambda_{t-1} r\left(f_{t}(x)\right)} d x . \tag{3.15}</script><p>结合变量替换关系$p_{t}(x)=p_{t-1}(f_{t}(x)) \left| \det \nabla f_{t}(x) \right|$与变量替换$y=f_{t}(x)$，可得：</p>
+<script type="math/tex; mode=display">\mathbb{P}(Y \in A)=\frac{1}{Z} \int_{A} p_{t-1}(y) e^{\lambda_{t-1} r(y)} d y, \tag{3.16}</script><p>其中$Z$为归一化常数。因此，$Y$的概率密度为$\tilde{\pi}_{t-1}(y) \propto p_{t-1}(y) \exp (\lambda_{t-1} r(y))$，即公式（3.14）所示的分布。</p>
+<h4 id="归纳推导"><a href="#归纳推导" class="headerlink" title="归纳推导"></a>归纳推导</h4><p>假设在第$t$步时，样本满足$x_{t}’ \sim p_{t}(x) \exp (\lambda_{t} r(x))$，则通过执行步骤1（朗之万细化）和步骤2（确定性去噪），可生成满足$x_{t-1}’ \sim p_{t-1}(x) \exp (\lambda_{t-1} r(x))$的样本。对$t=T, \ldots, 1$的所有步骤迭代执行上述操作，最终可得：</p>
+<script type="math/tex; mode=display">x_{0}' \sim p_{0}(x) \exp (\lambda r(x)),</script><p>该分布与公式（3.1）所示的DPO最优基于能量的分布完全一致。</p>
+<p>基于上述推导，我们将所提方法总结为如下算法。</p>
+<p><img src="a1.png" ></p>
+<h3 id="4-实验"><a href="#4-实验" class="headerlink" title="4 实验"></a>4 实验</h3><h4 id="4-1-实验设置"><a href="#4-1-实验设置" class="headerlink" title="4.1 实验设置"></a>4.1 实验设置</h4><h5 id="基础模型与采样器"><a href="#基础模型与采样器" class="headerlink" title="基础模型与采样器"></a>基础模型与采样器</h5><p>我们采用预训练的扩散模型作为基础模型，并搭配基于确定性常微分方程（ODE）的采样器（例如DDIM/EDM概率流采样器），将采样过程离散化为从$t=T$到$t=0$的$T=50$个步骤。</p>
+<h5 id="数据集"><a href="#数据集" class="headerlink" title="数据集"></a>数据集</h5><p>我们在4个256×256分辨率的无条件生成数据集上进行评估，分别是CelebA-HQ（Karras等人，2017）、AFHQ（包含猫/狗/野生动物子数据集）（Choi等人，2020）、LSUN卧室（Yu等人，2015）和ImageNet（Deng等人，2009）。所有数据集均使用其标准训练集划分，并采用扩散模型基础训练时的标准预处理流程。</p>
+<h5 id="奖励模型（可微）"><a href="#奖励模型（可微）" class="headerlink" title="奖励模型（可微）"></a>奖励模型（可微）</h5><p>我们采用两种可微奖励模型，具体如下：</p>
+<ul>
+<li><strong>美学评分（LAION美学预测器v2）</strong>：以CLIP图像编码器（ViT-L/14）（Radford等人，2021）为基础，后续连接一个线性回归头，用于预测标量美学分数（Schuhmann等人，2021）。在评分前，图像会被缩放到224×224分辨率，并采用CLIP标准归一化流程；该缩放操作具有可微性，梯度可反向传播至原始256×256分辨率图像。</li>
+<li><strong>NIMA（神经图像评估）</strong>：我们使用标准NIMA模型，输入图像通过双线性插值缩放到224×224分辨率并进行裁剪处理。</li>
+</ul>
+<p>为确保实验公平性与可复现性，所有数据集上的两种奖励模型均保持冻结状态（不进行微调）。为提升奖励组合时的稳定性，两种奖励模型的输出分数均被归一化到[0, 10]区间。</p>
+<h5 id="奖励调度与引导"><a href="#奖励调度与引导" class="headerlink" title="奖励调度与引导"></a>奖励调度与引导</h5><p>我们遵循公式（3.2）和（3.4）中定义的分步目标，采用如下奖励强度调度策略：$\lambda_T=0$、$\lambda_0=\lambda$且$\lambda_{t-1} \geq \lambda_t$。除非另有说明，否则我们设置$\lambda_{t-1}=\lambda \cdot w_t$，其中$w_t$为余弦衰减权重，计算公式为：</p>
+<script type="math/tex; mode=display">w_{t} = \frac{1}{2} \left( 1+\cos \left(\pi \cdot \frac{t-1}{T-1}\right)\right) , t=1,\dots,T</script><p>由此可得$w_1=1$、$w_T=0$。</p>
+<h5 id="朗之万细化"><a href="#朗之万细化" class="headerlink" title="朗之万细化"></a>朗之万细化</h5><p>在每个时间步$t$，我们执行$K_t \in \{2,5,10,20\}$步无调整朗之万算法（ULA），迭代更新公式为：</p>
+<script type="math/tex; mode=display">x^{(k+1)} = x^{(k)} + \alpha _{t}\left[s_{\theta }(x^{(k)},t) + \lambda _{t-1}\, \nabla _{x}r\big (f_{t}(x^{(k)})\big )\right]+\sqrt {2\alpha _{t}}\, \xi ^{(k)}</script><p>通过该设置，可观察不同朗之万细化步数对所提方法生成图像的预期奖励值的影响。</p>
+<h5 id="实现细节"><a href="#实现细节" class="headerlink" title="实现细节"></a>实现细节</h5><p>生成的图像分辨率为256×256，在输入奖励模型前，需通过可微缩放操作调整至224×224分辨率。在细化过程中，我们确保端到端梯度传播始终启用（无意外的梯度禁用或得分函数梯度分离情况）。对于每个数据集，我们生成2000张图像用于计算平均奖励值。</p>
+<h4 id="4-2-主要结果"><a href="#4-2-主要结果" class="headerlink" title="4.2 主要结果"></a>4.2 主要结果</h4><p>在所有4个256×256分辨率数据集以及两种可微奖励模型（美学评分和NIMA）上，随着朗之万细化步数的增加，我们的方法生成图像的预期奖励值呈现单调递增趋势。关键在于，即使仅执行2步朗之万细化，也能实现显著的奖励提升：在美学评分指标下，CelebA-HQ数据集的分数从6.23提升至6.52（+0.29）、AFHQ数据集从5.39提升至5.62（+0.23）、LSUN数据集从4.92提升至5.13（+0.21）、ImageNet数据集从4.33提升至4.52（+0.19）；在NIMA指标下，CelebA-HQ数据集从5.84提升至6.02（+0.18）、AFHQ数据集从4.77提升至4.87（+0.10）、LSUN数据集从4.52提升至4.71（+0.19）、ImageNet数据集从4.27提升至4.44（+0.17）。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t1.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表 1：不同朗之万步数下，四种数据集在美学评分（左）和 NIMA 评分（右）指标下的平均奖励值。分数越高越好。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>当朗之万细化步数设置为20时，奖励提升效果更为显著：美学评分指标下，ImageNet数据集分数从4.33提升至5.14（+0.81）、LSUN数据集从4.92提升至5.63（+0.71）、CelebA-HQ数据集从6.23提升至6.94（+0.71）、AFHQ数据集从5.39提升至5.92（+0.53）；NIMA指标下，LSUN数据集从4.52提升至5.39（+0.87）、ImageNet数据集从4.27提升至4.93（+0.66）、CelebA-HQ数据集从5.84提升至6.43（+0.59）、AFHQ数据集从4.77提升至5.17（+0.40）。</p>
+<p>图1显示，随着朗之万细化步数的增加，生成图像的平均奖励值显著上升。总体而言，我们提出的推理阶段细化方法能在不同数据集上稳定提升预期奖励值，且趋势具有一致性。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f1.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图 1：不同朗之万步数下所提方法的平均奖励值。结果表明，随着朗之万步数的增加，平均奖励值显著上升。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>（注：图1标题为“不同朗之万步数下所提方法的平均奖励值”，子图（a）对应美学评分奖励，子图（b）对应NIMA奖励，纵轴为平均奖励值，横轴为朗之万步数，可直观观察到奖励值随步数增加的上升趋势）。</p>
+<h4 id="4-3-基于所提方法的类别引导生成"><a href="#4-3-基于所提方法的类别引导生成" class="headerlink" title="4.3 基于所提方法的类别引导生成"></a>4.3 基于所提方法的类别引导生成</h4><p>在不修改扩散模型参数的前提下，我们的方法还可利用冻结的图像分类器作为奖励来源，在推理阶段实现类别引导，生成特定类别的图像。具体而言，我们将分类器对目标类别的置信度（例如类别logit值或对数概率）作为可微奖励，代入分层细化与确定性推进流程中。这种方式能实现类别选择性引导，使生成样本偏向目标类别，同时保持基于ODE采样器的稳定性与可控性。</p>
+<p>在实际操作中，我们仅需将生成的图像通过可微双线性插值缩放到分类器的原生输入分辨率，并采用分类器的标准归一化流程，即可计算标量奖励，无需任何再训练步骤。此外，将分类器作为奖励引导源，不仅能实现特定类别图像生成，还能提升生成图像的质量。图2（基于256×256分辨率ImageNet数据集）展示了该方法的有效性。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f2.png"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图2：以分类器作为奖励生成特定类别图像。该过程不仅能生成特定类型的图片，还能提升图像质量。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>（注：图2标题为“以分类器为奖励生成特定类别图像”，展示了5个目标类别的生成结果，分别是德国牧羊犬、蝴蝶犬、跑车、修道院、白狼，可直观观察到生成图像既符合目标类别特征，又具有较高视觉质量）。</p>
+<h3 id="5-相关工作"><a href="#5-相关工作" class="headerlink" title="5 相关工作"></a>5 相关工作</h3><h4 id="扩散模型与确定性ODE采样"><a href="#扩散模型与确定性ODE采样" class="headerlink" title="扩散模型与确定性ODE采样"></a>扩散模型与确定性ODE采样</h4><p>高效采样一直是扩散模型研究的核心主题。一项关键进展源于将扩散模型表述为随机微分方程（SDE）的解，这一表述自然地引出了其确定性对应形式——概率流常微分方程（Probability Flow ODE）（Song等人，2020b）。这种表述支持确定性采样，即生成过程由唯一轨迹定义，能够实现有意义的潜变量插值和精确的可复现性。</p>
+<p>Song等人提出了去噪扩散隐式模型（Denoising Diffusion Implicit Model，DDIM）采样器，这是一种一阶求解器，在保持生成质量的同时大幅加快了采样速度（Song等人，2020a）。后续研究则聚焦于开发更复杂的ODE求解器。例如，Karras等人（2022）通过实证阐明了基于ODE采样的设计选择，形成了稳健的实践方案；Lu等人（2022）提出了DPM-Solver，这是一种针对扩散ODE特定结构设计的高阶求解器，仅需约10步即可实现高保真度生成。</p>
+<p>除求解器设计外，另一类研究方向（如渐进式蒸馏（Progressive Distillation）（Salimans &amp; Ho，2022））旨在将复杂ODE求解器的行为蒸馏到更高效的模型中，进一步突破采样速度的限制。这些努力共同确立了确定性ODE采样作为扩散模型强大且高效的范式。</p>
+<h4 id="扩散模型的引导方法"><a href="#扩散模型的引导方法" class="headerlink" title="扩散模型的引导方法"></a>扩散模型的引导方法</h4><p>控制扩散模型的输出以使其与人类偏好对齐（这一挑战在语言模型中常通过基于人类反馈的强化学习（RLHF）解决），在图像领域也取得了并行进展。早期研究聚焦于推理时引导：Dhariwal与Nichol（2021）开创了分类器引导（Classifier Guidance）方法，利用预训练分类器的梯度将采样过程导向期望属性；随后，无分类器引导（Classifier-Free Guidance）方法取而代之，这种更稳健且应用广泛的技术通过联合训练条件与无条件模型实现控制，无需辅助分类器（Ho &amp; Salimans，2022）。</p>
+<p>近年来，研究开始探索将人类反馈直接融入模型训练循环，与RLHF范式相呼应。部分方法通过奖励梯度直接微调扩散模型（Clark等人，2023）；另一些方法（如DPOK）则将去噪过程形式化为序贯决策问题，并应用策略梯度算法（Fan等人，2023）。为规避强化学习的复杂性，DiffusionDPO等方法将直接偏好优化（Direct Preference Optimization）技术适配到扩散模型中，无需显式奖励模型即可高效实现与人类偏好的对齐（Wallace等人，2024）。</p>
+<p>从推理时引导到训练时对齐，这些研究方向对于开发可控且符合伦理的生成模型至关重要。</p>
+<h3 id="6-结论"><a href="#6-结论" class="headerlink" title="6 结论"></a>6 结论</h3><p>本文提出了“奖励引导朗之万细化”（Reward-Guided Langevin Refinement）方法，这是一种推理阶段框架，能够在不更新模型参数的情况下，将基于确定性常微分方程（ODE）的扩散采样器与任意可微奖励函数对齐。我们的核心思路是，在采样的每一步中，交替执行针对“拉回能量倾斜”的简短朗之万细化操作，以及确定性去噪推进操作。</p>
+<p>我们提供了两个简洁且可组合的理论保障：（i）朗之万细化操作会从分层倾斜分布$p_{t}(x) \exp (\lambda_{t-1} r(f_{t}(x)))$中采样；（ii）确定性推进操作$x_{t-1}=f_{t}(x_{t})$会将该倾斜分布精确转化为$p_{t-1}(x) \exp (\lambda_{t-1} r(x))$。通过采用递减的奖励强度调度策略，在多步采样中迭代执行上述操作，最终的输出分布会实现类似直接偏好优化（DPO）的指数倾斜形式，从而在推理阶段完全实现偏好对齐。</p>
+<p>实验结果表明，我们的方法在不同数据集和多种奖励模型（美学评分、NIMA评分以及基于分类器的类别引导）上，均能持续提升预期奖励值，同时在相同的实际耗时下保持生成样本的保真度。值得注意的是，仅需2步朗之万细化就能带来显著的奖励提升，而20步朗之万细化可实现更为明显的效果，这体现出该方法在奖励提升与效率之间具有良好的权衡特性。</p>
+<h5 id="局限性"><a href="#局限性" class="headerlink" title="局限性"></a>局限性</h5><p>我们的方法由于引入了朗之万动力学操作，会增加推理阶段的计算开销。使用的朗之万细化步数越多，生成图像的预期奖励值固然会越高，但也会导致生成时间延长。此外，生成图像还会继承所选奖励模型本身存在的偏差。</p>
+<h5 id="未来工作"><a href="#未来工作" class="headerlink" title="未来工作"></a>未来工作</h5><p>除了在推理阶段实现对齐之外，我们的框架还有望作为一种诊断工具，用于分析奖励函数本身的特性。由于我们的方法在沿奖励梯度提升奖励值的同时，仍能保留规范的扩散去噪步骤，因此可提供一种可控的方式来检测奖励函数是否存在“可被欺骗”的问题——即能否以极小的语义改进（甚至产生不良伪影）为代价，实现奖励值的大幅提升。此外，我们的方法或许还可作为一种通用工具，在负责任的使用协议下对奖励模型进行“红队测试”（red-teaming），帮助设计者优化奖励函数定义、提升奖励模型的校准度，并降低其受奖励欺骗的可能性。</p>
+<h2 id="Review"><a href="#Review" class="headerlink" title="Review"></a>Review</h2><h3 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h3><p>本文提出了一种适用于推理阶段的无需训练朗之万细化方法，将基于ODE的扩散采样器与任意可微奖励函数对齐。该方法通过交替地使用标准的确定性去噪更新步骤和 Langevin 奖励引导修正步骤，在采样时进行偏好或目标引导的生成，并且作者在文章中证明了所提出的方法可以逐步恢复 DPO 式指数倾斜目标分布。此外，在多个图像数据集和奖励模型上的结果表明了一致的改进，并且定性结果证明仅使用分类器作为奖励可以有效的引导图像生成特定的类别。</p>
+<h3 id="Strengths"><a href="#Strengths" class="headerlink" title="Strengths"></a>Strengths</h3><p>所提出的框架引入了一种无需训练的推理时间奖励引导细化机制，可与任意标准扩散 ODE 求解器和可微奖励函数兼容，具有广泛的适用性。</p>
+<p>文章提出的Reward-Guided Langevin Refinement方法不依赖于特定的预训练模型，并且可以结合不同的奖励模型，有助于进一步探索Reward-Guided Langevin Refinement的性能</p>
+<p>文章提出方法的有效性在数学层面得到证明，最终得到的迭代结果符合直接偏好优化（DPO）形式的最优输出分布。</p>
+<h3 id="Weaknesses"><a href="#Weaknesses" class="headerlink" title="Weaknesses"></a>Weaknesses</h3><p>正如文章中所提到的，生成图像会继承所选奖励模型本身存在的偏差，若奖励模型在训练过程中存在数据偏差、标注错误或者设计不合理等问题，生成的图像也将难以符合预期。</p>
+<p>所提出的方法仅讨论了无条件生成的改进情况，而对有引导条件生成的改进情形则没有被讨论。</p>
+<p>尽管该方法是无需训练的，但需要在每隔去噪步骤中增加多个 Langevin 细化步骤（每个去噪步骤可能多达 20 个），并且每一个Langevin 细化步骤都需要调用一次预训练的扩散模型和一次预训练的奖励模型，在相同的去噪步数下带来额外的计算成本。</p>
+<p>实验结果只提供了相对于基线的改进情况，但没有涉及与其他无需训练方法在相同推理资源下的效果对比。</p>
+<p>实验没有提供标准生成模型指标（例如 FID、精确度/召回率或覆盖率）的报告来评估引入的奖励增益是否以感知质量降低或者多样性为代价。</p>
+<h3 id="Questions"><a href="#Questions" class="headerlink" title="Questions"></a>Questions</h3><p>文章实现过程中是否使用了大模型作为辅助？为什么章节里没有介绍大模型的使用情况？</p>
+<p>从公式(3.9)和算法1来看，每一次 Langevin 细化 都需要调用一次预训练的扩散模型和一次预训练的奖励模型，可否提供在相同的计算成本下，使用 Langevin 细化和不适用 Langevin 细化的结果对比？</p>
+<p>可否提供更多完整的实验结果，以展示生成图像的FID、精确度/召回率或覆盖率的改进情况？</p>
+]]></content>
+      <categories>
+        <category>AI</category>
+      </categories>
+      <tags>
+        <tag>diffusion</tag>
+        <tag>2025</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>2025-ETC TRAINING-FREE DIFFUSION MODELS ACCELERATION WITH ERROR-AWARE TREND CONSISTENCY论文精读</title>
+    <url>/2025/10/21/2025-ETC-TRAINING-FREE-DIFFUSION-MODELS-ACCELERATION-WITH-ERROR-AWARE-TREND-CONSISTENCY%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/</url>
+    <content><![CDATA[<h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散模型已实现卓越的生成质量，但仍受限于高成本的迭代采样过程。近期的无训练加速方法通过<strong>复用模型输出来加快扩散进程</strong>，然而这些方法忽略了去噪趋势，且缺乏针对模型特异性容差的误差控制，导致多步复用时出现轨迹偏移，并加剧生成结果的不一致性。为解决这些问题，本文提出误差感知趋势一致性（Error-aware Trend Consistency, ETC）框架，该框架具备两大核心功能：1. <strong>引入一致性趋势预测器</strong>，利用扩散轨迹的平滑连续性，将历史去噪模式映射为稳定的未来方向，并在多个近似步骤中逐步分配这些方向，从而在实现加速的同时避免轨迹偏移；2. <strong>提出模型特异性误差容差搜索机制</strong>，通过识别从波动的语义规划阶段到稳定的质量优化阶段的过渡点，推导修正阈值。实验表明，ETC相较于FLUX模型实现了2.65倍的加速，而生成一致性仅出现微小下降（SSIM评分降低0.074）。注：更多样本与源代码可访问网站<a href="https://etcdiff.github.io/">https://etcdiff.github.io/</a></p>
+<span id="more"></span>
+<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1 引言"></a>1 引言</h3><p>扩散模型（Sohl-Dickstein 等人，2015；Song 与 Ermon，2019；Ho 等人，2020）已在图像、视频、音频等多个领域展现出卓越的生成能力。然而，其出色的生成性能通常依赖更大规模的模型架构和多步去噪过程，这导致了巨大的计算开销与推理延迟。基于训练的加速方法（Salimans 与 Ho，2022；Luo 等人，2023）通过从多步模型的去噪过程中学习少步模型来实现扩散加速，但这种范式需要大量训练，且原始模型与少步模型的预测分布之间往往存在差异（Stanton 等人，2021），进而削弱模型的泛化能力。</p>
+<p>与之相反，无训练方法（Chen 等人；Ye 等人，2024）无需重新训练模型，也不会导致性能下降，其通过利用相邻时间步之间的特征相似性实现加速，主要分为层内特征复用与步间特征复用两类机制。层内复用方法（Ma 等人，2024a；Liu 等人，2025b）通过在每个去噪迭代中复用模型内层特征实现推理加速，但需要针对特定架构进行设计；而步间复用方法（Ye 等人，2024；Liu 等人，2025a）通过评估模型输出的稳健性来决定多步复用策略，减少模型推理总次数，相比层内复用方法实现了更具泛化性的加速。然而，步间复用方法忽略了相邻时间步之间的去噪趋势，导致生成结果不一致。尽管近年来有研究（Chen 等人；Liu 等人，2025a）尝试通过模型输出之间的残差进行趋势预测以解决该问题，但短期输出波动往往会偏离长期去噪轨迹，正如图1a所示，这种波动残差的多步使用会进一步加剧趋势不一致性，因此，如何实现具有轨迹一致性的多步近似仍是一个未解决的挑战。</p>
+<p>此外，现有方法依赖人工设定的固定阈值评估近似误差，忽略了模型特异性的误差容差（如图1b所示）。这种固定阈值策略无法应对累积误差超出模型修正能力、导致不可逆轨迹偏移的情况，最终造成误差控制不足，生成不一致性加剧。综上，步间特征复用研究虽展现出巨大的加速潜力，但仍面临两大挑战：<strong>一是由于无法准确捕捉去噪趋势，多步近似过程中会出现轨迹偏移；二是由于对模型误差容限的探索不足，导致误差控制效果不佳。</strong></p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f1.png" width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图 1：轨迹偏移与去噪误差容差的可视化结果，子图（a）显示，现有方法无法跟随原始去噪轨迹，且会降低 latent 相似度；子图（b）显示，在一定程度的去噪误差范围内，模型仍能保持生成结果的一致性。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>为解决上述问题，本文提出无训练扩散加速框架ETC（Error-aware Trend Consistency，误差感知趋势一致性），通过轨迹一致性保障与模型特异性误差控制实现步间扩散加速。针对多步轨迹一致性问题，我们致力于从去噪过程固有的全局稳定特性中推导未来方向流：具体而言，通过计算模型输出跨步变化的加权投影，减弱近似误差带来的波动，同时放大长期动态的方向分量；为进一步提升加速效果，我们设计自适应扩展策略，根据投影趋势与周期性模型推理之间的偏差是否处于模型修正能力范围内，动态扩展或收缩近似窗口；此外，我们采用渐进式分配范式，将估计的方向流按比例分配到每个近似步骤中，在实现高效加速的同时避免偏离去噪轨迹。</strong></p>
+<p>针对误差控制不足的问题，我们<strong>将不同模型的误差容差视为去噪动态过程中涌现的特性</strong>。研究发现，<strong>去噪过程中的语义规划阶段具有高度动态波动性（Liu 等人，2025b），因此我们通过量化偏差扰动对生成质量的感知影响，推导从波动语义规划阶段到平稳质量优化阶段的关键过渡点，该过渡点可反映模型的误差修正极限。</strong></p>
+<p>综上，本文的主要贡献如下：</p>
+<ol>
+<li>提出一致性趋势预测器，将稳定的去噪趋势映射为未来方向流，并在近似步骤中逐步分配，确保轨迹一致性；</li>
+<li>提出模型特异性误差容差搜索方法，量化累积误差的影响，定位波动语义规划阶段与平稳质量优化阶段之间的过渡点，以此确定误差容差阈值；</li>
+<li>实验表明，在图像、视频、音频合成任务中，ETC在生成一致性与速度方面均优于其他最先进的基准方法。</li>
+</ol>
+<h3 id="2-相关工作"><a href="#2-相关工作" class="headerlink" title="2 相关工作"></a>2 相关工作</h3><h4 id="2-1-扩散模型"><a href="#2-1-扩散模型" class="headerlink" title="2.1 扩散模型"></a>2.1 扩散模型</h4><p>扩散模型在生成任务中已取得显著成果。早期扩散模型（Ho 等人，2020；Song 等人，2020a）直接在原始数据模态上执行迭代去噪过程，由于高维运算的存在，该过程产生了较大计算开销。为解决计算效率受限的问题，潜在扩散模型（Rombach 等人，2022；Blattmann 等人，2023）在应用扩散过程前，先将原始模态压缩为低维表示。潜在扩散模型最初基于U-Net（Ronneberger 等人，2015）开发，并展现出优异性能；但基于U-Net的设计面临可扩展性限制，这制约了更大规模模型的训练与实际部署。扩散Transformer（DiT）（Peebles 与 Xie，2023）通过引入Transformer（Vaswani 等人，2017）提升了可扩展性，进而在多个领域实现了最先进的性能（Labs，2024；Wan 等人，2025；Hung 等人，2024）。尽管扩散模型已实现高质量生成，但多步去噪的设计仍减慢了推理过程。</p>
+<h4 id="2-2-扩散模型加速"><a href="#2-2-扩散模型加速" class="headerlink" title="2.2 扩散模型加速"></a>2.2 扩散模型加速</h4><p>扩散模型加速可分为基于训练的方法与无训练方法两类。基于训练的方法旨在从多步去噪过程中学习少步模型。渐进式蒸馏（Salimans 与 Ho，2022）通过逐步匹配教师模型与学生模型之间的噪声预测结果实现加速；潜在一致性模型（LCM）（Luo 等人，2023）通过施加自一致性约束，实现了单步采样。然而，这些方法需要耗费大量时间进行训练，且由于少步模型与原始模型的预测分布存在差异（Stanton 等人，2021），往往会导致性能下降。</p>
+<p>与之相反，近年来的无训练方法借助相邻时间步之间的特征复用实现加速，这类方法可进一步分为层内特征复用与步间特征复用两类。层内复用方法通过复用模型不同层的特征实现扩散加速：DeepCache（Ma 等人，2024b）在U-Net中缓存高层特征，仅在后续步骤中动态更新浅层特征；T-Gate（Liu 等人，2025b）在Transformer交叉注意力输出收敛后对其进行缓存，并在剩余步骤中保持固定。但这类方法需针对特定模型架构设计，泛化能力较弱。</p>
+<p>步间复用方法则利用跨时间输出的相似性实现通用加速：AdaptiveDiffusion（Ye 等人，2024）通过三阶微分估计器检测去噪步骤间的冗余，并复用历史模型输出；但该方法忽略了去噪趋势，导致轨迹逐渐偏移。TeaCache（Liu 等人，2025a）通过将相邻步骤间的残差作为近似趋势，最大限度减少轨迹偏移，但短期去噪波动可能会加剧误差累积。SADA（Jiang 等人，2025）通过结合三步历史结果改进趋势估计，但最大四步跳跃的限制使其加速潜力受限。尽管步间复用方法已展现出加速潜力，但在多步近似过程中维持趋势一致性仍是一大挑战。此外，现有步间复用方法依赖人工预定义的阈值判断复用可行性，由于缺乏模型特异性阈值，不同模型的性能表现存在不一致性。</p>
+<p><strong>本文聚焦于在步间加速过程中维持去噪轨迹的一致性，通过结合所有历史趋势模式获取更稳定的未来方向估计，并确定模型特异性误差容差，确保近似过程与原始轨迹保持一致，不发生显著偏移。</strong></p>
+<h3 id="3-方法"><a href="#3-方法" class="headerlink" title="3 方法"></a>3 方法</h3><p>本节将详细介绍所提出的ETC（误差感知趋势一致性）框架的架构组件。如图2所示，该框架整体包含<strong>两大核心模块</strong>：1）<strong>一致性趋势预测器</strong>，用于预测未来去噪趋势与近似频率；2）<strong>模型特异性误差容差机制</strong>，用于确定不同模型的误差阈值。以下小节将详细阐述各模块的设计思路。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f2.png" width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图 2：ETC 框架总览，ETC 框架利用所有历史模型输出来估计未来趋势，并根据每个模型的误差容限动态调整近似频率。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="3-1-预备知识"><a href="#3-1-预备知识" class="headerlink" title="3.1 预备知识"></a>3.1 预备知识</h4><p><strong>扩散去噪过程</strong> 扩散模型由两个过程构成：通过高斯噪声逐步破坏数据的正向过程，以及通过迭代去噪重建干净数据的反向过程。在推理阶段，仅执行反向过程：从高斯噪声$x_T \sim N(0, I)$出发，以输入信号$c$（例如文本提示）为条件，将$x_T$逐步优化为目标输出$x_0$，其中$T$是预先定义的去噪步数。该优化过程遵循在每个时间步$ t $ 定义的通用更新规则：</p>
+<script type="math/tex; mode=display">x_{t-1} = f(t-1) \cdot x_t - g(t-1) \cdot \epsilon_\theta(x_t, t, c), \quad t = 1, \dots, T, \tag{1}</script><p>其中$ \epsilon_\theta(x_t, t, c) $是一个噪声预测网络，它以$ x_t $、时间步$ t $和附加条件$ c $为输入，用于估计$ x_t $中的噪声成分；而$ f(t) $和$ g(t) $是由采样器（也称为调度器）确定的系数（Ho et al., 2020; Song et al., 2020a）。噪声预测网络$ \epsilon_\theta $和采样器系数$ f(t) $、$ g(t) $都会直接影响生成质量。使用相同的采样器可确保$ f(t) $和$ g(t) $的一致性，因此生成质量主要受噪声预测模型$ \epsilon_\theta $差异的影响。</p>
+<p><strong>去噪过程的不同数学定义</strong> 去噪过程可通过多种数学框架来定义。随机微分方程（SDE）（Song et al., 2020b）对该过程的定义如下：</p>
+<script type="math/tex; mode=display">dx = \left[ -\frac{1}{2}\beta(t)x - \nabla_{x_t} \log p_t(x_t) \right] dt + \sqrt{\beta(t)} d\bar{w}, \tag{2}</script><p>其中$ \nabla_{x_t} \log p_t(x_t) $表示对数似然梯度，$ d\bar{w} $表示标准维纳过程。常微分方程（ODE）从公式（2）中移除了$ d\bar{w} $项，提供了一个更稳定的去噪过程，可缓解随机过程中固有的波动问题。流匹配（Lipman et al., 2022）通过学习数据流提出了一种确定性的去噪方法，其数学描述如下：</p>
+<script type="math/tex; mode=display">dx = v(x_t, t) dt, \tag{3}</script><p>其中$ v(x_t, t) $表示流函数，该函数控制数据随时间向目标分布的演化。尽管这些方法的表述形式不同，但它们都能确保数据特征随时间平滑演化。因此，我们提出以下假设。</p>
+<p><strong>假设1</strong> 在去噪过程中，模型输出随时间平滑演化，在不同时间步之间呈现出结构化且可预测的变化。</p>
+<h4 id="3-2-一致性趋势预测器"><a href="#3-2-一致性趋势预测器" class="headerlink" title="3.2 一致性趋势预测器"></a>3.2 一致性趋势预测器</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f3.png" width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图3：在MSCOCO2017验证集上使用FLUX进行推理时观察到的去噪过程模式。子图（a）展示了模型输出在不同潜在误差下的变化情况。子图（b）说明了当前趋势与各历史趋势的相似性。子图（c）描绘了不同去噪阶段趋势变化的稳定性。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>历史去噪模式投影</strong> 基于假设1，可利用近期趋势近似未来去噪轨迹。然而，如图3a所示，当近似趋势在 latent 空间中引入误差时，模型输出会相较于原始结果产生偏差，以修正累积误差；若继续使用该趋势近似未来轨迹，会引发波动并进一步加剧轨迹偏移。因此，我们的目标是通过结合多个历史趋势进行轨迹近似，最大限度减少误差修正型模型输出所引入的波动。</p>
+<p>设$d_{t}^{t+1} = \epsilon_{\theta}(x_{t}, t, c) - \epsilon_{\theta}(x_{t+1}, t+1, c)$表示时间步$t$与$t+1$之间的模型输出差异。如图3b所示，近期历史趋势能更精准地反映未来变化，而即使是较早时间步的趋势，其相似度也保持在0.7以上，表明仍能捕捉部分方向信息。因此，我们采用所有历史趋势的加权和进行预测，并为近期趋势分配更高权重。然而，存储所有历史趋势会产生显著的计算开销。为解决这一问题，我们提出一种递归历史趋势加权方法，公式如下：</p>
+<script type="math/tex; mode=display">\Delta_{t-2} = (1 - \alpha)\Delta_{t-1} + \alpha d_{t-1}^t, 0 \leq t < T, \Delta_{T-2} = d_{T-1}^T \tag{4}</script><p>其中$ \Delta_{t-2} $表示从时间步$ t-2 $开始的估计趋势，$ \alpha $是趋势调整系数，用于在保持与历史去噪轨迹一致性的同时，减少误差修正带来的波动。每轮多步近似中，仅使用模型输出和最终近似值来计算未来的估计趋势。此外，如图3b所示，去噪初始阶段的趋势与未来趋势的相关性存在显著波动（红色区域表示方差）。因此，我们先让模型执行$ n $步去噪，得到更稳定的趋势估计后再启动近似过程。一旦获得估计趋势，可使用以下公式计算近似输出$ \epsilon_\theta’ $：</p>
+<script type="math/tex; mode=display">\epsilon_\theta'(x_{t-2}, t-2, c) = \epsilon_\theta(x_{t-1}, t-1, c) + \Delta_{t-2} \tag{5}</script><p><strong>动态近似窗口扩展策略</strong> 为实现更快加速，我们的目标是在保持轨迹一致性的前提下最大化近似频率。如图3a所示，我们通过从潜在空间中减去一个固定值来表示近似误差。在误差修正范围内，模型可产生更大的输出来补偿由误差导致的去噪不足。但如果误差超出该范围，模型输出会开始偏离原始结果。基于这一观察，我们提出近似窗口扩展策略：若前一轮的累积误差低于阈值，下一轮的近似步数增加；否则减少。公式如下：</p>
+<script type="math/tex; mode=display">k_{t-2} = \begin{cases} 
+k_{t-1} + 1, & |d_{t-1}^t - \Delta_{t-1}| < \psi, \\ 
+k_{t-1} - 1, & |d_{t-1}^t - \Delta_{t-1}| \geq \psi 
+\end{cases} \tag{6}</script><p>其中$ k $是近似步数，$ \psi $是阈值。为保持多步近似的一致性，我们将估计趋势平均分配到每一步。这一设计确保最终近似方向与估计趋势对齐，防止估计误差累积导致轨迹偏差。每一步近似输出的计算公式如下：</p>
+<script type="math/tex; mode=display">\epsilon_\theta'(x_{t-1-s}, t-1-s, c) = \epsilon_\theta(x_{t-1}, t-1, c) + \frac{s}{k_{t-2}}\Delta_{t-2}, 1 \leq s \leq k_{t-2} \tag{7}</script><p><strong>误差估计</strong> 估计误差的详细分析见附录A.1。假设$ \alpha = 0.5 $，累积误差上限的公式如下：</p>
+<script type="math/tex; mode=display">error_r \leq \parallel \sum_{m=0}^{k_r-1} \left( (1 + \frac{k_r - m}{2k_r})\sigma_{r-1} + \frac{k_r - m}{2k_r} \cdot d_{T-n - \sum_{l=1}^{r-2}(k_l+1)}^{T-n - \sum_{l=1}^{r-1}(k_l+1)} - d_{T-n - \sum_{j=1}^{m-1}(k_j+1)}^{T-n - \sum_{j=1}^{m}(k_j+1)-k_r+m} \right) \parallel \tag{8}</script><p>令$ t = T - n - \sum_{l=1}^{r-2}(k_l + 1) $。如图4所示，近似误差取决于近似趋势（$ d $和$ \sigma $的加权组合）与未来趋势的对齐程度。假设$ \sigma = 0 $，误差仅由未来趋势与前一轮趋势的偏差程度决定，这确保去噪轨迹至少与前一步保持一致。因此，只要早期轮次的累积误差可控且$ \sigma $较小，估计趋势就会保持可控，去噪轨迹也能维持一致性。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f4.png" width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图4：$\alpha = 0.5$时的误差累积</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="3-3-模型特定的误差容忍度搜索机制"><a href="#3-3-模型特定的误差容忍度搜索机制" class="headerlink" title="3.3 模型特定的误差容忍度搜索机制"></a>3.3 模型特定的误差容忍度搜索机制</h4><p>先前的研究（Liu等人，2025b）表明，交叉注意力图在语义规划阶段会呈现显著波动，而在保真度优化阶段则保持相对稳定。与这些研究结果一致，我们在分析连续两步之间的模型输出差异时，观察到了如图3c所示的类似模式。我们将语义规划阶段视为模型误差容忍范围之外出现的波动。通过确定从该波动阶段到稳定质量提升阶段的过渡点，我们可以近似得到模型的误差容忍极限。具体而言，我们引入每一步去噪的模型输出差异$ d $作为对最终潜在表示的扰动，同时监测解码结果与原始生成结果之间的相似度。使用趋势拐点分析工具（例如ruptures包）来分析相似度趋势，我们能够确定两个阶段之间过渡点处的模型输出差异，这一差异对应着我们所估计的模型误差容忍极限。详细过程见附录A.3。</p>
+<h3 id="4-实验"><a href="#4-实验" class="headerlink" title="4 实验"></a>4 实验</h3><h4 id="4-1-实验设置"><a href="#4-1-实验设置" class="headerlink" title="4.1 实验设置"></a>4.1 实验设置</h4><p><strong>基础模型与对比方法</strong> 为验证所提方法的通用有效性，我们将该技术应用于图像、视频、音频生成领域的多种扩散模型，包括用于图像生成的SDXL（Podell等人，2023）和FLUX（Labs，2024）、用于视频生成的Open-Sora 1.2（Zheng等人，2024）和Wan 2.1（Wan等人，2025），以及用于音频生成的TangoFlux（Hung等人，2024）。我们将所提方法与近期主流的先进加速方法进行对比，包括AdaptiveDiffusion（Ye等人，2024）、SADA（Jiang等人，2025）、TeaCache（Liu等人，2025a）和MagCache（Ma等人，2025）。为更公平地评估效率与质量的权衡关系，我们采用TeaCache和MagCache的快速配置进行对比实验。</p>
+<p><strong>评估指标与数据集</strong> 我们从计算效率和生成质量两个核心维度对加速方法进行评估。在效率评估方面，我们报告浮点运算次数（FLOPs）、推理延迟和加速比；在质量评估方面，我们采用模态特异性指标全面衡量加速后输出与原始输出的保真度。</p>
+<ul>
+<li>对于图像和视频生成，我们使用LPIPS（Zhang等人，2018）、PSNR和SSIM衡量视觉相似度；此外，图像生成任务采用CLIP评分（Radford等人，2021）评估文本-图像对齐度，视频生成任务则采用VBench（Huang等人，2024）进行多维度视频质量评估。</li>
+<li>对于音频生成，我们使用FAD（Kilgour等人，2018）、MCD（Kubichek，1993）和分类概率KL散度（Copet等人，2023；Koutini等人，2021）衡量声学保真度，同时采用CLAP评分（Wu等人，2023）评估文本-音频对齐度。</li>
+</ul>
+<p>为确保对比公平性，所有实验均使用标准化提示数据集：图像生成任务采用MSCOCO2017（Lin等人，2014）验证集，视频生成任务采用VBench提示集，音频生成任务采用AudioCaps（Kim等人，2019）测试集。</p>
+<p><strong>实现细节</strong> 所有实验均在单台配备NVIDIA A800 80GB GPU的设备上基于PyTorch框架完成，且所有配置均启用FlashAttention（Dao等人，2022）。为高效确定步长跳过阈值，我们为每种模态采样少量提示：对于图像和音频模型，我们将MSCOCO-2017和AudioCaps的训练提示按长度分为10个区间，每个区间采样1条提示；对于视频模型，我们从VBench的每个评估维度中采样1条提示。阈值结果如表1所示。超参数$n$（预推理步数）在OpenSora模型中设为4，在其他模型中设为6；超参数$\alpha$（趋势调整系数）在所有模型中均设为0.5。</p>
+<h4 id="4-2-主要结果"><a href="#4-2-主要结果" class="headerlink" title="4.2 主要结果"></a>4.2 主要结果</h4><h5 id="定量对比"><a href="#定量对比" class="headerlink" title="定量对比"></a>定量对比</h5><p>表1展示了计算效率与生成质量的定量评估结果。ETC在不同任务和架构下均实现了卓越的加速性能，同时保持较高的视觉质量。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t1.png" width="90%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表1：定量评估结果。最佳性能用粗体表示，次佳性能用下划线表示。我们的方法在不同任务和架构上都实现了出色的效率 - 质量权衡。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>在Wan 2.1文本-视频基准模型上，我们的方法实现了2.5倍加速，且SSIM（结构相似性）达到0.806，优于MagCache（仅实现2.38倍加速，生成一致性降低5%）。</li>
+<li>在TangoFlux文本-音频基准模型上，我们的方法实现了2.43倍的最高加速比，且MCD（梅尔倒谱距离）评分比AdaptiveDiff低40%（AdaptiveDiff因优先保证生成质量，仅实现1.48倍加速）。</li>
+<li>在文本-图像基准模型上，我们的方法在FLUX模型上实现了2.65倍加速，SSIM达0.926；尽管在SDXL模型上的SSIM比SADA低0.6%，但推理速度提升了22%，展现出更优的效率-质量权衡性能。</li>
+</ul>
+<h5 id="可视化对比"><a href="#可视化对比" class="headerlink" title="可视化对比"></a>可视化对比</h5><p>图5对比了ETC与原始模型及其他基准方法的生成结果。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f5.png" width="60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图5：与对比方法的视觉质量对比。其他方法存在文本生成错误、细节缺失等问题，而ETC（误差感知趋势一致性）方法则实现了最佳的生成一致性。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>图像生成任务中：TeaCache和AdaptiveDiff存在明显的结构失真（如汽车前脸设计变形、椅子腿部扭曲）；SADA虽能保留整体结构，但存在细节丢失和文本生成错误（如椅子旁多余杂物、车牌从“NX4 5KJ”变为“AX4 5K”）。</li>
+<li>视频生成任务中：TeaCache存在显著内容偏移（如狗的外观、抚摸动作不一致）；MagCache虽能维持结构对齐，但丢失细粒度细节（如浣熊皮毛纹理、狗嘴周围独特的黄色胡须）。</li>
+<li>音频生成任务中：尽管任务复杂度相对较低，多数方法能保留与原始结果的相似性，但TeaCache仍引入了噪声失真等伪影（如图中红色框标注部分）。</li>
+</ul>
+<p>相比之下，我们的方法在各类任务中均同时保留了全局一致性和细粒度细节，展现出更优异的生成保真度。</p>
+<h4 id="4-3-消融实验"><a href="#4-3-消融实验" class="headerlink" title="4.3 消融实验"></a>4.3 消融实验</h4><h5 id="统计鲁棒性"><a href="#统计鲁棒性" class="headerlink" title="统计鲁棒性"></a>统计鲁棒性</h5><p>为评估不同文本条件下生成性能的稳定性，我们通过箱线图分析了三种生成任务的SSIM和延迟指标分布。如图6所示：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f6.png" width="60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图 6：不同任务下结构相似性指数（SSIM）与延迟指标的箱线图。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>TeaCache和MagCache的加速性能稳定，不同提示下的延迟分布较窄；但在Wan 2.1模型上，TeaCache的SSIM分布范围极宽（0.1-0.9），MagCache虽略有改善但仍处于0.5-0.9区间。</li>
+<li>我们的方法延迟方差适中，但SSIM分布显著更集中（0.7-0.9）；SADA和AdaptiveDiff虽表现出类似的自适应特性（延迟方差适中），但两者均存在质量不稳定问题，异常值数量远多于我们的方法。</li>
+</ul>
+<p>这些结果表明，ETC有效平衡了加速性能与稳定性，在不同条件下均能实现更一致的生成质量。</p>
+<h5 id="误差控制有效性"><a href="#误差控制有效性" class="headerlink" title="误差控制有效性"></a>误差控制有效性</h5><p>为研究近似噪声导致的误差累积，我们计算了每个时间步的近似噪声与真实噪声差异，以及对应的 latent 偏差。如图7所示，噪声误差呈现两种典型模式：波动增长和平稳增长。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f7.png" width="60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图 7：去噪误差的累积情况</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>TeaCache因采用简单的相邻历史噪声差异进行近似，误差呈平稳增长趋势，在高波动的初始阶段引入显著偏差，并在整个去噪过程中持续传播。</li>
+<li>我们的方法虽呈波动增长模式，但误差累积速度慢于MagCache和AdaptiveDiff；SADA虽与我们的方法呈现相似的误差累积模式，但需牺牲推理速度以实现更低的累积速率。</li>
+</ul>
+<p>相比之下，我们的方法在保持高加速比的同时有效控制了误差累积，表明所提趋势近似策略能在多步近似过程中维持去噪轨迹的一致性。</p>
+<h5 id="阈值选择有效性"><a href="#阈值选择有效性" class="headerlink" title="阈值选择有效性"></a>阈值选择有效性</h5><p>如表2所示，我们评估了不同扩展阈值设置下方法的加速性能。对不同基础模型进行加速时，生成质量在达到最优阈值前会急剧下降，超过最优阈值后则趋于稳定。这一趋势与我们在阈值搜索中观察到的去噪偏差模式一致，表明所提方法能有效捕捉各模型对偏差的容忍度。此外，在高阈值条件下，我们的方法实现的SSIM高于阈值搜索过程中的结果，说明平滑趋势估计有助于抵消高阈值下的去噪不稳定性。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t2.png" width="60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表2：不同扩展阈值设置下速度和生成质量的变化情况。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h5 id="固定误差阈值实验"><a href="#固定误差阈值实验" class="headerlink" title="固定误差阈值实验"></a>固定误差阈值实验</h5><p>表3展示了将OpenSora模型搜索得到的误差阈值作为固定阈值应用于不同模型时的生成结果。由于与最优阈值的差距不同，不同模型呈现出不同程度的质量下降。这表明采用模型特异性误差阈值能确保ETC在不同模型上均保持稳定性能。此外，如表2和图8所示，当采用更大误差阈值以实现3倍以上加速时，我们的方法仍能维持合理的相似度（SSIM&gt;0.65），这表明即使在误差控制较弱的情况下，一致的趋势估计仍能保留生成结果的整体结构完整性。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t3.png" width="60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表3：固定阈值生成的结果</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f8.png" width="60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图8：即便为实现更快加速而减少了误差控制，我们的方法仍能保持整体结构的一致性，仅存在细节上的差异。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h5 id="超参数-n-和-alpha-的敏感性"><a href="#超参数-n-和-alpha-的敏感性" class="headerlink" title="超参数$n$和$\alpha$的敏感性"></a>超参数$n$和$\alpha$的敏感性</h5><p>表4展示了不同$n$（预推理步数）和$\alpha$（趋势调整系数）设置下的SSIM变化。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t4.png" width="60%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表4：不同$n$（预推理步数）和$\alpha$（趋势调整系数）设置下的SSIM变化</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>对于超参数$n$：在去噪早期高波动阶段启动扩展近似会导致生成一致性下降；增大$n$虽能获得更稳定的初始趋势估计，但SSIM提升幅度逐渐减小。这表明允许少量初始去噪步骤有助于建立更稳定的去噪轨迹估计。</li>
+<li>对于超参数$\alpha$：不同$\alpha$值下的SSIM变化范围较窄，方法对$\alpha$的敏感性较低。这种鲁棒性表明，所提趋势平滑设计能有效维持加速去噪轨迹与原始采样路径的对齐，避免偏离预期生成过程。</li>
+</ul>
+<h3 id="5-结论与讨论"><a href="#5-结论与讨论" class="headerlink" title="5 结论与讨论"></a>5 结论与讨论</h3><p>在本研究中，我们提出了ETC（误差感知趋势一致性）——一种无训练扩散加速框架。该框架将所有历史模型输出映射为一致的未来趋势，并在模型容差范围内将这些趋势分配到多个步骤中。实验结果表明，ETC在实现显著加速的同时，能够保持生成保真度。然而，本研究存在一个关键局限性：在确定每轮迭代的最大近似步数时，我们目前仅采用基于前一轮结果的保守调整策略，这在一定程度上限制了可实现的加速效果。未来研究的一个重要方向是，通过评估累积误差与模型特异性容差边界之间的差距，来估计最大可行近似步数，从而进一步提升加速性能。</p>
+<h3 id="附录A"><a href="#附录A" class="headerlink" title="附录A"></a>附录A</h3><h4 id="A-1-一致性趋势预测器引发的误差估计"><a href="#A-1-一致性趋势预测器引发的误差估计" class="headerlink" title="A.1 一致性趋势预测器引发的误差估计"></a>A.1 一致性趋势预测器引发的误差估计</h4><h5 id="A-1-1-模型推理K步的通用公式"><a href="#A-1-1-模型推理K步的通用公式" class="headerlink" title="A.1.1 模型推理K步的通用公式"></a>A.1.1 模型推理K步的通用公式</h5><p>假设我们推理一次，从潜在表示$ x_t $中得到模型输出$ \epsilon_\theta(x_t, t, c) $，去噪公式如下：</p>
+<script type="math/tex; mode=display">x_{t-1} = f(t-1) \cdot x_t - g(t-1) \cdot \epsilon_\theta(x_t, t, c) \tag{9}</script><p>类似地，在第二次去噪并代入公式(9)后，我们可得到以下公式：</p>
+<script type="math/tex; mode=display">\begin{align*}
+x_{t-2} &= f(t-2) \cdot x_{t-2} - g(t-2) \cdot \epsilon_\theta(x_{t-1}, t-1, c) \\
+&= f(t-2) \cdot f(t-1) \cdot x_t - f(t-2) \cdot g(t-1) \cdot \epsilon_\theta(x_t, t, c) - g(t-2) \cdot \epsilon_\theta(x_{t-1}, t-1, c).
+\end{align*} \tag{10}</script><p>以此类推，在使用模型输出采样$ k $次后，我们可得到以下结果：</p>
+<script type="math/tex; mode=display">\begin{align*}
+x_{t-k} &= \prod_{j=t-k}^{t-1} f(j) \cdot x_t - g(t-k) \cdot \epsilon_\theta(x_{t-k+1}, t-k+1, c) \\
+& \quad - \sum_{m=0}^{k-2} \left( \left( \prod_{j=t-k}^{t-k+m} f(j) \right) \cdot g(t-k+m+1) \cdot \epsilon_\theta(x_{t-k+m+2}, t-k+m+2, c) \right).
+\end{align*} \tag{11}</script><h5 id="A-1-2-首次使用估计趋势导致的累积误差"><a href="#A-1-2-首次使用估计趋势导致的累积误差" class="headerlink" title="A.1.2 首次使用估计趋势导致的累积误差"></a>A.1.2 首次使用估计趋势导致的累积误差</h5><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f9.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图 9：模型推理 n 次后使用 k 次近似的误差累积情况。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>假设</strong> 如图9所示，我们做出以下假设：<br>(1) 去噪过程的时间步从$ T $递减至0；<br>(2) 令$ d_{t_2}^{t_1} = \epsilon_\theta(x_{t_2}, t_2, c) - \epsilon_\theta(x_{t_1}, t_1, c) $；<br>(3) 模型推理$ n $次后，利用估计趋势进行去噪。</p>
+<p><strong>初始近似趋势</strong> 当模型先执行两次推理，再使用输出计算估计趋势时，公式如下：</p>
+<script type="math/tex; mode=display">\Delta_{T-2} = \epsilon_\theta(x_{T-1}, T-1, c) - \epsilon_\theta(x_T, T, c) = d_{T-1}^T. \tag{12}</script><p><strong>第二次估计趋势公式</strong> 如下：</p>
+<script type="math/tex; mode=display">\Delta_{T-3} = (1 - \alpha) \cdot \Delta_{T-2} + \alpha \cdot d_{T-2}^{T-1} = (1 - \alpha) \cdot d_{T-1}^T + \alpha \cdot d_{T-2}^{T-1}. \tag{13}</script><p><strong>第三次估计趋势公式</strong> 如下：</p>
+<script type="math/tex; mode=display">\begin{align*}
+\Delta_{T-4} &= (1 - \alpha) \cdot \Delta_{T-3} + \alpha \cdot d_{T-3}^{T-2} \\
+&= (1 - \alpha) \cdot \left( (1 - \alpha) \cdot d_{T-1}^T + \alpha \cdot d_{T-2}^{T-1} \right) + \alpha \cdot d_{T-3}^{T-2} \\
+&= (1 - \alpha)^2 \cdot d_{T-1}^T + \alpha \cdot (1 - \alpha) \cdot d_{T-2}^{T-1} + \alpha \cdot d_{T-3}^{T-2}
+\end{align*} \tag{14}</script><p>以此类推，我们可得到第$ n $次迭代的估计趋势如下：</p>
+<script type="math/tex; mode=display">\Delta_{T-n-1} = (1 - \alpha)^{n-1} \cdot d_{T-1}^T + \alpha \sum_{m=0}^{n-2} (1 - \alpha)^m \cdot d_{T-n+m}^{T-n+m+1}. \tag{15}</script><p><strong>累积误差</strong> 为提高可读性，我们令$ \epsilon_\theta(x_t) = \epsilon_\theta(x_t, t, c) $。从$ x_{T-n-1} $开始，基于估计趋势和公式(11)，$ x_{T-n-1-k_1} $的公式如下：</p>
+<script type="math/tex; mode=display">\begin{align*}
+x_{T-n-1-k_1}' &= \prod_{j=T-n-1-k_1}^{T-n-2} f(j) \cdot x_{T-n-1} - g(T-n-1-k_1) \cdot (\epsilon_\theta(x_{T-n}) + \Delta_{T-n-1}) \\
+& \quad - \sum_{m=0}^{k_1-2} \left( \left( \prod_{j=T-n-1-k_1}^{T-n-1-k_1+m} f(j) \right) \cdot g(T-n-k_1+m) \cdot \left( \epsilon_\theta(x_{T-n}) + \frac{k_1 - m - 1}{k_1} \Delta_{T-n-1} \right) \right).
+\end{align*} \tag{16}</script><p>累积误差如下：</p>
+<script type="math/tex; mode=display">\begin{align*}
+error &= \| x_{T-n-1-k_1}' - x_{T-n-1-k_1} \| \\
+&= \| g(T-n-1-k_1) \cdot (\Delta_{T-n-1} - d_{T-n-k_1}^{T-n}) \\
+& \quad + \sum_{m=0}^{k_1-2} \left( \left( \prod_{j=T-n-1-k_1}^{T-n-1-k_1+m} f(j) \right) \cdot g(T-n-k_1+m) \cdot \left( \frac{k_1 - m - 1}{k_1} \Delta_{T-n-1} - d_{T-n-k_1+m+1}^{T-n} \right) \right) \|.
+\end{align*} \tag{17}</script><p>由于$ f \leq 1 $且$ g \leq 1 $，我们可得以下公式：</p>
+<script type="math/tex; mode=display">\begin{align*}
+error &\leq \| (\Delta_{T-n-1} - d_{T-n-k_1}^{T-n}) + \left( \frac{k_1 - m - 1}{k_1} \Delta_{T-n-1} - d_{T-n-k_1+m+1}^{T-n} \right) \| \\
+&= \| \sum_{m=0}^{k_1-1} \left( \frac{k_1 - m}{k_1} \Delta_{T-n-1} - d_{T-n-k_1+m}^{T-n} \right) \|.
+\end{align*} \tag{18}</script><p>将公式(15)代入公式(18)，我们得到误差的上界如下：</p>
+<script type="math/tex; mode=display">error \leq \| \sum_{m=0}^{k_1-1} \left( \frac{(k_1 - m)(1 - \alpha)^{n-1}}{k_1} \cdot d_{T-1}^T + \frac{\alpha(k_1 - m)}{k_1} \sum_{j=0}^{n-2} (1 - \alpha)^j \cdot d_{T-n+j}^{T-n+j+1} - d_{T-n-k_1+m}^{T-n} \right) \|. \tag{19}</script><h5 id="A-1-3-下一轮的误差累积"><a href="#A-1-3-下一轮的误差累积" class="headerlink" title="A.1.3 下一轮的误差累积"></a>A.1.3 下一轮的误差累积</h5><p><strong>假设</strong> 如图9所示，我们做出以下假设：<br>(1) 为修正累积误差，模型输出$ \epsilon_\theta^*(x_{T-n-k_1-1}) = \epsilon_\theta(x_{T-n-k_1-1}) + \sigma_1 $。经过一次模型推理后，得到的$ x_{T-n-k_1-2} $无误差。</p>
+<p><strong>更新后的近似趋势</strong> 使用一次模型推理修正累积误差后，我们更新估计趋势的公式如下：</p>
+<script type="math/tex; mode=display">\begin{align*}
+\Delta_{T-n-2-k_1} &= (1 - \alpha) \cdot \Delta_{T-n-1} + \alpha \cdot \left( (\epsilon_\theta(x_{T-n-k_1-1}) + \sigma_1) - (\epsilon_\theta(x_{T-n}) + \Delta_{T-n-1}) \right) \\
+&= (1 - 2\alpha) \cdot \Delta_{T-n-1} + \alpha \cdot \left( d_{T-n-k_1-1}^{T-n} + \sigma_1 \right).
+\end{align*} \tag{20}</script><p><strong>累积误差</strong> 为提高可读性，我们省略$ f $和$ g $的参数。从$ x_{T-n-2-k_1} $开始，基于估计趋势和公式(11)，$ x_{T-n-2-k_1-k_2} $的公式为：</p>
+<script type="math/tex; mode=display">\begin{align*}
+x_{T-n-2-k_1-k_2}' &= \prod f \cdot x_{T-n-2-k_1} - g \cdot \left( \epsilon_\theta(x_{T-n-1-k_1}) + \sigma_1 + \Delta_{T-n-2-k_1} \right) \\
+& \quad - \sum_{m=0}^{k_2-2} \left( (\prod f) \cdot g \cdot \left( \epsilon_\theta(x_{T-n-1-k_1}) + \sigma_1 + \frac{k_2 - m - 1}{k_2} \Delta_{T-n-2-k_1} \right) \right).
+\end{align*} \tag{21}</script><p>累积误差如下：</p>
+<script type="math/tex; mode=display">\begin{align*}
+error' &= \| x_{T-n-2-k_1-k_2}' - x_{T-n-2-k_1-k_2} \| \\
+&= \| g \cdot \left( \sigma_1 + \Delta_{T-n-2-k_1} - d_{T-n-1-k_1-k_2}^{T-n-1-k_1} \right) \\
+& \quad + \sum_{m=0}^{k_2-2} \left( (\prod f) \cdot g \cdot \left( \sigma_1 + \frac{k_2 - m - 1}{k_2} \Delta_{T-n-2-k_1} - d_{T-n-1-k_1-k_2+m}^{T-n-1-k_1} \right) \right) \|.
+\end{align*} \tag{22}</script><p>由于$ f \leq 1 $且$ g \leq 1 $，我们可得以下公式：</p>
+<script type="math/tex; mode=display">\begin{align*}
+error &\leq \| \left( \sigma_1 + \Delta_{T-n-2-k_1} - d_{T-n-1-k_1-k_2}^{T-n-1-k_1} \right) + \left( \sigma_1 + \frac{k_2 - m - 1}{k_2} \Delta_{T-n-2-k_1} - d_{T-n-k_1-k_2+m}^{T-n-1-k_1} \right) \| \\
+&= \| \sum_{m=0}^{k_2-1} \left( \sigma_1 + \frac{k_2 - m}{k_2} \Delta_{T-n-2-k_1} - d_{T-n-1-k_1-k_2+m}^{T-n-1-k_1} \right) \|.
+\end{align*} \tag{23}</script><p>将公式(20)代入公式(23)，我们得到误差的上界如下：</p>
+<script type="math/tex; mode=display">\begin{align*}
+error &\leq \| \sum_{m=0}^{k_2-1} \left( \frac{(k_2 - m)(1 - 2\alpha)(1 - \alpha)^{n-1}}{k_2} \cdot d_{T-1}^T + \frac{\alpha(k_2 - m)(1 - 2\alpha)}{k_2} \sum_{j=0}^{n-2} (1 - \alpha)^j \cdot d_{T-n+j}^{T-n+j+1} \right. \\
+& \quad \left. + \frac{\alpha(k_2 - m)}{k_2} \cdot d_{T-n-k_1-1}^{T-n} + \frac{k_2 + \alpha(k_2 - m)}{k_2} \cdot \sigma_1 - d_{T-n-1-k_1-k_2+m}^{T-n-1-k_1} \right) \|.
+\end{align*} \tag{24}</script><h5 id="A-1-4-全过程的误差累积"><a href="#A-1-4-全过程的误差累积" class="headerlink" title="A.1.4 全过程的误差累积"></a>A.1.4 全过程的误差累积</h5><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f10.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图10：整个去噪过程中的误差累积情况。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h6 id="假设条件"><a href="#假设条件" class="headerlink" title="假设条件"></a>假设条件</h6><p>如图10所示，我们做出如下假设：<br>（1）共进行$r$轮近似，每轮近似次数为$k_i$；对于每一轮，通过模型推理得到的输出与无误差情况下的模型输出之差为$\sigma_{i-1}$（其中$i=1,\dots,r$）。  </p>
+<h6 id="每轮的近似趋势"><a href="#每轮的近似趋势" class="headerlink" title="每轮的近似趋势"></a>每轮的近似趋势</h6><p>以此类推，第$r$轮使用的估计趋势可表示为：  </p>
+<script type="math/tex; mode=display">\Delta_{T-n-1-\sum_{m=1}^{r-1}(k_m+1)}=(1-2\alpha)^{r-1} \Delta_{T-n-1}+\alpha \sum_{m=1}^{r-1}\left((1-2\alpha)^{r-m-1}\left(d_{T-n-\sum_{j=1}^m k_j+1}^{T-n-\sum_{j=1}^{m-1}(k_j+1)}+\sigma_m\right)\right) \tag{25}</script><h6 id="累积误差"><a href="#累积误差" class="headerlink" title="累积误差"></a>累积误差</h6><p>以此类推，第$r$轮的累积误差可表示为：  </p>
+<script type="math/tex; mode=display">\begin{aligned} 
+error_r \leq & \bigg\| \sum_{m=0}^{k_r-1}\bigg(\sigma_{r-1}+\frac{k_r-m}{k_r} \Delta_{T-n-1-\sum_{j=1}^{r-1}(k_j+1)} - d_{T-n-\sum_{j=1}^{r-1}(k_j+1)-k_r+m}^{T-n-\sum_{j=1}^{r-1}(k_j+1)}\bigg) \bigg\| \\
+= & \bigg\| \sum_{m=0}^{k_r-1}\bigg(\sigma_{r-1}+\frac{\left(k_r-m\right)(1-2\alpha)^{r-1}}{k_r} \Delta_{T-n-1} \\
+& +\frac{\alpha\left(k_r-m\right)}{k_r} \sum_{j=1}^{r-1}\left((1-2\alpha)^{r-j-1}\left(d_{T-n-\sum_{l=1}^j (k_l+1)}^{T-n-\sum_{l=1}^{j-1}(k_l+1)}+\sigma_j\right)\right)-d_{T-n-\sum_{j=1}^{r-1}(k_j+1)-k_r+m}^{T-n-\sum_{j=1}^{r-1}(k_j+1)}\bigg) \bigg\|
+\end{aligned} \tag{26}</script><p>将公式（15）代入公式（26），可得到误差的上界：  </p>
+<script type="math/tex; mode=display">\begin{aligned}
+error_r & \leq \bigg\| \sum_{m=0}^{k_r-1}\bigg(\left(\sigma_{r-1}+\frac{\alpha\left(k_r-m\right)}{k_r} \sum_{j=1}^{r-1}(1-2\alpha)^{r-j-1} \cdot \sigma_j\right) \\
+& +\left(\frac{\left(k_r-m\right)(1-2\alpha)^{r-1}(1-\alpha)^{n-1}}{k_r} \cdot d_{T-1}^{T}+\frac{\alpha\left(k_r-m\right)(1-2\alpha)^{r-1}}{k_r} \sum_{j=0}^{n-2}(1-\alpha)^j \cdot d_{T-n+j}^{T-n+j+1}\right. \\
+& +\frac{\alpha\left(k_r-m\right)}{k_r} \sum_{j=1}^{r-1}(1-2\alpha)^{r-j-1} \cdot d_{T-n-\sum_{l=1}^j (k_l+1)}^{T-n-\sum_{l=1}^{j-1}(k_l+1)} - d_{T-n-\sum_{j=1}^{r-1}(k_j+1)-k_r+m}^{T-n-\sum_{j=1}^{r-1}(k_j+1)}\bigg) \bigg\|
+\end{aligned} \tag{27}</script><p>由此可见，我们在每一步都通过历史趋势与误差修正的加权组合来近似未来趋势。</p>
+<h4 id="A-2-一致性趋势预测器的算法"><a href="#A-2-一致性趋势预测器的算法" class="headerlink" title="A.2 一致性趋势预测器的算法"></a>A.2 一致性趋势预测器的算法</h4><p><img src="a1.png" width="100%"></p>
+<h4 id="A-3-模型特异性误差容差搜索机制的算法"><a href="#A-3-模型特异性误差容差搜索机制的算法" class="headerlink" title="A.3 模型特异性误差容差搜索机制的算法"></a>A.3 模型特异性误差容差搜索机制的算法</h4><p><img src="a2.png" width="100%"></p>
+<h2 id="Review"><a href="#Review" class="headerlink" title="Review"></a>Review</h2><h3 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h3><p>本文提出了一种名为 Error-aware Trend Consistency (ETC) 的扩散模型加速框架，在无需训练的情况下加速扩散采样并保持生成保真度。ETC包含了一致性趋势预测器和模型特定误差容忍度搜索机制，其中一致性趋势预测器通过历史模型输出估计稳定的未来去噪方向，而模型特定误差容忍度搜索机制基于去噪动态确定可安全重用的阈值。实验显示，ETC 在图像、视频和音频任务上实现了最高2.65×的加速，且质量下降可忽略。</p>
+<h3 id="Strengths"><a href="#Strengths" class="headerlink" title="Strengths"></a>Strengths</h3><p>实验较为全面，内容涵盖了主流的定量对比结果和定性的可视化结果，并且通过消融实验验证了误差控制有效性及统计鲁棒性和关键参数$n,\alpha$的作用。</p>
+<h3 id="Weaknesses"><a href="#Weaknesses" class="headerlink" title="Weaknesses"></a>Weaknesses</h3><p>未与其他无训练加速方法进行比较，例如基于层内特征复用的方法、基于求解器的方法</p>
+<p>对于模型特定的误差容忍度的搜索的描述较为模糊，仅通过算法2来描述，其中关于Trend Inflection Point Analysis Model等模型未给出具体的工作流程。</p>
+<h3 id="Questions"><a href="#Questions" class="headerlink" title="Questions"></a>Questions</h3><p>存储所有历史趋势与本文提出的递归历史趋势加权方法相比，两者之间的计算开销差距有多大？</p>
+<p>本文的ETC是DDIM兼容的吗？可否与其他高阶采样器例如iPNDM、DPM-Solver++等兼容？</p>
+]]></content>
+      <categories>
+        <category>AI</category>
+      </categories>
+      <tags>
+        <tag>diffusion</tag>
+        <tag>2025</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>2025-FREQCA ACCELERATING DIFFUSION MODELS VIA FREQUENCY-AWARE CACHING</title>
+    <url>/2025/10/20/2025-FREQCA-ACCELERATING-DIFFUSION-MODELS-VIA-FREQUENCY-AWARE-CACHING/</url>
+    <content><![CDATA[<h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散 Transformer（Diffusion Transformers）的应用正受限于其高昂的推理成本。近期，特征缓存（feature caching）技术被提出以解决这一问题，该技术通过复用前一时间步的特征，省去未来时间步的计算过程。然而，<strong>以往的特征缓存技术假设相邻时间步的特征具有相似性或连续性，这一假设并非在所有场景下都成立</strong>。为探究此问题，本文从频域视角展开分析，<strong>结果表明：扩散模型特征中的不同频段在时间步间呈现出截然不同的动态变化规律。具体而言，决定图像结构的低频成分相似性较高，但连续性较差；与之相反，承载图像细节信息的高频成分连续性显著，但相似性较低</strong>。这些有趣的发现促使我们提出一种 “<strong>频率感知缓存（FreqCa）</strong>” 方法。<strong>该方法基于低频成分的相似性直接复用其特征，同时利用高频成分的连续性，通过二阶埃尔米特插值器（Hermite interpolator）对易变的高频成分进行预测</strong>。此外，本文进一步<strong>提出缓存 “累积残差特征（Cumulative Residual Feature, CRF）”，而非所有层的特征</strong>，此举将特征缓存的内存占用降低了 99%。在 FLUX.1-dev、FLUX.1-Kontext-dev、Qwen-Image 和 Qwen-Image-Edit 等模型上开展的大量实验表明，该方法在图像生成与编辑任务中均具有良好效果。相关代码已收录于补充材料，并将在 GitHub 上发布</p>
+<span id="more"></span>
+<h3 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f1.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图1：Qwen-Image模型结合FreqCa方法采样得到的图像，加速比达7.14倍。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>扩散模型（Diffusion Models, DMs）在图像合成、视频生成等生成式任务中取得了显著成功（Ho et al., 2020a; Rombach et al., 2022; Blattmann et al., 2023）。近期提出的扩散Transformer（Diffusion Transformers）（Peebles &amp; Xie, 2023a）进一步提升了生成质量与多样性，成为大规模视觉内容创作的主流架构。然而，扩散Transformer通常依赖大量Transformer块堆叠与多步采样过程，计算效率成为其实际部署的关键瓶颈。为解决这一问题，特征缓存范式应运而生，该范式利用相邻时间步间的高时间冗余性实现加速（Ma et al., 2024; Li et al., 2023a; Selvaraju et al., 2024; Chen et al., 2024; Zou et al., 2025; 2024）。</p>
+<p><strong>缓存范式的争议：</strong> 特征缓存已逐渐发展出两种不同范式。“先缓存再复用（Cache-Then-Reuse）”范式假设扩散模型相邻时间步的特征高度相似，因此提出将前一时间步的特征直接复用于未来时间步（Selvaraju et al., 2024）；与之相对，“先缓存再预测（Cache-Then-Forecast）”范式则认为扩散模型特征具有“连续性”，进而提出利用泰勒展开等非参数预测器，基于前一时间步特征预测未来时间步特征。尽管“先缓存再预测”范式在近期研究中往往表现更优，但其对连续性的假设并非始终完全成立。例如，Liu等人的研究表明，FLUX模型的特征并不具备高阶连续性，这导致TaylorSeer方法退化为线性预测方式，进而产生质量损失（Liu et al., 2025a）。基于这些发现，本文首先对扩散模型的时间动态特性展开深入分析。</p>
+<p><strong>频域视角的分析：</strong> 在经典图像处理中，图像的高频与低频成分通常被认为承载着不同的语义信息，这一特点促使我们分别研究扩散模型特征中高频与低频成分的动态变化规律。如文中<strong>图2(a)-(b)所示，我们意外发现不同频段呈现出显著不同的动态特性：具体而言，低频成分在大多数时间步的相似性均高于0.90，而高频成分的相似性则明显较低；另一方面，如图2(c)-(d)所示，高频成分的特征轨迹展现出极佳的稳定性与连续性，而低频成分的特征轨迹则不稳定且伴随突变现象。这表明高频信息可被精准预测，而低频信息则难以预测。</strong></p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f2.png" width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图2：频域视角的分析结果。(a)-(b)：采用余弦相似度分析不同步长间隔下低频与高频成分的时间相似性；(c)-(d)：通过主成分分析(Principal Component Analysis, PCA)可视化特征轨迹。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>基于上述发现，本文提出“频率感知特征缓存（Frequency-aware Feature Caching, FreqCa）”方法，旨在对扩散模型特征的频率成分进行解耦，并采用不同范式分别处理。具体而言，FreqCa首先对需缓存的特征进行频率分解（如傅里叶变换等）；对于低频段，鉴于其高相似性，直接将其复用于未来时间步；对于高频段，凭借其良好的连续性，采用埃尔米特多项式预测器（Hermite polynomial predictor）等序列预测器对未来时间步的特征值进行预测。</strong> 随后，在未来时间步中，FreqCa通过复用的低频段与预测的高频段重构特征，从而省去扩散Transformer的计算过程，实现两种传统缓存范式的优势融合。</p>
+<p><strong>内存高效的特征缓存：</strong>以往的缓存方法通常会缓存注意力层与前馈网络（FFN）层的全部特征，这导致内存开销显著（例如，在FLUX模型上采用ToCa方法时，内存开销≥10GB），使得特征缓存方法难以应用于实际场景。正如Veit等人（2016）所指出的，具有残差连接的神经网络可被视为所有块特征的集合，<strong>这一观点促使我们提出缓存“累积残差特征（Cumulative Residual Feature, CRF）”——即所有来自注意力块与FFN块的残差连接的累积特征</strong> 。这一策略将原本需缓存的2×L个特征（L表示层数）减少为单个特征向量，使缓存内存占用量降低高达99%；此外，该策略还将频率（逆）分解操作的次数减少2L倍，使其在整个扩散过程中的延迟开销占比仅≤0.01%。</p>
+<p>综上，本文的贡献如下：</p>
+<ul>
+<li><strong>频率感知特征缓存（Frequency-Aware Feature Caching）：</strong>受不同频段在相似性与连续性上存在差异这一发现的启发，我们提出了 FreqCa 方法。该方法针对不同频率采用不同的特征缓存策略，实现了对以往两种缓存范式的融合统一。</li>
+<li><strong>内存高效的特征缓存：</strong>通过仅缓存累积残差特征（Cumulative Residual Feature, CRF），FreqCa 实现了 O (1) 的内存复杂度，在无保真度损失的前提下，将缓存内存占用量大幅降至以往方法的 1%，从而能够在消费级硬件上实现高质量加速。</li>
+<li><strong>顶尖的泛化能力与性能：</strong>在文本生成图像及图像编辑任务中，FreqCa 始终能实现 6-7 倍的加速，同时质量损失低于2%，其性能优于现有方法，并展现出极强的鲁棒性与实用性。</li>
+</ul>
+<h3 id="2-相关工作"><a href="#2-相关工作" class="headerlink" title="2 相关工作"></a>2 相关工作</h3><p>扩散模型已成为现代生成式人工智能的核心技术之一，在视觉内容合成领域展现出顶尖性能（Sohl-Dickstein et al., 2015; Ho et al., 2020b）。早期扩散模型多基于U-Net架构构建（Ronneberger et al., 2015），但其可扩展性局限为扩散Transformer（Diffusion Transformer, DiT）的发展奠定了基础（Peebles &amp; Xie, 2023b）。此后，DiT架构逐渐成为核心基础，推动了各类领域中高性能模型的涌现（Zheng et al., 2024; Yang et al., 2025）。然而，扩散采样过程的迭代特性给推理阶段带来了巨大的计算负担，因此加速技术成为该领域的关键研究方向（Ho et al., 2020b; Peebles &amp; Xie, 2023b）。目前，提升扩散模型效率的研究主要集中在两个互补方向：减少采样步数，以及加速去噪网络本身。</p>
+<h4 id="2-1-采样步数减少"><a href="#2-1-采样步数减少" class="headerlink" title="2.1 采样步数减少"></a>2.1 采样步数减少</h4><p>该方向的核心策略是在保证生成质量的前提下，尽可能减少所需的采样迭代次数。具有开创性的DDIM（Denoising Diffusion Implicit Models）方法引入了确定性采样机制，在无显著保真度损失的情况下减少了采样步数（Song et al., 2021）。这一思路在DPM-Solver系列方法中得到进一步优化——该系列方法采用高阶常微分方程（ODE）求解器，实现了更快的收敛速度（Lu et al., 2022a; 2022b; Zheng et al., 2023）。其他代表性方法包括知识蒸馏（knowledge distillation）：通过训练一个“学生模型”来模拟大型“教师模型”的多步去噪过程（Salimans &amp; Ho, 2022; Meng et al., 2022）；以及Rectified Flow（整流流）：通过学习“噪声分布”与“数据分布”之间的生成路径拉直方法，简化采样过程（Liu et al., 2023b）。近年来，一致性模型（Consistency Models）实现了突破性进展，其能够直接将噪声映射为清晰数据，无需序列式采样路径，从而实现单步高质量合成（Song et al., 2023）。</p>
+<h4 id="2-2-去噪网络加速"><a href="#2-2-去噪网络加速" class="headerlink" title="2.2 去噪网络加速"></a>2.2 去噪网络加速</h4><p>与减少采样步数不同，该方向旨在降低去噪网络单次前向传播的计算成本，主要通过模型压缩或特征缓存两种方式实现。</p>
+<p><strong>基于模型压缩的加速：</strong> 模型压缩是该方向的重要研究分支，涵盖网络剪枝（network pruning）（Fang et al., 2023; Zhu et al., 2024）、量化（quantization）（Li et al., 2023b; Shang et al., 2023; Kim et al., 2025），以及各类令牌缩减（token reduction）技术——这类技术通过动态缩短输入序列长度降低计算量（Bolya &amp; Hoffman, 2023; Kim et al., 2024; Zhang et al., 2024; 2025）。尽管这些方法具有一定效果，但模型简化往往会导致表达能力下降，因此通常需要微调或重训练阶段来缓解这一问题（Li et al., 2024; 2023b）。</p>
+<p><strong>基于特征缓存的加速：</strong> 特征缓存是一种无需训练的高效替代方案，其核心是利用去噪过程中的时间冗余性。该范式最初在U-Net架构中通过FasterDiffusion和DeepCache方法提出，随后被适配到DiT架构中。早期研究聚焦于“先缓存再复用（cache then reuse）”策略，而FORA和Δ-DiT等进阶方法对该策略进行了优化。随着研究深入，更复杂的机制不断涌现，包括动态令牌级更新（ToCa）、自适应采样（RAS（Liu et al., 2025c）），以及显式误差校正框架（Qiu et al., 2025; Chen et al., 2025; Chu et al., 2025）。该领域的一个关键突破是TaylorSeer提出的“先缓存再预测（cache then forecast）”范式，后续FoCa（Zheng et al., 2025）、HiCache（Feng et al., 2025）和SpeCa（Liu et al., 2025b）等方法通过更稳健的数值方法进一步完善了这一范式。</p>
+<p>然而，正如初步频域分析所暗示的，这些复杂范式存在一个关键缺陷。例如，PAB（Zhao et al., 2024）方法虽敏锐地将不同注意力机制与特定频段关联起来，但并未深入研究令牌级别的频率动态特性；类似地，FasterCache（Lv et al., 2025）虽在“无分类器引导（Classifier-Free Guidance）”场景下分析了频域差异，但其结论局限于该特定场景，未涉及时间维度上特征演化的普遍动态规律，因此实际加速效果有限。</p>
+<p>与以往将特征视为整体的方法不同，本文提出的FreqCa方法通过将特征分解为稳定的低频成分与易变的高频成分，并对其采用差异化处理，解决了缓存方法中的质量损失问题。此外，本文还引入了“累积残差特征（Cumulative Residual Feature）”，将内存复杂度从O(L)降至O(1)，从而解决了以往“逐层（layer-wise）”架构中资源效率低下的问题。</p>
+<h3 id="3-方法"><a href="#3-方法" class="headerlink" title="3 方法"></a>3 方法</h3><h4 id="3-1-预备知识"><a href="#3-1-预备知识" class="headerlink" title="3.1 预备知识"></a>3.1 预备知识</h4><h5 id="3-1-1-扩散Transformer架构"><a href="#3-1-1-扩散Transformer架构" class="headerlink" title="3.1.1 扩散Transformer架构"></a>3.1.1 扩散Transformer架构</h5><p>扩散Transformer（Diffusion Transformer, DiT）（Peebles &amp; Xie, 2023a）采用分层结构$G = g_1 \circ g_2 \circ \cdots \circ g_L$，其中每个模块$g_l = F_{SA}^l \circ F_{CA}^l \circ F_{MLP}^l$由自注意力（Self-Attention, SA）、交叉注意力（Cross-Attention, CA）和多层感知机（Multilayer Perceptron, MLP）组件构成。在DiT中，这些组件会随时间动态调整，以处理图像生成过程中不同的噪声水平。输入$x_t = \{x_i\}_{i=1}^{H \times W}$被表示为与图像块对应的令牌序列。每个模块通过残差连接整合信息，其形式为$F(x) = x + \text{AdaLN} \circ f(x)$，其中AdaLN表示自适应层归一化（Adaptive Layer Normalization），该操作可稳定训练过程并提升学习效果。</p>
+<h5 id="3-1-2-频率分解方法"><a href="#3-1-2-频率分解方法" class="headerlink" title="3.1.2 频率分解方法"></a>3.1.2 频率分解方法</h5><p>频率分解通过<strong>快速傅里叶变换</strong>（Fast Fourier Transform, FFT）、快速傅里叶变换（Discrete Cosine Transform, DCT）等方法实现，是一种将信号解耦为不同成分的强大技术。该过程会将信号分离为低频成分和高频成分：<strong>低频成分通常代表全局结构与平滑布局，高频成分则对应细粒度细节与锐利边缘。</strong> 在扩散模型的场景下，这种解耦能够区分生成过程中稳定的基础结构与易变的临时细节。</p>
+<h4 id="3-2-频率感知缓存加速框架"><a href="#3-2-频率感知缓存加速框架" class="headerlink" title="3.2 频率感知缓存加速框架"></a>3.2 频率感知缓存加速框架</h4><p>本节将介绍FreqCa（频率感知特征缓存，Frequency-aware Feature Caching）框架，该框架由<strong>三个核心组件构成：（i）对待缓存特征进行频率分解，并对低频成分与高频成分采用不同处理策略；（ii）针对高频部分采用基于非线性埃尔米特多项式（Hermite polynomial）的预测器，以提升预测精度；（iii）将累积残差特征（Cumulative Residual Feature, CRF）确定为一种新型、高效的单张量缓存目标，该特征可涵盖模型的完整变换历史。</strong></p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f3.png" width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图 3：FreqCa 框架概述。（a）累积残差特征（CRF）缓存：无需缓存每一层的特征，仅在流程末尾缓存单一的累积残差特征（CRF）。（b）频率感知缓存：采用快速傅里叶变换（FFT）或离散余弦变换（DCT）等频率分解技术，将缓存的特征分离为低频段和高频段。（c）低频策略：低频成分直接从前一步骤复用。（d）高频策略：高频成分通过埃尔米特预测器（Hermite predictor）进行预测，该预测器基于前两个激活步骤的数据拟合得到。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>1. 频率分解缓存与预测策略：</strong> 我们提出的差异化缓存策略，源于频率成分具有截然不同的时间动态特性：低频成分相似性高但连续性低，表现稳定却难以预测；相反，高频成分相似性低但连续性高，虽具波动性但可沿轨迹预测。这种关键差异表明，“一刀切”的方法并非最优选择，因此需要采用差异化策略。</p>
+<p>为实现该策略，我们首先通过通用频率变换$D(\cdot)$将特征$z_t$分解为其组成部分：</p>
+<script type="math/tex; mode=display">z_t = z_t^{low} + z_t^{high}, \quad \text{其中} \quad z_t^{low/high} = \mathcal{P}_{low/high}\left(\mathcal{D}(z_t)\right)</script><p>式中，$\mathcal{P}_{low/high}$为互补投影算子；低频部分主导全局结构，高频部分则编码细节信息。</p>
+<p>基于频率成分的动态特性，我们采用定制化策略：对于稳定的低频成分$z_t^{low}$，采用直接复用策略以维持全局一致性，且几乎无额外成本，即$\widehat{z}_t^{low} = z_{t-1}^{low}$；对于可预测的高频成分$z_t^{high}$，采用基于埃尔米特多项式的非线性预测器，以精准预测其轨迹。在归一化时间$s_t \in [-1,1]$处，每个高频系数$\widehat{h}_i$的建模形式为：$\widehat{h}_i(s_t) = \sum_{k=0}^{m} c_{i,k} \text{He}_k(s_t)$，其中系数$c_{i,k}$通过最近K个缓存步骤的最小二乘回归估计得出，最终可得到精准重构的高频成分$\widehat{z}_t^{high}$。</p>
+<p>最后，将两部分成分重组，得到最终的预测特征：$\widehat{z}_t = \widehat{z}_t^{low} + \widehat{z}_t^{high}$。</p>
+<p><strong>2. 累积残差特征（CRF）：</strong> 扩散Transformer（DiT）的核心是由L个残差块构成的深度堆叠结构。每个块$l$的变换并非替换操作，而是增量更新，其形式符合标准残差连接：$h^{(l+1)} = h^{(l)} + F^{(l)}(h^{(l)}, t)$，其中$F^{(l)}(\cdot, t)$表示第$l$层的变换模块（包含注意力和MLP组件），该模块会通过扩散时间步$t$（如通过AdaLN）进行动态调制。</p>
+<p>由此可推导出DiT最终输出的结构：$\phi_L(x_t) = h^{(0)} + \sum_{l=0}^{L-1} F^{(l)}(h^{(l)}, t)$。该公式表明，最终输出并非简单的中间特征，而是初始输入与所有后续残差更新的累积结果。我们将这一特殊输出定义为$z_t \triangleq \phi_L(x_t)$，并将其命名为累积残差特征（Cumulative Residual Feature, CRF），以体现其复合特性。</p>
+<p>这一见解催生出更高效的内存策略：传统逐层缓存需存储所有中间特征$\{h^{(l)}\}_{l=0}^{L-1}$，而我们的方法利用CRF已包含完整变换历史这一特性，将该单一全局融合张量作为全量特征集的高效替代方案。如图4所示，仅缓存CRF所实现的重构保真度与完整逐层缓存几乎一致，平均均方误差（MSE）仅高4\%，这表明CRF可作为对整个计算路径的近无损压缩。因此，CRF成为理想的轻量级缓存目标，能够在不显著损失质量的前提下，将内存复杂度从$O(L)$革命性地降至$O(1)$。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f4.png" width="70%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图 4：各时间步下真实特征（ground-truth）与预测特征之间均方误差（MSE，Mean Squared Error）的箱线图。（a）逐层特征缓存（layer-wise feature caching）；（b）累积残差特征（CRF，Cumulative Residual Feature）缓存。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="4-实验"><a href="#4-实验" class="headerlink" title="4 实验"></a>4 实验</h3><h4 id="4-1-实验设置"><a href="#4-1-实验设置" class="headerlink" title="4.1 实验设置"></a>4.1 实验设置</h4><h5 id="模型配置"><a href="#模型配置" class="headerlink" title="模型配置"></a>模型配置</h5><p>实验在五个当前主流的视觉生成模型上开展，分别为FLUX.1-dev（Labs, 2024）、Qwen-Image（Liu et al., 2023a）、FLUX.1-Kontext-dev（Zhang &amp; Agrawala, 2025）以及Qwen-Image-Edit（Salimans &amp; Ho, 2022）。</p>
+<h5 id="评估与指标"><a href="#评估与指标" class="headerlink" title="评估与指标"></a>评估与指标</h5><p>在文本生成图像任务的评估中，我们采用DrawBench基准测试集（Saharia et al., 2022）。生成样本通过ImageReward（Xu et al., 2023）和CLIP Score（Hessel et al., 2021）进行系统性评估，这两个指标可共同衡量图像质量与文本-图像语义对齐程度。为评估视觉保真度，我们进一步采用峰值信噪比（PSNR）、结构相似性指数（SSIM）（Wang et al., 2004）和感知相似度指标（LPIPS）（Zhang et al., 2018），以同时捕捉像素级相似性与感知一致性。此外，我们利用GEdit基准测试集（Wang et al., 2024）评估通用图像编辑任务，该基准可在文本和视觉指导下，系统性评估指令驱动的编辑保真度及与目标修改的对齐程度。</p>
+<h4 id="4-2-文本生成图像"><a href="#4-2-文本生成图像" class="headerlink" title="4.2 文本生成图像"></a>4.2 文本生成图像</h4><h5 id="4-2-1-FLUX-1-dev"><a href="#4-2-1-FLUX-1-dev" class="headerlink" title="4.2.1 FLUX.1-dev"></a>4.2.1 FLUX.1-dev</h5><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t1.png" width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表1：FLUX.1-dev与FLUX.1-schnell（其蒸馏版本）在文本生成图像任务中的定量对比。最佳结果以粗体标注，次佳结果以下划线标注。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>注：† 表示该方法存在显著的图像质量下降。灰色标注：相较于基准方法，质量下降且延迟降低；蓝色标注：FreqCa在大幅降低延迟的同时，实现了最小化的质量下降。</p>
+<p>在FLUX.1-dev模型上，FreqCa在不同加速比下均持续优于当前主流加速方法。当加速比为2.63倍时，FreqCa的ImageReward得分为1.00，显著优于FORA与TeaCache；当加速比达到4.99倍时，仍能保持无损质量。即便在6.24倍加速比下，FreqCa的ImageReward得分仅下降2%（降至0.97），而TaylorSeer的质量下降幅度则达13.1%。在蒸馏版本FLUX.1-schnell上，FreqCa实现2.00倍加速的同时，还将ImageReward得分从0.93提升至0.95。</p>
+<h5 id="4-2-2-Qwen-Image"><a href="#4-2-2-Qwen-Image" class="headerlink" title="4.2.2 Qwen-Image"></a>4.2.2 Qwen-Image</h5><p>在Qwen-Image模型上，FreqCa在不同加速比下均展现出优越性能。当加速比为5.00倍时，FreqCa的ImageReward得分为1.20，优于TaylorSeer（1.01）；当加速比提升至7.14倍时，FreqCa的ImageReward得分仅下降18.4%（降至1.02），而TaylorSeer的质量损失则达41.6%（降至0.73）。在蒸馏版本Qwen-Image-Lightning上，FreqCa实现4.00倍加速的同时，仅产生极小的质量下降。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t2.png" width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表2：Qwen-Image与Qwen-Image-Lightning（其蒸馏版本）在文本生成图像任务中的定量对比。最佳结果以粗体标注，次佳结果以下划线标注</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>注：† 表示该方法存在显著的图像质量下降。灰色标注：相较于基准方法，质量下降且延迟降低；蓝色标注：FreqCa在大幅降低延迟的同时，实现了最小化的质量下降。</p>
+<h4 id="4-3-图像编辑"><a href="#4-3-图像编辑" class="headerlink" title="4.3 图像编辑"></a>4.3 图像编辑</h4><h5 id="4-3-1-FLUX-1-Kontext-dev"><a href="#4-3-1-FLUX-1-Kontext-dev" class="headerlink" title="4.3.1 FLUX.1-Kontext-dev"></a>4.3.1 FLUX.1-Kontext-dev</h5><p>在FLUX.1-Kontext-dev模型上，FreqCa的性能优于其他加速方法。当加速比为5.00倍时，FreqCa的Q_O（总体得分）为6.195，高于ToCa（6.125）；当加速比达到6.24倍时，FreqCa的Q_O得分仅下降0.4%，展现出更优的感知保真度。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t3.png" width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表3：FLUX.1-Kontext-dev在文本生成图像任务中的定量对比。最佳结果以粗体标注，次佳结果以下划线标注。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>注：† 表示该方法存在显著的图像质量下降；Q_SC：语义一致性，Q_PQ：感知质量，Q_O：总体得分。灰色标注：相较于基准方法，质量下降且延迟降低；蓝色标注：FreqCa在大幅降低延迟的同时，实现了最小化的质量下降。</p>
+<h5 id="4-3-2-Qwen-Image-Edit"><a href="#4-3-2-Qwen-Image-Edit" class="headerlink" title="4.3.2 Qwen-Image-Edit"></a>4.3.2 Qwen-Image-Edit</h5><p>在Qwen-Image-Edit模型上，FreqCa在双语编辑任务中展现出优越性能。当加速比为5.00倍时，FreqCa在GEdit-CN（中文GEdit基准）和GEdit-EN（英文GEdit基准）上的Q_O得分分别为7.49和7.52，优于TaylorSeer（分别为6.92和6.89）；当加速比达到6.24倍时，FreqCa的质量下降幅度仅为1.9%和4.3%，而TaylorSeer的质量下降幅度则达14.8%和16.3%。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t4.png" width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表4：Qwen-Image-Edit在图像编辑任务中的定量对比。最佳结果以粗体标注，次佳结果以下划线标注。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>注：† 表示该方法存在显著的图像质量下降；Q_SC：语义一致性，Q_PQ：感知质量，Q_O：总体得分。灰色标注：相较于基准方法，质量下降且延迟降低；蓝色标注：FreqCa在大幅降低延迟的同时，实现了最小化的质量下降。</p>
+<p>如图5和图6所示，定性评估结果证实了FreqCa在视觉质量保留方面的优越性。FORA（6.24倍）、DuCa（5.46倍）和TaylorSeer（6.24倍）均出现明显的伪影，而FreqCa（6.24倍）则保持了与原始模型相近的稳定视觉质量。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f5.png" width="100%"></th>
+<th style="text-align:center"><img src="f6.png" width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图 5：基于 GEdit 基准测试集（的实验结果）在 Qwen-Image-Edit上，FreqCa 的性能优于大多数基准方法。</em></td>
+<td style="text-align:center"><em>图6：在Qwen-Image-Edit模型上，FreqCa在实现更高加速比的同时，编辑质量接近原始模型</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="4-4-消融实验"><a href="#4-4-消融实验" class="headerlink" title="4.4 消融实验"></a>4.4 消融实验</h4><h5 id="4-4-1-缓存内存与计算效率"><a href="#4-4-1-缓存内存与计算效率" class="headerlink" title="4.4.1 缓存内存与计算效率"></a>4.4.1 缓存内存与计算效率</h5><p>传统逐层缓存方法会存储每层的注意力层和MLP层输出（N=2），并为m阶预测保留m+1个历史状态，因此内存开销为$K_{layer}=2(m+1)L$。对于FLUX.1-dev模型（L=57层），当采用二阶预测（m=2）时，需342个缓存单元。</p>
+<p>相比之下，FreqCa仅缓存CRF，并采用频率解耦策略：低频成分复用（1个单元），高频成分采用二阶埃尔米特插值（3个单元），总内存开销固定，计算公式如下：</p>
+<script type="math/tex; mode=display">
+\mathcal{K}_{FreqCa}=1+3=4, \quad R=\frac{\mathcal{K}_{FreqCa}}{\mathcal{K}_{layer}}=\frac{4}{(m+1)\cdot N\cdot L}\approx1.17\% \quad (m=2, L=57, N=2)</script><p>这一策略将内存复杂度从$O(L)$降至$O(1)$。在计算方面，预测步骤的开销可忽略不计（$C_{pred}\ll C_{full}$）。每S步执行一次完整前向传播，平均开销计算公式如下：</p>
+<script type="math/tex; mode=display">
+\mathcal{C}=\frac{1}{S}C_{full}+\left(1-\frac{1}{S}\right)C_{pred} \implies \text{加速比} \approx S \quad (\text{当} \ C_{pred}\to0)</script><p>FreqCa实现了接近S倍的加速，且仅增加1%的内存开销，成为首个为扩散模型打造的“恒定内存、高吞吐量”推理加速框架。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="t5.png" width="100%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>表5：FLUX.1-dev模型上各方法在缓存内存、乘加运算量（MACs）、延迟和浮点运算量（FLOPs）方面的对比。最佳结果以粗体标注，次佳结果以下划线标注。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>注：所有方法均采用基准模型的内存优化技术（如FlashAttention）。ToCa与这些优化技术不兼容，因此其报告的缓存开销更高。各方法的实际缓存内存开销计算方式为：显存开销 - 0.62GB。</p>
+<h5 id="4-4-2-分解方法与预测阶数消融实验"><a href="#4-4-2-分解方法与预测阶数消融实验" class="headerlink" title="4.4.2 分解方法与预测阶数消融实验"></a>4.4.2 分解方法与预测阶数消融实验</h5><p>我们在FLUX.1-dev模型上开展消融实验，以确定最优的频率分解方法与预测阶数。实验对比了三种分解策略（FFT、DCT以及无分解的基准方法），每种策略均搭配多种频率成分预测方式。图10对比了这些优化配置的结果，表明基于DCT的方法（尤其是低频复用+高频预测的组合）在不同加速比下均能保持较高的ImageReward得分，且在较大步长间隔（N&gt;8）时优势显著。这种在高加速比下的稳健性，验证了我们选择该策略的合理性。在Qwen-Image模型上开展的独立消融实验显示，采用相同预测策略的FFT-based方法表现最佳。如图7所示，与最优配置相比，其他配置均会导致显著的质量下降。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f7.png" width="100%"></th>
+<th style="text-align:center"><img src="f8.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图 7：Qwen-Image 模型的消融实验结果，展示了不同频率预测配置与加速比下的图像质量。其中，(x,y)=(低频预测阶数，高频预测阶数)</em></td>
+<td style="text-align:center"><em>图 8：不同方法的 ImageReward 得分与加速比对比图。气泡大小代表缓存内存（占用量）</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="f9.png" width="100%"></th>
+<th style="text-align:center"><img src="f10.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图 9：在 FLUX.1-Fill-dev（FLUX.1 图像修复开发版）模型上，FreqCa（频率感知缓存方法）实现了 6.24 倍的加速，同时所保留的图像修复质量与原始模型（未加速时）几乎无差异。</em></td>
+<td style="text-align:center"><em>图 10：在 FLUX 模型上，不同加速比下各类频率分解方法对应的最优预测器对比图。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="5-结论"><a href="#5-结论" class="headerlink" title="5 结论"></a>5 结论</h3><p>在本研究中，我们提出了FreqCa——一种频率感知特征缓存框架，该框架融合了基于复用（reuse-based）与基于预测（forecast-based）两种范式的优势。通过将特征分解为低频成分与高频成分，FreqCa对稳定的低频特征进行选择性复用，并对动态变化的高频特征进行精准预测，最终在模型加速与生成质量之间实现了更优的权衡。此外，通过引入累积残差特征（Cumulative Residual Feature, CRF）缓存机制，我们将内存占用降至O(1)级别，使得频率感知缓存即便在消费级硬件上也具备实际应用可行性。在多种扩散模型上开展的大量实验表明，FreqCa能够实现6-7倍的加速，同时质量损失可忽略不计，为高效扩散模型推理树立了新的技术标杆（SOTA）。我们相信，FreqCa为可扩展、高性能的生成式建模开辟了新的可能，并为未来频率感知加速技术的研究提供了一种通用方法。</p>
+<h3 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h3><h4 id="A-大型语言模型的使用说明"><a href="#A-大型语言模型的使用说明" class="headerlink" title="A 大型语言模型的使用说明"></a>A 大型语言模型的使用说明</h4><p>本研究未使用任何大型语言模型（Large Language Models）。所有研究思路、算法设计、实验方法、数据分析及论文撰写工作均由作者独立完成。</p>
+<h4 id="B-详细实验设置"><a href="#B-详细实验设置" class="headerlink" title="B 详细实验设置"></a>B 详细实验设置</h4><p>本节提供第4.1节中提及的所有实验配置的完整技术细节。</p>
+<h5 id="B-1-模型与任务说明"><a href="#B-1-模型与任务说明" class="headerlink" title="B.1 模型与任务说明"></a>B.1 模型与任务说明</h5><ul>
+<li><strong>FLUX.1-dev与Qwen-Image</strong>：FLUX.1-dev、FLUX.1-schnell（FLUX.1-dev的蒸馏版本）及Qwen-Image-Lightning（Qwen-Image的蒸馏版本）生成的图像分辨率为1024×1024，所使用的200条高质量提示词均源自DrawBench基准测试集；Qwen-Image生成的图像分辨率为1328×1328。图像质量评估采用ImageReward指标——该指标是衡量文本-图像对齐程度的稳健感知指标。</li>
+<li><strong>FLUX.1-Kontext-dev与Qwen-Image-Edit</strong>：图像编辑合成任务采用FLUX.1-Kontext-dev与Qwen-Image-Edit模型。图像编辑操作及质量评估均基于GEdit基准测试集，该基准测试集以真实场景应用为核心构建，可对图像编辑模型进行更真实、全面的评估。</li>
+</ul>
+<h5 id="B-2-硬件与计算资源"><a href="#B-2-硬件与计算资源" class="headerlink" title="B.2 硬件与计算资源"></a>B.2 硬件与计算资源</h5><p>所有实验均在企业级GPU硬件环境中开展，具体配置如下：</p>
+<ul>
+<li>FLUX.1-dev实验：采用NVIDIA A100 GPU</li>
+<li>FLUX.1-Kontext-dev实验：采用NVIDIA A100 GPU</li>
+<li>Qwen-Image实验：采用NVIDIA H20 GPU</li>
+<li>Qwen-Image-Edit实验：采用NVIDIA H20 GPU</li>
+</ul>
+<h5 id="B-3-FreqCa实现参数"><a href="#B-3-FreqCa实现参数" class="headerlink" title="B.3 FreqCa实现参数"></a>B.3 FreqCa实现参数</h5><ul>
+<li>FLUX.1-dev实验：采用基于离散余弦变换（DCT）的频率分解方法</li>
+<li>FLUX.1-Kontext-dev实验：采用基于离散余弦变换（DCT）的频率分解方法</li>
+<li>Qwen-Image实验：采用基于快速傅里叶变换（FFT）的频率分解方法</li>
+<li>Qwen-Image-Edit实验：采用基于快速傅里叶变换（FFT）的频率分解方法</li>
+</ul>
+<h4 id="C-分解方法与预测阶数消融实验"><a href="#C-分解方法与预测阶数消融实验" class="headerlink" title="C 分解方法与预测阶数消融实验"></a>C 分解方法与预测阶数消融实验</h4><p>如图C1所示，我们系统对比了经典频率分解方法（快速傅里叶变换FFT、离散余弦变换DCT）与无频率分解的基准方法。结果清晰表明，频率分解对稳定模型性能至关重要：不进行分解会导致ImageReward得分急剧下降，而FFT与DCT两种分解方法均能显著缓解这种性能退化，在各时间步保持稳定的生成质量。</p>
+<p>此外，我们还探究了低频与高频成分不同预测阶数对模型性能的影响。实验发现，不当的预测策略易引入误差，损害生成质量。在所有测试配置中，“低频成分零阶预测（直接复用）+高频成分二阶预测”的组合始终表现最优，这验证了我们的核心假设——低频特征应直接复用，而高频成分则能从高阶预测建模中获益。这些发现不仅证实了频率感知设计的必要性，也为选择最优预测策略提供了实证依据。</p>
+<h5 id="C-1-预测阶数组合"><a href="#C-1-预测阶数组合" class="headerlink" title="C.1 预测阶数组合"></a>C.1 预测阶数组合</h5><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="fc1.png" width="80%"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em>图 C1：此处展示了 FLUX.1-dev 模型在不同分解策略（快速傅里叶变换 FFT、离散余弦变换 DCT、无分解（None））与不同频率预测方式搭配下的 ImageReward 得分。本部分内容包含每种分解策略对应的最优预测方法：其中，快速傅里叶变换（FFT）与离散余弦变换（DCT）采用 “低频复用 + 高频预测” 的策略，而无分解（None）策略则采用直接复用的方式。</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="Review"><a href="#Review" class="headerlink" title="Review"></a>Review</h2><h3 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h3><p>本文提出了一种基于频率感知的缓存框架FreqCa，用于加速扩散模型的采样效率。FreqCa通过将缓存的特征分解为低频和高频分量，之后重​​用低频部分，并使用历史高频信息和 Hermite 插值器预测高频部分。此外，本文提出仅缓存累积残差特征（CRF），大大减少了内存开销。实验结果表明，在文本到图像生成和图像编辑的基准测试中，FreqCa 在速度和内存占用方面始终表现出强劲的竞争力。</p>
+<h3 id="Strengths"><a href="#Strengths" class="headerlink" title="Strengths"></a>Strengths</h3><p>方法建立在良好的动机之上，图2展示了扩散模型采样过程中低频和高频分量的不同行为，证明了对低频和高频的差异化缓存策略的合理性与有效性。</p>
+<p>FreqCa将差异化频率处理与内存高效CRF 缓存相结合，超越了之前的整体特征缓存方法。</p>
+<p>实验结果充足，在不同模型和不同任务上进行了广泛的实验，充分证明了FreqCa的有效性。</p>
+<h3 id="Weaknesses"><a href="#Weaknesses" class="headerlink" title="Weaknesses"></a>Weaknesses</h3><p>扩散模型采样过程中低频和高频分量的不同行为在之前的工作（FreeU）中已经被发现，虽然它是针对于UNet模型的研究。</p>
+<p>文章写作缺少对使用方法的阐述，例如FFT和DCT具体是如何工作的，以及二阶Hermite插值器m阶差分$\Delta^{m}F(z_{t}^{High})$是如何求取的。</p>
+<p>虽然实验结果表明 Hermite 插值效果良好，但缺乏误差界或收敛性理论分析以及与其他方法的对比。</p>
+<h3 id="Questions"><a href="#Questions" class="headerlink" title="Questions"></a>Questions</h3><p>图3(d)中为什么$\Delta^{1}F(z_{t}^{High})$与$\Delta^{2}F(z_{t}^{High})$要与$\Delta^{1}F(z_{t+N}^{High})$与$\Delta^{2}F(z_{t+N}^{High})$双向连接？两者是互相影响的吗？</p>
+<p>为什么选择二阶埃尔米特插值器对易变的高频成分进行预测？有尝试使用不同的方法预测高频成分吗？效果与二阶埃尔米特插值器相比如何，有无具体对比结果？</p>
+<p>对于FreeCa，它的极限加速倍数有多少？是否存在一个加速阈值，之后生成的图像质量急速下降？</p>
+<p>对于FreeCa，会存在加速失效的特殊情况吗？如果有，是否可以说明加速失效的原因？</p>
+]]></content>
+      <categories>
+        <category>AI</category>
+      </categories>
+      <tags>
+        <tag>diffusion</tag>
+        <tag>2025</tag>
+      </tags>
+  </entry>
 </search>
