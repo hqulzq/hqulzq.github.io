@@ -20,24 +20,17 @@
     var CONFIG = {"hostname":"hqulzq.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="全文翻译摘要我们研究了基于常微分方程（ODE）采样器的预训练扩散模型在测试阶段与任务特定奖励的对齐问题。我们从受直接偏好优化（DPO）启发的基于能量的分布出发，提出了一种推理阶段朗之万细化方法：该方法在图像&#x2F; latent（潜变量）空间中，将标准的确定性去噪更新与奖励引导的修正交替进行。该流程对于常见的ODE求解器具有“即插即用”特性，无需额外训练或数据，且可适配任意可微奖励模型——包括人类偏好奖">
-<meta property="og:type" content="article">
+  <meta property="og:type" content="article">
 <meta property="og:title" content="2025-INFERENCE-TIME REWARD-GUIDED LANGEVIN RE-FINEMENT FOR DIFFUSION MODELS论文精读">
 <meta property="og:url" content="https://hqulzq.github.io/2025/10/16/2025-INFERENCE-TIME-REWARD-GUIDED-LANGEVIN-RE-FINEMENT-FOR-DIFFUSION-MODELS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/index.html">
 <meta property="og:site_name" content="Lzq&#39;s blog">
-<meta property="og:description" content="全文翻译摘要我们研究了基于常微分方程（ODE）采样器的预训练扩散模型在测试阶段与任务特定奖励的对齐问题。我们从受直接偏好优化（DPO）启发的基于能量的分布出发，提出了一种推理阶段朗之万细化方法：该方法在图像&#x2F; latent（潜变量）空间中，将标准的确定性去噪更新与奖励引导的修正交替进行。该流程对于常见的ODE求解器具有“即插即用”特性，无需额外训练或数据，且可适配任意可微奖励模型——包括人类偏好奖">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://hqulzq.github.io/2025/10/16/2025-INFERENCE-TIME-REWARD-GUIDED-LANGEVIN-RE-FINEMENT-FOR-DIFFUSION-MODELS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/a1.png">
-<meta property="og:image" content="https://hqulzq.github.io/2025/10/16/2025-INFERENCE-TIME-REWARD-GUIDED-LANGEVIN-RE-FINEMENT-FOR-DIFFUSION-MODELS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/t1.png">
-<meta property="og:image" content="https://hqulzq.github.io/2025/10/16/2025-INFERENCE-TIME-REWARD-GUIDED-LANGEVIN-RE-FINEMENT-FOR-DIFFUSION-MODELS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f1.png">
-<meta property="og:image" content="https://hqulzq.github.io/2025/10/16/2025-INFERENCE-TIME-REWARD-GUIDED-LANGEVIN-RE-FINEMENT-FOR-DIFFUSION-MODELS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/f2.png">
 <meta property="article:published_time" content="2025-10-16T08:09:46.000Z">
-<meta property="article:modified_time" content="2025-10-20T13:56:35.143Z">
+<meta property="article:modified_time" content="2026-04-17T06:24:07.111Z">
 <meta property="article:author" content="Zongqing Li">
 <meta property="article:tag" content="diffusion">
 <meta property="article:tag" content="2025">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://hqulzq.github.io/2025/10/16/2025-INFERENCE-TIME-REWARD-GUIDED-LANGEVIN-RE-FINEMENT-FOR-DIFFUSION-MODELS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/a1.png">
 
 <link rel="canonical" href="https://hqulzq.github.io/2025/10/16/2025-INFERENCE-TIME-REWARD-GUIDED-LANGEVIN-RE-FINEMENT-FOR-DIFFUSION-MODELS%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
 
@@ -139,7 +132,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">110</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">111</span></a>
 
   </li>
         <li class="menu-item menu-item-book">
@@ -232,7 +225,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-10-20 21:56:35" itemprop="dateModified" datetime="2025-10-20T21:56:35+08:00">2025-10-20</time>
+                <time title="修改时间：2026-04-17 14:24:07" itemprop="dateModified" datetime="2026-04-17T14:24:07+08:00">2026-04-17</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -255,150 +248,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>我们研究了基于常微分方程（ODE）采样器的预训练扩散模型在测试阶段与任务特定奖励的对齐问题。我们从受直接偏好优化（DPO）启发的基于能量的分布出发，提出了一种<strong>推理阶段朗之万细化方法</strong>：该方法在图像/ latent（潜变量）空间中，<strong>将标准的确定性去噪更新与奖励引导的修正交替进行</strong>。该流程对于常见的ODE求解器具有“即插即用”特性，无需额外训练或数据，且可适配任意可微奖励模型——包括人类偏好奖励模型、美学评分或安全性评分，以及基于CLIP的奖励模型。从实验结果来看，在多个数据集和不同奖励模型上，该方法在测试阶段均能持续提升奖励值。最终形成的是一种轻量级的“采样即对齐”方法：它能将预训练扩散模型转化为追求奖励的生成器，在无需微调数据、额外训练或架构修改的情况下提升生成质量。</p>
-<span id="more"></span>
-<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1. 引言"></a>1. 引言</h3><p>近年来，去噪扩散模型迅速成为高保真图像生成的主流方法，在学术研究和工业应用中均取得了显著进展（Ho 等人，2020；Dhariwal &amp; Nichol，2021；Rombach 等人，2022）。其优势的确立，得益于一个兼具卓越实际性能与坚实理论基础的框架。与其他生成范式不同，扩散模型建立在基于随机微分方程（SDE）的成熟公式之上（Song 等人，2020b）。这一视角提供了统一且规范的数学框架，巧妙地将前向加噪过程与反向生成过程（及其确定性概率流常微分方程对应形式（Song 等人，2020b），以及 DDIM（Song 等人，2020a）等高效常微分方程采样器）关联起来，带来了在其他模型中往往不够明确的理论保障与洞见。这种理论上的严谨性，再加上其在样本质量和多样性方面实现最先进结果的能力（Karras 等人，2022；Lu 等人，2022；Dhariwal &amp; Nichol，2021），使得扩散模型成为图像生成领域最受欢迎的方法。</p>
-<p>推进生成模型发展的一个关键方向，是<strong>让模型输出与细微的人类偏好对齐</strong>——不再局限于单纯的视觉保真度，而是延伸到美学质量、构图、伦理合规等属性。为此，越来越多的研究聚焦于利用人类反馈对生成模型进行微调。现有方法大致可按两个维度分类：<strong>反馈形式与训练范式</strong>。在反馈方面，部分方法利用人类直接提供的数据（如 pairwise 比较（Wallace 等人，2024）），另一部分则借助学习到的、包含人类偏好的奖励函数（Fan 等人，2023）。在训练范式方面，有些技术需要对模型进行全部或部分重训练（通常以强化学习（RL）的形式，通过优化去噪过程来最大化奖励信号（Fan 等人，2023；Clark 等人，2023））；另一些方法则通过蒸馏，将奖励引导过程中的知识迁移到模型参数中（Salimans &amp; Ho，2022）。与之相对，还有一类截然不同的研究思路聚焦于推理阶段：不更新预训练模型的权重，而是利用来自分类器或奖励模型的引导信号来调控生成过程（Dhariwal &amp; Nichol，2021；Ho &amp; Salimans，2022）。尽管这类方法具有一定效果，但往往需要在控制强度与样本质量之间进行权衡。</p>
-<p>在本研究中，我们提出了一种无需训练的推理阶段框架，可将基于确定性常微分方程（ODE）的扩散采样器与任意可微奖励函数对齐。在每一步采样过程中，我们先执行一个针对“拉回能量倾斜”的简短朗之万细化（该概念源于基于能量的模型（LeCun 等人，2006；Du 等人，2023）），随后再应用确定性去噪器，将细化后的状态推进到下一步。这种交替执行的设计带来了简洁且可组合的理论保障：下一步的分布会实现预期的奖励指数倾斜，而通过多步迭代，最终能恢复出类似 DPO（直接偏好优化）形式的基于能量的目标分布（Wallace 等人，2024），从而与直接偏好优化（Direct Preference Optimization）的原理建立了形式化关联（Rafailov 等人，2023）。我们的方法具有“即插即用”特性，不依赖特定架构，且可适配多种奖励模型（如美学评分（Fan 等人，2023）、NIMA（Talebi &amp; Milanfar，2018）、基于分类器的类别引导（Dhariwal &amp; Nichol，2021）），能在推理阶段完全实现实用化的偏好对齐——这与那些需要微调（Fan 等人，2023；Clark 等人，2023）或训练奖励模型（Rafailov 等人，2023；Wallace 等人，2024）的方法形成了鲜明对比。</p>
-<p>综上，本文的主要贡献如下：</p>
-<ol>
-<li><strong>无需训练的推理阶段框架</strong>：提出了一种面向基于确定性常微分方程（ODE）的扩散采样器、由奖励引导的无需训练的推理阶段微调框架，将简短的朗之万细化与模型的确定性去噪器交替执行。</li>
-<li><strong>理论保障</strong>：通过严格证明表明，我们的分层细化与确定性推进过程，能让每一层都实现预期的指数倾斜分布，最终在输出端形成类似 DPO 的倾斜分布，从而验证了该框架的正确性。</li>
-<li><strong>实验有效性</strong>：大量实验表明，我们的方法在不同数据集和奖励模型上均能持续提升预期奖励值；此外，将分类器的 logit 值作为奖励，还能在不更新参数的情况下，实现推理阶段的类别引导图像生成。</li>
-</ol>
-<h3 id="2-预备知识"><a href="#2-预备知识" class="headerlink" title="2 预备知识"></a>2 预备知识</h3><h4 id="2-1-扩散模型的前向过程与反向过程"><a href="#2-1-扩散模型的前向过程与反向过程" class="headerlink" title="2.1 扩散模型的前向过程与反向过程"></a>2.1 扩散模型的前向过程与反向过程</h4><p>我们考虑在有限时间域[0, T]内、定义在$T^d$（d维环面）上的前向加噪伊藤随机微分方程（SDE）：</p>
-<script type="math/tex; mode=display">d x_{t}=f\left(x_{t}, t\right) d t+g(t) d W_{t}, t \in[0, T], x_{0} \sim p_{0} \equiv p_{\text{data }}, \tag{2.1}</script><p>其中，$f(\cdot, t)$为漂移场，$g(t)&gt;0$为标量（或各向同性）扩散调度，$W_{t}$为标准维纳过程（Wiener process）。用$p_{t}$表示由公式（2.1）诱导的$x_{t}$的边缘概率密度。</p>
-<p>将服从分布$x_{T} \sim p_{T}$的样本反向映射回服从分布$x_{0} \sim p_{0}$的样本的反向时间SDE（即反向过程SDE）可表示为：</p>
-<script type="math/tex; mode=display">dx_{t} = \Big (f(x_{t},t) - g(t)^{2}\, \nabla _{x}\log p_{t}(x_{t})\Big )\, dt + g(t)\, d\overline {W}_{t}, t:T\to 0, \tag{2.2}</script><p>其中，$\bar{W}_{t}$为反向时间下的标准维纳过程，$\nabla_{x} \log p_{t}$为（未知的）得分函数（score function）。</p>
-<p>上述反向过程对应的确定性形式为概率流（反向）常微分方程（ODE），当得分函数精确时，该ODE与反向SDE具有相同的时间边缘分布，其表达式为：</p>
-<script type="math/tex; mode=display">\frac{d x_{t}}{d t}=f\left(x_{t}, t\right)-\frac{1}{2} g(t)^{2} \nabla_{x} \log p_{t}\left(x_{t}\right), t: T \to 0 . \tag{2.3}</script><p>在实际应用中，我们会用预训练的得分模型$s_{\theta}(x, t) \approx\nabla_{x} \log p_{t}(x)$替代公式（2.2）和公式（2.3）中的未知得分函数；对公式（2.3）进行数值离散化，即可得到基于确定性ODE的去噪采样器（例如DDIM（Song等人，2020a）、EDM风格的积分器（Karras等人，2022））。</p>
-<h4 id="2-2-作为SDE的朗之万动力学及其离散化"><a href="#2-2-作为SDE的朗之万动力学及其离散化" class="headerlink" title="2.2 作为SDE的朗之万动力学及其离散化"></a>2.2 作为SDE的朗之万动力学及其离散化</h4><p>给定目标概率密度$\pi(x) \propto e^{-U(x)}$（其中$U: \mathbb{R}^{d} \to \mathbb{R}$为能量函数），过阻尼朗之万SDE（单位温度下）可表示为：</p>
-<script type="math/tex; mode=display">d x_{\tau}=-\nabla U\left(x_{\tau}\right) d \tau+\sqrt{2} d B_{\tau}=\nabla \log \pi\left(x_{\tau}\right) d \tau+\sqrt{2} d B_{\tau}, \tag{2.4}</script><p>其中，$B_{\tau}$为标准布朗运动（Brownian motion）。在温和条件（如能量函数$U$具有约束性）下，该SDE对应的福克-普朗克方程（Fokker–Planck equation）$\partial_{\tau} q_{\tau}=-\nabla \cdot (q_{\tau} \nabla \log \pi)+\Delta q_{\tau}$以$\pi$为平稳分布（Pavliotis，2014）。</p>
-<p>该朗之万SDE的一种基础时间离散化方法是无调整朗之万算法（Unadjusted Langevin Algorithm，ULA）（Robert &amp; Tweedie，1996；Parisi &amp; Yongshi，1980），其更新公式为：</p>
-<script type="math/tex; mode=display">x \leftarrow x+\alpha \nabla \log \pi(x)+\sqrt{2 \alpha} \xi, \xi \sim \mathcal{N}(0, I), \alpha>0, \tag{2.5}</script><p>其中，$\alpha$为步长，$\xi$为服从标准正态分布的随机噪声。当$\alpha \to 0$且迭代次数足够多时（或通过Metropolis校正可实现精确收敛），ULA算法的输出会收敛到目标分布$\pi$。</p>
-<h4 id="2-3-类RLHF目标函数与DPO：诱导的能量倾斜最优解"><a href="#2-3-类RLHF目标函数与DPO：诱导的能量倾斜最优解" class="headerlink" title="2.3 类RLHF目标函数与DPO：诱导的能量倾斜最优解"></a>2.3 类RLHF目标函数与DPO：诱导的能量倾斜最优解</h4><p>设$p_{\theta}(x_{0})$为图像$x_{0}$上的参数化无条件生成模型，$p_{\text{ref }}(x_{0})$为固定的参考分布（例如预训练模型的分布）。基于人类反馈的强化学习（RLHF）的目标是最大化潜在奖励$r(x_{0})$，同时正则化模型分布与参考分布$p_{\text{ref }}$之间的KL散度（Ziegler等人，2019；Stiennon等人，2020），其目标函数可表示为：</p>
-<script type="math/tex; mode=display">max _{p_{\theta}} \mathbb{E}_{x_{0} \sim p_{\theta}\left(x_{0}\right)}\left[r\left(x_{0}\right)\right]-\beta D_{\text{KL}}\left[p_{\theta}\left(x_{0}\right) \| p_{\text{ref }}\left(x_{0}\right)\right], \beta>0 . \tag{2.6}</script><p>对于公式（2.6）所示的目标函数，其（唯一的）全局最优解具有能量倾斜形式的闭合表达式：</p>
-<script type="math/tex; mode=display">p_{\theta}^{*}\left(x_{0}\right)=\frac{1}{Z} p_{\text{ref }}\left(x_{0}\right) \exp \left(r\left(x_{0}\right) / \beta\right), Z=\int p_{\text{ref }}\left(x_{0}\right) \exp \left(r\left(x_{0}\right) / \beta\right) d x_{0} . \tag{2.7}</script><p>其中，$Z$为归一化常数。</p>
-<h5 id="推导过程"><a href="#推导过程" class="headerlink" title="推导过程"></a>推导过程</h5><p>引入用于归一化约束的拉格朗日乘数$\lambda$，对目标泛函：</p>
-<script type="math/tex; mode=display">\mathcal{L}[p]=\int p\left(x_{0}\right) r\left(x_{0}\right) d x_{0}-\beta \int p\left(x_{0}\right) \log \frac{p\left(x_{0}\right)}{p_{\text{ref }}\left(x_{0}\right)} d x_{0}-\lambda\left(\int p\left(x_{0}\right) d x_{0}-1\right) \tag{2.8}</script><p>关于$p$求导并令导数为0，可得：</p>
-<script type="math/tex; mode=display">\frac{\delta \mathcal{L}}{\delta p}=r\left(x_{0}\right)-\beta\left(\log p\left(x_{0}\right)-\log p_{\text{ref }}\left(x_{0}\right)+1\right)-\lambda=0 \tag{2.9}</script><p>整理后得到$\log p(x_{0})=\log p_{\text{ref }}(x_{0})+r(x_{0}) / \beta-C$（其中$C$为常数）。对等式两边取指数并进行归一化，即可得到公式（2.7）。</p>
-<h5 id="基于能量的视角"><a href="#基于能量的视角" class="headerlink" title="基于能量的视角"></a>基于能量的视角</h5><p>公式（2.7）可视为一种基于能量的模型（Energy-Based Model，EBM），其能量函数为$E(x_{0})=-\log p_{\text{ref }}(x_{0})-r(x_{0}) / \beta$。因此，优化公式（2.6）所示的RLHF目标函数，等价于从如下基于能量的模型族中采样：$p(x_{0}) \propto p_{\text{ref }}(x_{0}) \exp (r(x_{0}) / \beta)$。</p>
-<h4 id="2-4-基于ODE的扩散模型：确定性去噪"><a href="#2-4-基于ODE的扩散模型：确定性去噪" class="headerlink" title="2.4 基于ODE的扩散模型：确定性去噪"></a>2.4 基于ODE的扩散模型：确定性去噪</h4><p>我们采用基于确定性ODE的采样器（例如对概率流ODE进行DDIM/EDM风格积分的采样器），该采样器会生成离散时间的去噪轨迹，其表达式为：</p>
-<script type="math/tex; mode=display">x_{t-1}=f_{t}\left(x_{t}\right), t \in\{T, T-1, \ldots, 1\} .\tag{2.10}</script><p>其中，$f_{t}$为去噪函数，$t$为采样步数（从$T$到1逐步迭代）。</p>
-<p>用$p_{t}$表示第$t$步（layer t）时模型诱导的$x_{t}$的边缘分布。由于$f_{t}: \mathbb{R}^{d} \to \mathbb{R}^{d}$是可微的且在支撑集上局部可逆，因此各步的概率密度满足变量替换恒等式：</p>
-<script type="math/tex; mode=display">p_{t}(x)=p_{t-1}\left(f_{t}(x)\right)\left|\det \nabla f_{t}(x)\right| . \tag{2.11}</script><p>其中，$\det \nabla f_{t}(x)$表示$f_{t}(x)$梯度的雅可比行列式的绝对值。</p>
-<p>由此可知，一旦初始采样$x_{T} \sim p_{T}$（通常为标准正态分布）确定，整个采样轨迹$\{x_{t}\}$就会由公式（2.10）完全确定；也就是说，给定$x_{T}$，后续所有步骤的$x_{T-1}, \ldots, x_{0}$都会被唯一确定。</p>
-<h3 id="3-方法"><a href="#3-方法" class="headerlink" title="3 方法"></a>3 方法</h3><h4 id="最终目标"><a href="#最终目标" class="headerlink" title="最终目标"></a>最终目标</h4><p>受直接偏好优化（DPO）闭式解的启发，我们旨在将$t=0$时刻（即最终输出时刻）的分布倾斜为如下基于能量的模型分布：</p>
-<script type="math/tex; mode=display">p_{0}^{(\lambda)}(x) \propto p_{0}(x) \exp (\lambda r(x)), \tag{3.1}</script><p>其中，$r: X \to \mathbb{R}$代表（可微的）奖励函数，$\lambda&gt;0$为全局奖励强度参数。</p>
-<h4 id="分步目标"><a href="#分步目标" class="headerlink" title="分步目标"></a>分步目标</h4><p>为逐步实现公式（3.1）所示的最终目标，我们引入一个递减的奖励强度调度策略：</p>
-<script type="math/tex; mode=display">\lambda_{T}=0, \lambda_{0}=\lambda, \lambda_{t-1} \geq \lambda_{t} \quad(t=1, \ldots, T), \tag{3.2}</script><p>并定义第$t$步（layer t）的倾斜分布为：</p>
-<script type="math/tex; mode=display">p_{t}^{\left(\lambda_{t}\right)}(x) \propto p_{t}(x) \exp \left(\lambda_{t} r(x)\right) . \tag{3.3}</script><p>已知当前时刻$t$的样本$x_{t}’ \sim p_{t}^{(\lambda_{t})}$，我们通过以下两步操作生成下一时刻$t-1$的样本$x_{t-1}’ \sim p_{t-1}^{(\lambda_{t-1})}$：</p>
-<h5 id="步骤1：朗之万细化"><a href="#步骤1：朗之万细化" class="headerlink" title="步骤1：朗之万细化"></a>步骤1：朗之万细化</h5><p>从时刻$t$的样本$x_{t}’$出发，执行若干步朗之万迭代，目标分布为：</p>
-<script type="math/tex; mode=display">\pi_{t}(x) \propto p_{t}(x) \exp \left(\lambda_{t-1} r\left(f_{t}(x)\right)\right), \tag{3.4}</script><p>最终得到细化后的样本：</p>
-<script type="math/tex; mode=display">x_{t}^{\text{new }} \sim p_{t}(x) \exp \left(\lambda_{t-1} r\left(f_{t}(x)\right)\right) . \tag{3.5}</script><p>针对目标分布$\pi_{t}$的连续时间朗之万随机微分方程（SDE）为：</p>
-<script type="math/tex; mode=display">d X_{\tau}=\nabla_{x} \log \pi_{t}\left(X_{\tau}\right) d \tau+\sqrt{2} d B_{\tau} . \tag{3.6}</script><p>该分布的对数梯度为：</p>
-<script type="math/tex; mode=display">\nabla_{x} \log \pi_{t}(x)=s_{\theta}(x, t)+\lambda_{t-1} \nabla_{x} r\left(f_{t}(x)\right) . \tag{3.7}</script><p>其中，$s_{\theta}(x, t)$为预训练的得分模型。</p>
-<p>以当前时刻$t$的状态为初始值：</p>
-<script type="math/tex; mode=display">x^{(0)}=x_{t}' . \tag{3.8}</script><p>随后执行$K_{t}$步无调整朗之万算法（ULA），步长为$\alpha_{t}&gt;0$，迭代更新公式为：</p>
-<script type="math/tex; mode=display">x^{(k+1)}=x^{(k)}+\alpha_{t}\left[s_{\theta}\left(x^{(k)}, t\right)+\lambda_{t-1} \nabla_{x} r\left(f_{t}\left(x^{(k)}\right)\right)\right]+\sqrt{2 \alpha_{t}} \xi^{(k)} . \tag{3.9}</script><p>其中，高斯噪声满足：</p>
-<script type="math/tex; mode=display">\xi^{(k)} \sim \mathcal{N}(0, I) . \tag{3.10}</script><p>在噪声极低的采样步骤中，可采用无噪声版本的迭代更新公式：</p>
-<script type="math/tex; mode=display">x^{(k+1)}=x^{(k)}+\alpha_{t}\left[s_{\theta}\left(x^{(k)}, t\right)+\lambda_{t-1} \nabla_{x} r\left(f_{t}\left(x^{(k)}\right)\right)\right] . \tag{3.11}</script><p>经过$K_{t}$次迭代后，定义细化后的样本为：</p>
-<script type="math/tex; mode=display">x_{t}^{\text{new }}:=x^{\left(K_{t}\right)} . \tag{3.12}</script><p>当步长$\alpha_{t}$足够小且迭代次数$K_{t}$足够多时，细化后的样本$x_{t}^{\text{new }}$会满足公式（3.5）所示的分布。</p>
-<h5 id="步骤2：确定性去噪"><a href="#步骤2：确定性去噪" class="headerlink" title="步骤2：确定性去噪"></a>步骤2：确定性去噪</h5><p>已知细化后的样本$x_{t}^{\text{new }}$满足公式（3.5），将其输入确定性去噪器，得到：</p>
-<script type="math/tex; mode=display">x_{t-1}'=f_{t}\left(x_{t}^{\text{new }}\right), \tag{3.13}</script><p>通过变量替换可知，该操作会使下一时刻的样本满足预期的倾斜分布：</p>
-<script type="math/tex; mode=display">x_{t-1}' \sim p_{t-1}(x) \exp \left(\lambda_{t-1} r(x)\right) . \tag{3.14}</script><h6 id="证明过程"><a href="#证明过程" class="headerlink" title="证明过程"></a>证明过程</h6><p>由公式（3.5）可知，$X’ \equiv x_{t}^{\text{new }}$的概率密度为$\tilde{\pi}_{t}(x) \propto p_{t}(x) \exp (\lambda_{t-1} r(f_{t}(x)))$。令$Y=f_{t}(X’)$，对于任意可测集$A \subset \mathbb{R}^{d}$，有：</p>
-<script type="math/tex; mode=display">\mathbb{P}(Y \in A)=\int 1_{\left\{f_{t}(x) \in A\right\}} p_{t}(x) e^{\lambda_{t-1} r\left(f_{t}(x)\right)} d x . \tag{3.15}</script><p>结合变量替换关系$p_{t}(x)=p_{t-1}(f_{t}(x)) \left| \det \nabla f_{t}(x) \right|$与变量替换$y=f_{t}(x)$，可得：</p>
-<script type="math/tex; mode=display">\mathbb{P}(Y \in A)=\frac{1}{Z} \int_{A} p_{t-1}(y) e^{\lambda_{t-1} r(y)} d y, \tag{3.16}</script><p>其中$Z$为归一化常数。因此，$Y$的概率密度为$\tilde{\pi}_{t-1}(y) \propto p_{t-1}(y) \exp (\lambda_{t-1} r(y))$，即公式（3.14）所示的分布。</p>
-<h4 id="归纳推导"><a href="#归纳推导" class="headerlink" title="归纳推导"></a>归纳推导</h4><p>假设在第$t$步时，样本满足$x_{t}’ \sim p_{t}(x) \exp (\lambda_{t} r(x))$，则通过执行步骤1（朗之万细化）和步骤2（确定性去噪），可生成满足$x_{t-1}’ \sim p_{t-1}(x) \exp (\lambda_{t-1} r(x))$的样本。对$t=T, \ldots, 1$的所有步骤迭代执行上述操作，最终可得：</p>
-<script type="math/tex; mode=display">x_{0}' \sim p_{0}(x) \exp (\lambda r(x)),</script><p>该分布与公式（3.1）所示的DPO最优基于能量的分布完全一致。</p>
-<p>基于上述推导，我们将所提方法总结为如下算法。</p>
-<p><img src="a1.png" ></p>
-<h3 id="4-实验"><a href="#4-实验" class="headerlink" title="4 实验"></a>4 实验</h3><h4 id="4-1-实验设置"><a href="#4-1-实验设置" class="headerlink" title="4.1 实验设置"></a>4.1 实验设置</h4><h5 id="基础模型与采样器"><a href="#基础模型与采样器" class="headerlink" title="基础模型与采样器"></a>基础模型与采样器</h5><p>我们采用预训练的扩散模型作为基础模型，并搭配基于确定性常微分方程（ODE）的采样器（例如DDIM/EDM概率流采样器），将采样过程离散化为从$t=T$到$t=0$的$T=50$个步骤。</p>
-<h5 id="数据集"><a href="#数据集" class="headerlink" title="数据集"></a>数据集</h5><p>我们在4个256×256分辨率的无条件生成数据集上进行评估，分别是CelebA-HQ（Karras等人，2017）、AFHQ（包含猫/狗/野生动物子数据集）（Choi等人，2020）、LSUN卧室（Yu等人，2015）和ImageNet（Deng等人，2009）。所有数据集均使用其标准训练集划分，并采用扩散模型基础训练时的标准预处理流程。</p>
-<h5 id="奖励模型（可微）"><a href="#奖励模型（可微）" class="headerlink" title="奖励模型（可微）"></a>奖励模型（可微）</h5><p>我们采用两种可微奖励模型，具体如下：</p>
-<ul>
-<li><strong>美学评分（LAION美学预测器v2）</strong>：以CLIP图像编码器（ViT-L/14）（Radford等人，2021）为基础，后续连接一个线性回归头，用于预测标量美学分数（Schuhmann等人，2021）。在评分前，图像会被缩放到224×224分辨率，并采用CLIP标准归一化流程；该缩放操作具有可微性，梯度可反向传播至原始256×256分辨率图像。</li>
-<li><strong>NIMA（神经图像评估）</strong>：我们使用标准NIMA模型，输入图像通过双线性插值缩放到224×224分辨率并进行裁剪处理。</li>
-</ul>
-<p>为确保实验公平性与可复现性，所有数据集上的两种奖励模型均保持冻结状态（不进行微调）。为提升奖励组合时的稳定性，两种奖励模型的输出分数均被归一化到[0, 10]区间。</p>
-<h5 id="奖励调度与引导"><a href="#奖励调度与引导" class="headerlink" title="奖励调度与引导"></a>奖励调度与引导</h5><p>我们遵循公式（3.2）和（3.4）中定义的分步目标，采用如下奖励强度调度策略：$\lambda_T=0$、$\lambda_0=\lambda$且$\lambda_{t-1} \geq \lambda_t$。除非另有说明，否则我们设置$\lambda_{t-1}=\lambda \cdot w_t$，其中$w_t$为余弦衰减权重，计算公式为：</p>
-<script type="math/tex; mode=display">w_{t} = \frac{1}{2} \left( 1+\cos \left(\pi \cdot \frac{t-1}{T-1}\right)\right) , t=1,\dots,T</script><p>由此可得$w_1=1$、$w_T=0$。</p>
-<h5 id="朗之万细化"><a href="#朗之万细化" class="headerlink" title="朗之万细化"></a>朗之万细化</h5><p>在每个时间步$t$，我们执行$K_t \in \{2,5,10,20\}$步无调整朗之万算法（ULA），迭代更新公式为：</p>
-<script type="math/tex; mode=display">x^{(k+1)} = x^{(k)} + \alpha _{t}\left[s_{\theta }(x^{(k)},t) + \lambda _{t-1}\, \nabla _{x}r\big (f_{t}(x^{(k)})\big )\right]+\sqrt {2\alpha _{t}}\, \xi ^{(k)}</script><p>通过该设置，可观察不同朗之万细化步数对所提方法生成图像的预期奖励值的影响。</p>
-<h5 id="实现细节"><a href="#实现细节" class="headerlink" title="实现细节"></a>实现细节</h5><p>生成的图像分辨率为256×256，在输入奖励模型前，需通过可微缩放操作调整至224×224分辨率。在细化过程中，我们确保端到端梯度传播始终启用（无意外的梯度禁用或得分函数梯度分离情况）。对于每个数据集，我们生成2000张图像用于计算平均奖励值。</p>
-<h4 id="4-2-主要结果"><a href="#4-2-主要结果" class="headerlink" title="4.2 主要结果"></a>4.2 主要结果</h4><p>在所有4个256×256分辨率数据集以及两种可微奖励模型（美学评分和NIMA）上，随着朗之万细化步数的增加，我们的方法生成图像的预期奖励值呈现单调递增趋势。关键在于，即使仅执行2步朗之万细化，也能实现显著的奖励提升：在美学评分指标下，CelebA-HQ数据集的分数从6.23提升至6.52（+0.29）、AFHQ数据集从5.39提升至5.62（+0.23）、LSUN数据集从4.92提升至5.13（+0.21）、ImageNet数据集从4.33提升至4.52（+0.19）；在NIMA指标下，CelebA-HQ数据集从5.84提升至6.02（+0.18）、AFHQ数据集从4.77提升至4.87（+0.10）、LSUN数据集从4.52提升至4.71（+0.19）、ImageNet数据集从4.27提升至4.44（+0.17）。</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th style="text-align:center"><img src="t1.png"></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center"><em>表 1：不同朗之万步数下，四种数据集在美学评分（左）和 NIMA 评分（右）指标下的平均奖励值。分数越高越好。</em></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>当朗之万细化步数设置为20时，奖励提升效果更为显著：美学评分指标下，ImageNet数据集分数从4.33提升至5.14（+0.81）、LSUN数据集从4.92提升至5.63（+0.71）、CelebA-HQ数据集从6.23提升至6.94（+0.71）、AFHQ数据集从5.39提升至5.92（+0.53）；NIMA指标下，LSUN数据集从4.52提升至5.39（+0.87）、ImageNet数据集从4.27提升至4.93（+0.66）、CelebA-HQ数据集从5.84提升至6.43（+0.59）、AFHQ数据集从4.77提升至5.17（+0.40）。</p>
-<p>图1显示，随着朗之万细化步数的增加，生成图像的平均奖励值显著上升。总体而言，我们提出的推理阶段细化方法能在不同数据集上稳定提升预期奖励值，且趋势具有一致性。</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th style="text-align:center"><img src="f1.png"></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center"><em>图 1：不同朗之万步数下所提方法的平均奖励值。结果表明，随着朗之万步数的增加，平均奖励值显著上升。</em></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>（注：图1标题为“不同朗之万步数下所提方法的平均奖励值”，子图（a）对应美学评分奖励，子图（b）对应NIMA奖励，纵轴为平均奖励值，横轴为朗之万步数，可直观观察到奖励值随步数增加的上升趋势）。</p>
-<h4 id="4-3-基于所提方法的类别引导生成"><a href="#4-3-基于所提方法的类别引导生成" class="headerlink" title="4.3 基于所提方法的类别引导生成"></a>4.3 基于所提方法的类别引导生成</h4><p>在不修改扩散模型参数的前提下，我们的方法还可利用冻结的图像分类器作为奖励来源，在推理阶段实现类别引导，生成特定类别的图像。具体而言，我们将分类器对目标类别的置信度（例如类别logit值或对数概率）作为可微奖励，代入分层细化与确定性推进流程中。这种方式能实现类别选择性引导，使生成样本偏向目标类别，同时保持基于ODE采样器的稳定性与可控性。</p>
-<p>在实际操作中，我们仅需将生成的图像通过可微双线性插值缩放到分类器的原生输入分辨率，并采用分类器的标准归一化流程，即可计算标量奖励，无需任何再训练步骤。此外，将分类器作为奖励引导源，不仅能实现特定类别图像生成，还能提升生成图像的质量。图2（基于256×256分辨率ImageNet数据集）展示了该方法的有效性。</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th style="text-align:center"><img src="f2.png"></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center"><em>图2：以分类器作为奖励生成特定类别图像。该过程不仅能生成特定类型的图片，还能提升图像质量。</em></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>（注：图2标题为“以分类器为奖励生成特定类别图像”，展示了5个目标类别的生成结果，分别是德国牧羊犬、蝴蝶犬、跑车、修道院、白狼，可直观观察到生成图像既符合目标类别特征，又具有较高视觉质量）。</p>
-<h3 id="5-相关工作"><a href="#5-相关工作" class="headerlink" title="5 相关工作"></a>5 相关工作</h3><h4 id="扩散模型与确定性ODE采样"><a href="#扩散模型与确定性ODE采样" class="headerlink" title="扩散模型与确定性ODE采样"></a>扩散模型与确定性ODE采样</h4><p>高效采样一直是扩散模型研究的核心主题。一项关键进展源于将扩散模型表述为随机微分方程（SDE）的解，这一表述自然地引出了其确定性对应形式——概率流常微分方程（Probability Flow ODE）（Song等人，2020b）。这种表述支持确定性采样，即生成过程由唯一轨迹定义，能够实现有意义的潜变量插值和精确的可复现性。</p>
-<p>Song等人提出了去噪扩散隐式模型（Denoising Diffusion Implicit Model，DDIM）采样器，这是一种一阶求解器，在保持生成质量的同时大幅加快了采样速度（Song等人，2020a）。后续研究则聚焦于开发更复杂的ODE求解器。例如，Karras等人（2022）通过实证阐明了基于ODE采样的设计选择，形成了稳健的实践方案；Lu等人（2022）提出了DPM-Solver，这是一种针对扩散ODE特定结构设计的高阶求解器，仅需约10步即可实现高保真度生成。</p>
-<p>除求解器设计外，另一类研究方向（如渐进式蒸馏（Progressive Distillation）（Salimans &amp; Ho，2022））旨在将复杂ODE求解器的行为蒸馏到更高效的模型中，进一步突破采样速度的限制。这些努力共同确立了确定性ODE采样作为扩散模型强大且高效的范式。</p>
-<h4 id="扩散模型的引导方法"><a href="#扩散模型的引导方法" class="headerlink" title="扩散模型的引导方法"></a>扩散模型的引导方法</h4><p>控制扩散模型的输出以使其与人类偏好对齐（这一挑战在语言模型中常通过基于人类反馈的强化学习（RLHF）解决），在图像领域也取得了并行进展。早期研究聚焦于推理时引导：Dhariwal与Nichol（2021）开创了分类器引导（Classifier Guidance）方法，利用预训练分类器的梯度将采样过程导向期望属性；随后，无分类器引导（Classifier-Free Guidance）方法取而代之，这种更稳健且应用广泛的技术通过联合训练条件与无条件模型实现控制，无需辅助分类器（Ho &amp; Salimans，2022）。</p>
-<p>近年来，研究开始探索将人类反馈直接融入模型训练循环，与RLHF范式相呼应。部分方法通过奖励梯度直接微调扩散模型（Clark等人，2023）；另一些方法（如DPOK）则将去噪过程形式化为序贯决策问题，并应用策略梯度算法（Fan等人，2023）。为规避强化学习的复杂性，DiffusionDPO等方法将直接偏好优化（Direct Preference Optimization）技术适配到扩散模型中，无需显式奖励模型即可高效实现与人类偏好的对齐（Wallace等人，2024）。</p>
-<p>从推理时引导到训练时对齐，这些研究方向对于开发可控且符合伦理的生成模型至关重要。</p>
-<h3 id="6-结论"><a href="#6-结论" class="headerlink" title="6 结论"></a>6 结论</h3><p>本文提出了“奖励引导朗之万细化”（Reward-Guided Langevin Refinement）方法，这是一种推理阶段框架，能够在不更新模型参数的情况下，将基于确定性常微分方程（ODE）的扩散采样器与任意可微奖励函数对齐。我们的核心思路是，在采样的每一步中，交替执行针对“拉回能量倾斜”的简短朗之万细化操作，以及确定性去噪推进操作。</p>
-<p>我们提供了两个简洁且可组合的理论保障：（i）朗之万细化操作会从分层倾斜分布$p_{t}(x) \exp (\lambda_{t-1} r(f_{t}(x)))$中采样；（ii）确定性推进操作$x_{t-1}=f_{t}(x_{t})$会将该倾斜分布精确转化为$p_{t-1}(x) \exp (\lambda_{t-1} r(x))$。通过采用递减的奖励强度调度策略，在多步采样中迭代执行上述操作，最终的输出分布会实现类似直接偏好优化（DPO）的指数倾斜形式，从而在推理阶段完全实现偏好对齐。</p>
-<p>实验结果表明，我们的方法在不同数据集和多种奖励模型（美学评分、NIMA评分以及基于分类器的类别引导）上，均能持续提升预期奖励值，同时在相同的实际耗时下保持生成样本的保真度。值得注意的是，仅需2步朗之万细化就能带来显著的奖励提升，而20步朗之万细化可实现更为明显的效果，这体现出该方法在奖励提升与效率之间具有良好的权衡特性。</p>
-<h5 id="局限性"><a href="#局限性" class="headerlink" title="局限性"></a>局限性</h5><p>我们的方法由于引入了朗之万动力学操作，会增加推理阶段的计算开销。使用的朗之万细化步数越多，生成图像的预期奖励值固然会越高，但也会导致生成时间延长。此外，生成图像还会继承所选奖励模型本身存在的偏差。</p>
-<h5 id="未来工作"><a href="#未来工作" class="headerlink" title="未来工作"></a>未来工作</h5><p>除了在推理阶段实现对齐之外，我们的框架还有望作为一种诊断工具，用于分析奖励函数本身的特性。由于我们的方法在沿奖励梯度提升奖励值的同时，仍能保留规范的扩散去噪步骤，因此可提供一种可控的方式来检测奖励函数是否存在“可被欺骗”的问题——即能否以极小的语义改进（甚至产生不良伪影）为代价，实现奖励值的大幅提升。此外，我们的方法或许还可作为一种通用工具，在负责任的使用协议下对奖励模型进行“红队测试”（red-teaming），帮助设计者优化奖励函数定义、提升奖励模型的校准度，并降低其受奖励欺骗的可能性。</p>
-<h2 id="Review"><a href="#Review" class="headerlink" title="Review"></a>Review</h2><h3 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h3><p>本文提出了一种适用于推理阶段的无需训练朗之万细化方法，将基于ODE的扩散采样器与任意可微奖励函数对齐。该方法通过交替地使用标准的确定性去噪更新步骤和 Langevin 奖励引导修正步骤，在采样时进行偏好或目标引导的生成，并且作者在文章中证明了所提出的方法可以逐步恢复 DPO 式指数倾斜目标分布。此外，在多个图像数据集和奖励模型上的结果表明了一致的改进，并且定性结果证明仅使用分类器作为奖励可以有效的引导图像生成特定的类别。</p>
-<h3 id="Strengths"><a href="#Strengths" class="headerlink" title="Strengths"></a>Strengths</h3><p>所提出的框架引入了一种无需训练的推理时间奖励引导细化机制，可与任意标准扩散 ODE 求解器和可微奖励函数兼容，具有广泛的适用性。</p>
-<p>文章提出的Reward-Guided Langevin Refinement方法不依赖于特定的预训练模型，并且可以结合不同的奖励模型，有助于进一步探索Reward-Guided Langevin Refinement的性能</p>
-<p>文章提出方法的有效性在数学层面得到证明，最终得到的迭代结果符合直接偏好优化（DPO）形式的最优输出分布。</p>
-<h3 id="Weaknesses"><a href="#Weaknesses" class="headerlink" title="Weaknesses"></a>Weaknesses</h3><p>正如文章中所提到的，生成图像会继承所选奖励模型本身存在的偏差，若奖励模型在训练过程中存在数据偏差、标注错误或者设计不合理等问题，生成的图像也将难以符合预期。</p>
-<p>所提出的方法仅讨论了无条件生成的改进情况，而对有引导条件生成的改进情形则没有被讨论。</p>
-<p>尽管该方法是无需训练的，但需要在每隔去噪步骤中增加多个 Langevin 细化步骤（每个去噪步骤可能多达 20 个），并且每一个Langevin 细化步骤都需要调用一次预训练的扩散模型和一次预训练的奖励模型，在相同的去噪步数下带来额外的计算成本。</p>
-<p>实验结果只提供了相对于基线的改进情况，但没有涉及与其他无需训练方法在相同推理资源下的效果对比。</p>
-<p>实验没有提供标准生成模型指标（例如 FID、精确度/召回率或覆盖率）的报告来评估引入的奖励增益是否以感知质量降低或者多样性为代价。</p>
-<h3 id="Questions"><a href="#Questions" class="headerlink" title="Questions"></a>Questions</h3><p>文章实现过程中是否使用了大模型作为辅助？为什么章节里没有介绍大模型的使用情况？</p>
-<p>从公式(3.9)和算法1来看，每一次 Langevin 细化 都需要调用一次预训练的扩散模型和一次预训练的奖励模型，可否提供在相同的计算成本下，使用 Langevin 细化和不适用 Langevin 细化的结果对比？</p>
-<p>可否提供更多完整的实验结果，以展示生成图像的FID、精确度/召回率或覆盖率的改进情况？</p>
-
+        
     </div>
 
     
@@ -482,7 +332,6 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%BF%BB%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">全文翻译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-number">1.2.</span> <span class="nav-text">1. 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86"><span class="nav-number">1.3.</span> <span class="nav-text">2 预备知识</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%89%8D%E5%90%91%E8%BF%87%E7%A8%8B%E4%B8%8E%E5%8F%8D%E5%90%91%E8%BF%87%E7%A8%8B"><span class="nav-number">1.3.1.</span> <span class="nav-text">2.1 扩散模型的前向过程与反向过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E4%BD%9C%E4%B8%BASDE%E7%9A%84%E6%9C%97%E4%B9%8B%E4%B8%87%E5%8A%A8%E5%8A%9B%E5%AD%A6%E5%8F%8A%E5%85%B6%E7%A6%BB%E6%95%A3%E5%8C%96"><span class="nav-number">1.3.2.</span> <span class="nav-text">2.2 作为SDE的朗之万动力学及其离散化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-%E7%B1%BBRLHF%E7%9B%AE%E6%A0%87%E5%87%BD%E6%95%B0%E4%B8%8EDPO%EF%BC%9A%E8%AF%B1%E5%AF%BC%E7%9A%84%E8%83%BD%E9%87%8F%E5%80%BE%E6%96%9C%E6%9C%80%E4%BC%98%E8%A7%A3"><span class="nav-number">1.3.3.</span> <span class="nav-text">2.3 类RLHF目标函数与DPO：诱导的能量倾斜最优解</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%8E%A8%E5%AF%BC%E8%BF%87%E7%A8%8B"><span class="nav-number">1.3.3.1.</span> <span class="nav-text">推导过程</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E8%83%BD%E9%87%8F%E7%9A%84%E8%A7%86%E8%A7%92"><span class="nav-number">1.3.3.2.</span> <span class="nav-text">基于能量的视角</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-4-%E5%9F%BA%E4%BA%8EODE%E7%9A%84%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B%EF%BC%9A%E7%A1%AE%E5%AE%9A%E6%80%A7%E5%8E%BB%E5%99%AA"><span class="nav-number">1.3.4.</span> <span class="nav-text">2.4 基于ODE的扩散模型：确定性去噪</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.</span> <span class="nav-text">3 方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%80%E7%BB%88%E7%9B%AE%E6%A0%87"><span class="nav-number">1.4.1.</span> <span class="nav-text">最终目标</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E6%AD%A5%E7%9B%AE%E6%A0%87"><span class="nav-number">1.4.2.</span> <span class="nav-text">分步目标</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A41%EF%BC%9A%E6%9C%97%E4%B9%8B%E4%B8%87%E7%BB%86%E5%8C%96"><span class="nav-number">1.4.2.1.</span> <span class="nav-text">步骤1：朗之万细化</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A42%EF%BC%9A%E7%A1%AE%E5%AE%9A%E6%80%A7%E5%8E%BB%E5%99%AA"><span class="nav-number">1.4.2.2.</span> <span class="nav-text">步骤2：确定性去噪</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#%E8%AF%81%E6%98%8E%E8%BF%87%E7%A8%8B"><span class="nav-number">1.4.2.2.1.</span> <span class="nav-text">证明过程</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BD%92%E7%BA%B3%E6%8E%A8%E5%AF%BC"><span class="nav-number">1.4.3.</span> <span class="nav-text">归纳推导</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%AE%9E%E9%AA%8C"><span class="nav-number">1.5.</span> <span class="nav-text">4 实验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E5%AE%9E%E9%AA%8C%E8%AE%BE%E7%BD%AE"><span class="nav-number">1.5.1.</span> <span class="nav-text">4.1 实验设置</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E6%A8%A1%E5%9E%8B%E4%B8%8E%E9%87%87%E6%A0%B7%E5%99%A8"><span class="nav-number">1.5.1.1.</span> <span class="nav-text">基础模型与采样器</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="nav-number">1.5.1.2.</span> <span class="nav-text">数据集</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%A5%96%E5%8A%B1%E6%A8%A1%E5%9E%8B%EF%BC%88%E5%8F%AF%E5%BE%AE%EF%BC%89"><span class="nav-number">1.5.1.3.</span> <span class="nav-text">奖励模型（可微）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%A5%96%E5%8A%B1%E8%B0%83%E5%BA%A6%E4%B8%8E%E5%BC%95%E5%AF%BC"><span class="nav-number">1.5.1.4.</span> <span class="nav-text">奖励调度与引导</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%9C%97%E4%B9%8B%E4%B8%87%E7%BB%86%E5%8C%96"><span class="nav-number">1.5.1.5.</span> <span class="nav-text">朗之万细化</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82"><span class="nav-number">1.5.1.6.</span> <span class="nav-text">实现细节</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E4%B8%BB%E8%A6%81%E7%BB%93%E6%9E%9C"><span class="nav-number">1.5.2.</span> <span class="nav-text">4.2 主要结果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-%E5%9F%BA%E4%BA%8E%E6%89%80%E6%8F%90%E6%96%B9%E6%B3%95%E7%9A%84%E7%B1%BB%E5%88%AB%E5%BC%95%E5%AF%BC%E7%94%9F%E6%88%90"><span class="nav-number">1.5.3.</span> <span class="nav-text">4.3 基于所提方法的类别引导生成</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E7%9B%B8%E5%85%B3%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.6.</span> <span class="nav-text">5 相关工作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B%E4%B8%8E%E7%A1%AE%E5%AE%9A%E6%80%A7ODE%E9%87%87%E6%A0%B7"><span class="nav-number">1.6.1.</span> <span class="nav-text">扩散模型与确定性ODE采样</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%BC%95%E5%AF%BC%E6%96%B9%E6%B3%95"><span class="nav-number">1.6.2.</span> <span class="nav-text">扩散模型的引导方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E7%BB%93%E8%AE%BA"><span class="nav-number">1.7.</span> <span class="nav-text">6 结论</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%B1%80%E9%99%90%E6%80%A7"><span class="nav-number">1.7.0.1.</span> <span class="nav-text">局限性</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%9C%AA%E6%9D%A5%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.7.0.2.</span> <span class="nav-text">未来工作</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Review"><span class="nav-number">2.</span> <span class="nav-text">Review</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Summary"><span class="nav-number">2.1.</span> <span class="nav-text">Summary</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Strengths"><span class="nav-number">2.2.</span> <span class="nav-text">Strengths</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Weaknesses"><span class="nav-number">2.3.</span> <span class="nav-text">Weaknesses</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Questions"><span class="nav-number">2.4.</span> <span class="nav-text">Questions</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -498,7 +347,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-count">111</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -560,7 +409,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2025</span>
+  <span itemprop="copyrightYear">2026</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
