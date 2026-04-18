@@ -128,7 +128,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">110</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">109</span></a>
 
   </li>
         <li class="menu-item menu-item-book">
@@ -186,87 +186,6 @@
 
           <div class="content index posts-expand">
             
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/03/28/Style-Injection-in-Diffusion-A-Training-free-Approach-for-Adapting-Large-scale-Diffusion-Models-for-Style-Transfer%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
-      <meta itemprop="name" content="Zongqing Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lzq's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2025/03/28/Style-Injection-in-Diffusion-A-Training-free-Approach-for-Adapting-Large-scale-Diffusion-Models-for-Style-Transfer%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" class="post-title-link" itemprop="url">Style Injection in Diffusion A Training-free Approach for Adapting Large-scale Diffusion Models for Style Transfer论文精读</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2025-03-28 20:09:00" itemprop="dateCreated datePublished" datetime="2025-03-28T20:09:00+08:00">2025-03-28</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-05-06 17:24:49" itemprop="dateModified" datetime="2025-05-06T17:24:49+08:00">2025-05-06</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><p>尽管扩散模型具有令人印象深刻的生成能力，但现有的基于扩散模型的风格迁移方法要么<strong>需要耗时的推理阶段优化</strong>（如风格的微调或文本反转），要么<strong>未能充分利用大规模扩散模型的生成能力</strong>。为解决这些问题，我们提出了一种<strong>基于预训练大规模扩散模型的无需任何优化过程的新型艺术风格迁移方法</strong>。具体而言，<strong>我们通过模仿交叉注意力机制的工作方式，对自注意力层的特征进行操作：在生成过程中，将内容的键（key）和值（value）替换为风格图像的对应特征</strong>。这种方法为风格迁移提供了几个理想特性：<strong>1）通过将相似风格传递到相似图像块来保留内容结构；2）基于内容与风格图像之间局部纹理（如边缘）的相似性进行风格传递。</strong>此外，我们<strong>引入查询保留和注意力温度缩放来缓解原始内容结构被破坏的问题，并提出初始潜在自适应实例归一化（AdaIN）来处理颜色不和谐（风格颜色传递失败）的问题</strong>。实验结果表明，我们的方法在传统和基于扩散的风格迁移基准上均超越了现有技术。代码可在<a target="_blank" rel="noopener" href="https://github.com/jiwoogit/StyleID">https://github.com/jiwoogit/StyleID</a> 获取。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/03/28/Style-Injection-in-Diffusion-A-Training-free-Approach-for-Adapting-Large-scale-Diffusion-Models-for-Style-Transfer%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
       
   
   
@@ -979,6 +898,87 @@
   
   
 
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/03/12/DPM-Solver-A-Fast-ODE-Solver-for-Diffusion-Probabilistic-Model-Sampling-in-Around-10-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2025/03/12/DPM-Solver-A-Fast-ODE-Solver-for-Diffusion-Probabilistic-Model-Sampling-in-Around-10-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" class="post-title-link" itemprop="url">DPM-Solver-A Fast ODE Solver for Diffusion Probabilistic Model Sampling in Around 10 Steps论文精读</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-03-12 20:59:26" itemprop="dateCreated datePublished" datetime="2025-03-12T20:59:26+08:00">2025-03-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-05-10 17:29:14" itemprop="dateModified" datetime="2025-05-10T17:29:14+08:00">2025-05-10</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散概率模型（DPMs）是新兴的强大生成模型。尽管DPMs具有高质量的生成性能，但它们的采样速度仍然较慢，因为通常需要对大型神经网络进行数百或数千次的顺序函数评估（步骤）才能生成一个样本。从DPMs中采样可以看作是求解相应的扩散常微分方程（ODEs）。在这项工作中，我们提出了扩散ODEs解的精确公式。<strong>该公式通过解析计算解的线性部分，而不是像以往工作那样将所有项都留给黑箱ODE求解器处理。通过变量变换，解可以等效简化为神经网络的指数加权积分。</strong>基于我们的公式，我们提出了DPM-Solver，这是一种快速的、具有收敛阶保证的<code>专用高阶扩散ODE求解器</code>。DPM-Solver适用于离散时间和连续时间的DPMs，且无<strong>需任何额外训练</strong>。实验结果表明，DPM-Solver在各种数据集上仅需<strong>10 - 20次</strong>函数评估就能生成高质量样本。在CIFAR10数据集上，我们在10次函数评估中达到了4.70的FID（Frechet Inception Distance），在20次函数评估中达到了2.87的FID，并且与之前最先进的无训练采样器相比，在各种数据集上实现了4 - 16倍的加速。<br>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/03/12/DPM-Solver-A-Fast-ODE-Solver-for-Diffusion-Probabilistic-Model-Sampling-in-Around-10-Steps%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
 
   
   <nav class="pagination">
@@ -1050,7 +1050,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-count">109</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

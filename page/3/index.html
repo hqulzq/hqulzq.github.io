@@ -128,7 +128,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">110</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">109</span></a>
 
   </li>
         <li class="menu-item menu-item-book">
@@ -190,81 +190,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/07/10/2025-CVPR-Layer-and-Timestep-Adaptive-Differentiable-Token-Compression-Ratios-for-Efficient-Diffusion-Transformers-%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
-      <meta itemprop="name" content="Zongqing Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lzq's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2025/07/10/2025-CVPR-Layer-and-Timestep-Adaptive-Differentiable-Token-Compression-Ratios-for-Efficient-Diffusion-Transformers-%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" class="post-title-link" itemprop="url">2025-CVPR-Layer and Timestep-Adaptive Differentiable Token Compression Ratios for Efficient Diffusion Transformers 论文精读</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2025-07-10 21:28:34 / 修改时间：22:53:43" itemprop="dateCreated datePublished" datetime="2025-07-10T21:28:34+08:00">2025-07-10</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散Transformer（DiTs）已实现了最先进（SOTA）的图像生成质量，但存在延迟高和内存效率低的问题，使其难以在资源受限的设备上部署。<strong>一个主要的效率瓶颈是，现有的DiTs在图像的所有区域上应用了同等的计算量。然而，并非所有图像令牌都同等重要，某些局部区域（如物体）需要更多计算。为解决这一问题，我们提出了DiffCR，这是一种具有可微分压缩比的动态DiT推理框架，它能自动学习为每个图像令牌跨层和跨时间步动态分配计算资源，从而实现高效的DiTs。具体而言，DiffCR集成了三个特性：（1）令牌级路由机制，其中每个DiT层包含一个路由器，该路由器与模型权重联合微调以预测令牌重要性分数。通过这种方式，不重要的令牌可以绕过整个层的计算；（2）层级可微分比率机制，不同的DiT层从零初始化开始自动学习不同的压缩比，使得冗余层的压缩比较大，而其他层的压缩比较小甚至不压缩；（3）时间步级可微分比率机制，每个去噪时间步学习其自身的压缩比。由此产生的模式显示，在噪声较大的时间步压缩比较高，而随着图像变得更清晰，压缩比逐渐降低。</strong>在文本到图像和图像修复任务上的大量实验表明，DiffCR有效地捕捉了令牌、层和时间步三个维度的动态性，与先前的工作相比，在生成质量和效率之间取得了更优的权衡。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/07/10/2025-CVPR-Layer-and-Timestep-Adaptive-Differentiable-Token-Compression-Ratios-for-Efficient-Diffusion-Transformers-%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/07/10/2025-CVPR-DreamCache-Finetuning-Free-Lightweight-Personalized-Image-Generation-via-Feature-Caching%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -288,10 +213,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2025-07-10 21:13:41 / 修改时间：21:27:11" itemprop="dateCreated datePublished" datetime="2025-07-10T21:13:41+08:00">2025-07-10</time>
+              <time title="创建时间：2025-07-10 21:13:41" itemprop="dateCreated datePublished" datetime="2025-07-10T21:13:41+08:00">2025-07-10</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2026-04-17 16:37:20" itemprop="dateModified" datetime="2026-04-17T16:37:20+08:00">2026-04-17</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -978,6 +909,87 @@
   
   
 
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/06/26/2025-CVPR-Attend-to-Not-Attended-Structure-then-Detail-Token-Merging-for-Post-training-DiT-Acceleratio%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2025/06/26/2025-CVPR-Attend-to-Not-Attended-Structure-then-Detail-Token-Merging-for-Post-training-DiT-Acceleratio%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" class="post-title-link" itemprop="url">2025-CVPR-Attend to Not Attended Structure-then-Detail Token Merging for Post-training DiT Acceleratio论文精读</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-06-26 21:31:22" itemprop="dateCreated datePublished" datetime="2025-06-26T21:31:22+08:00">2025-06-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-06-29 21:36:51" itemprop="dateModified" datetime="2025-06-29T21:36:51+08:00">2025-06-29</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>扩散Transformer（DiT）在视觉生成领域展现出了卓越的性能，但其计算成本高昂。尽管已有一些通过在相似token间共享去噪过程来压缩模型的token精简技术，但现有方法忽视了扩散模型的去噪先验，导致加速效果欠佳且生成图像质量下降。本研究提出了一个新的概念：关注并修剪扩散过程未关注区域的特征冗余。我们基于从结构到细节的去噪先验，分析了特征冗余的位置和程度，进而提出了SDTM（从结构到细节的token合并）方法，用于动态压缩特征冗余。具体而言，我们针对不同阶段设计了动态视觉token合并、压缩比调整和提示重加权策略。该方法以训练后处理的方式工作，可无缝集成到任何DiT架构中。在各种骨干网络、调度器和数据集上进行的大量实验表明，我们的方法具有优越性，例如实现了1.55倍的加速，同时对图像质量的影响微乎其微。项目页面：<a target="_blank" rel="noopener" href="https://github.com/ICTMCG/SDTM">https://github.com/ICTMCG/SDTM</a>。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/06/26/2025-CVPR-Attend-to-Not-Attended-Structure-then-Detail-Token-Merging-for-Post-training-DiT-Acceleratio%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
 
   
   <nav class="pagination">
@@ -1049,7 +1061,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-count">109</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

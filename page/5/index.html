@@ -128,7 +128,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">110</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">109</span></a>
 
   </li>
         <li class="menu-item menu-item-book">
@@ -186,87 +186,6 @@
 
           <div class="content index posts-expand">
             
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/05/30/2024-NeurIPS-Simple-and-Fast-Distillation-of-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
-      <meta itemprop="name" content="Zongqing Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lzq's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2025/05/30/2024-NeurIPS-Simple-and-Fast-Distillation-of-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" class="post-title-link" itemprop="url">2024-NeurIPS-Simple and Fast Distillation of Diffusion Models论文精读</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2025-05-30 22:06:14" itemprop="dateCreated datePublished" datetime="2025-05-30T22:06:14+08:00">2025-05-30</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-07-26 21:54:09" itemprop="dateModified" datetime="2025-07-26T21:54:09+08:00">2025-07-26</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><h3 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h3><p>基于扩散的生成模型在各种任务中展现出了强大的性能，但其代价是采样速度缓慢。为了实现高效且高质量的合成，最近开发了各种基于蒸馏的加速采样方法。然而，这些方法通常需要通过精心设计进行耗时的微调，才能在特定的函数评估次数（NFE）下取得令人满意的性能，这使得它们在实际应用中难以使用。为了解决这个问题，我们提出了扩散模型的简单快速蒸馏（SFD）方法，它简化了现有方法中使用的范式，并将微调时间大幅缩短了1000倍。<font style="color:red;background:yellow"><strong>我们从一种基于普通蒸馏的采样方法开始，通过识别和解决几个影响合成效率和质量的微小但关键的因素，将其性能提升到了最先进的水平。</strong></font>我们的方法还可以使用单个蒸馏模型实现可变NFE的采样。大量实验表明，SFD在少步图像生成任务中，在样本质量和微调成本之间取得了良好的平衡。例如，SFD在CIFAR-10上仅用单个NVIDIA A100 GPU进行0.64小时的微调，就实现了4.53的FID（NFE=2）。我们的代码可在<a target="_blank" rel="noopener" href="https://github.com/zju-pi/diff-sampler">https://github.com/zju-pi/diff-sampler</a>获取。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/05/30/2024-NeurIPS-Simple-and-Fast-Distillation-of-Diffusion-Models%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
       
   
   
@@ -956,6 +875,87 @@ y(x_{n + 1}) = y(x_{n})+hf(x_{n}+\theta h,y(x_{n}+\theta h)) \tag{13}</script><p
   
   
 
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/03/28/Style-Injection-in-Diffusion-A-Training-free-Approach-for-Adapting-Large-scale-Diffusion-Models-for-Style-Transfer%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2025/03/28/Style-Injection-in-Diffusion-A-Training-free-Approach-for-Adapting-Large-scale-Diffusion-Models-for-Style-Transfer%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/" class="post-title-link" itemprop="url">Style Injection in Diffusion A Training-free Approach for Adapting Large-scale Diffusion Models for Style Transfer论文精读</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-03-28 20:09:00" itemprop="dateCreated datePublished" datetime="2025-03-28T20:09:00+08:00">2025-03-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-05-06 17:24:49" itemprop="dateModified" datetime="2025-05-06T17:24:49+08:00">2025-05-06</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="全文翻译"><a href="#全文翻译" class="headerlink" title="全文翻译"></a>全文翻译</h2><p>尽管扩散模型具有令人印象深刻的生成能力，但现有的基于扩散模型的风格迁移方法要么<strong>需要耗时的推理阶段优化</strong>（如风格的微调或文本反转），要么<strong>未能充分利用大规模扩散模型的生成能力</strong>。为解决这些问题，我们提出了一种<strong>基于预训练大规模扩散模型的无需任何优化过程的新型艺术风格迁移方法</strong>。具体而言，<strong>我们通过模仿交叉注意力机制的工作方式，对自注意力层的特征进行操作：在生成过程中，将内容的键（key）和值（value）替换为风格图像的对应特征</strong>。这种方法为风格迁移提供了几个理想特性：<strong>1）通过将相似风格传递到相似图像块来保留内容结构；2）基于内容与风格图像之间局部纹理（如边缘）的相似性进行风格传递。</strong>此外，我们<strong>引入查询保留和注意力温度缩放来缓解原始内容结构被破坏的问题，并提出初始潜在自适应实例归一化（AdaIN）来处理颜色不和谐（风格颜色传递失败）的问题</strong>。实验结果表明，我们的方法在传统和基于扩散的风格迁移基准上均超越了现有技术。代码可在<a target="_blank" rel="noopener" href="https://github.com/jiwoogit/StyleID">https://github.com/jiwoogit/StyleID</a> 获取。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/03/28/Style-Injection-in-Diffusion-A-Training-free-Approach-for-Adapting-Large-scale-Diffusion-Models-for-Style-Transfer%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
 
   
   <nav class="pagination">
@@ -1027,7 +1027,7 @@ y(x_{n + 1}) = y(x_{n})+hf(x_{n}+\theta h,y(x_{n}+\theta h)) \tag{13}</script><p
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-count">109</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

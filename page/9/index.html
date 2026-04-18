@@ -128,7 +128,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">110</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">109</span></a>
 
   </li>
         <li class="menu-item menu-item-book">
@@ -186,90 +186,6 @@
 
           <div class="content index posts-expand">
             
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/02/07/diffusion%E5%8E%9F%E7%90%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
-      <meta itemprop="name" content="Zongqing Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lzq's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2025/02/07/diffusion%E5%8E%9F%E7%90%86/" class="post-title-link" itemprop="url">diffusion原理</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2025-02-07 20:57:57" itemprop="dateCreated datePublished" datetime="2025-02-07T20:57:57+08:00">2025-02-07</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-02-27 10:37:03" itemprop="dateModified" datetime="2025-02-27T10:37:03+08:00">2025-02-27</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="公式推导"><a href="#公式推导" class="headerlink" title="公式推导"></a>公式推导</h2><p>如下图所示，给大家一个直观的认识：Diffusion Model分为前向过程和反向过程，前向过程将输入图$x_{0}$变为纯高斯噪声$x_{T}$，反向过程就是将噪声$x_{T}$还原为图片$x_{0}$的过程（就是一个不断去噪的过程）<br><img src="struct.png" alt="struct"></p>
-<h3 id="前向推导"><a href="#前向推导" class="headerlink" title="前向推导"></a>前向推导</h3><h4 id="前向过程从-x-t-1-到-x-t-的公式"><a href="#前向过程从-x-t-1-到-x-t-的公式" class="headerlink" title="前向过程从$x_{t-1}$到$x_{t}$的公式"></a>前向过程从$x_{t-1}$到$x_{t}$的公式</h4><p>给定真实图片$x_0 \sim q(x)$，前向过程中diffusion model对其添加了$T$次高斯噪声，分别得到图$x_{0},x_{1},…,x_{T}$（随着$t$的增加，$x$包含越来越多的噪声），这个过程如下表示</p>
-<script type="math/tex; mode=display">q(x_{t}|x_{t-1}) = \mathcal{N}(x_{t};\sqrt{1-\beta}x_{t-1},\beta I)</script><p>下图展示了前向加噪的过程中图片的变化，从左到右为$x_{0},x_{1},…,x_{T}$</p>
-<p><img src="image_0.png" alt="image_0"><br>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/02/07/diffusion%E5%8E%9F%E7%90%86/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
       
   
   
@@ -1078,6 +994,79 @@
   
   
 
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hqulzq.github.io/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://github.com/hqulzq/hqulzq.github.io/blob/main/images/userimg.jpg?raw=true">
+      <meta itemprop="name" content="Zongqing Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lzq's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/" class="post-title-link" itemprop="url">Git与GitLab的企业实战</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-02-05 19:50:07" itemprop="dateCreated datePublished" datetime="2025-02-05T19:50:07+08:00">2025-02-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-02-27 10:37:03" itemprop="dateModified" datetime="2025-02-27T10:37:03+08:00">2025-02-27</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="第1章-Git概述"><a href="#第1章-Git概述" class="headerlink" title="第1章 Git概述"></a>第1章 Git概述</h1><p>Git是一个免费的、开源的分布式版本控制系统，可以快速高效地处理从小型到大型的各种项目。</p>
+<p>Git易于学习，占地面积小，性能极快。 它具有廉价的本地库，方便的暂存区域和多个工作流分支等特性。其性能优于Subversion(svn)、CVS、Perforce和ClearCase等版本控制工具。<br>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/02/05/Git%E4%B8%8EGitLab%E7%9A%84%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%88%98/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
 
   
   <nav class="pagination">
@@ -1149,7 +1138,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">110</span>
+          <span class="site-state-item-count">109</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
